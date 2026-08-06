@@ -1,94 +1,32 @@
 <!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-7JH2C25PVM"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-7JH2C25PVM');
-</script>
-<title>子育ておでかけマップ｜子育て家庭のためのおでかけ情報サイト</title>
-<meta name="description" content="'今日どこ行こう'を、地図で解決。子育て家庭のためのおでかけ情報サイト「子育ておでかけマップ」。まずは愛知版で400ヶ所の子連れスポットを地図から検索できます。">
-<link rel="canonical" href="https://kosodate-odekake.jp/">
-<meta property="og:title" content="子育ておでかけマップ">
-<meta property="og:description" content="'今日どこ行こう'を、地図で解決。子育て家庭のためのおでかけ情報サイトです。">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://kosodate-odekake.jp/">
-<meta property="og:image" content="https://kosodate-odekake.jp/og-logo.png">
-<meta property="og:locale" content="ja_JP">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-<link rel="icon" href="favicon.ico">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>子育ておでかけマップ（全国版）</title>
+<meta name="robots" content="noindex">
 <style>
-:root{
-  --bg:#faf6ef; --card:#fffdf9; --ink:#3d3a34; --sub:#7a746a; --line:#e7ddcd;
-  --accent:#e08a5b; --accent-d:#c9713f;
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;-webkit-text-size-adjust:100%}
-a{color:var(--accent-d)}
-.wrap{max-width:640px;margin:0 auto;padding:0 18px}
-
-header.hero{background:linear-gradient(160deg,#fbe6d3,#f6ede0);padding:44px 0 34px;text-align:center;border-bottom:1px solid var(--line)}
-.logo{width:84px;height:84px;border-radius:22px;box-shadow:0 4px 14px rgba(200,113,63,.25);margin-bottom:14px}
-header.hero h1{font-size:1.5rem;margin:0 0 10px;color:var(--ink)}
-header.hero .catch{font-size:1.02rem;color:var(--accent-d);font-weight:700;margin:0 0 6px}
-header.hero .note{font-size:.88rem;color:var(--sub);margin:0;max-width:420px;margin-left:auto;margin-right:auto}
-
-main{padding:34px 0 10px}
-
-.area-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px 22px;box-shadow:0 3px 12px rgba(160,140,110,.14);text-align:center}
-.area-badge{display:inline-block;background:var(--accent);color:#fff;font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:999px;margin-bottom:10px}
-.area-card h2{font-size:1.3rem;margin:0 0 8px;color:var(--ink)}
-.area-card p{font-size:.9rem;color:var(--sub);margin:0 0 18px}
-.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;padding:14px 22px;border-radius:999px;font-size:.98rem;font-weight:700;box-shadow:0 3px 10px rgba(200,113,63,.3);transition:transform .1s}
-.btn:active{transform:scale(.97)}
-
-.expand-note{text-align:center;font-size:.78rem;color:var(--sub);margin:16px 0 0}
-
-footer{margin-top:48px;padding:22px 0 34px;border-top:1px solid var(--line);text-align:center}
-.site-footer-links{font-size:.8rem;color:var(--sub);margin:0 0 10px}
-.site-footer-links a{color:var(--sub);text-decoration:underline}
-.disclaimer{font-size:.72rem;color:var(--sub);opacity:.85;margin:0 0 10px;max-width:480px;margin-left:auto;margin-right:auto}
-.copyright{font-size:.72rem;color:var(--sub);opacity:.7;margin:0}
-</style>
-</head>
+:root{--accent:#e8802a;--accent-d:#c96a1c;--card:#fff8f0;--line:#efe4d4;--sub:#8a8172;--bg:#fffdf9}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,'Hiragino Sans',sans-serif;background:var(--bg);color:#3a352d}
+header{padding:34px 18px 10px;text-align:center}h1{font-size:1.4rem;margin:0 0 6px}
+.sub{color:var(--sub);font-size:.9rem;margin:0}
+.wrap{max-width:760px;margin:0 auto;padding:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.pref-card{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:inherit;
+background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.pref-card:hover{border-color:var(--accent)}
+.pref-name{font-size:1.1rem;font-weight:700;color:var(--accent-d)}
+.pref-site{font-size:.82rem;color:var(--sub)}.pref-count{font-size:.82rem;font-weight:700}
+footer{text-align:center;color:var(--sub);font-size:.78rem;padding:24px 18px;line-height:1.8}
+</style></head>
 <body>
-
-<header class="hero">
-  <div class="wrap">
-    <img class="logo" src="favicon-192.png" alt="子育ておでかけマップ ロゴ">
-    <h1>子育ておでかけマップ</h1>
-    <p class="catch">"今日どこ行こう"を、地図で解決。</p>
-    <p class="note">子育て家庭のためのおでかけ情報サイトです。</p>
-  </div>
-</header>
-
-<main>
-  <div class="wrap">
-    <div class="area-card">
-      <span class="area-badge">愛知版</span>
-      <h2>あいち子育ておでかけマップ</h2>
-      <p>愛知県の子連れおでかけスポットを地図で検索できます。公園・水族館・科学館から子連れランチまで、出発地からの所要時間でも絞り込み可能。</p>
-      <a class="btn" href="https://nishimikawa-odekake.com/?utm_source=kosodate-odekake&utm_medium=referral">愛知県400ヶ所の子連れスポットを地図で検索 →</a>
-    </div>
-    <p class="expand-note">今後、他エリアへも順次拡大予定です。</p>
-  </div>
-</main>
-
+<header><h1>子育ておでかけマップ</h1><p class="sub">お住まいの都道府県を選んでください</p></header>
+<div class="wrap"><div class="grid">
+<a class="pref-card" href="./shizuoka/index.html"><span class="pref-name">静岡県</span><span class="pref-site">しずおか子育ておでかけマップ</span><span class="pref-count">274スポット</span></a>
+<a class="pref-card" href="./gifu/index.html"><span class="pref-name">岐阜県</span><span class="pref-site">ぎふ子育ておでかけマップ</span><span class="pref-count">252スポット</span></a>
+<a class="pref-card" href="./mie/index.html"><span class="pref-name">三重県</span><span class="pref-site">みえ子育ておでかけマップ</span><span class="pref-count">237スポット</span></a>
+<a class="pref-card" href="./nagano/index.html"><span class="pref-name">長野県</span><span class="pref-site">ながの子育ておでかけマップ</span><span class="pref-count">252スポット</span></a>
+</div></div>
 <footer>
-  <div class="wrap">
-    <p class="site-footer-links"><a href="https://nishimikawa-odekake.com/about.html">運営者情報</a> | <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcSuUG_4MbFgNq-Ejn_cfDvXKhQdQZh4DxITrDiKlo4ocFfw/viewform" target="_blank" rel="noopener">お問い合わせ</a></p>
-    <p class="disclaimer">掲載情報は公開情報をもとに確認していますが、内容は変更される場合があります。お出かけ前に必ず公式サイト等で最新情報をご確認ください。</p>
-    <p class="copyright">© 子育ておでかけマップ</p>
-  </div>
+<p>掲載情報は作成時点のものです。最新情報は公式サイトをご確認ください。</p>
+<p>お問い合わせ: <a href="mailto:info@kosodate-odekake.jp">info@kosodate-odekake.jp</a></p>
 </footer>
-
-</body>
-</html>
+</body></html>

@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://kosodate-odekake.jp/</loc>
-    <lastmod>2026-08-01</lastmod>
-  </url>
+  <url><loc>https://kosodate-odekake.jp/</loc></url>
+  <url><loc>https://kosodate-odekake.jp/shizuoka/</loc></url>
+  <url><loc>https://kosodate-odekake.jp/shizuoka/map.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/gifu/</loc></url>
+  <url><loc>https://kosodate-odekake.jp/gifu/map.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/mie/</loc></url>
+  <url><loc>https://kosodate-odekake.jp/mie/map.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/nagano/</loc></url>
+  <url><loc>https://kosodate-odekake.jp/nagano/map.html</loc></url>
 </urlset>
