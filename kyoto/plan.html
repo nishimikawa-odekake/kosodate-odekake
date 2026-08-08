@@ -395,8 +395,8 @@ function fmtTime(mins){
 function priceLabel(s){
   const p=parsePrice(s);
   const isFood=(s.play_types||[]).includes('food');
-  if(p===0) return '料金: 無料';
-  if(p==null) return '料金は公式サイトで確認';
+  if(p===0) return isFood?'食事代: 実費（店舗により異なります）':'料金: 無料';
+  if(p==null) return isFood?'食事代: 実費（店舗により異なります）':'料金は公式サイトで確認';
   if(isFood) return '食事代: 1人あたり '+p.toLocaleString()+'円〜目安';
   return '大人1人あたり '+p.toLocaleString()+'円目安';
 }
@@ -455,9 +455,11 @@ function capFor(dt){
   return Infinity;
 }
 function nextCap(cap){
+  // 自動拡大は段階的に。全国版は県内でも距離が出るため、上限90分で打ち止め（無制限にしない）
   if(cap===20) return 40;
   if(cap===40) return 60;
-  return Infinity;
+  if(cap===60) return 90;
+  return cap;
 }
 
 /* ===== wizard nav ===== */
@@ -650,7 +652,7 @@ function buildPool(date,w){
     const dm=driveMinutesFrom(o,s);
     if(dm==null||dm>CURRENT_CAP) return false;
     if(!budgetPass(s)) return false;
-    if(rain && !(s.indoor_or_outdoor==='indoor'||s.rain_friendly)) return false;
+    if(rain && !isRainOk(s)) return false;
     if(isClosedOn(s,date)) return false;
     // business-hours vs arrival-time consistency
     const arrival=start+dm;
@@ -703,6 +705,11 @@ function applyDriveMoodTier(pool){
   }
   return pool;
 }
+// 雨天フォールバック: rain_friendly 未整備の県が多いため play_types に indoor を含む施設も屋内扱い
+function isRainOk(s){
+  const pt=s.play_types||[];
+  return s.indoor_or_outdoor==='indoor' || s.rain_friendly===true || pt.includes('indoor') || pt.includes('museum_science');
+}
 function pickLunch(main,date){
   const o=state.origin;
   const c=SPOTS.filter(s=>{
@@ -718,8 +725,11 @@ function pickLunch(main,date){
     s.__km=km; return true;
   });
   c.sort((a,b)=>a.__km-b.__km);
-  return c[0]||null;
+  // 食事系スポットが圏内に3件未満のエリアでは、無理な遠距離ランチを出さず案内カードに置き換える
+  LUNCH_SPARSE = (c.length < 3);
+  return c.length ? c[0] : null;
 }
+let LUNCH_SPARSE=false;
 function pickSub(main,lunch,mainDriveMin,date,w){
   const o=state.origin;
   const rain=w&&w.precip!=null&&w.precip>=50;
@@ -734,7 +744,7 @@ function pickSub(main,lunch,mainDriveMin,date,w){
     // ~20 min ≈ within about 12km locally
     if(km>12) return false;
     if(isClosedOn(s,date)) return false;
-    if(rain && !(s.indoor_or_outdoor==='indoor'||s.rain_friendly)) return false;
+    if(rain && !isRainOk(s)) return false;
     const dmO=driveMinutesFrom(o,s);
     if(dmO==null||dmO>CURRENT_CAP) return false;
     // 余力枠は「帰り道」原則: 出発地からの所要時間がメインより小さい（帰る方向）ものだけ
@@ -755,7 +765,9 @@ function startMinutes(){
 }
 function buildPlan(main,date,w,shareOverride){
   const o=state.origin;
-  const lunch=shareOverride?(shareOverride.lunch||null):pickLunch(main,date);
+  let lunch=shareOverride?(shareOverride.lunch||null):pickLunch(main,date);
+  const lunchSparse=shareOverride?(lunch==null):LUNCH_SPARSE;
+  if(lunchSparse) lunch=null; // 圏内の食事系が3件未満 → 案内カードに置き換え
   const dm=driveMinutesFrom(o,main)||30;
   let sub=shareOverride?(shareOverride.sub||null):pickSub(main,lunch,dm,date,w);
   let t=startMinutes();
@@ -782,6 +794,11 @@ function buildPlan(main,date,w,shareOverride){
     rows.push({type:'spot',time:t,spot:lunch,tag:mealTag,food:true,paynote:state.budget==='free',closeNote:arrivalCi.note,waterNote});
     t+=60;
     lastName=lunch.name; lastLat=lunch.latitude; lastLng=lunch.longitude;
+  } else {
+    // 食事系スポットが圏内に少ないエリア: 空枠や遠距離ランチの代わりに案内カード
+    rows.push({type:'mealnote',time:t,label:mealLabelFor(t)+'は途中の飲食で 🍴',
+      sub:'このあたりは掲載中の食事スポットが少ないため、移動途中のお店をご利用ください。'});
+    t+=60;
   }
   // age-based fatigue: 0-2 -> no additional post-meal spot, go home; 3-5 -> max 1 extra spot (bonus tier);
   if(onlyToddler) sub=null;
@@ -961,6 +978,12 @@ function rowHtml(r){
     return '<div class="tl branch"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
       '<span class="icon">🏠</span><span class="line"></span></div>'+
       '<div class="body"><div class="sname">'+esc(r.label)+'</div></div></div>';
+  }
+  if(r.type==='mealnote'){
+    return '<div class="tl"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
+      '<span class="icon">🍴</span><span class="line"></span></div>'+
+      '<div class="body"><div class="sname">'+esc(r.label)+'</div>'+
+      '<div class="meta">'+esc(r.sub)+'</div></div></div>';
   }
   if(r.type==='move'){
     return '<div class="tl move'+(r.opt?' bonus':'')+'"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
