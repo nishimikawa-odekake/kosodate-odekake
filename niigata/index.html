@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8CDXHXFG9F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8CDXHXFG9F');
+</script>
+<meta name="google-site-verification" content="Nfs_SxbXHLkNUnpUxyqPTuQx__y9nLNq0hhPFKrpB_E" />
+<title>にいがた子育ておでかけマップ｜新潟の子連れおでかけ・遊び場・ランチ検索</title>
+<meta name="description" content="新潟県の子連れおでかけスポット193件と児童館59館、計約252カ所を地図で検索。公園・水族館・科学館・工場見学から子連れランチまで。新潟など出発地を選んで所要時間で絞り込み。雨の日OK・無料スポットも。">
+<link rel="canonical" href="https://kosodate-odekake.jp/niigata/">
+<meta property="og:title" content="にいがた子育ておでかけマップ">
+<meta property="og:description" content="新潟県の子連れおでかけスポット193件と児童館59館、計約252カ所を地図で検索。公園・水族館・科学館・工場見学から子連れランチまで。新潟など出発地を選んで所要時間で絞り込み。雨の日OK・無料スポットも。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kosodate-odekake.jp/niigata/">
+<meta property="og:site_name" content="にいがた子育ておでかけマップ">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:image" content="https://kosodate-odekake.jp/og-logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="にいがた子育ておでかけマップ">
+<meta name="twitter:description" content="新潟県の子連れおでかけスポット193件と児童館59館、計約252カ所を地図で検索。公園・水族館・科学館・工場見学から子連れランチまで。新潟など出発地を選んで所要時間で絞り込み。雨の日OK・無料スポットも。">
+<meta name="twitter:image" content="https://kosodate-odekake.jp/og-logo.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "にいがた子育ておでかけマップ",
+  "url": "https://kosodate-odekake.jp/niigata/",
+  "description": "新潟県の子連れおでかけスポット193件と児童館59館、計約252カ所を地図で検索。公園・水族館・科学館・工場見学から子連れランチまで。新潟など出発地を選んで所要時間で絞り込み。雨の日OK・無料スポットも。",
+  "inLanguage": "ja"
+}
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" referrerpolicy="no-referrer">
+<style>
+:root{
+  --bg:#faf6ef; --card:#fffdf9; --ink:#3d3a34; --sub:#7a746a; --line:#e7ddcd;
+  --accent:#e08a5b; --accent-d:#c9713f;
+  --animal:#E9A23B; --active:#4CAF6E; --water:#3FA9D6; --create:#9B6DD6; --vehicle:#E06C75; --indoor:#7A8AA0; --food:#D95D77;
+  --animal-b:#fbeccd; --active-b:#d9f0e2; --water-b:#d5edf8; --create-b:#ece0f7; --vehicle-b:#f9dcde; --indoor-b:#e3e8ef; --food-b:#f9dbe2;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-text-size-adjust:100%}
+a{color:var(--accent-d)}
+img{max-width:100%;display:block}
+.wrap{max-width:1100px;margin:0 auto;padding:0 14px}
+
+/* header */
+header.hero{background:linear-gradient(160deg,#fbe6d3,#f6ede0);padding:22px 0 18px;border-bottom:1px solid var(--line)}
+header.hero h1{font-size:1.5rem;margin:0 0 6px;letter-spacing:.02em}
+header.hero .catch{font-size:1.02rem;color:var(--accent-d);font-weight:700;margin:0 0 4px}
+header.hero .note{font-size:.8rem;color:var(--sub);margin:0}
+header.hero .creator{font-size:.72rem;color:var(--sub);margin:2px 0 4px;opacity:.85}
+
+/* mascot: おでまる */
+.odemaru-mark{width:30px;height:30px;vertical-align:-7px;margin-right:6px;display:inline-block}
+.odemaru-note{display:flex;align-items:center;justify-content:center;gap:8px;margin:2px 0 12px;
+  color:var(--sub);font-size:.76rem;opacity:.9}
+.odemaru-note img{width:34px;height:auto;flex:none}
+
+/* mood buttons */
+.moods{padding:14px 0 4px}
+.moods h2{font-size:.95rem;margin:0 0 8px;color:var(--sub)}
+.mood-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+.mood-btn{flex:0 0 auto;border:none;border-radius:18px;padding:14px 16px;min-width:104px;font-size:.95rem;font-weight:700;color:#4a4640;background:var(--card);box-shadow:0 2px 6px rgba(160,140,110,.18);cursor:pointer;text-align:center;line-height:1.35;transition:transform .1s}
+.mood-btn:active{transform:scale(.96)}
+.mood-btn .emo{font-size:1.5rem;display:block;margin-bottom:4px}
+
+/* filter bar */
+.filterbar{position:sticky;top:0;z-index:900;background:rgba(250,246,239,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 0}
+.frow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+.frow:last-child{margin-bottom:0}
+.flabel{font-size:.75rem;color:var(--sub);margin-right:2px;flex:0 0 auto}
+.chip{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer;color:var(--ink);white-space:nowrap;transition:.12s}
+.chip:active{transform:scale(.95)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.chip.play.on{color:#fff}
+.chip.play[data-t="animal"].on{background:var(--animal);border-color:var(--animal)}
+.chip.play[data-t="active"].on{background:var(--active);border-color:var(--active)}
+.chip.play[data-t="water"].on{background:var(--water);border-color:var(--water)}
+.chip.play[data-t="create"].on{background:var(--create);border-color:var(--create)}
+.chip.play[data-t="vehicle"].on{background:var(--vehicle);border-color:var(--vehicle)}
+.chip.play[data-t="indoor"].on{background:var(--indoor);border-color:var(--indoor)}
+.chip.play[data-t="food"].on{background:var(--food);border-color:var(--food)}
+.count{font-size:.85rem;font-weight:700;color:var(--accent-d)}
+.reset{border:none;background:transparent;color:var(--sub);text-decoration:underline;font-size:.8rem;cursor:pointer;padding:6px 4px}
+
+/* layout */
+.main{display:flex;flex-direction:column;gap:16px;padding:16px 0}
+#mapwrap{width:100%;position:relative}
+#fullscreenMapBtn{position:absolute;top:10px;right:10px;z-index:400;background:#fff;color:var(--accent-d);font-size:.78rem;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:8px 12px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+#fullscreenMapBtn:active{transform:scale(.96)}
+#map{width:100%;height:45vh;min-height:360px;border-radius:16px;box-shadow:0 2px 10px rgba(160,140,110,.18);z-index:1}
+.listwrap{width:100%;min-width:0}
+.section-title{font-size:1.1rem;margin:6px 0 2px;display:flex;align-items:baseline;gap:8px}
+.section-title small{font-size:.8rem;color:var(--sub);font-weight:400}
+
+/* cards */
+.cards{display:grid;grid-template-columns:1fr;gap:14px;max-width:700px;margin:0 auto;width:100%}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(160,140,110,.12);transition:box-shadow .15s,transform .15s}
+.card.hl{box-shadow:0 0 0 3px var(--accent),0 4px 14px rgba(200,113,63,.28)}
+.card .photo{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#eee}
+.card .photo img{width:100%;height:100%;object-fit:cover}
+.credit{position:absolute;left:0;bottom:0;right:0;font-size:.62rem;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.55));padding:10px 8px 3px}
+.card .body{padding:12px 14px 14px}
+.card:not(:has(.photo)) .body{padding-top:16px}
+.card h3{font-size:1.08rem;margin:0 0 2px}
+.card .city{font-size:.8rem;color:var(--sub);margin:0 0 8px}
+.appeal{background:#fff6ee;border-left:4px solid var(--accent);border-radius:6px;padding:8px 10px;font-size:.95rem;font-weight:700;color:#5a4632;margin:0 0 10px}
+.badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.badge{font-size:.74rem;border-radius:999px;padding:3px 9px;font-weight:700;white-space:nowrap}
+.badge.play{color:#fff}
+.badge.drive{background:#efe7da;color:#6a5c46}
+.badge.free{background:#dff0e4;color:#2e7d47}
+.badge.rain{background:#e3e8ef;color:#4a586c}
+.info{font-size:.78rem;color:var(--sub);margin:0 0 3px;display:flex;gap:5px}
+.info b{color:#665e50;font-weight:700;flex:0 0 auto}
+.actions{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+.btn{flex:1 1 auto;text-align:center;text-decoration:none;border-radius:10px;padding:10px 8px;font-size:.86rem;font-weight:700;white-space:nowrap}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.map{background:#eef2f6;color:#41556e;border:1px solid #d8e0ea}
+.checked{font-size:.68rem;color:#a89f90;margin:9px 0 0}
+.kidfeat{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 10px}
+.kidfeat .kf{font-size:.72rem;background:var(--food-b);color:#a13a54;border-radius:999px;padding:3px 9px;font-weight:700;white-space:nowrap}
+.srcnote{font-size:.72rem;color:var(--sub);margin:0 0 6px}
+.foodnote{font-size:.68rem;color:#b08a92;margin:7px 0 0;line-height:1.4}
+
+/* weekend card */
+.weekend{background:linear-gradient(135deg,#fbe6d3,#f3e7d6);border-radius:16px;padding:18px 16px;text-align:center;border:1px solid var(--line)}
+.weekend h3{margin:0 0 6px;font-size:1.15rem}
+.weekend p{margin:0 0 12px;font-size:.9rem;color:#6a5c46}
+.weekend .actions{justify-content:center}
+.weekend .btn.insta{background:#d6588a;color:#fff;flex:0 1 auto;padding:10px 18px}
+.weekend .btn.links{background:#fff;color:var(--accent-d);border:1px solid var(--accent);flex:0 1 auto;padding:10px 18px}
+
+/* listing inquiry */
+.listing{max-width:700px;margin:24px auto 8px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 18px;text-align:center;box-shadow:0 2px 8px rgba(160,140,110,.12)}
+.listing h3{margin:0 0 6px;font-size:1.08rem}
+.listing p{margin:0 0 14px;font-size:.86rem;color:var(--sub)}
+.listing .btn.contact{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;border-radius:10px;padding:11px 22px;font-size:.9rem;font-weight:700}
+.listing .contact-msg{font-size:.8rem;color:var(--accent-d);font-weight:700;margin:12px 0 0}
+
+footer{margin-top:8px;padding:22px 0 40px;border-top:1px solid var(--line);color:var(--sub);font-size:.78rem}
+footer p{margin:0 0 6px}
+
+.leaflet-popup-content{margin:10px 12px;font-family:inherit}
+.pop h4{margin:0 0 4px;font-size:.95rem}
+.pop .pa{font-size:.8rem;color:#5a4632;margin:0 0 6px}
+.pop a{font-size:.82rem;font-weight:700}
+/* rich mini-card popup */
+.leaflet-popup.minipop .leaflet-popup-content-wrapper{border-radius:16px;box-shadow:0 6px 22px rgba(120,90,50,.28);padding:0;overflow:hidden;background:var(--card)}
+.leaflet-popup.minipop .leaflet-popup-content{margin:0;width:auto!important;font-family:inherit}
+.leaflet-popup.minipop .leaflet-popup-tip{background:var(--card)}
+.leaflet-popup.minipop a.leaflet-popup-close-button{color:var(--sub);text-shadow:none;font-size:20px;padding:5px 8px 0 0;z-index:3}
+#backToMap{position:fixed;right:16px;bottom:22px;z-index:1200;background:#E8823C;color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:700;box-shadow:0 4px 14px rgba(120,70,20,.35);display:none;align-items:center;gap:6px;cursor:pointer}
+#backToMap.show{display:inline-flex}
+#backToMap:active{transform:scale(.97)}
+.minicard.no-photo .mc-body{padding:26px 11px 4px}
+.minicard{cursor:pointer;width:100%;max-width:290px}
+.mc-photo{height:90px;overflow:hidden}
+.mc-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.mc-ph{width:100%;height:90px;display:flex;align-items:center;justify-content:center;font-size:2.4rem}
+.mc-body{padding:9px 11px 4px}
+.mc-name{font-weight:800;font-size:.95rem;color:var(--ink);line-height:1.3}
+.mc-city{font-size:.72rem;color:var(--sub);margin:1px 0 5px}
+.mc-appeal{font-size:.82rem;font-weight:700;color:#5a4632;background:#fff6ee;border-left:3px solid var(--accent);border-radius:5px;padding:5px 8px;margin:0 0 7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mc-badges{display:flex;flex-wrap:wrap;gap:4px}
+.mc-badge{font-size:.68rem;border-radius:999px;padding:2px 7px;font-weight:700;white-space:nowrap}
+.mc-badge.play{color:#fff}
+.mc-badge.drive{background:#efe7da;color:#6a5c46}
+.mc-badge.free{background:#dff0e4;color:#2e7d47}
+.mc-badge.rain{background:#e3e8ef;color:#4a586c}
+.mc-kf{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.mc-kf .kf{font-size:.66rem;background:var(--food-b);color:#a13a54;border-radius:999px;padding:2px 7px;font-weight:700}
+.mc-more{background:var(--accent);color:#fff;text-align:center;font-size:.8rem;font-weight:800;padding:7px;margin-top:7px;letter-spacing:.02em}
+.minicard:active .mc-more{background:var(--accent-d)}
+.pin{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 5px rgba(0,0,0,.3);border:2px solid #fff}
+.pin span{transform:rotate(45deg);font-size:16px}
+.pin.home{border-radius:50%;background:#4a4640}
+.pin.home span{transform:none}
+
+/* home/origin marker: bigger, distinct, pulsing */
+.home-wrap{position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center}
+.home-pulse{position:absolute;inset:0;border-radius:50%;background:var(--accent);opacity:.55;animation:home-pulse 2.2s ease-out infinite}
+.home-pin{position:relative;width:48px;height:48px;border-radius:50%;background:#fff;border:3px solid var(--accent-d);box-shadow:0 3px 10px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-size:24px}
+.home-label{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:2px;background:var(--accent-d);color:#fff;font-size:.72rem;font-weight:700;white-space:nowrap;padding:2px 8px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.25);pointer-events:none}
+
+#recenterBtn{position:absolute;right:10px;bottom:10px;z-index:410;width:40px;height:40px;border-radius:50%;background:#fff;border:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.18);font-size:19px;line-height:1;color:var(--accent-d);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+#recenterBtn:active{transform:scale(.94)}
+.geo-dot{width:16px;height:16px;position:relative}
+.geo-dot-ring{position:absolute;inset:-7px;border-radius:50%;background:rgba(66,133,244,.25)}
+.geo-dot-core{position:absolute;inset:0;border-radius:50%;background:#4285F4;border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.4)}
+.geo-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(10px);background:rgba(30,28,24,.92);color:#fff;font-size:.8rem;font-weight:600;padding:9px 16px;border-radius:999px;z-index:2000;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:86vw;text-align:center}
+.geo-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@keyframes home-pulse{0%{transform:scale(.6);opacity:.55}100%{transform:scale(2.1);opacity:0}}
+@media(prefers-reduced-motion:reduce){.home-pulse{animation:none;display:none}}
+
+.empty{text-align:center;color:var(--sub);padding:30px;font-size:.9rem}
+
+/* origin selector */
+.origin-sel{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 10px;font-size:.85rem;color:var(--ink);font-family:inherit;cursor:pointer;max-width:9.5em}
+.origin-btn{border:1.5px solid var(--accent);background:var(--card);color:var(--accent-d);border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer;font-weight:700;white-space:nowrap}
+.origin-btn:active{transform:scale(.95)}
+.origin-note{font-size:.7rem;color:var(--sub)}
+.origin-msg{font-size:.75rem;color:var(--accent-d);font-weight:700;flex-basis:100%;margin:2px 0 0}
+
+.readings{max-width:700px;margin:24px auto 0}
+.readings h2.section-title{margin-bottom:8px}
+.readings-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+.reading-card{flex:0 0 auto;width:220px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 2px 6px rgba(160,140,110,.15);text-decoration:none;color:#4a4640;transition:transform .1s}
+.reading-card:active{transform:scale(.97)}
+.reading-card .emo{font-size:1.4rem;display:block;margin-bottom:6px}
+.reading-card .rt{font-size:.92rem;font-weight:800;line-height:1.4;color:#4a4640}
+.reading-card .rd{font-size:.76rem;color:var(--sub);margin-top:6px;line-height:1.4}
+
+@media(min-width:900px){
+  .readings{max-width:none}
+}
+
+@media(min-width:820px){
+  header.hero h1{font-size:1.8rem}
+}
+
+@media(min-width:900px){
+  .main{flex-direction:row;align-items:flex-start;gap:24px}
+  #mapwrap{flex:0 0 57%;max-width:57%;position:sticky;top:12px;align-self:flex-start}
+  #map{width:100%;height:calc(100vh - 24px);min-height:520px;max-height:none}
+  .listwrap{flex:1 1 43%;max-width:43%;min-width:0}
+  .cards{grid-template-columns:1fr;max-width:none}
+  .listing{max-width:none}
+}
+/* スポットカード内アフィリボタン */
+.card .aff{display:inline-flex;align-items:center;gap:5px;margin:8px 0 0;padding:6px 12px;font-size:.76rem;font-weight:700;color:#8a7f6e;background:#fbf6ee;border:1px solid var(--line);border-radius:8px;text-decoration:none;transition:.12s}
+.card .aff:hover{border-color:var(--accent);color:var(--accent-d)}
+.card .aff .pr{font-size:.6rem;color:#b0a695;font-weight:700}
+/* 週末天気ウィジェット */
+.wxbar{display:none;margin:12px auto 0;max-width:700px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:9px 13px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.wxbar.show{display:block}
+.wxbar-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.wxbar-title{font-size:.78rem;font-weight:800;color:#5a4632;white-space:nowrap}
+.wxbar-days{display:flex;gap:10px;flex:1 1 auto;flex-wrap:wrap}
+.wxday{display:inline-flex;align-items:center;gap:5px;background:#fbf6ee;border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:.8rem;font-weight:700;color:#6a5c46;white-space:nowrap}
+.wxday .wxd-emo{font-size:1rem}
+.wxday .wxd-t{color:#c9713f}
+.wxday .wxd-tn{color:#3FA9D6}
+.wxday .wxd-p{color:#7a746a;font-size:.72rem}
+.wxday .wxd-label{color:#a89f90;font-weight:800}
+.wxbar-rain{flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;background:#d5edf8;border:1.5px solid #9cd0ea;border-radius:999px;padding:5px 12px;font-size:.76rem;font-weight:800;color:#2a7aa0;cursor:pointer;transition:.12s;white-space:nowrap}
+.wxbar-rain:hover{background:#c2e4f3}
+.wxbar-src{font-size:.56rem;color:#c3baaa;margin:5px 0 0}
+.topbanner{display:block;max-width:700px;margin:10px auto 0;background:#fff6ee;border:1.5px solid var(--accent);border-radius:999px;padding:9px 16px;text-align:center;font-size:.85rem;font-weight:800;color:var(--accent-d);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbanner:hover{background:var(--accent);color:#fff}
+.topbanner.planbanner{margin-top:8px;background:var(--accent);color:#fff;border-color:var(--accent)}
+.topbanner.planbanner:hover{background:var(--accent-d);border-color:var(--accent-d)}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <h1><img class="odemaru-mark" src="/odemaru-mark.png" alt="おでまる" width="96" height="96" decoding="async">にいがた子育ておでかけマップ</h1>
+    <p class="catch">新潟の"子どもが喜ぶ場所"だけを集めたおでかけマップ</p>
+    <p class="creator">新潟県内約252カ所を掲載（おでかけスポット193＋児童館59館）。新潟市在住の2児の父が個人開発しました。</p>
+    <p class="note">公園・水遊び・室内遊び場から子連れランチまで、今日の気分と出発地で選べます。</p>
+    <div class="wxbar" id="wxbar" aria-live="polite">
+      <div class="wxbar-top">
+        <span class="wxbar-title" id="wxbarTitle">📅 今週末の天気</span>
+        <span class="wxbar-days" id="wxbarDays"></span>
+        <button class="wxbar-rain" id="wxbarRain" type="button" style="display:none">☔ 雨でも室内のスポットを見る</button>
+      </div>
+      <p class="wxbar-src">天気: Open-Meteo</p>
+    </div>
+    <!-- weekly-banner: 週次更新時に件数を書き換え -->
+    <a class="topbanner" href="./links.html">📅 今週末のイベント32選はこちら →</a>
+    <a class="topbanner planbanner" href="./plan.html">🎯 質問に答えるだけ、きょうのプランを自動作成 →</a>
+  </div>
+</header>
+
+<section class="moods">
+  <div class="wrap">
+    <h2>気分で選ぶ</h2>
+    <div class="mood-scroll" id="moods" role="list">
+      <button class="mood-btn" data-mood="rain"    role="listitem"><span class="emo">☔</span>雨でも室内</button>
+      <button class="mood-btn" data-mood="free"    role="listitem"><span class="emo">🆓</span>無料</button>
+      <button class="mood-btn" data-mood="animal"  role="listitem"><span class="emo">🦁</span>動物とふれあう</button>
+      <button class="mood-btn" data-mood="active"  role="listitem"><span class="emo">🛝</span>からだを動かす</button>
+      <button class="mood-btn" data-mood="water"   role="listitem"><span class="emo">💦</span>水であそぶ</button>
+      <button class="mood-btn" data-mood="create"  role="listitem"><span class="emo">🔬</span>つくる・体験</button>
+      <button class="mood-btn" data-mood="vehicle" role="listitem"><span class="emo">🚃</span>のりもの・電車</button>
+      <button class="mood-btn" data-mood="food"    role="listitem"><span class="emo">🍽</span>子連れランチ</button>
+    </div>
+  </div>
+</section>
+
+<div class="filterbar" id="filterbar">
+  <div class="wrap">
+    <div class="frow" role="group" aria-label="出発地を選ぶ">
+      <span class="flabel">🚗 どこから行く？</span>
+      <select class="origin-sel" id="originSel" aria-label="出発地の街"></select>
+      <button class="origin-btn" id="originGeo" type="button">📍現在地から</button>
+      <span class="origin-note">※所要時間は目安です</span>
+      <span class="origin-msg" id="originMsg" role="status" aria-live="polite" style="display:none"></span>
+    </div>
+    <div class="frow" role="group" aria-label="遊びタイプで絞り込み">
+      <span class="flabel">遊び</span>
+      <button class="chip play" data-t="animal"  aria-pressed="false">🦁 動物</button>
+      <button class="chip play" data-t="active"  aria-pressed="false">🛝 からだ</button>
+      <button class="chip play" data-t="water"   aria-pressed="false">💦 水</button>
+      <button class="chip play" data-t="create"  aria-pressed="false">🔬 つくる</button>
+      <button class="chip play" data-t="vehicle" aria-pressed="false">🚃 のりもの</button>
+      <button class="chip play" data-t="indoor"  aria-pressed="false">☔ 室内</button>
+      <button class="chip play" data-t="food"    aria-pressed="false">🍽 ごはん</button>
+    </div>
+    <div class="frow" role="group" aria-label="出発地からの所要時間で絞り込み">
+      <span class="flabel" id="driveLabel">新潟から</span>
+      <button class="chip drive" data-d="20" aria-pressed="false">20分</button>
+      <button class="chip drive" data-d="30" aria-pressed="false">30分</button>
+      <button class="chip drive" data-d="40" aria-pressed="false">40分</button>
+      <button class="chip drive" data-d="50" aria-pressed="false">50分</button>
+      <button class="chip drive" data-d="60" aria-pressed="false">60分</button>
+    </div>
+    <div class="frow">
+      <button class="chip" data-f="rain" aria-pressed="false">☔ 雨でもOK</button>
+      <button class="chip" data-f="free" aria-pressed="false">🆓 無料</button>
+      <button class="chip" data-f="kids" aria-pressed="false">🧸 キッズスペース</button>
+      <button class="chip" data-f="jidokan" aria-pressed="false">🏠 児童館</button>
+      <span class="count" id="count" aria-live="polite">該当32件</span>
+      <button class="reset" id="reset">リセット</button>
+    </div>
+    <div class="frow" id="foodSubChips" role="group" aria-label="ごはん店の追加条件" style="display:none">
+      <span class="flabel">ごはん店の条件</span>
+      <button class="chip" data-f="zashiki" aria-pressed="false">🍵 座敷あり</button>
+      <button class="chip" data-f="kids_chair" aria-pressed="false">🪑 子ども椅子</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="main">
+    <div id="mapwrap">
+      <div id="map" role="application" aria-label="スポットの地図"></div>
+      <button id="fullscreenMapBtn" type="button">⛶ 全画面で見る</button>
+      <button id="recenterBtn" type="button" aria-label="現在地へ戻る" title="現在地へ戻る">⌖</button>
+    </div>
+    <button id="backToMap" type="button" aria-label="マップに戻る">🗺 マップに戻る</button>
+    <div class="listwrap">
+      <h2 class="section-title">スポット一覧 <small id="listcount"></small></h2>
+      <div class="cards" id="cards"></div>
+      <div class="empty" id="empty" style="display:none">条件に合うスポットがありません。条件をゆるめてみてください。</div>
+
+      <p style="font-size:.74rem;color:var(--sub);line-height:1.6;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:14px 0 0">掲載情報は公式サイト・自治体サイト等の公開情報をもとに確認していますが、営業時間・料金・休業日・設備情報は変更される場合があります。お出かけ前に、必ず公式サイト等で最新情報をご確認ください。<br><a href="./request.html">情報の修正・削除依頼はこちら</a></p>
+
+      <div class="weekend" style="margin-top:18px">
+        <h3>今週末のおでかけ 🎪</h3>
+        <p>最新イベント情報はInstagramでお知らせ！</p>
+        <div class="actions">
+          <a class="btn insta" href="#" target="_blank" rel="noopener">📷 Instagram</a>
+          <a class="btn links" href="./links.html">今週末のリンク集 →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="madeby" aria-label="運営者について" style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;margin:18px 0">
+    <h2 style="font-size:1.05rem;margin:0 0 8px;color:var(--accent-d)">新潟市在住の子育て中の父が作りました</h2>
+    <p style="font-size:.88rem;color:#5c574e;line-height:1.7;margin:0 0 12px">週末や雨の日に「子どもをどこへ連れて行こう？」と悩んだ経験から、西三河・新潟県内の子連れスポットを地図で探せるサイトを作りました。公園、室内施設、無料スポット、雨の日に使いやすい場所など、子育て家庭が知りたい情報を中心にまとめています。</p>
+    <a href="./about.html" style="display:inline-block;background:var(--accent);color:#fff;text-decoration:none;padding:10px 18px;border-radius:999px;font-size:.85rem;font-weight:700">運営者情報を見る →</a>
+  </section>
+</div>
+
+<div class="wrap">
+  
+</div>
+
+<div class="wrap">
+  
+</div>
+
+<div class="wrap">
+  <!-- 掲載のお問い合わせ導線 -->
+  <section class="listing" aria-label="掲載のご案内">
+    <h3>掲載をご検討の施設・イベント主催者さまへ</h3>
+    <p>子育て世帯向けの施設・イベント情報を随時掲載しています。掲載のご相談や掲載内容の修正はお気軽にご連絡ください。</p>
+    <a class="btn contact" id="contactBtn" href="./request.html">掲載についてのご相談はこちら →</a>
+  </section>
+  <p style="text-align:center;margin:18px auto 6px;font-size:.86rem;color:var(--sub)">📅 週末イベントは毎週木曜にInstagramで配信中 → <a href="#" target="_blank" rel="noopener" style="font-weight:700"></a></p>
+</div>
+
+
+<footer>
+  <div class="wrap">
+    <p class="odemaru-note"><img src="/odemaru-guide.png" alt="おでまる" width="160" height="186" loading="lazy" decoding="async"><span>案内役の「おでまる」がおでかけをお手伝いします。</span></p>
+    <p>掲載情報は変わることがあります。おでかけ前に各公式サイトで最終確認をお願いします。</p>
+    <p>写真: Wikimedia Commons（各写真にクレジットを表示しています）</p>
+    <p>当サイトはアフィリエイトプログラムに参加しており、リンクを経由した予約・購入により収入を得ることがあります（PR）。</p>
+    <p>Amazonのアソシエイトとして、にいがた子育ておでかけマップは適格販売により収入を得ています。</p>
+    <p style="color:#bcb3a3">にいがた子育ておでかけマップ</p>
+    <p class="site-footer-links"><a href="./about.html">運営者情報</a> | <a href="./disclaimer.html">免責事項</a> | <a href="./privacy.html">プライバシーポリシー</a> | <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcSuUG_4MbFgNq-Ejn_cfDvXKhQdQZh4DxITrDiKlo4ocFfw/viewform" target="_blank" rel="noopener">お問い合わせ</a> | <a href="./request.html">掲載情報の修正・削除依頼</a></p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" referrerpolicy="no-referrer"></script>
+<script>
+const SPOTS = [{"name":"二ツ亀海水浴場","city":"佐渡市","latitude":38.330966,"longitude":138.486142,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本の快水浴場100選・ミシュラン二つ星の透明度抜群のビーチ。奇岩二ツ亀のそばで遊泳可、キャンプ場隣接","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"両津郷土博物館","city":"佐渡市","latitude":38.061127,"longitude":138.424316,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"「海」「くらしと木」「祭」がテーマ。北佐渡の漁撈用具2,162点は国指定重要有形文化財。雨天でも楽しめる室内学習スポット","business_hours":null,"closed_days":null,"official_url":"https://www.city.sado.niigata.jp/site/museum/460.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"尖閣湾揚島遊園","city":"佐渡市","latitude":38.093696,"longitude":138.250727,"play_types":["water","vehicle","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"全国渚百選の海中公園。海中透視船（遊覧船）で湾内巡り、水族館・資料館も併設","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"史跡 佐渡金山","city":"佐渡市","latitude":38.039734,"longitude":138.25592,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"世界文化遺産。宗太夫坑は人形で採掘作業を再現、道遊坑では道遊の割戸を見学。MR・プロジェクションマッピングコースも","business_hours":null,"closed_days":null,"official_url":"http://www.sado-kinzan.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"きらりうむ佐渡","city":"佐渡市","latitude":38.029785,"longitude":138.240601,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"佐渡金銀山のガイダンス施設。映像や歴史絵巻で金銀山の価値を紹介、多言語対応","business_hours":null,"closed_days":null,"official_url":"https://www.city.sado.niigata.jp/site/mine/5306.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"トキの森公園","city":"佐渡市","latitude":38.037129,"longitude":138.420865,"play_types":["animal","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"トキふれあいプラザでトキを間近に観察、資料展示館も。売店の枝豆ソフトが人気","business_hours":null,"closed_days":null,"official_url":"https://www.city.sado.niigata.jp/site/tokinomori/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"佐渡歴史伝説館","city":"佐渡市","latitude":37.955612,"longitude":138.349594,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"等身大ロボット人形で佐渡の歴史・伝説を再現。食事処も併設、雨天向き","business_hours":null,"closed_days":null,"official_url":"https://www.sado-rekishi.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"佐和田海水浴場","city":"佐渡市","latitude":38.000162,"longitude":138.317302,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"真野湾の波穏やかな遠浅ビーチで子連れに安心。商店街から徒歩2分、無料キャンプ場も隣接","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"真野公園","city":"佐渡市","latitude":37.956248,"longitude":138.344095,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"児童遊具のある広い公園。約2,000本の桜の名所で春は芸能祭も開催","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"佐渡西三川ゴールドパーク","city":"佐渡市","latitude":37.898204,"longitude":138.296261,"play_types":["create","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"本物の砂金を探す砂金採り体験ができるミュージアム。子ども向け宝石探しもあり、雨天でも楽しめる","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"佐渡太鼓体験交流館（たたこう館）","city":"佐渡市","latitude":37.822099,"longitude":138.232458,"play_types":["create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"樹齢600年の欅から作った大太鼓など、講師指導で太鼓を叩ける体験施設","business_hours":null,"closed_days":null,"official_url":"http://www.sadotaiken.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"越後妻有里山現代美術館 MonET(モネ)","city":"十日町市","latitude":37.13903,"longitude":138.760132,"play_types":["create","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大地の芸術祭の拠点美術館(旧キナーレ)。水盤を囲む回廊型の建築で子連れでも楽しめる。10:00-17:00、祝日除く火・水曜休館、年末年始休館。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/42279","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"清津川フレッシュパーク","city":"十日町市","latitude":37.029747,"longitude":138.698649,"play_types":["water","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"川遊び・バーベキュー・足湯が楽しめる広々とした公園。隣に温泉施設ゆくら妻有。豪雪地のため冬季は積雪で利用不可の可能性、要確認。詳細住所・営業期間は未確認。","business_hours":null,"closed_days":null,"official_url":"https://www.tokamachishikankou.jp/special/kodomospot/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"鉢&田島征三 絵本と木の実の美術館","city":"十日町市","latitude":37.11244,"longitude":138.693505,"play_types":["create","animal"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"廃校を活用した体験型美術館。ヤギとの触れ合いもあり親子で一日楽しめる。冬季休館の可能性・要確認。料金・営業時間は未確認。","business_hours":null,"closed_days":null,"official_url":"https://www.tokamachishikankou.jp/special/kodomospot/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"十日町市博物館","city":"十日町市","latitude":37.141262,"longitude":138.755173,"play_types":["indoor","create"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"国宝火焔型土器を展示。アバター体験や立体土器パズルなど体験型。屋内施設で悪天候・冬季でも利用しやすいが開館情報は要確認。料金未確認。","business_hours":null,"closed_days":null,"official_url":"https://www.tokamachishikankou.jp/special/kodomospot/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"子育ての駅かたっくり(魚沼市総合ビジターセンター)","city":"魚沼市","latitude":37.214695,"longitude":138.976685,"play_types":["indoor","active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"響きの森公園内の全天候型子ども遊び場。エアートランポリン、ボルダリング、乳幼児スペース、授乳室等。開館9:30-18:30(冬季12-2月は9:00-18:00)、月曜・年末年始休館。屋内で豪雪期も利用可。料金は要確認。","business_hours":null,"closed_days":null,"official_url":"https://www.kosodatenoeki.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"奥只見レクリエーション都市公園 響きの森公園","city":"魚沼市","latitude":37.214695,"longitude":138.976685,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"「雪国音楽の森」がテーマの28.7haの大規模公園。雪のコロシアム、文化会館、ビジターセンターかたっくり等。駐車場は夏季404台・冬季296台。冬季は積雪で屋外利用に制限の可能性、要確認。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/8382","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 ゆのたに","city":"魚沼市","latitude":37.224182,"longitude":138.982422,"play_types":["food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"魚沼産コシヒカリ・地酒・山菜加工品などの特産品販売、郷土料理レストラン、観光案内所(尾瀬・奥只見湖方面)。インフォメーションセンター9:00-17:00通年。冬季は営業時間短縮あり、要確認。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/7011","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 南魚沼「雪あかり」","city":"南魚沼市","latitude":37.003124,"longitude":138.818863,"play_types":["water","active","food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"農産物直売所・軽食・美術館・公園を備えた道の駅。憩いの広場のふわふわドームや水遊び場が子供に人気、冬季はスノーキッズパークを開設。四季味わい館9:00-18:00(12-4月は10:00-17:00)。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/10233","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"五十沢キャンプ場","city":"南魚沼市","latitude":37.035432,"longitude":138.958386,"play_types":["active","water"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"五十沢川沿い3.5haの広大なキャンプ場。川での水遊び、釣り堀、林業体験実習館あり。2026年4月29日～11月30日の季節営業で冬季は閉鎖。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/6173","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"八色の森公園","city":"南魚沼市","latitude":37.164637,"longitude":138.936199,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"越後三山を望む芝生広場・遊具・ウォーキングロードのある公園。無料で遊べるファミリー向け。豪雪地のため冬季は積雪で屋外遊具の利用不可の可能性、要確認。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/12918","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"津南見玉公園","city":"津南町","latitude":36.957139,"longitude":138.661594,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"中津川対岸の柱状節理を望む「大地の鼓動が聞こえる谷」がテーマの公園。池や草花、散策路あり。秋山郷入口。冬季は積雪で閉鎖・散策不可の可能性、要確認。","business_hours":null,"closed_days":null,"official_url":"https://www.town.tsunan.niigata.jp/site/kanko/midama-park.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"津南ひまわり広場","city":"津南町","latitude":36.992094,"longitude":138.651967,"play_types":["active"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"約50万本のひまわりが咲く4haの畑。写真コンテストやスタンプラリーも。開催は2026年7月24日～8月16日 9:00-17:00の夏季限定イベント(冬季は開催なし)。","business_hours":null,"closed_days":null,"official_url":"https://tsunan.info/tsunan-sunflower-square-2/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"龍ヶ窪の池","city":"津南町","latitude":36.974033,"longitude":138.628922,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"全国名水百選。1日約43,000tの湧水で1日1回全体の水が入れ替わる神秘的な池。飲料水として持ち帰り可。終日開放の散策スポット。最深1mのため幼児は要注意。豪雪地のため冬季はアクセス・散策路に注意、要確認。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/6988","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"湯沢高原パノラマパーク(アルプの里)","city":"湯沢町","latitude":36.936237,"longitude":138.787964,"play_types":["vehicle","active"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ロープウェイで山頂の高山植物園アルプの里へ。グリーンシーズン営業は2026年4/25-5/6・5/30-11/15。ロープウェイ運行8:40-16:40。スキー場のグリーンシーズン営業のため期間外(冬季はスキー場営業)は要確認。","business_hours":null,"closed_days":null,"official_url":"https://www.yuzawakogen.com/green/tickets/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"湯沢中央公園","city":"湯沢町","latitude":36.930733,"longitude":138.836456,"play_types":["active","water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"陸上競技場・野球場・テニスコート・レジャープール等を備える総合公園。桜やイチョウなど四季の風景も。営業は4月第4土曜～11月第2日曜で冬季は営業なし(積雪のため)。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/6940","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大源太キャニオンキャンプ場","city":"湯沢町","latitude":36.933712,"longitude":138.817429,"play_types":["active","water"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"「上越のミニ上高地」大源太湖畔のキャンプ場。日帰り可のネイチャーゾーン、BBQ広場あり。営業は概ね5月～10月で冬季は閉鎖。料金は公式サイト要確認。","business_hours":null,"closed_days":null,"official_url":"https://www.town.yuzawa.lg.jp/soshikikarasagasu/kikkakusangyoukankoubu/kankyonorinka/9/2/2/1019.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"小千谷市錦鯉の里","city":"小千谷市","latitude":37.311386,"longitude":138.796448,"play_types":["animal","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本庭園で優秀鯉15品種200尾を間近に観られる世界唯一の錦鯉展示施設。屋内展示館があり冬季も観覧可。9:00-17:00、12/29-1/3休。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/6096","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"白山運動公園","city":"小千谷市","latitude":37.321095,"longitude":138.772154,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"80mのローラー滑り台や大型コンビネーション遊具を備えた運動公園。豪雪地のため冬季は積雪で遊具利用不可の可能性、要確認。","business_hours":null,"closed_days":null,"official_url":"https://www.city.ojiya.niigata.jp/soshiki/kenko/oyako-shisetsu201304.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"船岡公園","city":"小千谷市","latitude":37.304355,"longitude":138.795197,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"コンビネーション遊具があり春は桜まつりが開催される公園。豪雪地のため冬季は積雪で遊具利用不可の可能性、要確認。","business_hours":null,"closed_days":null,"official_url":"https://www.city.ojiya.niigata.jp/site/kanko/funaokakouen.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"おぢゃ~る(山本山高原/小千谷市総合産業会館周辺体験施設)","city":"小千谷市","latitude":37.289936,"longitude":138.81181,"play_types":["active","indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"山本山エリアの体験・交流施設。キャンプ、すべり台、発電館(入館無料)などがある。冬季休館・利用制限の可能性、要確認。","business_hours":null,"closed_days":null,"official_url":"https://www.city.ojiya.niigata.jp/soshiki/kenko/oyako-shisetsu201304.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新潟市水族館 マリンピア日本海","city":"新潟市","latitude":37.924023,"longitude":139.028152,"play_types":["animal","water","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本海側最大級の水族館。イルカショー・マリンサファリ・砂遊びゾーンあり。","business_hours":null,"closed_days":null,"official_url":"http://www.marinepia.or.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新潟県立自然科学館","city":"新潟市","latitude":37.890381,"longitude":139.049774,"play_types":["indoor","create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"体験型科学館。プラネタリウム、屋外遊具・恐竜広場あり。雨の日向き。","business_hours":null,"closed_days":null,"official_url":"http://www.sciencemuseum.jp/niigata","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"水の公園・福島潟／ビュー福島潟","city":"新潟市","latitude":37.91481,"longitude":139.239822,"play_types":["active","create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"福島潟の自然情報施設。周囲は水辺の公園で散策・生きもの観察ができる。","business_hours":null,"closed_days":null,"official_url":"https://view-fukushimagata.niigata.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新潟市新津鉄道資料館","city":"新潟市","latitude":37.802372,"longitude":139.141739,"play_types":["vehicle","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"200系新幹線・蒸気機関車など実車展示。のりもの好きの子に。","business_hours":null,"closed_days":null,"official_url":"http://www.ncnrm.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"サントピアワールド","city":"阿賀野市","latitude":37.764442,"longitude":139.256805,"play_types":["active","vehicle"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"下越の遊園地。約30種のアトラクション、屋内プレイランド、BBQあり。新潟市近郊(下越)。","business_hours":null,"closed_days":null,"official_url":"http://www.suntopi.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新潟せんべい王国","city":"新潟市","latitude":37.929321,"longitude":139.16362,"play_types":["create","food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ばかうけの栗山米菓の体験施設。直径30cmのせんべい焼き体験が人気。","business_hours":null,"closed_days":null,"official_url":"http://senbei-oukoku.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新潟県立鳥屋野潟公園(女池地区・鐘木地区)","city":"新潟市","latitude":37.890381,"longitude":139.049774,"play_types":["active","create"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"鳥屋野潟の水辺の県立公園。芝生・遊具・自然体験プログラム。","business_hours":null,"closed_days":null,"official_url":"https://www.toyanogata-park.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"上堰潟公園","city":"新潟市","latitude":37.79078,"longitude":138.866464,"play_types":["active","water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大型遊具・ローラー滑り台・ターザンロープ。潟一周2kmの遊歩道。わらアート発祥地。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/nishikan/shisetsu/yoka/leisure/uwasekigata.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 花夢里にいつ","city":"新潟市","latitude":37.792618,"longitude":139.078293,"play_types":["create","food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"鉢花・花木中心の花の道の駅。ガラス温室に約4万鉢。","business_hours":null,"closed_days":null,"official_url":"https://ja-kagayaki.or.jp/office/468/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"聖籠観音の湯「ざぶ〜ん」","city":"聖籠町","latitude":37.970749,"longitude":139.28215,"play_types":["water","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日帰り温泉。塩化物強塩温泉。寝湯・打たせ湯など多彩な浴槽。聖籠町。","business_hours":null,"closed_days":null,"official_url":"http://www.zaboon.co.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"いくとぴあ食花","city":"新潟市","latitude":37.88007,"longitude":139.04932,"play_types":["animal","create","food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"食と花の複合施設。動物ふれあい(ウサギ・カピバラ・アルパカ等)、こども創造センター併設。","business_hours":null,"closed_days":null,"official_url":"http://www.ikutopia.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"角田浜海水浴場","city":"新潟市","latitude":37.796341,"longitude":138.823666,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"西蒲区の海水浴場。夏季海開き。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/nishikan/about/kankou/kaisui-nishikan.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"網代浜海水浴場","city":"聖籠町","latitude":38.007525,"longitude":139.251535,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"聖籠町の家族連れに人気の海水浴場。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/10019","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"白山公園","city":"新潟市","latitude":37.914414,"longitude":139.039342,"play_types":["active","create"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本最古級の都市公園の一つ。遊具・池・ボート。白山神社隣接。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/chuo/shisetsu/yoka/leisure/hakusan.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"鳥屋野交通公園","city":"新潟市","latitude":37.888779,"longitude":139.044224,"play_types":["vehicle","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"自転車やゴーカートで交通ルールを学べる交通公園。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/chuo/shisetsu/yoka/leisure/toyanokotsu.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"西海岸公園(お城公園・関分記念公園)","city":"新潟市","latitude":37.933434,"longitude":139.043603,"play_types":["active","water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"海沿いの松林の公園。新遊具エリア・市営プール。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/chuo/shisetsu/yoka/leisure/nishikaiganpark.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新潟県スポーツ公園","city":"新潟市","latitude":37.882988,"longitude":139.059891,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"デンカビッグスワン周辺の広大な芝生公園。遊具あり。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"じゅんさい池公園","city":"新潟市","latitude":37.94189,"longitude":139.102627,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"じゅんさい池を囲む自然豊かな公園。散策・生きもの観察。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/5626","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"山の下みなとランド","city":"新潟市","latitude":37.944169,"longitude":139.070692,"play_types":["active","water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"交通公園・じゃぶじゃぶ池・夏はプールで遊べる子ども向け公園。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/higashi/shisetsu/yoka/leisure/yamanoshitaminatora.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"寺山公園","city":"新潟市","latitude":37.915679,"longitude":139.106948,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大型遊具のある公園。子育て交流施設い〜てらす併設。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/higashi/shisetsu/kosodate/aishou_terayama.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"山の下海浜公園","city":"新潟市","latitude":37.954123,"longitude":139.09409,"play_types":["water","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"海沿いの公園。夏は海水浴・プール。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"濁川公園","city":"新潟市","latitude":37.9375,"longitude":139.159834,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"地域の公園。遊具・広場。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/kurashi/park/shoukai/area/kitaku/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"阿賀野川ふれあい公園","city":"新潟市","latitude":37.931093,"longitude":139.150426,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"河川敷の運動・レクリエーション公園。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/kita/shisetsu/yoka/sports/aganogawahureai.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"濁川自然生態観察園","city":"新潟市","latitude":37.939691,"longitude":139.15539,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"自然観察ができる生態観察園。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/kurashi/park/shoukai/area/kitaku/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"亀田公園","city":"新潟市","latitude":37.880027,"longitude":139.110505,"play_types":["active","water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大型遊具・じゃぶじゃぶ池・広い芝生。子連れに人気。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/konan/shisetsu/yoka/leisure/kamedakouen.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"天寿園","city":"新潟市","latitude":37.87929,"longitude":139.053992,"play_types":["active","create"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本庭園と中国庭園のある公園。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"よこごし公園","city":"新潟市","latitude":37.85856,"longitude":139.145488,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"遊具のある地域公園。","business_hours":null,"closed_days":null,"official_url":"https://www.nts-kij.co.jp/blog/1067/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大江山公園","city":"新潟市","latitude":37.881613,"longitude":139.151745,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"遊具・広場のある公園。","business_hours":null,"closed_days":null,"official_url":"https://www.nts-kij.co.jp/blog/1067/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"白根総合公園","city":"新潟市","latitude":37.758651,"longitude":139.025325,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"運動施設充実の総合公園。遊具あり。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/minami/shisetsu/yoka/leisure/shironesogo.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大通ふれあい公園","city":"新潟市","latitude":37.823683,"longitude":139.022628,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"遊具充実、BBQも楽しめる公園。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/minami/shisetsu/yoka/leisure/fureaipark.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"桜遊歩道公園","city":"新潟市","latitude":37.845988,"longitude":139.022301,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"川沿いの桜並木の遊歩道公園。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/10747","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新飯田公園","city":"新潟市","latitude":37.685049,"longitude":138.981522,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ローラーすべり台など遊具のある公園。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/minami/shisetsu/yoka/leisure/niida.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"きらら西公園","city":"新潟市","latitude":37.834384,"longitude":138.908851,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ふわふわドームやペダルゴーカートのある総合公園。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/kurashi/park/shoukai/area/nishiku/kiraranishiko-en.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"みどりと森の運動公園","city":"新潟市","latitude":37.824805,"longitude":138.992817,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"アスレチック充実の運動公園。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/nishi/shisetsu/yoka/leisure/midoritomori.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"宮のもり・木場城公園","city":"新潟市","latitude":37.834904,"longitude":138.99986,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"木場城跡のアスレチック遊具中心の公園。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/nishi/shisetsu/yoka/leisure/miyanomori.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"寺尾中央公園","city":"新潟市","latitude":37.883155,"longitude":138.97226,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"4万本のチューリップが咲く公園。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/5627","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"青山水道遊園","city":"新潟市","latitude":37.891155,"longitude":138.996588,"play_types":["active","water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"滝・池・せせらぎが魅力の公園。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/5622","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"的場史跡公園","city":"新潟市","latitude":37.861945,"longitude":138.994808,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"市内初の史跡公園。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/nishi/shisetsu/yoka/leisure/matobashiseki.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"山田河川敷公園","city":"新潟市","latitude":37.872712,"longitude":139.02188,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"信濃川ときめき橋たもとの河川敷公園。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/nishi/shisetsu/yoka/leisure/yamadakasen.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"西川ふれあい公園","city":"新潟市","latitude":37.78822,"longitude":138.913126,"play_types":["active","water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"水辺と芝生のふれあい公園。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/7438","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"花と遺跡のふるさと公園","city":"新潟市","latitude":37.764222,"longitude":139.114634,"play_types":["active","create"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"古津八幡山遺跡と花のある公園。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/akiha/shisetsu/yoka/leisure/hanafurupark.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"寺山公園子育て交流施設「い〜てらす」","city":"新潟市","latitude":37.916151,"longitude":139.106876,"play_types":["indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"寺山公園内の乳幼児向け屋内子育て交流施設。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/higashi/shisetsu/kosodate/aishou_terayama.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"わいわいひろば(東区プラザ)","city":"新潟市","latitude":37.924791,"longitude":139.092659,"play_types":["indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"東区プラザ内の屋内遊び場。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/kosodate/ninshin/life_stage/odekake/asobiba/waiwaihiroba.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"子育て応援ひろば","city":"新潟市","latitude":37.921876,"longitude":139.044074,"play_types":["indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"中央区の子育て支援・屋内遊び場。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/kosodate/ninshin/life_stage/odekake/asobiba/52.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"アクアリンクにいがた(MGC三菱ガス化学アイスアリーナ)","city":"新潟市","latitude":37.874616,"longitude":139.044761,"play_types":["active","indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"通年営業のアイススケートリンク。夏はプール併設。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/30969","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"アクアパークにいがた","city":"新潟市","latitude":37.838259,"longitude":138.966109,"play_types":["water","indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"温水を利用した施設。所在区は要確認。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/11337","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"水の公園福島潟 遊水館","city":"新潟市","latitude":37.914394,"longitude":139.236281,"play_types":["water","indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"福島潟に隣接する温水プール施設。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/7450","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"DeKKY401(デッキィ401)","city":"新潟市","latitude":37.898576,"longitude":139.029868,"play_types":["indoor","food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ショッピングモール。キッズ向け店舗・遊び場・飲食あり。雨の日向き。","business_hours":null,"closed_days":null,"official_url":"https://www.dekky401.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"The Kids 新潟イオン白根店","city":"新潟市","latitude":37.768154,"longitude":139.018897,"play_types":["indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"モール内の室内遊園地。雨の日向き。","business_hours":null,"closed_days":null,"official_url":"https://thekids.co.jp/shop/niigata-shirone/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"石油の世界館","city":"新潟市","latitude":37.749916,"longitude":139.113474,"play_types":["indoor","create"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"新津の石油産業を学べる資料館。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/5613","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新潟県立植物園","city":"新潟市","latitude":37.759926,"longitude":139.112122,"play_types":["create","active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大温室のある県立植物園。屋外は散策自由。","business_hours":null,"closed_days":null,"official_url":"https://botanical.greenanet.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"Befcoばかうけ展望室(朱鷺メッセ)","city":"新潟市","latitude":37.927155,"longitude":139.060684,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"地上約125mの無料展望室。日本海と信濃川を一望。雨の日向き。","business_hours":null,"closed_days":null,"official_url":"https://www.hotelnikkoniigata.jp/observatory/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新潟市歴史博物館みなとぴあ","city":"新潟市","latitude":37.930187,"longitude":139.057632,"play_types":["indoor","create"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"旧税関など歴史建築と広場。港町の歴史を学べる。","business_hours":null,"closed_days":null,"official_url":"https://www.nchm.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"北方文化博物館","city":"新潟市","latitude":37.830002,"longitude":139.153381,"play_types":["create","active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"豪農の館と広大な庭園。藤棚が有名。","business_hours":null,"closed_days":null,"official_url":"https://hoppou-bunka.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新潟市マンガの家","city":"新潟市","latitude":37.920601,"longitude":139.04256,"play_types":["indoor","create"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"新潟ゆかりの漫画家を紹介。体験コーナーあり。雨の日向き。","business_hours":null,"closed_days":null,"official_url":"https://house.nmam.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新潟市マンガ・アニメ情報館","city":"新潟市","latitude":37.916088,"longitude":139.053406,"play_types":["indoor","create"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"アニメ制作体験など。万代シテイ内で雨の日向き。","business_hours":null,"closed_days":null,"official_url":"https://museum.nmam.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 新潟ふるさと村","city":"新潟市","latitude":37.872704,"longitude":139.019531,"play_types":["food","create"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"県内最大級の道の駅。物産・花畑・アピール館。子連れ休憩・食事に。","business_hours":null,"closed_days":null,"official_url":"https://furusatomura.pref.niigata.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 豊栄","city":"新潟市","latitude":37.957817,"longitude":139.222183,"play_types":["food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本の道の駅発祥の一つとされる。休憩・食事に。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/7001","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 加治川","city":"新発田市","latitude":38.00232,"longitude":139.372458,"play_types":["food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"下越の道の駅。新潟市近郊。","business_hours":null,"closed_days":null,"official_url":"https://www.michi-no-eki.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"白根グレープガーデン","city":"新潟市","latitude":37.832445,"longitude":139.038505,"play_types":["animal","food","create"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"通年果物狩り。ウサギのふれあい広場・カフェ。","business_hours":null,"closed_days":null,"official_url":"https://kudamonogari.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"カーブドッチワイナリー","city":"新潟市","latitude":37.803284,"longitude":138.84581,"play_types":["food","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ワイナリー併設の庭園・レストラン。芝生で子どもも過ごせる。","business_hours":null,"closed_days":null,"official_url":"https://www.docci.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"関屋浜海水浴場","city":"新潟市","latitude":37.917655,"longitude":139.01544,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"新潟市の海水浴場(夏季海開き)。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/5630","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"青山海岸海水浴場","city":"新潟市","latitude":37.898064,"longitude":138.982906,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"新潟市の海水浴場(夏季海開き)。","business_hours":null,"closed_days":null,"official_url":"https://www.nvcb.or.jp/feature/23056","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"山の下船江町浜海水浴場","city":"新潟市","latitude":37.954646,"longitude":139.093383,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"新潟市の海水浴場(夏季海開き)。","business_hours":null,"closed_days":null,"official_url":"https://www.nvcb.or.jp/feature/23056","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"島見浜海水浴場","city":"新潟市","latitude":37.977761,"longitude":139.190619,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"新潟市の海水浴場(夏季海開き)。","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/kita/about/fubutsu/beach.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新発田城（新発田城址公園）","city":"新発田市","latitude":37.954815,"longitude":139.326142,"play_types":["indoor","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"現存三階櫓等をもつ城跡公園。散策向き。","business_hours":null,"closed_days":null,"official_url":"https://www.city.shibata.lg.jp/kankou/shibatajou/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"深層湯温泉 紫雲の郷","city":"新発田市","latitude":38.030098,"longitude":139.295452,"play_types":["indoor","water","food"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日帰り温泉・温水プール・食事処の複合施設。","business_hours":null,"closed_days":null,"official_url":"https://www.shiun-sato.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"Jump862 イオンモール新発田","city":"新発田市","latitude":37.941456,"longitude":139.309586,"play_types":["indoor","active"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"モール内の室内アスレチック・アミューズメント。","business_hours":null,"closed_days":null,"official_url":"https://www.halos.co.jp/news/jump862%E3%82%A4%E3%82%AA%E3%83%B3%E3%83%A2%E3%83%BC%E3%83%AB%E6%96%B0%E7%99%BA%E7%94%B0%E5%BA%97%E3%81%8B%E3%82%89%E3%81%86%E3%82%8C%E3%81%97%E3%81%84%E3%81%8A%E7%9F%A5%E3%82%89%E3%81%9B%E2%99%AA/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"イヨボヤ会館（鮭公園／サーモンパーク）","city":"村上市","latitude":38.227871,"longitude":139.472076,"play_types":["animal","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本最初の鮭の博物館。種川のサケ観察やこどもサケ科学館。","business_hours":null,"closed_days":null,"official_url":"https://www.iyoboya.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 朝日（朝日みどりの里）","city":"村上市","latitude":38.28226,"longitude":139.522354,"play_types":["food","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"直売所・温泉・体験施設を備える道の駅。","business_hours":null,"closed_days":null,"official_url":"https://www.sake3.com/spot/273","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 笹川流れ（夕日会館）","city":"村上市","latitude":38.375202,"longitude":139.458557,"play_types":["food","water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"笹川流れ観光の拠点。遊覧船乗り場に隣接。","business_hours":null,"closed_days":null,"official_url":"https://www.city.murakami.lg.jp/site/kanko/bussan-mitinoekisasagawa.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"樽ケ橋遊園","city":"胎内市","latitude":38.062627,"longitude":139.453208,"play_types":["animal","vehicle","active"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"アルパカ等23種の動物とふれあえる遊園地。ゴーカート・メリーゴーラウンド等。","business_hours":null,"closed_days":null,"official_url":"https://www.tarugahashi.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"胎内フラワーパーク","city":"胎内市","latitude":38.025094,"longitude":139.497724,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"季節の花畑と芝生の公園。","business_hours":null,"closed_days":null,"official_url":"https://tainai.info/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"胎内自然天文館","city":"胎内市","latitude":38.028522,"longitude":139.501676,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"プラネタリウム・天体観測施設。","business_hours":null,"closed_days":null,"official_url":"https://tainai.info/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"クアハウスたいない","city":"胎内市","latitude":38.064048,"longitude":139.45174,"play_types":["water","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"温泉・温水プールの複合施設。","business_hours":null,"closed_days":null,"official_url":"https://tainai.info/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 胎内（たるが橋観光交流センター）","city":"胎内市","latitude":38.063407,"longitude":139.452996,"play_types":["food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"樽ケ橋遊園に隣接する道の駅。直売所・軽食。","business_hours":null,"closed_days":null,"official_url":"https://tainai.info/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新潟県少年自然の家","city":"胎内市","latitude":38.121691,"longitude":139.402745,"play_types":["active","create"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"野外活動・自然体験の宿泊研修施設。","business_hours":null,"closed_days":null,"official_url":"https://tainai.info/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"村松公園","city":"五泉市","latitude":37.692704,"longitude":139.188163,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"桜の名所として知られる総合公園。遊具・広場。","business_hours":null,"closed_days":null,"official_url":"https://www.city.gosen.lg.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"瓢湖水きん公園","city":"阿賀野市","latitude":37.836536,"longitude":139.236725,"play_types":["animal","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ラムサール条約登録の白鳥飛来地。10月〜3月に白鳥・カモの餌やり体験。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/10803","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"ヤスダヨーグルト 工場見学","city":"阿賀野市","latitude":37.778657,"longitude":139.228015,"play_types":["create","indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ヨーグルトの製造工程を見学できる社会見学。","business_hours":null,"closed_days":null,"official_url":"https://www.yasuda-yogurt.co.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"三川・温泉スキー場（グリーンシーズン）","city":"阿賀町","latitude":37.720678,"longitude":139.393373,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"冬はスキー場。グリーンシーズンは自然散策等。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 関川（桂の関）／桂の関温泉ゆ〜む","city":"関川村","latitude":38.092055,"longitude":139.566301,"play_types":["food","indoor","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"芝生広場・足湯・直売所と日帰り温泉。多目的施設にクライミングウォール。","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/7006","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大石ダム湖畔県民休養地","city":"関川村","latitude":38.034644,"longitude":139.563383,"play_types":["animal","active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"小動物園・BBQ・公園を備える湖畔の休養地。","business_hours":null,"closed_days":null,"official_url":"https://www.vill.sekikawa.niigata.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"せきかわ歴史とみちの館","city":"関川村","latitude":38.091151,"longitude":139.565343,"play_types":["indoor","create"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"村の歴史・大したもん蛇まつり等を紹介する資料館。","business_hours":null,"closed_days":null,"official_url":"https://www.vill.sekikawa.niigata.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"国営越後丘陵公園","city":"長岡市","latitude":37.428212,"longitude":138.747915,"play_types":["active","water"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ふわふわドーム・水遊び場・変形自転車など子供向け遊具が豊富","business_hours":null,"closed_days":null,"official_url":"http://echigo-park.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"寺泊水族博物館","city":"長岡市","latitude":37.633871,"longitude":138.760355,"play_types":["animal"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"海に浮かぶ八角形の建物。約300種10000匹を展示","business_hours":null,"closed_days":null,"official_url":"http://aquarium-teradomari.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"長岡市立科学博物館","city":"長岡市","latitude":37.435719,"longitude":138.839935,"play_types":["indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"長岡の自然と暮らしを紹介する展示","business_hours":null,"closed_days":null,"official_url":"https://www.museum.city.nagaoka.niigata.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新潟県立歴史博物館","city":"長岡市","latitude":37.438496,"longitude":138.76735,"play_types":["indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"新潟県の歴史・文化を紹介。縄文の展示など","business_hours":null,"closed_days":null,"official_url":"https://nbz.or.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"馬高縄文館 火焔土器ミュージアム","city":"長岡市","latitude":37.446619,"longitude":138.76848,"play_types":["indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"火焔土器に関する資料を紹介","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/kanko/cate04/umataka/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"長岡市トキと自然の学習館 トキみ〜て","city":"長岡市","latitude":37.608675,"longitude":138.772371,"play_types":["animal"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"トキを観覧窓から間近に観察できる","business_hours":null,"closed_days":null,"official_url":"https://nagaoka-navi.or.jp/spot/41893","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"悠久山公園","city":"長岡市","latitude":37.431026,"longitude":138.881962,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"桜の名所。小動物園・郷土資料館・遊具を有する総合公園","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/bunka/yukyu-zoo.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"悠久山小動物園","city":"長岡市","latitude":37.429093,"longitude":138.881074,"play_types":["animal"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ニホンザル中心に約30種の小動物を飼育。9-17時、月曜休、冬季休園","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/bunka/yukyu-zoo.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"子育ての駅千秋 てくてく","city":"長岡市","latitude":37.454329,"longitude":138.826385,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"屋内でのびのび遊べる子育て支援拠点。乳幼児向けプレールーム","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/kosodate/cate99/tekuteku/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅「ながおか花火館」","city":"長岡市","latitude":37.455613,"longitude":138.804728,"play_types":["food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"長岡花火を音と映像で楽しめるドームシアター・フードコート・直売所","business_hours":null,"closed_days":null,"official_url":"https://nagaoka-hanabikan.niigata.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅「R290 とちお」","city":"長岡市","latitude":37.459778,"longitude":139.007431,"play_types":["food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"栃尾の油揚げが名物の道の駅・物産販売","business_hours":null,"closed_days":null,"official_url":"https://nagaoka-navi.or.jp/spot/5822","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"八木ヶ鼻温泉 いい湯らてい","city":"三条市","latitude":37.539044,"longitude":139.125448,"play_types":["water"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"八木ヶ鼻を望む日帰り温泉。家族で楽しめる","business_hours":null,"closed_days":null,"official_url":"https://www.iiyuratei.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"三条市総合運動公園","city":"三条市","latitude":37.604537,"longitude":138.983551,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"甲子園球場6個分の敷地。トリムの森や芝生広場","business_hours":null,"closed_days":null,"official_url":"https://ballpark-sanjo.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大崎山公園","city":"三条市","latitude":37.6165,"longitude":139.001426,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"三条市街地と弥彦山を一望。大きなブランコが名物","business_hours":null,"closed_days":null,"official_url":"https://osakiyama.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"しらさぎ森林公園","city":"三条市","latitude":37.569139,"longitude":138.947556,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"栄地域にある花菖蒲を主体とした菖蒲園・自然公園","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"条南あおば公園","city":"三条市","latitude":37.623605,"longitude":138.94697,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"旧条南小学校跡地の公園","business_hours":null,"closed_days":null,"official_url":"https://www.pref.niigata.lg.jp/site/miryokutankenki/koenasobi.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"三条市体育文化会館","city":"三条市","latitude":37.637148,"longitude":138.952657,"play_types":["indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"クライミングウォールやネット遊具、キッズスペースを備えた複合施設","business_hours":null,"closed_days":null,"official_url":"https://www.pref.niigata.lg.jp/site/miryokutankenki/okunaiasobi.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"燕三条駅観光物産センター 燕三条Wing","city":"三条市","latitude":37.648615,"longitude":138.939299,"play_types":["food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"燕三条の金属加工製品や地場産品を集めた物産センター","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/5729","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"燕市交通公園","city":"燕市","latitude":37.647698,"longitude":138.922382,"play_types":["vehicle"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"信号機・横断歩道など交通ルールを学べる。無料レンタル自転車・ゴーカート","business_hours":null,"closed_days":null,"official_url":"http://safetydrive-park.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"吉田ふれあい広場","city":"燕市","latitude":37.693928,"longitude":138.903152,"play_types":["active","vehicle"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"複合遊具・ゴーカート・ドッグラン・BBQ。広い芝生","business_hours":null,"closed_days":null,"official_url":"http://www.yoshida-fureai.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"みなみ親水公園","city":"燕市","latitude":37.678302,"longitude":138.87409,"play_types":["water","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"芝すべりの丘・タッチ式ミスト噴水・複合遊具。冬はソリ遊び","business_hours":null,"closed_days":null,"official_url":"https://tsubame-kankou.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大河津分水さくら公園","city":"燕市","latitude":37.613264,"longitude":138.843093,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"27種460本の桜。ビジターハウス併設","business_hours":null,"closed_days":null,"official_url":"https://tsubame-kankou.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"東町公園","city":"燕市","latitude":37.658105,"longitude":138.949571,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"かまどベンチなど防災施設を兼ね備えた公園","business_hours":null,"closed_days":null,"official_url":"https://tsubame-kankou.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"国上健康の森公園","city":"燕市","latitude":37.663199,"longitude":138.823332,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"道の駅国上内。足湯・日帰り温泉施設併設","business_hours":null,"closed_days":null,"official_url":"https://tsubame-kankou.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"燕市産業史料館","city":"燕市","latitude":37.652435,"longitude":138.919724,"play_types":["create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"燕の金属加工技術を学べる。鎚起・スプーン磨きなど体験工房あり","business_hours":null,"closed_days":null,"official_url":"https://tim.tsubame-shiryoukan.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"みつけイングリッシュガーデン","city":"見附市","latitude":37.536514,"longitude":138.890623,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"英国式庭園。1000種超の植物・MEG CAFE511併設","business_hours":null,"closed_days":null,"official_url":"https://www.city.mitsuke.niigata.jp/site/english-garden/list144-564.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"加茂山公園","city":"加茂市","latitude":37.656734,"longitude":139.052582,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"雪椿の群生地。彫刻の森・大型すべり台・リス園","business_hours":null,"closed_days":null,"official_url":"https://www.city.kamo.niigata.jp/docs/30373.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"リス園(加茂山公園内)","city":"加茂市","latitude":37.656734,"longitude":139.052582,"play_types":["animal"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"シマリスが放し飼い。9:30-16時、月曜休。4月開園","business_hours":null,"closed_days":null,"official_url":"https://www.city.kamo.niigata.jp/docs/30374.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"柏崎中央海水浴場","city":"柏崎市","latitude":37.374429,"longitude":138.548907,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"市街地に最も近い海水浴場。2026年7/5海開き。ドーム型の海浜公園隣接","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/6068","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"石地海水浴場","city":"柏崎市","latitude":37.508863,"longitude":138.648406,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"約1kmのロングビーチ。遠浅で小さな子連れに適する","business_hours":null,"closed_days":null,"official_url":"http://www.uwatt.com/spot/199","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"番神海水浴場","city":"柏崎市","latitude":37.365419,"longitude":138.527118,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"柏崎市街地に近い海水浴場","business_hours":null,"closed_days":null,"official_url":"https://www.city.kashiwazaki.lg.jp/soshikiichiran/sangyoshinkobu/shogyokankoka/kankosinko/umi/kaisuiyoku/1/3581.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新潟県立柏崎アクアパーク","city":"柏崎市","latitude":37.372421,"longitude":138.552765,"play_types":["water"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"通年のレジャープール、夏は50mプール、冬はアイスリンク","business_hours":null,"closed_days":null,"official_url":"https://aqua.ksz.or.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"柏崎・夢の森公園","city":"柏崎市","latitude":37.333611,"longitude":138.590332,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"里山空間。ザリガニ釣り・そり遊び、エコハウスに室内クライミングウォール","business_hours":null,"closed_days":null,"official_url":"https://yumenomori-park.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"柏崎市立博物館","city":"柏崎市","latitude":37.359055,"longitude":138.542023,"play_types":["indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"自然・民俗・プラネタリウムのある総合博物館","business_hours":null,"closed_days":null,"official_url":"https://www.city.kashiwazaki.lg.jp/k_museum/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"源土運動広場","city":"刈羽村","latitude":37.423504,"longitude":138.636279,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"17万m2の運動広場。多目的広場でBBQ、15種のアスレチック遊具","business_hours":null,"closed_days":null,"official_url":"https://niigata-kankou.or.jp/spot/7574","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"弥彦山ロープウェイ","city":"弥彦村","latitude":37.711849,"longitude":138.819626,"play_types":["vehicle"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"山頂まで約5分。回転昇降式展望塔・越後平野と日本海を一望","business_hours":null,"closed_days":null,"official_url":"http://www.yahiko-rope.co.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"弥彦公園","city":"弥彦村","latitude":37.699485,"longitude":138.83008,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"JR弥彦駅近く16万m2。秋の紅葉・観月橋で有名","business_hours":null,"closed_days":null,"official_url":"https://www.e-yahiko.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅「越後出雲崎天領の里」","city":"出雲崎町","latitude":37.538824,"longitude":138.676128,"play_types":["food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本海を望む観光拠点。天領時代館・物産館・食事処。夕凪の橋","business_hours":null,"closed_days":null,"official_url":"https://tenryonosato.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"上越市立水族博物館うみがたり","city":"上越市","latitude":37.17326,"longitude":138.232803,"play_types":["animal","water","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本海側最大級の水族館。マゼランペンギン飼育数日本一、大水槽やイルカショー。全天候型で雨の日も楽しめる。","business_hours":null,"closed_days":null,"official_url":"https://www.umigatari.jp/joetsu/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"リージョンプラザ上越","city":"上越市","latitude":37.154148,"longitude":138.25174,"play_types":["active","water","indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"レジャープール、冬季アイスアリーナ、コンサートホール等を備えた複合施設。夏はプール、冬はスケートが楽しめる。","business_hours":null,"closed_days":null,"official_url":"https://region-joetsu.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"高田城址公園","city":"上越市","latitude":37.109634,"longitude":138.256677,"play_types":["active","water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"約50haの大規模公園。三重櫓、芝生広場、外堀のボート貸出。日本三大夜桜の桜と東洋一の蓮で有名。","business_hours":null,"closed_days":null,"official_url":"https://joetsukankonavi.jp/spot/detail.php?id=20","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"五智公園","city":"上越市","latitude":37.161709,"longitude":138.221313,"play_types":["active","vehicle"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"里山の自然公園。交通公園に1周730mのゴーカートと大型複合遊具。八重桜の名所で自然観察にも。","business_hours":null,"closed_days":null,"official_url":"https://joetsukankonavi.jp/spot/detail.php?id=21","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"上越科学館","city":"上越市","latitude":37.154148,"longitude":138.25174,"play_types":["create","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"「みて、ふれて、たしかめて」体験できる科学館。全天候型で雨の日も楽しめる。","business_hours":null,"closed_days":null,"official_url":"https://jscience.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"上越清里星のふるさと館","city":"上越市","latitude":37.038857,"longitude":138.362082,"play_types":["indoor","create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"県内最大の口径65cm反射望遠鏡と4Kデジタルプラネタリウム。親子星空教室や夜間観望会も開催。","business_hours":null,"closed_days":null,"official_url":"https://www.city.joetsu.niigata.jp/soshiki/kiyosato-ku/kiyosato-kankou-hosifuru.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"金谷山公園（スーパーボブスレー）","city":"上越市","latitude":37.104324,"longitude":138.222961,"play_types":["active","vehicle"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本スキー発祥の地。グリーンシーズンはスーパーボブスレー（3歳〜）やリフトが楽しめる。","business_hours":null,"closed_days":null,"official_url":"https://joetsukankonavi.jp/spot/detail.php?id=23","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大池いこいの森","city":"上越市","latitude":37.181573,"longitude":138.36699,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"2つの池を巡る遊歩道、サイクリング、キャンプ場、ビジターセンター（1階に農業資料館）。","business_hours":null,"closed_days":null,"official_url":"https://joetsukankonavi.jp/spot/detail.php?id=30","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"直江津D51レールパーク","city":"上越市","latitude":37.172447,"longitude":138.247177,"play_types":["vehicle","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"旧車両基地を活用した鉄道テーマパーク。SL乗車体験、扇形車庫・転車台、413系や「おいらん車」を展示。直江津駅南口徒歩3分。","business_hours":null,"closed_days":null,"official_url":"https://www.naoetsu-d51-railpark.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"妙高サンシャインランド","city":"上越市","latitude":36.950043,"longitude":138.211273,"play_types":["active","vehicle"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大観覧車やゴーカート、メリーゴランド、子供電車など幅広い年齢向けの遊園地。園内でBBQやレンタサイクルも。","business_hours":null,"closed_days":null,"official_url":"https://www.myokosunshine.co.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"上越市立歴史博物館","city":"上越市","latitude":37.110931,"longitude":138.254868,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"高田城址公園内。「越後の都」をテーマに春日山城・福島城・高田城の歴史を展示。全天候型。","business_hours":null,"closed_days":null,"official_url":"https://joetsukankonavi.jp/spot/detail.php?id=1","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"春日山城史跡広場・春日山城跡ものがたり館","city":"上越市","latitude":37.153091,"longitude":138.220856,"play_types":["active","indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"土塁や堀を復元した史跡広場と、上杉謙信の映像・資料を展示するものがたり館。日本百名城スタンプ設置。","business_hours":null,"closed_days":null,"official_url":"https://joetsukankonavi.jp/spot/detail.php?id=5","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"鵜の浜海水浴場","city":"上越市","latitude":37.241462,"longitude":138.337588,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"広い砂浜と透明度が自慢のリゾートビーチ。温泉街に隣接。開設2026年7/11〜8/16。","business_hours":null,"closed_days":null,"official_url":"https://joetsukankonavi.jp/spot/detail.php?id=59","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"キューピットバレイ","city":"上越市","latitude":37.055035,"longitude":138.484504,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"冬はスキー場。グリーンシーズンは高原の芝生サイトでキャンプ・BBQ。ゆきだるま温泉久比岐野を併設。","business_hours":null,"closed_days":null,"official_url":"https://joetsukankonavi.jp/spot/detail.php?id=99","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"フォッサマグナミュージアム","city":"糸魚川市","latitude":37.023506,"longitude":137.869232,"play_types":["indoor","create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"石や地球について学べる博物館。ヒスイやフォッサマグナなど糸魚川の地質と地球の歴史を展示。全天候型。","business_hours":null,"closed_days":null,"official_url":"https://fmm.geo-itoigawa.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"ヒスイ海岸","city":"糸魚川市","latitude":37.051003,"longitude":137.879152,"play_types":["water","create"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"色とりどりの石が広がる海岸で、天然のヒスイ原石探しが楽しめる。夏は糸魚川海水浴場として賑わう。","business_hours":null,"closed_days":null,"official_url":"https://geo-itoigawa.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"糸魚川ジオステーション ジオパル","city":"糸魚川市","latitude":37.042736,"longitude":137.861435,"play_types":["vehicle","indoor","create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"糸魚川駅高架下のジオパーク発信基地。HO・Nゲージ大型ジオラマ、運転体験、プラレール展示、キッズクライミング、滑り台。","business_hours":null,"closed_days":null,"official_url":"https://geo-itoigawa.com/tourism/geopal/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅マリンドリーム能生","city":"糸魚川市","latitude":37.114178,"longitude":138.004303,"play_types":["food"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本海に面した道の駅。「かにや横丁」でベニズワイガニや海産物、レストラン、土産店が楽しめる。","business_hours":null,"closed_days":null,"official_url":"https://www.marine-dream.net/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"糸魚川海水浴場","city":"糸魚川市","latitude":37.0500475,"longitude":137.8747745,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ヒスイ海岸とも呼ばれ、糸魚川駅から最も近い遠浅の海水浴場。シャワー・トイレ完備。監視員2026年7/18〜8/16。","business_hours":null,"closed_days":null,"official_url":"https://www.itoigawa-kanko.net/beach-summer/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"美山公園","city":"糸魚川市","latitude":37.024605,"longitude":137.860382,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本海と北アルプスを望む広大な公園。フォッサマグナミュージアム、長者ケ原考古館、桜2000本、駐車場614台。","business_hours":null,"closed_days":null,"official_url":"https://www.itoigawa-kanko.net/spot/miyama_park/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"いもり池","city":"妙高市","latitude":36.866479,"longitude":138.174977,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"妙高山を映す景勝地。約15分で1周できる遊歩道。春はミズバショウ10万株、秋は紅葉。グリーンシーズンの散策に最適。","business_hours":null,"closed_days":null,"official_url":"https://myokotourism.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"苗名滝","city":"妙高市","latitude":36.850243,"longitude":138.132916,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本の滝百選、落差55mの名瀑。駐車場から観瀑台まで徒歩約15分の整備された遊歩道。妙高高原自然遊歩道の起点。","business_hours":null,"closed_days":null,"official_url":"https://myokotourism.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"妙高高原スカイケーブル","city":"妙高市","latitude":36.886314,"longitude":138.153488,"play_types":["active","vehicle"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"標高約1,300mの山頂へ。スカイテラス＆ガーデンのカフェ、ブナ原生林の散策路、ドッグラン。営業7/18〜11/9。","business_hours":null,"closed_days":null,"official_url":"https://akr-sky.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅あらい（くびき野情報館）","city":"妙高市","latitude":37.027691,"longitude":138.227737,"play_types":["food"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"高速・国道両方から利用できる大型道の駅。農産物直売所、多数の食事処、コンビニ、授乳室、ユニバーサルデザイン対応。","business_hours":null,"closed_days":null,"official_url":"https://eki-arai.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"五十公野公園","city":"新発田市","latitude":37.93826,"longitude":139.355005,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"総合公園。あやめ園(300品種60万本)・升潟の湖・遊具あり。陸上競技場・テニス等併設。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"月岡カリオンパーク","city":"新発田市","latitude":37.8843,"longitude":139.305618,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"月岡温泉に隣接するファミリー向け公園。ジャンボすべり台など子ども向け遊具・ひまわり畑・ガラス工芸体験施設あり。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新発田中央公園","city":"新発田市","latitude":37.952213,"longitude":139.32991,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"宇宙をイメージした複合遊具・ちびっ子トンネル・親水施設のある「わんぱく広場」。ふれあい広場・総合体育施設併設。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"天朝山公園","city":"阿賀野市","latitude":37.836082,"longitude":139.238159,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"小学生向け・幼児向けの2種の複合遊具、4人乗りシーソー、ブランコ、すべり台、芝生広場、池、文化交流の家。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"ふるさと公園","city":"阿賀野市","latitude":37.844303,"longitude":139.184601,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"コンビネーション遊具・ユニバーサルブランコ、冬はそり遊びのできる築山。世界の絵本の図書館・屋内運動場併設。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"緑岡第一公園","city":"阿賀野市","latitude":37.841305,"longitude":139.188034,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"コンビネーション遊具・ブランコ・スプリング遊具(ロッキンドギー/ポゴティ)。公衆トイレあり。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"いこいの森児童公園","city":"村上市","latitude":38.206501,"longitude":139.434486,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"恐竜のすべり台・複合遊具・バーベキュー施設。隣接の道玄池いこいの森森林公園に遊歩道・あずま屋。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"お幕場森林公園","city":"村上市","latitude":38.169892,"longitude":139.433013,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"遊歩道10km・東屋4棟・芝生広場3ヶ所のある森林公園。駐車場250台。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"新潟市文化財センター(まいぶんポート)","city":"新潟市","latitude":37.833035,"longitude":138.984634,"play_types":["create","indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"市内出土の土器・石器を展示。子ども向け体験プログラムあり。旧武田家住宅・畜動舎を併設。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"関沢森林公園","city":"胎内市","latitude":38.029459,"longitude":139.41308,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本一小さな櫛形山脈の登山口にある森林公園。東屋・テーブル・イス・トイレ。散策・登山の出発地。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"北公園(胎内市)","city":"胎内市","latitude":38.063898,"longitude":139.408202,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"4連ブランコ・砂遊び場・回転ハッピー・3連鉄棒・幼児用すべり台・すべり台。東屋・トイレあり。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"あかね公園","city":"聖籠町","latitude":38.005692,"longitude":139.259613,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"子ども向け遊具のある聖籠町の都市公園。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"亀塚第2公園","city":"聖籠町","latitude":38.008457,"longitude":139.267593,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"子ども向け遊具のある聖籠町の都市公園。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"正庵公園","city":"聖籠町","latitude":37.958672,"longitude":139.262924,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"子ども向け遊具のある聖籠町の都市公園。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"櫻美公園","city":"聖籠町","latitude":37.969711,"longitude":139.266312,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"子ども向け遊具のある聖籠町の都市公園。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"汐美台公園","city":"聖籠町","latitude":38.016539,"longitude":139.274089,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"子ども向け遊具のある聖籠町の都市公園。","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"岩室地域児童館","city":"新潟市","latitude":37.725201,"longitude":138.881546,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/shisetsu/cat/kosodate/sonotajido/sonotajido/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"白根南児童館","city":"新潟市","latitude":37.718899,"longitude":138.997894,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/shisetsu/cat/kosodate/sonotajido/sonotajido/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"こども創作活動館","city":"新潟市","latitude":37.917664,"longitude":139.094528,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/shisetsu/cat/kosodate/sonotajido/sonotajido/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"早通児童センター","city":"新潟市","latitude":37.920391,"longitude":139.176239,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童センター","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/shisetsu/cat/kosodate/sonotajido/sonotajido/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"三ツ森児童館","city":"新潟市","latitude":37.899052,"longitude":139.16394,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/shisetsu/cat/kosodate/sonotajido/sonotajido/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"豊栄児童センター","city":"新潟市","latitude":37.914257,"longitude":139.223785,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童センター","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/shisetsu/cat/kosodate/sonotajido/sonotajido/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"新潟市児童センター","city":"新潟市","latitude":37.917324,"longitude":139.062622,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童センター","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/shisetsu/cat/kosodate/sonotajido/sonotajido/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"亀田東児童館","city":"新潟市","latitude":37.86945,"longitude":139.118866,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/shisetsu/cat/kosodate/sonotajido/sonotajido/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"白根児童センター","city":"新潟市","latitude":37.765614,"longitude":139.016586,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童センター","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/shisetsu/cat/kosodate/sonotajido/sonotajido/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"坂井輪児童館","city":"新潟市","latitude":37.874878,"longitude":138.969025,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/shisetsu/cat/kosodate/sonotajido/sonotajido/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"有明児童センター","city":"新潟市","latitude":37.897099,"longitude":138.991699,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童センター","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/shisetsu/cat/kosodate/sonotajido/sonotajido/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"入徳館野外研修場","city":"新潟市","latitude":37.756786,"longitude":138.845795,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"その他児童厚生施設","business_hours":null,"closed_days":null,"official_url":"https://www.city.niigata.lg.jp/shisetsu/cat/kosodate/sonotajido/sonotajido/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"新発田市児童センター","city":"新発田市","latitude":37.95734,"longitude":139.334885,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童センター","business_hours":"午前9時～午後5時","closed_days":"月曜日、祝日、第3日曜日、年末年始","official_url":"https://www.city.shibata.lg.jp/shisetsu/kosodate/jidou/1004928.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"二之町児童館","city":"村上市","latitude":38.222603,"longitude":139.481171,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":"日曜日、祝日、お盆期間、年末年始","official_url":"https://www.city.murakami.lg.jp/site/kodomo/jidokan.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"南町児童館","city":"村上市","latitude":38.215008,"longitude":139.472504,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":"日曜日、祝日、お盆期間、年末年始","official_url":"https://www.city.murakami.lg.jp/site/kodomo/jidokan.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"岩船児童館","city":"村上市","latitude":38.192692,"longitude":139.436798,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":"日曜日、祝日、お盆期間、年末年始","official_url":"https://www.city.murakami.lg.jp/site/kodomo/jidokan.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"瀬波児童館","city":"村上市","latitude":38.231575,"longitude":139.457993,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":"日曜日、祝日、お盆期間、年末年始","official_url":"https://www.city.murakami.lg.jp/site/kodomo/jidokan.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"千手児童館","city":"長岡市","latitude":37.442245,"longitude":138.842194,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"阪之上児童館","city":"長岡市","latitude":37.449257,"longitude":138.860596,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"中島児童館","city":"長岡市","latitude":37.453827,"longitude":138.841385,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"豊田児童館","city":"長岡市","latitude":37.428738,"longitude":138.856628,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"新町児童館","city":"長岡市","latitude":37.464218,"longitude":138.854843,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"表町児童館","city":"長岡市","latitude":37.45364,"longitude":138.848328,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"神田児童館","city":"長岡市","latitude":37.459339,"longitude":138.8535,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"四郎丸児童館","city":"長岡市","latitude":37.440186,"longitude":138.857025,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"川崎中央児童館","city":"長岡市","latitude":37.453533,"longitude":138.862442,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"山本児童館","city":"長岡市","latitude":37.469254,"longitude":138.904419,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"桂児童館","city":"長岡市","latitude":37.481152,"longitude":138.919067,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"新組児童館","city":"長岡市","latitude":37.500813,"longitude":138.883774,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"栖吉児童館","city":"長岡市","latitude":37.436964,"longitude":138.879894,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"山通児童館","city":"長岡市","latitude":37.423927,"longitude":138.868271,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"上組児童館","city":"長岡市","latitude":37.419846,"longitude":138.847504,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"十日町児童館","city":"長岡市","latitude":37.38763,"longitude":138.837708,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"六日市児童館","city":"長岡市","latitude":37.354862,"longitude":138.832397,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"宮内児童館","city":"長岡市","latitude":37.425476,"longitude":138.842041,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"山谷沢児童館","city":"長岡市","latitude":37.37286,"longitude":138.835098,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"石坂児童館","city":"長岡市","latitude":37.392838,"longitude":138.85556,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"前川児童館","city":"長岡市","latitude":37.404305,"longitude":138.822784,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"上川西児童館","city":"長岡市","latitude":37.472973,"longitude":138.834656,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"福戸児童館","city":"長岡市","latitude":37.48061,"longitude":138.806992,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"下川西児童館","city":"長岡市","latitude":37.507126,"longitude":138.826736,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"大島児童館","city":"長岡市","latitude":37.451256,"longitude":138.818863,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"希望が丘児童センター","city":"長岡市","latitude":37.439896,"longitude":138.813248,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童センター","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"才津児童館","city":"長岡市","latitude":37.43219,"longitude":138.798187,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"深沢児童館","city":"長岡市","latitude":37.411777,"longitude":138.775146,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"日越児童館","city":"長岡市","latitude":37.454132,"longitude":138.798843,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"大積児童館","city":"長岡市","latitude":37.431831,"longitude":138.728951,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"青葉台児童館","city":"長岡市","latitude":37.446327,"longitude":138.749207,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"中条児童館","city":"長岡市","latitude":37.574699,"longitude":138.834979,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagaoka.niigata.jp/shisetsu/jidoukan/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"大崎児童館","city":"三条市","latitude":37.625896,"longitude":138.991806,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":"平日13:00-17:30、土曜・長期休業日9:00-17:30","closed_days":null,"official_url":"https://www.city.sanjo.niigata.jp/soshiki/sanjoukyouiku/kyoikuiinkaijimukyoku/kosodateshienka/3/10728.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"杉名児童館","city":"燕市","latitude":37.638847,"longitude":138.908264,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":"平日13:00-17:00、土曜9:00-12:00・13:00-17:00","closed_days":"日曜・祝日・お盆・年末年始","official_url":"https://www.city.tsubame.niigata.jp/soshiki/kodomoseisaku/1/65986/840.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"西燕児童館","city":"燕市","latitude":37.67993,"longitude":138.912131,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.city.tsubame.niigata.jp/soshiki/kodomoseisaku/1/65986/840.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"吉田児童センター笑来童","city":"燕市","latitude":37.687897,"longitude":138.883026,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童センター","business_hours":"9:00-12:00・13:00-18:00（11-2月は17:00まで）","closed_days":"火曜・お盆・年末年始","official_url":"https://www.city.tsubame.niigata.jp/soshiki/kodomoseisaku/1/65986/840.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"分水児童館童楽夢","city":"燕市","latitude":37.639317,"longitude":138.83725,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":"9:00-12:00・13:00-17:00","closed_days":"月曜・お盆・年末年始","official_url":"https://www.city.tsubame.niigata.jp/soshiki/kodomoseisaku/1/65986/840.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"こどもの森","city":"燕市","latitude":37.647537,"longitude":138.921967,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童研修館","business_hours":"10:00-17:00（7・8月は18:00まで）","closed_days":"水曜・年末年始","official_url":"https://www.city.tsubame.niigata.jp/soshiki/kodomoseisaku/1/65986/840.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"十日町市児童センター めごらんど","city":"十日町市","latitude":37.130219,"longitude":138.764038,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童センター","business_hours":"9:00-12:00・13:00-17:45","closed_days":"毎週木曜・12月29日-1月3日","official_url":"https://www.city.tokamachi.lg.jp/kosodate_kyoiku/kosodate/kosodatenikansurushisetsu/jidocenter_MEGOLAND/2976.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"オーレンプラザこどもセンター","city":"上越市","latitude":37.108829,"longitude":138.252502,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"こどもセンター","business_hours":"午前8時30分～午後5時","closed_days":"毎月第2・第4火曜日（休日の場合は翌日）、12月29日～1月3日","official_url":"https://www.city.joetsu.niigata.jp/soshiki/kodomo/lifeguide-331.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"市民プラザこどもセンター","city":"上越市","latitude":37.130378,"longitude":138.244419,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"こどもセンター","business_hours":"午前8時30分～午後5時","closed_days":"毎月第3水曜日（休日の場合は翌日）、12月29日～1月3日","official_url":"https://www.city.joetsu.niigata.jp/soshiki/kodomo/lifeguide-331.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"能生児童館","city":"糸魚川市","latitude":37.101322,"longitude":137.98407,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":"月～金 13時～17時、土日祝 9時30分～17時（長期休暇期間は土日祝と同じ）","closed_days":"年末年始（12月29日～1月3日）","official_url":"https://www.city.itoigawa.lg.jp/site/kosodate/1753.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-06","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true}];
+
+const ANJO=[37.9161,139.0365];
+
+// --- origin selector data & calibration ---
+const CITIES=[["佐渡市", 38.0186, 138.368, "佐渡"], ["十日町市", 37.1275, 138.7556, "中越"], ["魚沼市", 37.2364, 138.9638, "中越"], ["南魚沼市", 37.0656, 138.8761, "中越"], ["津南町", 37.0142, 138.6525, "中越"], ["湯沢町", 36.934, 138.8175, "中越"], ["小千谷市", 37.3144, 138.795, "中越"], ["新潟市", 37.9161, 139.0365, "下越"], ["阿賀野市", 37.8345, 139.226, "下越"], ["新発田市", 37.948, 139.3271, "下越"], ["聖籠町", 37.9744, 139.2745, "下越"], ["村上市", 38.2242, 139.48, "下越"], ["胎内市", 38.0597, 139.4103, "下越"], ["五泉市", 37.7445, 139.1826, "下越"], ["阿賀町", 37.6756, 139.4588, "下越"], ["関川村", 38.0894, 139.565, "下越"], ["長岡市", 37.4465, 138.8515, "中越"], ["三条市", 37.6364, 138.9617, "中越"], ["燕市", 37.6732, 138.8821, "中越"], ["見附市", 37.5316, 138.9128, "中越"], ["加茂市", 37.6664, 139.0403, "中越"], ["柏崎市", 37.365, 138.558, "中越"], ["刈羽村", 37.4219, 138.6225, "中越"], ["田上町", 37.6988, 139.058, "中越"], ["弥彦村", 37.6911, 138.8552, "中越"], ["出雲崎町", 37.5307, 138.7094, "中越"], ["上越市", 37.1479, 138.2361, "上越"], ["糸魚川市", 37.0391, 137.8627, "上越"], ["妙高市", 37.0253, 138.2533, "上越"]];
+function haversineKm(la1,lo1,la2,lo2){
+  const R=6371,d2r=Math.PI/180;
+  const dLa=(la2-la1)*d2r,dLo=(lo2-lo1)*d2r;
+  const a=Math.sin(dLa/2)**2+Math.cos(la1*d2r)*Math.cos(la2*d2r)*Math.sin(dLo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a));
+}
+// Fit minutes ≈ a + b*km using the 32 Anjo-based samples (single linear regression)
+const REG=(function(){
+  const xs=[],ys=[];
+  SPOTS.forEach(s=>{
+    if(s.latitude!=null&&s.longitude!=null&&s.estimated_drive_minutes_from_anjo!=null){
+      xs.push(haversineKm(ANJO[0],ANJO[1],s.latitude,s.longitude));
+      ys.push(s.estimated_drive_minutes_from_anjo);
+    }
+  });
+  const n=xs.length;
+  if(n<2) return {a:0,b:1.5,n};
+  const mx=xs.reduce((a,b)=>a+b,0)/n, my=ys.reduce((a,b)=>a+b,0)/n;
+  let num=0,den=0;
+  for(let i=0;i<n;i++){num+=(xs[i]-mx)*(ys[i]-my);den+=(xs[i]-mx)**2;}
+  const b=den?num/den:0, a=my-b*mx;
+  return {a,b,n};
+})();
+console.log('drive-time regression: minutes ≈ '+REG.a.toFixed(2)+' + '+REG.b.toFixed(3)+' * km (n='+REG.n+')');
+
+const origin={name:'新潟市',lat:ANJO[0],lng:ANJO[1],isAnjo:true};
+function driveMinutes(s){
+  if(origin.isAnjo) return s.estimated_drive_minutes_from_anjo;
+  if(s.latitude==null||s.longitude==null) return null;
+  const km=haversineKm(origin.lat,origin.lng,s.latitude,s.longitude);
+  let m=Math.round((REG.a+REG.b*km)/5)*5;
+  if(m<5)m=5;
+  return m;
+}
+
+const PLAY={
+  animal:{c:'#E9A23B',e:'🦁',label:'動物'},
+  active:{c:'#4CAF6E',e:'🛝',label:'からだ'},
+  water:{c:'#3FA9D6',e:'💦',label:'水'},
+  create:{c:'#9B6DD6',e:'🔬',label:'つくる'},
+  vehicle:{c:'#E06C75',e:'🚃',label:'のりもの'},
+  indoor:{c:'#7A8AA0',e:'☔',label:'室内'},
+  food:{c:'#D95D77',e:'🍽',label:'ごはん'}
+};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const primary=s=>(s.play_types&&s.play_types[0])||'indoor';
+
+// state
+const state={play:new Set(),drive:null,rain:false,free:false,kids:false,jidokan:false,zashiki:false,kids_chair:false};
+
+// --- map init (isolated: map failures must never block cards/filters) ---
+let map=null;
+const markers={};
+try{
+  map=L.map('map',{scrollWheelZoom:false}).setView([37.7,138.9],8);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:18,
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+  map.on('click',()=>map.scrollWheelZoom.enable());
+
+  // home/origin marker is created once and moved on origin change (see updateOriginMarker below)
+
+  // spot markers
+  SPOTS.forEach((s,i)=>{
+    if(s.latitude==null||s.longitude==null) return;
+    const p=primary(s), col=PLAY[p].c, emo=PLAY[p].e;
+    const icon=L.divIcon({className:'',html:`<div class="pin" style="background:${col}"><span>${emo}</span></div>`,iconSize:[34,34],iconAnchor:[17,34],popupAnchor:[0,-30]});
+    const m=L.marker([s.latitude,s.longitude],{icon,title:s.name});
+    // popup content is generated on each open so drive-minutes always reflect the current origin
+    m.bindPopup(()=>popupHTML(s,i),{maxWidth:290,minWidth:220,autoPan:false,closeOnClick:false,className:'minipop',maxHeight:Math.max(180,Math.round(window.innerHeight*0.34)),offset:[0,-6]});
+    m._spotIndex=i;
+    markers[i]=m;
+    m.addTo(map);
+  });
+  // whole mini-card is tappable: close popup + scroll to the detail card
+  map.on('popupopen',e=>{
+    const el=e.popup.getElement(); if(!el) return;
+    const mc=el.querySelector('.minicard'); if(!mc) return;
+    const go=()=>{ const i=+mc.dataset.i; map.closePopup(); focusCard(i); };
+    mc.addEventListener('click',go);
+    mc.addEventListener('keydown',ev=>{ if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();go();} });
+  });
+}catch(e){
+  console.warn('map init failed',e);
+  map=null;
+}
+
+// --- back-to-map floating button: show only when map is scrolled out of view above ---
+(function(){
+  const btn=document.getElementById('backToMap');
+  const mapEl=document.getElementById('mapwrap')||document.getElementById('map');
+  if(!btn||!mapEl) return;
+  btn.addEventListener('click',()=>{
+    mapEl.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){ btn.classList.remove('show'); }
+        else if(entry.boundingClientRect.top<0){ btn.classList.add('show'); }
+        else { btn.classList.remove('show'); }
+      });
+    },{threshold:0});
+    io.observe(mapEl);
+  }else{
+    window.addEventListener('scroll',()=>{
+      const r=mapEl.getBoundingClientRect();
+      if(r.bottom<0||r.top>window.innerHeight) btn.classList.remove('show');
+      else if(r.top<0) btn.classList.add('show'); else btn.classList.remove('show');
+    },{passive:true});
+  }
+})();
+
+function focusCard(i){
+  const el=document.getElementById('card-'+i);
+  if(!el) return;
+  document.querySelectorAll('.card.hl').forEach(c=>c.classList.remove('hl'));
+  el.classList.add('hl');
+  // offset the smooth scroll by the sticky filter bar so the card lands fully visible
+  const bar=document.getElementById('filterbar');
+  const off=(bar?bar.offsetHeight:0)+14;
+  const y=el.getBoundingClientRect().top+window.pageYOffset-off;
+  window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+  setTimeout(()=>el.classList.remove('hl'),2600);
+}
+
+// rich mini-card popup (rendered on demand → always current origin/minutes)
+function popupHTML(s,i){
+  const p=primary(s), col=PLAY[p].c;
+  let badges=`<span class="mc-badge play" style="background:${col}">${PLAY[p].label}</span>`;
+  const dm=driveMinutes(s);
+  if(dm!=null) badges+=`<span class="mc-badge drive">🚗 ${esc(origin.name)}から約${dm}分</span>`;
+  if(s.is_free===true) badges+=`<span class="mc-badge free">🆓 無料</span>`;
+  if(s.rain_friendly===true||s.indoor_or_outdoor==='indoor') badges+=`<span class="mc-badge rain">☔ 室内</span>`;
+  const isFood=(s.play_types||[]).includes('food');
+  let kidfeat='';
+  if(isFood && Array.isArray(s.kid_features) && s.kid_features.length){
+    kidfeat='<div class="mc-kf">'+s.kid_features.slice(0,3).map(f=>`<span class="kf">${esc(f)}</span>`).join('')+'</div>';
+  }
+  return `<div class="minicard no-photo" data-i="${i}" role="button" tabindex="0" aria-label="${esc(s.name)}の詳細をみる">
+    <div class="mc-body">
+      <div class="mc-name">${esc(s.name)}</div>
+      <div class="mc-city">${esc(s.city||'')}</div>
+      <div class="mc-badges">${badges}</div>
+      ${kidfeat}
+    </div>
+    <div class="mc-more">詳しくみる ▼</div>
+  </div>`;
+}
+
+// --- rendering ---
+const cardsEl=document.getElementById('cards');
+function cardHTML(s,i){
+  const p=primary(s), col=PLAY[p].c;
+  let photoBlock='';
+  if(s.image_url){
+    let photo=`<img loading="lazy" src="${esc(s.image_url)}" alt="${esc(s.name)}の写真" onerror="this.closest('.photo').remove()">`;
+    if(s.image_credit) photo+=`<div class="credit">${esc(s.image_credit)}</div>`;
+    photoBlock=`<div class="photo">${photo}</div>`;
+  }
+  // badges
+  let badges='';
+  (s.play_types||[]).forEach(t=>{if(PLAY[t])badges+=`<span class="badge play" style="background:${PLAY[t].c}">${PLAY[t].e} ${PLAY[t].label}</span>`;});
+  const dm=driveMinutes(s);
+  if(dm!=null) badges+=`<span class="badge drive">🚗 ${esc(origin.name)}から約${dm}分</span>`;
+  if(s.is_free===true) badges+=`<span class="badge free">🆓 無料</span>`;
+  if(s.rain_friendly===true||s.indoor_or_outdoor==='indoor') badges+=`<span class="badge rain">☔ 屋内・雨OK</span>`;
+  const kfHasKidsSpace=Array.isArray(s.kid_features)&&s.kid_features.some(f=>/キッズスペース|キッズルーム|キッズコーナー|プレイスペース/.test(f));
+  if(s.has_kids_space===true&&!kfHasKidsSpace) badges+=`<span class="badge free">🧸 キッズスペース</span>`;
+  const kfHasZashiki=Array.isArray(s.kid_features)&&s.kid_features.some(f=>/座敷|小上がり|掘りごたつ/.test(f));
+  if(s.has_zashiki===true&&!kfHasZashiki) badges+=`<span class="badge free">🍵 座敷あり</span>`;
+  const kfHasKidsChair=Array.isArray(s.kid_features)&&s.kid_features.some(f=>/キッズチェア|子ども椅子|子供椅子|ハイチェア|ベビーチェア|まめイス/.test(f));
+  if(s.has_kids_chair===true&&!kfHasKidsChair) badges+=`<span class="badge free">🪑 子ども椅子</span>`;
+  if(s.is_jidokan===true) badges+=`<span class="badge free">🏠 児童館</span>`;
+  // info
+  let info='';
+  if(s.price_text) info+=`<p class="info"><b>料金</b><span>${esc(s.price_text)}</span></p>`;
+  if(s.business_hours) info+=`<p class="info"><b>時間</b><span>${esc(s.business_hours)}</span></p>`;
+  if(s.closed_days) info+=`<p class="info"><b>休み</b><span>${esc(s.closed_days)}</span></p>`;
+  if(s.parking) info+=`<p class="info"><b>駐車場</b><span>${esc(s.parking)}</span></p>`;
+  // actions
+  let actions='';
+  if(s.official_url){
+    const isTabelog=/tabelog\.com/.test(s.official_url);
+    const linkLabel=s.url_label ? s.url_label+' →' : (isTabelog ? '詳細情報(食べログ) →' : '公式サイト →');
+    actions+=`<a class="btn primary" href="${esc(s.official_url)}" target="_blank" rel="noopener">${esc(linkLabel)} </a>`;
+  }
+  const gmapsSearchUrl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.name+' '+(s.city||''));
+  actions+=`<a class="btn map" href="${esc(gmapsSearchUrl)}" target="_blank" rel="noopener">🗺 Googleマップ</a>`;
+  // 文脈アフィリボタン（PR）: water優先、次に屋外active
+  const pt=s.play_types||[];
+  let aff='';
+  if(pt.includes('water')){
+    aff=`<a class="aff" href="//af.moshimo.com/af/c/click?a_id=5711058&p_id=54&pc_id=54&pl_id=616&url=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F%25E6%25B0%25B4%25E9%2581%258A%25E3%2581%25B3%2B%25E3%2581%258A%25E3%2582%2582%25E3%2581%25A1%25E3%2582%2583%2B%25E5%25AD%2590%25E4%25BE%259B%2F" target="_blank" rel="noopener sponsored">🛒 水遊びグッズを見る <span class="pr">[PR]</span></a>`;
+  }else if(pt.includes('active')&&!pt.includes('indoor')){
+    aff=`<a class="aff" href="//af.moshimo.com/af/c/click?a_id=5711058&p_id=54&pc_id=54&pl_id=616&url=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F%25E3%2583%25AC%25E3%2582%25B8%25E3%2583%25A3%25E3%2583%25BC%25E3%2582%25B7%25E3%2583%25BC%25E3%2583%2588%2B%25E5%258E%259A%25E6%2589%258B%2F" target="_blank" rel="noopener sponsored">🛒 レジャーシートなど公園グッズ <span class="pr">[PR]</span></a>`;
+  }
+  const isFood=(s.play_types||[]).includes('food');
+  // food-specific: kid feature tags + source note
+  let kidfeat='';
+  if(isFood && Array.isArray(s.kid_features) && s.kid_features.length){
+    kidfeat='<div class="kidfeat">'+s.kid_features.map(f=>`<span class="kf">${esc(f)}</span>`).join('')+'</div>';
+  }
+  let srcnote='';
+  if(isFood && s.source_note){
+    srcnote=`<p class="srcnote">紹介: Instagram @nishimika_waiwai</p>`;
+  }
+  const foodDisclaimer=isFood?`<p class="foodnote">※営業情報は変わりやすいため、お店の最新の発信をご確認ください。</p>`:'';
+  const checked=(s.checked_at?`<p class="checked">情報確認日: ${esc(s.checked_at)}</p>`:'')+foodDisclaimer;
+  return `<article class="card" id="card-${i}" data-i="${i}">
+    ${photoBlock}
+    <div class="body">
+      <h3>${esc(s.name)}</h3>
+      <p class="city">${esc(s.city||'')}</p>
+      ${s.kid_appeal?`<p class="appeal">${esc(s.kid_appeal)}</p>`:''}
+      <div class="badges">${badges}</div>
+      ${kidfeat}
+      ${info}
+      ${srcnote}
+      <div class="actions">${actions}</div>
+      ${aff}
+      ${checked}
+    </div>
+  </article>`;
+}
+
+function matches(s){
+  if(state.play.size){
+    const pts=s.play_types||[];
+    if(![...state.play].some(t=>pts.includes(t))) return false;
+  }
+  if(state.drive!=null){
+    const dm=driveMinutes(s);
+    if(dm==null||dm>state.drive) return false;
+  }
+  if(state.rain){ if(!(s.rain_friendly===true||s.indoor_or_outdoor==='indoor')) return false; }
+  if(state.free){ if(s.is_free!==true) return false; }
+  if(state.kids){ if(s.has_kids_space!==true) return false; }
+  if(state.jidokan){ if(s.is_jidokan!==true) return false; }
+  else { if(s.is_jidokan===true) return false; }
+  if(state.zashiki){ if(s.has_zashiki!==true) return false; }
+  if(state.kids_chair){ if(s.has_kids_chair!==true) return false; }
+  // 条件チップ単独時（ごはんチップ未選択）は、foodのみのスポット（飲食店）を除外
+  const pts0=s.play_types||[];
+  if(pts0.length&&pts0.every(t=>t==='food')&&!state.play.has('food')&&(state.rain||state.free||state.kids||state.drive!=null)) return false;
+  return true;
+}
+
+function apply(){
+  let n=0;
+  const frag=[];
+  SPOTS.forEach((s,i)=>{
+    const ok=matches(s);
+    if(ok){n++;frag.push(cardHTML(s,i));}
+  });
+  // card list rendering must always happen, regardless of map state
+  cardsEl.innerHTML=frag.join('');
+  document.getElementById('count').textContent='該当'+n+'件';
+  document.getElementById('listcount').textContent='('+n+'件)';
+  document.getElementById('empty').style.display=n?'none':'block';
+
+  // map marker sync is best-effort and isolated from card rendering
+  try{
+    if(map){
+      SPOTS.forEach((s,i)=>{
+        const ok=matches(s);
+        const m=markers[i];
+        if(m){ if(ok){ if(!map.hasLayer(m))m.addTo(map);} else { if(map.hasLayer(m))map.removeLayer(m);} }
+      });
+    }
+  }catch(e){
+    console.warn('map update failed',e);
+  }
+}
+
+// --- filter chip wiring ---
+function updateFoodSubChips(){
+  const el=document.getElementById('foodSubChips');
+  if(!el) return;
+  const show=state.play.has('food');
+  el.style.display=show?'':'none';
+  if(!show){
+    let changed=false;
+    ['zashiki','kids_chair'].forEach(f=>{
+      if(state[f]){ state[f]=false; changed=true; }
+    });
+    document.querySelectorAll('#foodSubChips .chip').forEach(c=>{c.classList.remove('on');c.setAttribute('aria-pressed','false')});
+  }
+}
+document.querySelectorAll('.chip.play').forEach(c=>{
+  c.addEventListener('click',()=>{
+    const t=c.dataset.t;
+    if(state.play.has(t))state.play.delete(t);else state.play.add(t);
+    c.classList.toggle('on');c.setAttribute('aria-pressed',state.play.has(t));
+    updateFoodSubChips();
+    apply();
+  });
+});
+document.querySelectorAll('.chip.drive').forEach(c=>{
+  c.addEventListener('click',()=>{
+    const d=+c.dataset.d;
+    document.querySelectorAll('.chip.drive').forEach(x=>{x.classList.remove('on');x.setAttribute('aria-pressed','false')});
+    if(state.drive===d){state.drive=null;}else{state.drive=d;c.classList.add('on');c.setAttribute('aria-pressed','true');}
+    apply();
+  });
+});
+document.querySelectorAll('.chip[data-f]').forEach(c=>{
+  c.addEventListener('click',()=>{
+    const f=c.dataset.f;state[f]=!state[f];
+    c.classList.toggle('on');c.setAttribute('aria-pressed',state[f]);
+    apply();
+  });
+});
+document.getElementById('reset').addEventListener('click',resetAll);
+function resetAll(){
+  state.play.clear();state.drive=null;state.rain=false;state.free=false;state.kids=false;state.jidokan=false;state.zashiki=false;state.kids_chair=false;
+  document.querySelectorAll('.chip.on').forEach(c=>{c.classList.remove('on');c.setAttribute('aria-pressed','false')});
+  updateFoodSubChips();
+  apply();
+}
+
+// --- mood buttons ---
+document.querySelectorAll('.mood-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    resetAll();
+    const mood=b.dataset.mood;
+    if(mood==='rain'){ state.rain=true; setChip('[data-f="rain"]'); }
+    else if(mood==='free'){ state.free=true; setChip('[data-f="free"]'); }
+    else { state.play.add(mood); setChip('.chip.play[data-t="'+mood+'"]'); }
+    updateFoodSubChips();
+    apply();
+    document.getElementById('filterbar').scrollIntoView({behavior:'smooth',block:'start'});
+    setTimeout(()=>{try{if(map)map.invalidateSize();}catch(e){console.warn('map invalidateSize failed',e);}},400);
+  });
+});
+function setChip(sel){const c=document.querySelector(sel);if(c){c.classList.add('on');c.setAttribute('aria-pressed','true');}}
+
+// --- fullscreen map button: hand off current filter + origin city to map.html ---
+(function(){
+  const btn=document.getElementById('fullscreenMapBtn');
+  if(!btn) return;
+  btn.addEventListener('click',()=>{
+    const params=new URLSearchParams();
+    if(state.rain) params.set('filter','rain');
+    else if(state.free) params.set('filter','free');
+    else if(state.kids) params.set('filter','kids');
+    else if(state.jidokan) params.set('filter','jidokan');
+    else if(state.play.size) params.set('filter',[...state.play][0]);
+    if(!origin.isAnjo){
+      params.set('from',origin.name);
+      // 現在地はCITIESに無いため座標も渡し、全画面側で現在地設定を維持する
+      if(origin.name==='現在地'){ params.set('flat',origin.lat.toFixed(5)); params.set('flng',origin.lng.toFixed(5)); }
+    }
+    const qs=params.toString();
+    location.href='./map.html'+(qs?('?'+qs):'');
+  });
+})();
+
+// --- origin selector wiring ---
+const originSel=document.getElementById('originSel');
+const cityOptGroups={};
+CITIES.forEach(([nm,lat,lng,grp])=>{
+  const o=document.createElement('option');
+  o.value=lat+','+lng; o.dataset.name=nm; o.textContent=nm;
+  let parent=originSel;
+  if(grp){
+    if(!cityOptGroups[grp]){
+      const g=document.createElement('optgroup'); g.label=grp;
+      originSel.appendChild(g); cityOptGroups[grp]=g;
+    }
+    parent=cityOptGroups[grp];
+  }
+  parent.appendChild(o);
+});
+originSel.value=CITIES[0][1]+','+CITIES[0][2]; // 新潟市
+originSel.querySelector(`option[value="${CITIES[0][1]},${CITIES[0][2]}"]`).selected=true;
+
+const originMsg=document.getElementById('originMsg');
+function showMsg(t){originMsg.textContent=t;originMsg.style.display='';}
+function hideMsg(){originMsg.style.display='none';}
+
+// single home/origin marker: created once, moved+relabeled on every origin change (never duplicated)
+let originMarker=null;
+function homeDivIcon(label){
+  const emo=origin.isAnjo?'🏠':(origin.name==='現在地'?'📍':'🚗');
+  return L.divIcon({
+    className:'',
+    html:`<div class="home-wrap"><div class="home-pulse"></div><div class="home-pin"><span>${emo}</span></div><div class="home-label">📍${esc(label)}</div></div>`,
+    iconSize:[48,48],
+    iconAnchor:[24,24]
+  });
+}
+function updateOriginMarker(){
+  try{
+    if(!map) return;
+    const icon=homeDivIcon(origin.name);
+    if(originMarker){
+      originMarker.setLatLng([origin.lat,origin.lng]);
+      originMarker.setIcon(icon);
+      originMarker.setPopupContent(`<div class="pop"><h4>🏠 ${esc(origin.name)}</h4><div class="pa">ここからの所要時間の目安を表示しています</div></div>`);
+      originMarker.options.title=origin.name;
+    }else{
+      originMarker=L.marker([origin.lat,origin.lng],{icon,zIndexOffset:2000,title:origin.name})
+        .addTo(map)
+        .bindPopup(`<div class="pop"><h4>🏠 ${esc(origin.name)}</h4><div class="pa">ここからの所要時間の目安を表示しています</div></div>`);
+    }
+  }catch(e){ console.warn('origin marker update failed',e); }
+}
+updateOriginMarker(); // place initial marker (新潟市) once map/origin are ready
+
+// --- 現在地UX: 青ドット表示・初回自動パン・トースト通知（alert不使用） ---
+let userLatLng=null, userDotMarker=null, autoPannedOnce=false;
+function showToast(msg){
+  let t=document.getElementById('geoToast');
+  if(!t){ t=document.createElement('div'); t.id='geoToast'; t.className='geo-toast'; document.body.appendChild(t); }
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(showToast._tm);
+  showToast._tm=setTimeout(()=>t.classList.remove('show'),2600);
+}
+function blueDotIcon(){
+  return L.divIcon({className:'',html:'<div class="geo-dot"><div class="geo-dot-ring"></div><div class="geo-dot-core"></div></div>',iconSize:[16,16],iconAnchor:[8,8]});
+}
+function placeUserDot(lat,lng){
+  userLatLng=[lat,lng];
+  if(!map) return;
+  try{
+    if(userDotMarker){ userDotMarker.setLatLng(userLatLng); }
+    else{ userDotMarker=L.marker(userLatLng,{icon:blueDotIcon(),zIndexOffset:3000,interactive:false,keyboard:false}).addTo(map); }
+  }catch(e){ console.warn('user dot update failed',e); }
+}
+function requestGeolocation(onOk){
+  if(!navigator.geolocation){ showToast('位置情報が許可されていません'); return; }
+  let done=false;
+  const watchdog=setTimeout(()=>{ if(done)return; done=true; showToast('位置情報が許可されていません'); },9000);
+  navigator.geolocation.getCurrentPosition(
+    pos=>{ if(done)return; done=true; clearTimeout(watchdog); onOk(pos.coords.latitude,pos.coords.longitude); },
+    ()=>{ if(done)return; done=true; clearTimeout(watchdog); showToast('位置情報が許可されていません'); },
+    {timeout:8000,maximumAge:60000}
+  );
+}
+const recenterBtn=document.getElementById('recenterBtn');
+if(recenterBtn){
+  recenterBtn.addEventListener('click',()=>{
+    if(userLatLng){
+      if(map) map.setView(userLatLng,13,{animate:true});
+      setOrigin('現在地',userLatLng[0],userLatLng[1]);
+      placeUserDot(userLatLng[0],userLatLng[1]);
+      return;
+    }
+    requestGeolocation((lat,lng)=>{
+      setOrigin('現在地',lat,lng);
+      placeUserDot(lat,lng);
+      if(map) map.setView([lat,lng],13,{animate:true});
+      autoPannedOnce=true;
+    });
+  });
+}
+
+function setOrigin(name,lat,lng){
+  origin.name=name; origin.lat=lat; origin.lng=lng; origin.isAnjo=(name==='新潟市');
+  const dl=document.getElementById('driveLabel'); if(dl) dl.textContent=origin.name+'から';
+  apply();               // re-renders cards with new minutes + re-applies current 分以内 filter + count
+  updateOriginMarker();  // best-effort, guarded inside
+  updateWeather();       // best-effort, self-hides on any failure
+}
+
+originSel.addEventListener('change',()=>{
+  hideMsg();
+  const opt=originSel.selectedOptions[0];
+  const parts=originSel.value.split(',');
+  setOrigin(opt.dataset.name, +parts[0], +parts[1]);
+});
+
+document.getElementById('originGeo').addEventListener('click',()=>{
+  hideMsg();
+  const backToAnjo=()=>{ originSel.value=CITIES[0][1]+','+CITIES[0][2]; setOrigin('新潟市',ANJO[0],ANJO[1]); };
+  if(!navigator.geolocation){ backToAnjo(); showMsg('現在地を取得できませんでした'); return; }
+  let done=false;
+  const fail=()=>{ if(done)return; done=true; backToAnjo(); showMsg('現在地を取得できませんでした'); };
+  // watchdog: if neither callback fires (e.g. prompt dismissed / headless), fall back gracefully
+  const watchdog=setTimeout(fail,9000);
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      if(done)return; done=true; clearTimeout(watchdog);
+      const lat=pos.coords.latitude, lng=pos.coords.longitude;
+      setOrigin('現在地',lat,lng);
+      placeUserDot(lat,lng);
+      if(!autoPannedOnce && map){ map.setView([lat,lng],13,{animate:true}); autoPannedOnce=true; }
+    },
+    ()=>{ clearTimeout(watchdog); fail(); },
+    {timeout:8000,maximumAge:60000}
+  );
+});
+
+// --- 週末天気ウィジェット (Open-Meteo, キー不要 / 失敗時は完全非表示) ---
+const wxCache=Object.create(null); // メモリのみ: "lat,lng" -> {sat,sun} （localStorage不使用）
+function wxEmoji(c){
+  if(c==null) return '☁️';
+  if(c===0) return '☀️';
+  if(c<=2) return '🌤';
+  if(c===3) return '☁️';
+  if(c<=48) return '🌫';
+  if(c<=67) return '🌧';
+  if(c<=77) return '❄️';
+  if(c<=82) return '🌧';
+  if(c<=86) return '❄️';
+  return '⛈';
+}
+function wxWeekendDates(){
+  // 直近の土曜・日曜（今日が土/日ならその週末=今日を含む）
+  const now=new Date();
+  const dow=now.getDay(); // 0=日,6=土
+  const fmt=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  let sat,sun;
+  if(dow===0){ // 日曜: 昨日(土)と今日(日)
+    sun=new Date(now); sat=new Date(now); sat.setDate(now.getDate()-1);
+  }else if(dow===6){ // 土曜: 今日(土)と明日(日)
+    sat=new Date(now); sun=new Date(now); sun.setDate(now.getDate()+1);
+  }else{ // 平日: 次の土曜・日曜
+    const toSat=(6-dow+7)%7; sat=new Date(now); sat.setDate(now.getDate()+toSat);
+    sun=new Date(sat); sun.setDate(sat.getDate()+1);
+  }
+  return {sat:fmt(sat),sun:fmt(sun)};
+}
+let wxReqSeq=0;
+async function updateWeather(){
+  const bar=document.getElementById('wxbar');
+  if(!bar) return;
+  const key=origin.lat.toFixed(4)+','+origin.lng.toFixed(4);
+  const seq=++wxReqSeq;
+  try{
+    let data=wxCache[key];
+    if(!data){
+      const url=`https://api.open-meteo.com/v1/forecast?latitude=${origin.lat}&longitude=${origin.lng}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=10`;
+      const res=await fetch(url);
+      if(!res.ok) throw new Error('http '+res.status);
+      const json=await res.json();
+      const t=json&&json.daily&&json.daily.time;
+      if(!t||!t.length) throw new Error('no daily');
+      const {sat,sun}=wxWeekendDates();
+      const pick=day=>{
+        const i=t.indexOf(day);
+        if(i<0) return null;
+        return {
+          code:json.daily.weather_code[i],
+          tmax:json.daily.temperature_2m_max[i],
+          tmin:json.daily.temperature_2m_min[i],
+          pop:json.daily.precipitation_probability_max[i]
+        };
+      };
+      data={sat:pick(sat),sun:pick(sun)};
+      if(!data.sat&&!data.sun) throw new Error('no weekend');
+      wxCache[key]=data;
+    }
+    if(seq!==wxReqSeq) return; // 連打対策: 古いレスポンスは破棄
+    const daysEl=document.getElementById('wxbarDays');
+    const mk=(label,d)=>{
+      if(!d) return '';
+      const tmax=d.tmax==null?'--':Math.round(d.tmax);
+      const tmin=d.tmin==null?'--':Math.round(d.tmin);
+      const pop=d.pop==null?'--':d.pop;
+      return `<span class="wxday"><span class="wxd-label">${label}</span><span class="wxd-emo">${wxEmoji(d.code)}</span><span class="wxd-t">${tmax}°</span><span class="wxd-tn">${tmin}°</span><span class="wxd-p">☔${pop}%</span></span>`;
+    };
+    daysEl.innerHTML=mk('土',data.sat)+mk('日',data.sun);
+    document.getElementById('wxbarTitle').textContent=`📅 今週末の天気（${origin.name}）`;
+    const rainy=[data.sat,data.sun].some(d=>d&&d.pop!=null&&d.pop>=50);
+    document.getElementById('wxbarRain').style.display=rainy?'':'none';
+    bar.classList.add('show');
+  }catch(e){
+    if(seq===wxReqSeq) bar.classList.remove('show'); // フェイルセーフ: 非表示のみ
+  }
+}
+(function(){
+  const rb=document.getElementById('wxbarRain');
+  if(rb) rb.addEventListener('click',()=>{
+    state.rain=true; setChip('[data-f="rain"]'); apply();
+    const list=document.querySelector('.listwrap')||document.querySelector('.cards');
+    if(list) list.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+})();
+
+apply();
+updateWeather();
+setTimeout(()=>{try{if(map)map.invalidateSize();}catch(e){console.warn('map invalidateSize failed',e);}},300);
+</script>
+</body>
+</html>
