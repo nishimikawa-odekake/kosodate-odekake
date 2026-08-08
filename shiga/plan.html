@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8CDXHXFG9F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8CDXHXFG9F');
+</script>
+<title>滋賀の子連れおでかけプランを自動作成｜しが子育ておでかけマップ</title>
+<meta name="description" content="出発地・日程・お子さんの年齢・予算を選ぶだけで、滋賀の子連れおでかけプランを自動作成。天気予報も自動反映して雨の日は室内プランに。移動時間・費用の目安つきタイムラインで、きょうのおでかけがすぐ決まります。">
+<link rel="canonical" href="https://kosodate-odekake.jp/shiga/plan.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="🎯きょうのプラン｜滋賀の子連れおでかけを自動作成">
+<meta property="og:description" content="質問に答えるだけ。天気も反映して、きょうの家族おでかけプランを自動作成します。">
+<meta property="og:url" content="https://kosodate-odekake.jp/shiga/plan.html">
+<meta property="og:image" content="https://kosodate-odekake.jp/og-logo.png">
+<meta name="twitter:image" content="https://kosodate-odekake.jp/og-logo.png">
+<meta name="theme-color" content="#e08a5b">
+<style>
+:root{
+  --bg:#faf6ef; --card:#fffdf9; --ink:#3d3a34; --sub:#7a746a; --line:#e7ddcd;
+  --accent:#e08a5b; --accent-d:#c9713f;
+  --animal:#E9A23B; --active:#4CAF6E; --water:#3FA9D6; --create:#9B6DD6; --vehicle:#E06C75; --indoor:#7A8AA0; --food:#D95D77;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-text-size-adjust:100%}
+a{color:var(--accent-d)}
+.wrap{max-width:620px;margin:0 auto;padding:0 14px 40px}
+header.top{background:linear-gradient(160deg,#fbe6d3,#f6ede0);border-bottom:1px solid var(--line);padding:16px 14px 14px;text-align:center}
+header.top h1{font-size:1.18rem;margin:0 0 3px;color:var(--accent-d)}
+header.top p{font-size:.8rem;color:var(--sub);margin:0}
+header.top a.home{display:inline-block;margin-top:8px;font-size:.78rem;color:var(--sub);text-decoration:none}
+header.top a.home:hover{color:var(--accent-d)}
+.odemaru-mark{width:26px;height:26px;vertical-align:-6px;margin-right:5px;display:inline-block}
+
+/* progress dots */
+.dots{display:flex;gap:8px;justify-content:center;margin:18px 0 6px}
+.dots .d{width:10px;height:10px;border-radius:50%;background:var(--line);transition:.2s}
+.dots .d.on{background:var(--accent);transform:scale(1.15)}
+.dots .d.done{background:var(--accent-d)}
+
+/* wizard */
+.step{display:none;animation:fade .25s ease}
+.step.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.q{font-size:1.15rem;font-weight:800;text-align:center;margin:18px 0 4px;color:var(--ink)}
+.qsub{font-size:.8rem;color:var(--sub);text-align:center;margin:0 0 16px}
+.bigbtns{display:flex;flex-direction:column;gap:10px}
+.bigbtn{border:2px solid var(--line);background:var(--card);border-radius:16px;padding:16px;font-size:1.02rem;font-weight:700;color:var(--ink);cursor:pointer;text-align:center;transition:.12s;box-shadow:0 2px 6px rgba(160,140,110,.12)}
+.bigbtn:hover{border-color:var(--accent)}
+.bigbtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.bigbtn small{display:block;font-size:.72rem;font-weight:600;opacity:.8;margin-top:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+select.origin{width:100%;padding:14px;font-size:1rem;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font-weight:700}
+.geo{margin-top:10px;width:100%;border:2px dashed var(--accent);background:#fff6ee;border-radius:14px;padding:12px;font-size:.92rem;font-weight:700;color:var(--accent-d);cursor:pointer}
+.geo:active{background:#ffe9d8}
+.geonote{font-size:.72rem;color:var(--sub);text-align:center;margin:8px 0 0;min-height:1em}
+.navrow{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
+.back{border:none;background:transparent;color:var(--sub);font-size:.9rem;cursor:pointer;padding:8px 4px;text-decoration:underline}
+.next{border:none;background:var(--accent);color:#fff;font-weight:800;border-radius:999px;padding:12px 28px;font-size:1rem;cursor:pointer;box-shadow:0 3px 10px rgba(200,113,63,.3)}
+.next:disabled{opacity:.4;cursor:default;box-shadow:none}
+
+/* loading */
+.loading{text-align:center;padding:50px 10px}
+.spinner{width:44px;height:44px;border:4px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 16px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* result */
+#result{display:none}
+.wxbadge{display:inline-block;background:#fff6ee;border:1.5px solid var(--accent);color:var(--accent-d);border-radius:999px;padding:7px 14px;font-size:.82rem;font-weight:800;margin:4px 0 14px}
+.plancard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 14px;box-shadow:0 3px 12px rgba(160,140,110,.14);margin-bottom:16px}
+.plantitle{font-size:1.02rem;font-weight:800;color:var(--accent-d);margin:0 0 2px}
+.plantitle small{font-size:.74rem;font-weight:600;color:var(--sub)}
+.timeline{margin:14px 0 4px;position:relative}
+.tl{display:flex;gap:12px;padding:0 0 16px;position:relative}
+.tl:last-child{padding-bottom:0}
+.tl .rail{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;width:52px}
+.tl .time{font-size:.82rem;font-weight:800;color:var(--ink);white-space:nowrap}
+.tl .icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.05rem;margin-top:3px;background:#fff6ee;border:2px solid var(--accent)}
+.tl.move .icon{background:#eef2f6;border-color:#c9d3dd;font-size:.95rem}
+.tl .line{flex:1;width:2px;background:var(--line);margin-top:2px}
+.tl:last-child .line{display:none}
+.tl .body{flex:1;padding-bottom:4px;min-width:0}
+.tl .sname{font-weight:800;font-size:1rem;margin:2px 0 2px;color:var(--ink)}
+.tl.move .sname{font-weight:700;font-size:.9rem;color:var(--sub)}
+.tl .appeal{font-size:.85rem;color:#5a4632;background:#fff6ee;border-left:3px solid var(--accent);border-radius:5px;padding:5px 8px;margin:4px 0 6px}
+.tl .meta{font-size:.78rem;color:var(--sub);margin:0 0 6px}
+.tl .opt{display:inline-block;font-size:.7rem;font-weight:800;background:#f0ead9;color:#8a7a4a;border-radius:6px;padding:2px 7px;margin-bottom:4px}
+.tl .links{display:flex;gap:8px;flex-wrap:wrap}
+.tl .links a{font-size:.78rem;font-weight:700;text-decoration:none;border-radius:999px;padding:6px 12px;border:1.5px solid var(--accent);color:var(--accent-d)}
+.tl .links a.map{border-color:#c9d3dd;color:#5b6572}
+.summary{background:#f6ede0;border-radius:12px;padding:12px 14px;font-size:.86rem;color:#5a4632;margin-top:6px}
+.summary b{color:var(--accent-d)}
+.actions{display:flex;flex-direction:column;gap:10px;margin:18px 0 8px}
+.actions button,.actions a{display:block;text-align:center;text-decoration:none;border-radius:14px;padding:14px;font-size:1rem;font-weight:800;cursor:pointer;border:2px solid transparent}
+.act-reroll{background:var(--accent);color:#fff;border:none}
+.act-map{background:#fff;color:var(--accent-d);border:2px solid var(--accent)}
+.act-restart{background:transparent;color:var(--sub);border:none;text-decoration:underline;font-weight:600;font-size:.9rem;padding:6px}
+.act-share{background:#fff;color:var(--accent-d);border:2px solid var(--accent);width:100%;box-sizing:border-box}
+.sharedbanner{text-align:center;font-size:.8rem;font-weight:700;color:var(--accent-d);background:#fff6ee;border-radius:10px;padding:8px 10px;margin:0 0 10px}
+.sharedbanner a{color:var(--accent-d);text-decoration:underline}
+#shareToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#333;color:#fff;padding:10px 18px;border-radius:20px;font-size:.85rem;font-weight:700;z-index:9999;box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .25s}
+#shareToast.show{opacity:1}
+.share{text-align:center;font-size:.86rem;color:var(--accent-d);font-weight:700;background:#fff6ee;border-radius:12px;padding:12px;margin:6px 0}
+.notice{font-size:.74rem;color:var(--sub);line-height:1.5;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:16px}
+.empty{text-align:center;padding:30px 14px;color:var(--sub)}
+.empty button{margin-top:14px;border:none;background:var(--accent);color:#fff;font-weight:800;border-radius:999px;padding:12px 24px;font-size:.95rem;cursor:pointer}
+footer{text-align:center;font-size:.72rem;color:var(--sub);padding:20px 0 30px}
+footer a{color:var(--sub)}
+
+/* --- added: parent summary / bonus tier / price / food tags / spacing polish --- */
+.parentline{background:#fff6ee;border:1.5px solid var(--accent);border-radius:14px;padding:12px 14px;font-size:.9rem;font-weight:700;color:#5a4632;margin:10px 0 14px;line-height:1.5}
+.tl .sname{margin-bottom:4px}
+.tl .body{padding-top:1px}
+.tl .appeal{line-height:1.5;word-break:break-word}
+.tl .meta{line-height:1.6;word-break:break-word}
+.foodtags{margin:2px 0 6px}
+.foodtags .ftline{font-size:.78rem;color:#5a4632;background:#fbeee0;display:inline-block;border-radius:6px;padding:2px 8px;margin:0 4px 4px 0}
+.foodnote{font-size:.72rem;color:var(--sub);margin:0 0 6px}
+.hourwarn{font-size:.74rem;color:#b5601f;font-weight:700;margin:2px 0 6px;background:#fff2e0;border-radius:6px;padding:4px 8px;display:inline-block}
+.eveningwarn{font-size:.74rem;color:#6b6248;font-weight:700;margin:2px 0 6px;background:#f0ead9;border-radius:6px;padding:4px 8px;display:inline-block}
+.moveline{font-size:.82rem;color:var(--sub)}
+.actions button,.actions a{margin:0}
+.actions{gap:12px}
+.bonus-wrap{margin-top:6px}
+.bonus-head{font-size:.86rem;font-weight:800;color:#8a7a4a;margin:14px 0 6px;padding-left:4px;border-left:4px solid #d8c98f}
+.bonus-sub{font-size:.74rem;color:var(--sub);font-weight:600;margin:-2px 0 8px 4px}
+.tl.bonus{opacity:.72}
+.tl.bonus .icon{background:#f3efe3;border-color:#d8c98f;font-size:.92rem;width:30px;height:30px}
+.tl.bonus .sname{font-size:.88rem;color:#6b6248}
+.tl.bonus .appeal{background:#f3efe3;border-left-color:#c9b976;font-size:.8rem}
+.tl.bonus .meta{font-size:.72rem}
+.homepriority{font-size:.8rem;color:#3a7d4f;font-weight:700;background:#eaf5ee;border-radius:8px;padding:6px 10px;margin:6px 0}
+.noticebottom{font-size:.72rem;color:var(--sub);line-height:1.6;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}
+@media (max-width:420px){
+  .tl .sname{font-size:.95rem}
+  .tl .appeal{padding:6px 9px;font-size:.83rem}
+  .actions button,.actions a{padding:15px 10px}
+}
+</style>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+</head>
+<body>
+<header class="top">
+  <h1><img class="odemaru-mark" src="/odemaru-mark.png" alt="おでまる" width="96" height="96" decoding="async">きょうのプラン</h1>
+  <p>質問に答えるだけ、家族のおでかけを自動作成</p>
+  <a class="home" href="./index.html">← マップにもどる</a>
+</header>
+
+<div class="wrap">
+  <div class="dots" id="dots" aria-hidden="true">
+    <span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
+  </div>
+
+  <p style="font-size:.78rem;color:var(--sub);text-align:center;line-height:1.6;margin:0 0 14px">出発地・出発時間・お子さんの年齢・予算・天気・営業時間・移動距離などをもとに、子育て家庭が回りやすいおでかけ候補を組み合わせて表示します。提案内容は目安です。お子さんの体調や混雑状況に合わせて、無理のない範囲でご利用ください。</p>
+
+  <!-- STEP 1: 出発地 -->
+  <section class="step" data-step="0">
+    <div class="q">どこから出発？</div>
+    <p class="qsub">おでかけのスタート地点を選んでね</p>
+    <select class="origin" id="originSel"></select>
+    <button class="geo" id="geoBtn">📍 現在地から探す</button>
+    <p class="geonote" id="geoNote"></p>
+    <div class="navrow">
+      <span></span>
+      <button class="next" data-next>次へ →</button>
+    </div>
+  </section>
+
+  <!-- STEP 2: 車での移動時間 -->
+  <section class="step" data-step="1">
+    <div class="q">車でどのくらいまで？</div>
+    <p class="qsub">出発地からの移動時間の目安を選んでね</p>
+    <div class="bigbtns" id="driveBtns">
+      <button class="bigbtn" data-drive="20">🏠 〜20分（ご近所）<small>近場でサクッと遊びたい</small></button>
+      <button class="bigbtn" data-drive="40">🚗 〜40分<small>ちょっとお出かけ気分で</small></button>
+      <button class="bigbtn" data-drive="60">🛣 〜60分<small>足を延ばしてしっかり遊ぶ</small></button>
+      <button class="bigbtn" data-drive="any">🗺 遠くてもOK<small>気になる場所ならどこでも</small></button>
+    </div>
+    <div class="navrow">
+      <button class="back" data-back>← もどる</button>
+      <button class="next" data-next disabled>次へ →</button>
+    </div>
+  </section>
+
+  <!-- STEP 3: いつ -->
+  <section class="step" data-step="2">
+    <div class="q">いつ出かける？</div>
+    <p class="qsub">お天気を自動でチェックします</p>
+    <div class="bigbtns" id="whenBtns">
+      <button class="bigbtn" data-when="today">今日これから<small>いまから準備してGO</small></button>
+      <button class="bigbtn" data-when="tomorrow">明日<small>あしたのおでかけ</small></button>
+      <button class="bigbtn" data-when="sat">今週末（土）</button>
+      <button class="bigbtn" data-when="sun">今週末（日）</button>
+    </div>
+    <div id="departWrap" style="display:none;margin-top:18px">
+      <div class="q" style="font-size:1.05rem" id="departQ">何時に出発？</div>
+      <div class="bigbtns" id="departTodayBtns" style="display:none">
+        <button class="bigbtn" data-depart="30">30分後くらい</button>
+        <button class="bigbtn" data-depart="60">1時間後</button>
+        <button class="bigbtn" data-depart="120">2時間後</button>
+        <button class="bigbtn" data-depart="180">3時間後</button>
+      </div>
+      <div class="bigbtns" id="departDayBtns" style="display:none">
+        <button class="bigbtn" data-slot="am">午前<small>9:30ごろ出発</small></button>
+        <button class="bigbtn" data-slot="noon">お昼から<small>13:00ごろ出発</small></button>
+      </div>
+    </div>
+    <div class="navrow">
+      <button class="back" data-back>← もどる</button>
+      <button class="next" data-next disabled>次へ →</button>
+    </div>
+  </section>
+
+  <!-- STEP 4: 年齢 -->
+  <section class="step" data-step="3">
+    <div class="q">お子さんの年齢は？</div>
+    <p class="qsub">あてはまるものを選んでね（複数OK）</p>
+    <div class="grid2" id="ageBtns">
+      <button class="bigbtn" data-age="0-2">0〜2歳<small>あかちゃん</small></button>
+      <button class="bigbtn" data-age="3-5">3〜5歳<small>未就学</small></button>
+      <button class="bigbtn" data-age="elem" style="grid-column:1/3">小学生</button>
+    </div>
+    <div class="navrow">
+      <button class="back" data-back>← もどる</button>
+      <button class="next" data-next disabled>次へ →</button>
+    </div>
+  </section>
+
+  <!-- STEP 5: 予算 -->
+  <section class="step" data-step="4">
+    <div class="q">予算は？</div>
+    <p class="qsub">1家族あたりの目安でOK</p>
+    <div class="bigbtns" id="budgetBtns">
+      <button class="bigbtn" data-budget="free">🆓 無料メイン<small>お金をかけずに遊びたい</small></button>
+      <button class="bigbtn" data-budget="1000">1人あたり〜1,000円</button>
+      <button class="bigbtn" data-budget="3000">1人あたり〜3,000円</button>
+      <button class="bigbtn" data-budget="any">予算は気にしない</button>
+    </div>
+    <div class="navrow">
+      <button class="back" data-back>← もどる</button>
+      <button class="next" data-next disabled id="genBtn">🎯 プランを作る</button>
+    </div>
+  </section>
+
+  <!-- LOADING -->
+  <div class="loading" id="loading" style="display:none">
+    <div class="spinner"></div>
+    <p style="color:var(--sub);font-size:.9rem">お天気とスポットを調べて<br>プランを組み立てています…</p>
+  </div>
+
+  <!-- RESULT -->
+  <section id="result"></section>
+</div>
+
+<footer>
+  <a href="./index.html">しが子育ておでかけマップ</a><br>
+  データ・掲載情報は各公式サイトでご確認ください<br>
+  <p class="site-footer-links" style="margin-top:10px"><a href="./about.html">運営者情報</a> | <a href="./disclaimer.html">免責事項</a> | <a href="./privacy.html">プライバシーポリシー</a> | <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcSuUG_4MbFgNq-Ejn_cfDvXKhQdQZh4DxITrDiKlo4ocFfw/viewform" target="_blank" rel="noopener">お問い合わせ</a> | <a href="./request.html">掲載情報の修正・削除依頼</a></p>
+</footer>
+
+<script>
+/* ===== data ===== */
+const SPOTS = [{"name":"滋賀県立びわ湖こどもの国","city":"高島市","latitude":35.321598,"longitude":136.076752,"play_types":["active","water","create"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"全長40mの大型遊具・冒険水路・クライミングウォール・トランポリン等。琵琶湖畔の県立児童厚生施設","business_hours":null,"closed_days":null,"official_url":"http://www.biwa.ne.jp/~kodomo92/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 藤樹の里あどがわ","city":"高島市","latitude":35.326591,"longitude":136.029755,"play_types":["food","create"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"扇子づくり体験工房・レストラン2店舗・特産品販売","business_hours":null,"closed_days":null,"official_url":"https://adogawa.net/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 マキノ追坂峠","city":"高島市","latitude":35.462917,"longitude":136.089523,"play_types":["food","water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近隣サニービーチで湖水浴・キャンプ。地元産野菜・米粉パン・そば","business_hours":null,"closed_days":null,"official_url":"https://takashima-kanko.jp/spot/2018/06/post_218.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"白鬚神社","city":"高島市","latitude":35.278416,"longitude":136.007187,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"湖中大鳥居で有名。近江最古の大社","business_hours":null,"closed_days":null,"official_url":"http://shirahigejinja.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"今津総合運動公園","city":"高島市","latitude":35.4174613,"longitude":135.9995618,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"遊具広場・多目的グラウンド","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"豊公園","city":"長浜市","latitude":35.3758366,"longitude":136.261111,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"児童遊園に遊具。長浜城歴史博物館併設。桜・梅・フジの名所","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"奥びわスポーツの森","city":"長浜市","latitude":35.413651,"longitude":136.206955,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"琵琶湖岸の総合公園。遊具広場・多目的広場・テニスコート","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"神照運動公園","city":"長浜市","latitude":35.395302,"longitude":136.279205,"play_types":["active","water"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"夏はキッズプール・流水プールの大型プール。レクリエーション広場","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大通寺公園","city":"長浜市","latitude":35.384036,"longitude":136.269475,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"池のある静かな公園。8-17時","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"浅井文化スポーツ公園","city":"長浜市","latitude":35.430744,"longitude":136.312363,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"全長80mのローラーコースターほか大型遊具が充実","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"木之本スポーツ広場","city":"長浜市","latitude":35.497028,"longitude":136.212814,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大型遊具の芝生広場・キッズボルダリング","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"グリーンパーク山東","city":"米原市","latitude":35.373184,"longitude":136.360031,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"林間キャンプ場・アスレチック・ふれあい広場・グリーンドーム・日帰り温泉","business_hours":null,"closed_days":null,"official_url":"https://greenpark-santo.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 湖北みずどりステーション","city":"長浜市","latitude":35.4452335,"longitude":136.190516,"play_types":["food","animal"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"琵琶湖水鳥・湖北野鳥センター隣接。バードウォッチング","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"長浜鉄道スクエア","city":"長浜市","latitude":35.37648,"longitude":136.266144,"play_types":["vehicle","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"現存最古級の旧長浜駅舎・蒸気機関車D51/ED70展示","business_hours":null,"closed_days":null,"official_url":"https://kitabiwako.jp/tetsudou","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"黒壁スクエア","city":"長浜市","latitude":35.38065,"longitude":136.267166,"play_types":["create","food"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ガラス工房・体験・海洋堂フィギュアミュージアム等が集まる町並み","business_hours":null,"closed_days":null,"official_url":"https://www.kurokabe.co.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"海洋堂フィギュアミュージアム黒壁","city":"長浜市","latitude":35.380444,"longitude":136.266495,"play_types":["indoor","create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"精巧なフィギュア展示・食玩の世界","business_hours":null,"closed_days":null,"official_url":"https://www.ryuyukan.net/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"長浜城歴史博物館","city":"長浜市","latitude":35.378075,"longitude":136.26088,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"豊公園内・模擬天守から琵琶湖を一望","business_hours":null,"closed_days":null,"official_url":"https://www.city.nagahama.lg.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"伊吹山文化資料館","city":"米原市","latitude":35.382481,"longitude":136.378357,"play_types":["indoor"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"伊吹山麓の自然と歴史を紹介","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"ローザンベリー多和田","city":"米原市","latitude":35.342754,"longitude":136.33197,"play_types":["animal","active","create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"羊のふれあい・ひつじのショーンファーム・体験工房・庭園","business_hours":null,"closed_days":null,"official_url":"https://www.rosemary-garden.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"賤ヶ岳リフト","city":"長浜市","latitude":35.5026403,"longitude":136.1971934,"play_types":["vehicle","active"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"賤ヶ岳山頂へのリフト。琵琶湖と余呉湖を一望","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"皇子が丘公園","city":"大津市","latitude":35.01836,"longitude":135.853928,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大型遊具・こどもの国風の広場・桜","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"皇子山総合運動公園","city":"大津市","latitude":35.019146,"longitude":135.857162,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"陸上競技場・遊具広場","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"柳が崎湖畔公園（びわ湖大津館）","city":"大津市","latitude":35.026615,"longitude":135.867767,"play_types":["create"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"イングリッシュガーデン・旧琵琶湖ホテル・湖畔","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"膳所城跡公園","city":"大津市","latitude":34.994114,"longitude":135.895111,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"膳所城本丸跡の湖畔公園・遊具・桜","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"長等公園","city":"大津市","latitude":35.0071605,"longitude":135.8571774,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"三尾神社近く・大型すべり台・桜の名所","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"なぎさ公園プール","city":"大津市","latitude":35.0008871,"longitude":135.8917135,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"夏季屋外プール。大津湖岸なぎさ公園に隣接","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"唐橋公園","city":"大津市","latitude":34.973529415115,"longitude":135.911337200725,"play_types":["water","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"瀬田川・瀬田唐橋のたもと。夏季プール","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"田上公園","city":"大津市","latitude":34.936183,"longitude":135.9354687,"play_types":["water","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"夏季プール・遊具","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"雄琴臨水公園","city":"大津市","latitude":35.0888555,"longitude":135.8962421,"play_types":["water"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"琵琶湖岸・夏季プール","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"瀬田公園","city":"大津市","latitude":34.9749076,"longitude":135.9374086,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"体育館・遊具広場","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"尾花川公園","city":"大津市","latitude":35.018192,"longitude":135.8606107,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"住宅地の近隣公園","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"茶臼山公園","city":"大津市","latitude":34.9895917,"longitude":135.8839146,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"古墳のある丘陵公園","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大石緑地スポーツ村","city":"大津市","latitude":34.910057,"longitude":135.911636,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"信楽川沿いのスポーツ・自然公園","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"びわこ文化公園","city":"大津市","latitude":34.972923,"longitude":135.945282,"play_types":["create","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"県立美術館・図書館・日本庭園・芝生広場","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大津市科学館","city":"大津市","latitude":34.994141,"longitude":135.892929,"play_types":["create","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"プラネタリウム・体験型科学展示。生涯学習センター内","business_hours":null,"closed_days":null,"official_url":"https://www.otsu.ed.jp/kagaku/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"びわ湖バレイ／びわ湖テラス","city":"大津市","latitude":35.207863,"longitude":135.899689,"play_types":["active"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ロープウェイで山上へ・スカイウォーカー等アドベンチャー・絶景テラス","business_hours":null,"closed_days":null,"official_url":"https://www.biwako-valley.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大津市歴史博物館","city":"大津市","latitude":35.016991,"longitude":135.854324,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津の歴史・三井寺近く","business_hours":null,"closed_days":null,"official_url":"https://www.rekihaku.otsu.shiga.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"琵琶湖汽船 ミシガンクルーズ","city":"大津市","latitude":35.012074,"longitude":135.866165,"play_types":["vehicle","water"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"外輪船ミシガンで琵琶湖南湖クルーズ","business_hours":null,"closed_days":null,"official_url":"https://www.biwakokisen.co.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"石山寺","city":"大津市","latitude":34.960609,"longitude":135.90564,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"紫式部ゆかり・国宝多宝塔・瀬田川沿い","business_hours":null,"closed_days":null,"official_url":"https://www.ishiyamadera.or.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"三井寺（園城寺）","city":"大津市","latitude":35.00972,"longitude":135.846924,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"天台寺門宗総本山・広大な境内","business_hours":null,"closed_days":null,"official_url":"https://www.shiga-miidera.or.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"近江神宮","city":"大津市","latitude":35.032024,"longitude":135.851868,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"かるたの聖地・時計博物館併設","business_hours":null,"closed_days":null,"official_url":"https://oumijingu.org/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"日吉大社","city":"大津市","latitude":35.071457,"longitude":135.864853,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"全国日吉・日枝神社の総本宮・紅葉の名所・神猿","business_hours":null,"closed_days":null,"official_url":"http://hiyoshitaisha.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"坂本ケーブル","city":"大津市","latitude":35.067127,"longitude":135.852036,"play_types":["vehicle"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本最長のケーブルカーで比叡山延暦寺へ","business_hours":null,"closed_days":null,"official_url":"https://www.sakamoto-cable.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"滋賀県立琵琶湖博物館","city":"草津市","latitude":35.062431,"longitude":135.938568,"play_types":["animal","water","create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本最大級の淡水生物水族展示・バイカルアザラシ・ディスカバリールーム・樹冠トレイル","business_hours":null,"closed_days":null,"official_url":"http://www.biwahaku.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"ロクハ公園","city":"草津市","latitude":35.000557,"longitude":135.965668,"play_types":["water","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"夏季流水プール・アスレチック遊具・キャンプ場のある総合公園","business_hours":null,"closed_days":null,"official_url":"https://www.park-698.net/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"水生植物公園みずの森","city":"草津市","latitude":35.062431,"longitude":135.938568,"play_types":["create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"世界の水生植物・ロータス館の温室・巨大オオオニバス","business_hours":null,"closed_days":null,"official_url":"https://www.seibu-la.co.jp/mizunomori/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"佐川美術館","city":"守山市","latitude":35.11002,"longitude":135.944351,"play_types":["create","indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"水に浮かぶ建築・楽吉左衞門館の陶芸体験","business_hours":null,"closed_days":null,"official_url":"https://www.sagawa-artmuseum.or.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"守山市民運動公園","city":"守山市","latitude":35.0663565,"longitude":135.9797416,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"遊具広場・体育館・プール","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"ほたるの森資料館","city":"守山市","latitude":35.065333,"longitude":135.980089,"play_types":["indoor","animal"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ゲンジボタルの生態展示。市の天然記念物","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"栗東自然観察の森","city":"栗東市","latitude":35.01593,"longitude":136.0047,"play_types":["animal","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"里山の自然観察・昆虫・野鳥・木道散策","business_hours":null,"closed_days":null,"official_url":"https://www.city.ritto.lg.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"栗東歴史民俗博物館","city":"栗東市","latitude":35.017685,"longitude":136.008575,"play_types":["indoor","create"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"地域の歴史・体験学習","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"こんぜの里森遊館・森の未来館","city":"栗東市","latitude":34.975391,"longitude":136.029373,"play_types":["active","create"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"金勝山麓のキャンプ・自然体験拠点","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"野洲市歴史民俗博物館（銅鐸博物館）","city":"野洲市","latitude":35.073521,"longitude":136.045059,"play_types":["indoor","create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日本最大の銅鐸出土地・勾玉づくり体験","business_hours":null,"closed_days":null,"official_url":"https://www.city.yasu.lg.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"滋賀県希望が丘文化公園","city":"野洲市","latitude":35.056087,"longitude":136.044113,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"広大な芝生ランド・アスレチック・青年の城・レンタサイクル","business_hours":null,"closed_days":null,"official_url":"https://www.kibougaoka.or.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"十二坊温泉ゆらら","city":"湖南市","latitude":35.004395,"longitude":136.112183,"play_types":["indoor","water"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日帰り温泉・オートキャンプ場併設","business_hours":null,"closed_days":null,"official_url":"https://www.yulala.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"甲賀の里忍術村","city":"甲賀市","latitude":34.922504,"longitude":136.208969,"play_types":["active","create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"忍者道場（塀登り・綱渡り・からくり井戸）・手裏剣・陶器絵付け体験","business_hours":null,"closed_days":null,"official_url":"https://koka.ninpou.jp","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"滋賀県立陶芸の森","city":"甲賀市","latitude":34.88427,"longitude":136.057571,"play_types":["create","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"信楽焼・広大な芝生・作陶体験・産業展示館","business_hours":null,"closed_days":null,"official_url":"https://www.sccp.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"水口スポーツの森","city":"甲賀市","latitude":34.9598972,"longitude":136.1624571,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"陸上競技場・遊具広場・ジャンボ滑り台","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"滋賀農業公園ブルーメの丘","city":"日野町","latitude":35.013927,"longitude":136.281174,"play_types":["animal","active","create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"動物ふれあい・アトラクション・花畑・体験工房のドイツ風農業公園","business_hours":null,"closed_days":null,"official_url":"https://www.blumenooka.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 竜王かがみの里","city":"竜王町","latitude":35.085759,"longitude":136.0792006,"play_types":["food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"旧中山道鏡宿・農産物直売。県公式一覧で実在確認","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 アグリパーク竜王","city":"竜王町","latitude":35.043407,"longitude":136.144501,"play_types":["animal","food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"動物ふれあい広場・季節の味覚狩り（いちご・ぶどう等）・農産物直売","business_hours":null,"closed_days":null,"official_url":"https://www.aguri-p.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"三井アウトレットパーク滋賀竜王","city":"竜王町","latitude":35.051979,"longitude":136.083603,"play_types":["food","indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"キッズ遊具・フードコートのある大型アウトレット","business_hours":null,"closed_days":null,"official_url":"https://mitsui-shopping-park.com/mop/shiga/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"彦根城・玄宮園","city":"彦根市","latitude":35.276436,"longitude":136.252335,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"国宝天守・ひこにゃん・大名庭園玄宮園","business_hours":null,"closed_days":null,"official_url":"https://hikonecastle.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"滋賀県立安土城考古博物館","city":"近江八幡市","latitude":35.150017,"longitude":136.147736,"play_types":["indoor","create"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"安土城・信長・戦国テーマ。高精細CG復元映像","business_hours":null,"closed_days":null,"official_url":"https://azuchi-museum.or.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"八幡堀","city":"近江八幡市","latitude":35.1397044,"longitude":136.0899624,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"時代劇ロケ地の水郷の町並み・和船めぐり","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 あいとうマーガレットステーション","city":"東近江市","latitude":35.109627,"longitude":136.258377,"play_types":["food","create"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"花畑・ジェラート・農産物直売・いちご狩り。県公式一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.aito-margaret.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"河辺いきものの森","city":"東近江市","latitude":35.126175,"longitude":136.207916,"play_types":["animal","active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"里山の森・ネイチャーセンター・自然観察・木工体験","business_hours":null,"closed_days":null,"official_url":"https://www.satoyama-lab.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"太郎坊宮（阿賀神社）","city":"東近江市","latitude":35.11898,"longitude":136.17775,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"巨岩の間を抜ける参道・742段の石段・絶景","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"近江商人博物館・中路融人記念館","city":"東近江市","latitude":35.151848,"longitude":136.184723,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江商人の歴史・五個荘の町並み","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"愛荘町立歴史文化博物館","city":"愛荘町","latitude":35.165096,"longitude":136.282944,"play_types":["indoor","create"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"金剛輪寺隣接・地域の歴史・体験","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"豊郷小学校旧校舎群","city":"豊郷町","latitude":35.203316,"longitude":136.233185,"play_types":["indoor","create"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"ヴォーリズ建築・図書館・アニメ聖地。うさぎと亀の階段彫刻","business_hours":null,"closed_days":null,"official_url":"https://toyosato-kanko.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"道の駅 せせらぎの里こうら","city":"甲良町","latitude":35.2017538,"longitude":136.2754742,"play_types":["food"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"地元農産物・食事処。県公式一覧で実在確認","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"多賀大社","city":"多賀町","latitude":35.226028,"longitude":136.290695,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"お多賀さん・延命長寿・そり橋・門前の糸切餅","business_hours":null,"closed_days":null,"official_url":"https://www.tagataisya.or.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"あけぼのパーク多賀","city":"多賀町","latitude":35.220978,"longitude":136.302734,"play_types":["create","indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"図書館・多賀町立博物館・アケボノゾウ化石・芝生広場","business_hours":null,"closed_days":null,"official_url":"https://www.town.taga.lg.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"甲賀市みなくち子どもの森","city":"甲賀市","latitude":34.956467,"longitude":136.167572,"play_types":["animal","active","create"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"自然館・昆虫や化石の展示・木工体験・里山の散策路","business_hours":null,"closed_days":null,"official_url":"https://minakuchi-kodomonomori.org/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"イオンモール草津","city":"草津市","latitude":34.99818,"longitude":135.912125,"play_types":["food","indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"キッズ向け店舗・フードコート・屋内で雨の日も安心","business_hours":null,"closed_days":null,"official_url":"https://kusatsu-aeonmall.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"近江日野商人館","city":"日野町","latitude":35.011127,"longitude":136.247559,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日野商人の暮らしと商いを紹介","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"馬見岡綿向神社","city":"日野町","latitude":35.014362,"longitude":136.261841,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"日野祭の舞台・迫力ある社殿","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大池寺（蓬莱庭園）","city":"甲賀市","latitude":34.985069,"longitude":136.17305,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"サツキの大刈込の枯山水庭園","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"水口城資料館","city":"甲賀市","latitude":34.970524,"longitude":136.165649,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"水口城（碧水城）の歴史・城跡","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"金剛輪寺","city":"愛荘町","latitude":35.162849,"longitude":136.278091,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"湖東三山・血染めのもみじの名所・広い境内","business_hours":null,"closed_days":null,"official_url":"https://kongourinji.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"西明寺（湖東三山）","city":"甲良町","latitude":35.185379,"longitude":136.285217,"play_types":["indoor"],"is_free":false,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"湖東三山・国宝本堂と三重塔・紅葉の名所","business_hours":null,"closed_days":null,"official_url":"https://saimyouji.com/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"彦根市開国記念館","city":"彦根市","latitude":35.275547,"longitude":136.254959,"play_types":["indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"彦根城内・企画展示","business_hours":null,"closed_days":null,"official_url":null,"google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"ビバシティ彦根","city":"彦根市","latitude":35.244106,"longitude":136.250107,"play_types":["food","indoor"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"キッズ向け店舗・映画館・フードコートの商業施設","business_hours":null,"closed_days":null,"official_url":"https://www.vivacity.co.jp/","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"堅田・雄琴湖岸公園","city":"大津市","latitude":35.1092461,"longitude":135.9197795,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具1基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"伊香立公園","city":"大津市","latitude":35.138767,"longitude":135.88858,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具6基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"曽束緑地","city":"大津市","latitude":34.9043797,"longitude":135.8783831,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具6基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"月輪大池公園","city":"大津市","latitude":34.9803541,"longitude":135.945344,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具1基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"向陽公園","city":"大津市","latitude":35.1376678,"longitude":135.9171913,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具7基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"仰木西公園","city":"大津市","latitude":35.102737,"longitude":135.890274,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具8基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"このみ公園","city":"大津市","latitude":35.1109812,"longitude":135.894078,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具4基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"日吉台第10公園","city":"大津市","latitude":35.081461,"longitude":135.8818669,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具4基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大津駅前公園","city":"大津市","latitude":35.0046373,"longitude":135.8657323,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具1基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"鶴の里公園","city":"大津市","latitude":34.9924397,"longitude":135.8720829,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具3基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大平公園","city":"大津市","latitude":34.955616,"longitude":135.895248,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具4基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"南郷公園","city":"大津市","latitude":34.9401466,"longitude":135.9087968,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具4基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"月見台公園","city":"大津市","latitude":34.9403842,"longitude":135.9006848,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具4基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"佐久奈度公園","city":"大津市","latitude":34.9116538,"longitude":135.9128228,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具2基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"青山中央公園","city":"大津市","latitude":34.9786839,"longitude":135.9678704,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具11基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"瀬田駅前西公園","city":"大津市","latitude":34.985455,"longitude":135.924637,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具2基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"小野妹子公園","city":"大津市","latitude":35.1437885,"longitude":135.9198894,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具1基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"若葉台公園","city":"大津市","latitude":34.9748073,"longitude":135.8790171,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具3基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"真野六丁目公園","city":"大津市","latitude":35.1356841,"longitude":135.9209059,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具4基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"大友桜公園","city":"大津市","latitude":35.1217281,"longitude":135.9107522,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"大津市公園緑地課 都市公園遊具一覧（オープンデータ）掲載。遊具2基。番地は要確認（町字まで）","business_hours":null,"closed_days":null,"official_url":"https://www.city.otsu.lg.jp/soshiki/035/1809/od/68228.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"下之郷史跡公園","city":"守山市","latitude":35.065334,"longitude":135.990448,"play_types":["active","create"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"守山市公式「公園」一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.moriyama.lg.jp/shisetsu/kouen/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"近江妙蓮公園・近江妙蓮資料館","city":"守山市","latitude":35.086998,"longitude":135.996994,"play_types":["create"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"守山市公式「公園」一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.moriyama.lg.jp/shisetsu/kouen/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"もりやま芦刈園","city":"守山市","latitude":35.0776667,"longitude":135.9523116,"play_types":["active"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"守山市公式「公園」一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.moriyama.lg.jp/shisetsu/kouen/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"もりやまフルーツランド","city":"守山市","latitude":35.120258,"longitude":135.9707116,"play_types":["active","food"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"守山市公式「公園」一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.moriyama.lg.jp/shisetsu/kouen/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"野洲川立入河川公園","city":"守山市","latitude":35.05398962199773,"longitude":136.00907920598362,"play_types":["active","water"],"is_free":null,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"守山市公式「公園」一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.moriyama.lg.jp/shisetsu/kouen/index.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"弾正公園","city":"草津市","latitude":35.031532,"longitude":135.934738,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"草津市公式「公園・施設の紹介」掲載。住所詳細は要確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.kusatsu.shiga.jp/kurashi/koen_midori/koen_shokai/danjyoukouen.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"健康ふれあい公園","city":"近江八幡市","latitude":35.0999393,"longitude":136.0900388,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"近江八幡市運動公園","city":"近江八幡市","latitude":35.150482,"longitude":136.06665,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"安土文芸の郷公園","city":"近江八幡市","latitude":35.149658,"longitude":136.146759,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"八幡公園","city":"近江八幡市","latitude":35.141888,"longitude":136.084641,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"篠原公園","city":"近江八幡市","latitude":35.103729,"longitude":136.072693,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"駅前第2児童公園","city":"近江八幡市","latitude":35.126122,"longitude":136.1008,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"駅前第3児童公園","city":"近江八幡市","latitude":35.124889,"longitude":136.100662,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"八幡児童公園","city":"近江八幡市","latitude":35.13908,"longitude":136.094391,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"中央第1児童公園","city":"近江八幡市","latitude":35.127693,"longitude":136.100433,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"中央第2児童公園","city":"近江八幡市","latitude":35.126545,"longitude":136.098328,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"中央第3児童公園","city":"近江八幡市","latitude":35.124657,"longitude":136.097748,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"中村児童公園","city":"近江八幡市","latitude":35.130375,"longitude":136.091278,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"江頭公園","city":"近江八幡市","latitude":35.118011,"longitude":136.05748,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"為心町公園","city":"近江八幡市","latitude":35.138069,"longitude":136.091354,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"末広公園","city":"近江八幡市","latitude":35.111881,"longitude":136.149551,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"出町公園","city":"近江八幡市","latitude":35.131962,"longitude":136.10022,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"蟻尾街区公園","city":"近江八幡市","latitude":35.133339,"longitude":136.103958,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"駅南第1児童公園","city":"近江八幡市","latitude":35.129765,"longitude":136.105606,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"駅南第2児童公園","city":"近江八幡市","latitude":35.126511,"longitude":136.103729,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"駅南第3児童公園","city":"近江八幡市","latitude":35.125751,"longitude":136.108597,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"駅南第4児童公園","city":"近江八幡市","latitude":35.12315,"longitude":136.105652,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"駅南第5児童公園","city":"近江八幡市","latitude":35.123924,"longitude":136.111481,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"上田町第1公園","city":"近江八幡市","latitude":35.1142744,"longitude":136.1110507,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"西宿町公園","city":"近江八幡市","latitude":35.11467,"longitude":136.127335,"play_types":["active"],"is_free":true,"price_text":null,"rain_friendly":false,"indoor_or_outdoor":"outdoor","kid_appeal":"近江八幡市公式 都市公園一覧で実在確認","business_hours":null,"closed_days":null,"official_url":"https://www.city.omihachiman.lg.jp/soshiki/toshi/kouen/1052.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":false},{"name":"子育て広場スキップ","city":"長浜市","latitude":35.371338,"longitude":136.286636,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"サンサンランド子育て支援センター","city":"長浜市","latitude":35.376774,"longitude":136.279282,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"こどもらんど子育て支援センター","city":"長浜市","latitude":35.432743,"longitude":136.312271,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"あいあいらんど子育て支援センター","city":"長浜市","latitude":35.475052,"longitude":136.234787,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"チャイルドハウス子育て支援センター","city":"長浜市","latitude":35.355717,"longitude":136.284058,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"ニコニコひろば","city":"長浜市","latitude":35.460655,"longitude":136.255981,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"まちのほけんしつ きずな","city":"長浜市","latitude":35.372646,"longitude":136.275528,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"地域子育て支援センター 寺子屋","city":"米原市","latitude":35.361027,"longitude":136.369781,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"地域子育て支援センター あゆっこ","city":"米原市","latitude":35.318787,"longitude":136.28685,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"地域子育て支援センター はなばたけ","city":"米原市","latitude":35.380505,"longitude":136.384674,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"プチしろふじ","city":"高島市","latitude":35.303692,"longitude":136.007965,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"遊びの広場チューリップ","city":"高島市","latitude":35.334332,"longitude":136.016891,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"高島市地域子育て支援センターほのぼの","city":"高島市","latitude":35.465408,"longitude":136.040085,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"高島市マキノ児童館","city":"高島市","latitude":35.465408,"longitude":136.040085,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":"9:00-17:00","closed_days":null,"official_url":"https://www.city.takashima.lg.jp/soshiki/kodomomiraibu/makinojidokan/7455.html","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"木戸つどいの広場にじっこ","city":"大津市","latitude":35.206429,"longitude":135.921188,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"東部つどいの広場きらきらひろば","city":"大津市","latitude":34.987038,"longitude":135.92868,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場親と子の未来塾","city":"大津市","latitude":35.102871,"longitude":135.898483,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場ありんこ","city":"大津市","latitude":35.05241,"longitude":135.867447,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場てくてく","city":"大津市","latitude":34.951595,"longitude":135.903244,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"子育て総合支援センターゆめっこ","city":"大津市","latitude":35.011639,"longitude":135.86319,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"中南部つどいの広場ほっぺ","city":"大津市","latitude":34.998173,"longitude":135.888031,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場くれよん","city":"草津市","latitude":34.99823,"longitude":135.967377,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"草津市地域子育て支援センター（上笠）","city":"草津市","latitude":35.033447,"longitude":135.950119,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"草津市子育て支援センター（草津）","city":"草津市","latitude":35.012993,"longitude":135.96022,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"ミナクサ☆ひろば","city":"草津市","latitude":35.002663,"longitude":135.948334,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"ココクル♥ひろば","city":"草津市","latitude":35.021713,"longitude":135.965271,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"きらきらひろば","city":"彦根市","latitude":35.239655,"longitude":136.203232,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"まんまるひろば","city":"彦根市","latitude":35.244106,"longitude":136.250107,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"チャチャチャひろば","city":"彦根市","latitude":35.267162,"longitude":136.268936,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"ほほえみサロン","city":"守山市","latitude":35.061455,"longitude":135.985641,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"守山市地域子育て支援センター","city":"守山市","latitude":35.05592,"longitude":135.98912,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"栗東市地域子育て包括支援センター","city":"栗東市","latitude":35.037289,"longitude":135.981461,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"栗東市地域子育て支援センター金勝","city":"栗東市","latitude":34.997593,"longitude":136.02272,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"きたの子育て支援センター","city":"野洲市","latitude":35.078056,"longitude":136.022675,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"あやめ子育て支援センター","city":"野洲市","latitude":35.103142,"longitude":136.010818,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場おおぞら","city":"湖南市","latitude":34.978722,"longitude":136.099991,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場すくすく","city":"湖南市","latitude":35.013695,"longitude":136.12645,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場くまさんとクラブ","city":"湖南市","latitude":35.038334,"longitude":136.06366,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場こなんっこ広場","city":"湖南市","latitude":35.002663,"longitude":136.085388,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場ひまわり","city":"湖南市","latitude":35.001102,"longitude":136.113724,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"水口子育て支援センター","city":"甲賀市","latitude":34.972149,"longitude":136.171814,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"土山子育て支援センター","city":"甲賀市","latitude":34.938,"longitude":136.283905,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"甲賀子育て支援センター","city":"甲賀市","latitude":34.900433,"longitude":136.231522,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"甲南子育て支援センター","city":"甲賀市","latitude":34.927948,"longitude":136.168091,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"八幡子どもセンター","city":"近江八幡市","latitude":35.137218,"longitude":136.096909,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"八幡西子どもセンター","city":"近江八幡市","latitude":35.111828,"longitude":136.087463,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"八幡東子どもセンター","city":"近江八幡市","latitude":35.112202,"longitude":136.150055,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"ほんわかの家八幡","city":"近江八幡市","latitude":35.136532,"longitude":136.096695,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"ほんわかの家金田","city":"近江八幡市","latitude":35.124329,"longitude":136.113907,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"あいあいの家","city":"近江八幡市","latitude":35.1441,"longitude":136.134216,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"子育て支援センター クレヨン","city":"近江八幡市","latitude":35.131847,"longitude":136.068161,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"安土子育て支援センター","city":"近江八幡市","latitude":35.133118,"longitude":136.138962,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"八日市子育て支援センター","city":"東近江市","latitude":35.107243,"longitude":136.195694,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"能登川子育て支援センター","city":"東近江市","latitude":35.193714,"longitude":136.143234,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"蒲生子育て支援センター","city":"東近江市","latitude":35.059578,"longitude":136.181992,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"五個荘子育て支援センター","city":"東近江市","latitude":35.143269,"longitude":136.18576,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"愛東・永源寺子育て支援センター","city":"東近江市","latitude":35.109116,"longitude":136.261703,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場 ぽれぽれ","city":"東近江市","latitude":35.113544,"longitude":136.204666,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場 童夢の館どむどむ","city":"東近江市","latitude":35.137447,"longitude":136.259247,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場 つくし児童館","city":"東近江市","latitude":35.181576,"longitude":136.177139,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"児童館","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場 えがお","city":"東近江市","latitude":35.031433,"longitude":136.162766,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場 ぐるり","city":"東近江市","latitude":35.114456,"longitude":136.196274,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいの広場 すずかけっこ","city":"東近江市","latitude":35.094952,"longitude":136.148346,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"わらべ地域子育て支援センター","city":"日野町","latitude":35.011513,"longitude":136.230591,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"つどいのひろば ぽけっと","city":"日野町","latitude":35.018391,"longitude":136.245636,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"竜王町地域子育て支援センター こどもひろば","city":"竜王町","latitude":35.060276,"longitude":136.12471,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"わんぱくひろば","city":"愛荘町","latitude":35.173271,"longitude":136.210709,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"つどいの広場","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"愛荘町子育て支援センター あいっ子","city":"愛荘町","latitude":35.174915,"longitude":136.244919,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"愛荘町子育て支援センター つくしひろば","city":"愛荘町","latitude":35.1899306,"longitude":136.2025506,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"豊郷町子育て支援センター","city":"豊郷町","latitude":35.203316,"longitude":136.233185,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true},{"name":"多賀子育て支援センター","city":"多賀町","latitude":35.219631,"longitude":136.292496,"play_types":["indoor"],"is_free":true,"price_text":"無料","rain_friendly":true,"indoor_or_outdoor":"indoor","kid_appeal":"子育て支援センター","business_hours":null,"closed_days":null,"official_url":"https://www.hugnavi.net/child/base.php","google_maps_url":null,"estimated_drive_minutes_from_anjo":null,"kid_features":null,"image_url":null,"checked_at":"2026-08-07","editorial_scale":null,"has_kids_space":null,"has_zashiki":null,"has_kids_chair":null,"is_jidokan":true}];
+const CITIES=[["高島市", 35.3305, 136.0349, "湖西"], ["長浜市", 35.3807, 136.2672, "湖北"], ["米原市", 35.3671, 136.3649, "湖北"], ["大津市", 35.0121, 135.8903, "大津・湖南"], ["草津市", 35.0174, 135.9492, "大津・湖南"], ["守山市", 35.0634, 135.9898, "大津・湖南"], ["栗東市", 35.0159, 136.0086, "大津・湖南"], ["野洲市", 35.0758, 136.0334, "大津・湖南"], ["湖南市", 35.0035, 136.1061, "大津・湖南"], ["甲賀市", 34.938, 136.1718, "大津・湖南"], ["日野町", 35.0139, 136.2476, "大津・湖南"], ["竜王町", 35.052, 136.1247, "大津・湖南"], ["彦根市", 35.2556, 136.2512, "湖東"], ["近江八幡市", 35.1277, 136.1007, "湖東"], ["東近江市", 35.1145, 136.1858, "湖東"], ["愛荘町", 35.1692, 136.2615, "湖東"], ["豊郷町", 35.2033, 136.2332, "湖東"], ["甲良町", 35.1854, 136.2852, "湖東"], ["多賀町", 35.221, 136.2925, "湖東"]];
+const ANJO=[35.0165,135.8547];
+
+/* ===== helpers ===== */
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function haversineKm(la1,lo1,la2,lo2){
+  const R=6371,d2r=Math.PI/180;
+  const dLa=(la2-la1)*d2r,dLo=(lo2-lo1)*d2r;
+  const a=Math.sin(dLa/2)**2+Math.cos(la1*d2r)*Math.cos(la2*d2r)*Math.sin(dLo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a));
+}
+// same-complex / too-close detection (bug fix: prevent same-site facilities from
+// being treated as distinct stops in a single plan)
+function isSameComplex(a,b){
+  if(!a||!b) return false;
+  if(a===b) return true;
+  const na=(a.name||'').trim(), nb=(b.name||'').trim();
+  const da=a.description||'', db=b.description||'';
+  if(na.length>=3 && nb.length>=3){
+    if(na.includes(nb)||nb.includes(na)) return true;
+  }
+  if(na.length>=3 && db.includes(na)) return true;
+  if(nb.length>=3 && da.includes(nb)) return true;
+  return false;
+}
+function tooClose(a,b,minKm){
+  if(!a||!b||a.latitude==null||a.longitude==null||b.latitude==null||b.longitude==null) return false;
+  return haversineKm(a.latitude,a.longitude,b.latitude,b.longitude)<minKm;
+}
+// combined "same place, should not both appear in one plan" check
+function isSamePlace(a,b,minKm){
+  if(isSameComplex(a,b)) return true;
+  return tooClose(a,b,minKm==null?1.0:minKm);
+}
+// minutes ≈ 18.3 + 1.244*km (回帰式)
+function driveMinutesFrom(o,s){
+  if(s.latitude==null||s.longitude==null) return null;
+  if(o.isAnjo && s.estimated_drive_minutes_from_anjo!=null) return s.estimated_drive_minutes_from_anjo;
+  const km=haversineKm(o.lat,o.lng,s.latitude,s.longitude);
+  let m=Math.round((18.3+1.244*km)/5)*5;
+  return m<5?5:m;
+}
+const PLAY={
+  animal:{e:'🦁'},active:{e:'🛝'},water:{e:'💦'},create:{e:'🔬'},
+  vehicle:{e:'🚃'},indoor:{e:'☔'},food:{e:'🍽'},nature:{e:'🌳'},museum_science:{e:'🔬'}
+};
+function spotEmoji(s){
+  const p=(s.play_types||[])[0]||'indoor';
+  return (PLAY[p]||PLAY.indoor).e;
+}
+// price parse: return representative per-person upper number, or null(unknown)
+function parsePrice(s){
+  if(s.is_free) return 0;
+  const t=s.price_text||'';
+  if(!t) return null;
+  if(/無料|入館無料|入園無料|入場無料/.test(t) && !/有料|円/.test(t.replace(/無料/g,''))) return 0;
+  const nums=[];
+  const re=/([0-9,]+)\s*円/g; let m;
+  while((m=re.exec(t))){ const n=parseInt(m[1].replace(/,/g,''),10); if(!isNaN(n)) nums.push(n); }
+  if(!nums.length) return null;
+  return Math.max(...nums);
+}
+const WD=['日','月','火','水','木','金','土'];
+// target Date for a "when" choice
+function targetDate(when){
+  const d=new Date(); d.setHours(0,0,0,0);
+  if(when==='today') return d;
+  if(when==='tomorrow'){ d.setDate(d.getDate()+1); return d; }
+  const dow=d.getDay();
+  if(when==='sat'){ let add=(6-dow+7)%7; if(add===0&&new Date().getDay()!==6)add=7; d.setDate(d.getDate()+add); return d; }
+  if(when==='sun'){ let add=(0-dow+7)%7; if(add===0&&new Date().getDay()!==0)add=7; d.setDate(d.getDate()+add); return d; }
+  return d;
+}
+// closed check: exclude if closed_days encodes a weekday == target weekday (simple pattern only)
+function isClosedOn(s,date){
+  const dow=date.getDay();               // 0=日 ... 6=土
+  const isWeekend=(dow===0||dow===6);
+  const tw=WD[dow];
+  const cd=s.closed_days||'';
+  const bh=s.business_hours||'';
+
+  // (1) closed_days: weekday chars immediately followed by 曜 （既存: 「日曜」「月曜」等）
+  const re=/([日月火水木金土])曜/g; let m; const days=new Set();
+  while((m=re.exec(cd))) days.add(m[1]);
+  if(days.has(tw)) return true;
+
+  // (2) closed_days: 「土日祝」「土日」「日祝」等 曜なしの週末表記
+  //     （例: 防災教育センター=土日祝, トヨタ会館の日祝系）
+  if(/土日祝|土日|週末/.test(cd)){ if(isWeekend) return true; }
+  else if(/日祝/.test(cd)){ if(dow===0) return true; }        // 日祝→日曜休
+  // 「日・祝」「日曜・祝日」等は(1)の日曜で拾えるが、念のため
+  if(/(^|[^平])日休|日曜休|日祝休/.test(cd) && dow===0) return true;
+
+  // (3) 週末に平日限定営業の施設を除外
+  //     business_hours/closed_days が「月〜金」「平日のみ」等を示し、
+  //     かつ土日営業（土日/週末/年中無休）の記載が無い場合
+  if(isWeekend){
+    const txt=bh+' '+cd;
+    const weekdayOnly=/(月[〜～ー\-]金|平日のみ|平日限定|平日のみ営業|平日 ?\d|要予約.*平日|平日 ?要予約)/.test(txt)
+      || /^平日/.test(bh.trim());
+    const weekendOpen=/土日|週末|土曜|年中無休|土祝|日祝日?営業|土日祝.*(営業|\d{1,2}:\d{2})/.test(txt);
+    if(weekdayOnly && !weekendOpen) return true;
+  }
+  return false;
+}
+// main stay minutes
+function stayMinutes(s){
+  const name=s.name||'', pt=s.play_types||[];
+  if(/パーク|ランド|ワールド|牧場|ズー|水族館|動物園/.test(name)) return 120;
+  if(pt.includes('indoor')&&/遊び|キッズ|プレイ|あそび/.test(name)) return 120;
+  if(pt.includes('museum_science')||pt.includes('create')) return 90;
+  if(pt.includes('active')||pt.includes('nature')) return 90;
+  if(pt.includes('indoor')) return 90;
+  return 90;
+}
+function fmtTime(mins){
+  mins=((mins%1440)+1440)%1440;
+  const h=Math.floor(mins/60), m=mins%60;
+  return h+':'+String(m).padStart(2,'0');
+}
+function priceLabel(s){
+  const p=parsePrice(s);
+  const isFood=(s.play_types||[]).includes('food');
+  if(p===0) return isFood?'食事代: 実費（店舗により異なります）':'料金: 無料';
+  if(p==null) return isFood?'食事代: 実費（店舗により異なります）':'料金は公式サイトで確認';
+  if(isFood) return '食事代: 1人あたり '+p.toLocaleString()+'円〜目安';
+  return '大人1人あたり '+p.toLocaleString()+'円目安';
+}
+// parse "9:00〜17:00" style business_hours into {openMin,closeMin} in minutes-of-day. null if unparseable.
+function parseBusinessHours(s){
+  const bh=s.business_hours||'';
+  if(!bh) return null;
+  const m=bh.match(/(\d{1,2}):(\d{2})\s*[〜～\-ー~]\s*(\d{1,2}):(\d{2})/);
+  if(!m) return null;
+  const openMin=(+m[1])*60+(+m[2]);
+  let closeMin=(+m[3])*60+(+m[4]);
+  if(closeMin<=openMin) closeMin+=24*60; // overnight edge-case, keep simple
+  return {openMin,closeMin};
+}
+// meal label auto-switch by arrival time (minutes-of-day)
+function mealLabelFor(arrivalMin){
+  const t=((arrivalMin%1440)+1440)%1440;
+  if(t>=630&&t<870) return 'ランチ';       // 10:30-14:30
+  if(t>=870&&t<990) return 'カフェ・休憩';   // 14:30-16:30
+  if(t>=990) return '夕食';                // 16:30-
+  return '食事';
+}
+// business-hours vs arrival-time consistency check
+// returns {exclude:bool, bonus:bool, note:string|null}
+function closingInfo(s,arrivalMin){
+  const bh=parseBusinessHours(s);
+  if(!bh) return {exclude:false,bonus:false,note:null}; // unparseable -> skip silently
+  const t=((arrivalMin%1440)+1440)%1440;
+  const remain=bh.closeMin-t;
+  if(t<bh.openMin||remain<=0) return {exclude:true,bonus:false,note:null};
+  if(remain<30) return {exclude:true,bonus:false,note:null};
+  if(remain<60) return {exclude:false,bonus:false,note:'※閉館まで時間が短いため、短時間利用がおすすめです'};
+  return {exclude:false,bonus:false,note:null};
+}
+// short tag-line rendering for kid_features (2-3 lines instead of one long sentence)
+function foodTagLines(s){
+  const feats=s.kid_features||[];
+  if(!feats.length) return '';
+  const chunks=[]; const per=Math.ceil(feats.length/Math.min(3,Math.max(1,Math.ceil(feats.length/2))));
+  for(let i=0;i<feats.length;i+=2) chunks.push(feats.slice(i,i+2).join('・'));
+  const lim=chunks.slice(0,3);
+  return '<div class="foodtags">'+lim.map(c=>'<span class="ftline">'+esc(c)+'</span>').join('')+'</div>';
+}
+function transitLabel(fromName,toName,minutes){
+  return esc(fromName)+' → '+esc(toName)+' 約'+minutes+'分目安';
+}
+
+/* ===== state ===== */
+const state={origin:null,driveTime:null,when:null,depart:null,ages:new Set(),budget:null,weather:null,variant:0,plans:[],expandedDrive:false,shownMains:[],cycledNote:false};
+let step=0;
+let CURRENT_CAP=Infinity;
+function capFor(dt){
+  if(dt==='20') return 20;
+  if(dt==='40') return 40;
+  if(dt==='60') return 60;
+  return Infinity;
+}
+function nextCap(cap){
+  // 自動拡大は段階的に。全国版は県内でも距離が出るため、上限90分で打ち止め（無制限にしない）
+  if(cap===20) return 40;
+  if(cap===40) return 60;
+  if(cap===60) return 90;
+  return cap;
+}
+
+/* ===== wizard nav ===== */
+const steps=[...document.querySelectorAll('.step')];
+const dots=[...document.querySelectorAll('#dots .d')];
+function render(){
+  steps.forEach(s=>s.classList.toggle('active',+s.dataset.step===step));
+  dots.forEach((d,i)=>{ d.classList.toggle('on',i===step); d.classList.toggle('done',i<step); });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function canNext(){
+  if(step===0) return !!state.origin;
+  if(step===1) return !!state.driveTime;
+  if(step===2) return !!state.when&&!!state.depart;
+  if(step===3) return state.ages.size>0;
+  if(step===4) return !!state.budget;
+  return false;
+}
+function refreshNext(){
+  const btn=steps[step].querySelector('[data-next]');
+  if(btn) btn.disabled=!canNext();
+}
+document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>{
+  if(!canNext()) return;
+  if(step===4){ generate(); return; }
+  step++; render(); refreshNext();
+}));
+document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>{
+  if(step>0){ step--; render(); refreshNext(); }
+}));
+
+/* origin select */
+const originSel=document.getElementById('originSel');
+CITIES.forEach(([nm,lat,lng])=>{
+  const o=document.createElement('option'); o.value=lat+','+lng; o.textContent=nm; originSel.appendChild(o);
+});
+originSel.value=CITIES[0][1]+','+CITIES[0][2];
+state.origin={name:'大津市',lat:ANJO[0],lng:ANJO[1],isAnjo:true};
+originSel.addEventListener('change',()=>{
+  const [lat,lng]=originSel.value.split(',').map(Number);
+  const nm=originSel.options[originSel.selectedIndex].textContent;
+  state.origin={name:nm,lat,lng,isAnjo:(nm==='大津市')};
+  document.getElementById('geoNote').textContent='';
+  refreshNext();
+});
+document.getElementById('geoBtn').addEventListener('click',()=>{
+  const note=document.getElementById('geoNote');
+  if(!navigator.geolocation){ note.textContent='この端末では現在地を取得できません'; return; }
+  note.textContent='現在地を取得中…';
+  navigator.geolocation.getCurrentPosition(pos=>{
+    state.origin={name:'現在地',lat:pos.coords.latitude,lng:pos.coords.longitude,isAnjo:false};
+    // nearest city label for friendliness
+    let best=null,bd=1e9;
+    CITIES.forEach(([nm,la,ln])=>{const d=haversineKm(pos.coords.latitude,pos.coords.longitude,la,ln); if(d<bd){bd=d;best=nm;}});
+    note.textContent='📍 現在地を設定しました（最寄り: '+best+'付近）';
+    refreshNext();
+  },()=>{ note.textContent='現在地を取得できませんでした。市町村を選んでください'; });
+});
+
+/* drive time preference */
+document.querySelectorAll('#driveBtns .bigbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#driveBtns .bigbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); state.driveTime=b.dataset.drive; refreshNext();
+}));
+
+/* when */
+document.querySelectorAll('#whenBtns .bigbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#whenBtns .bigbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); state.when=b.dataset.when;
+  // reset departure sub-question when the date changes
+  state.depart=null;
+  document.querySelectorAll('#departTodayBtns .bigbtn,#departDayBtns .bigbtn').forEach(x=>x.classList.remove('on'));
+  const isToday=state.when==='today';
+  document.getElementById('departWrap').style.display='block';
+  document.getElementById('departQ').textContent=isToday?'何時に出発？':'出発は？';
+  document.getElementById('departTodayBtns').style.display=isToday?'':'none';
+  document.getElementById('departDayBtns').style.display=isToday?'none':'';
+  refreshNext();
+}));
+/* departure time (today: offset from now) */
+document.querySelectorAll('#departTodayBtns .bigbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#departTodayBtns .bigbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); state.depart={mode:'offset',min:parseInt(b.dataset.depart,10)}; refreshNext();
+}));
+/* departure time (tomorrow/weekend: am or noon slot) */
+document.querySelectorAll('#departDayBtns .bigbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#departDayBtns .bigbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); state.depart={mode:'slot',slot:b.dataset.slot}; refreshNext();
+}));
+/* ages (multi) */
+document.querySelectorAll('#ageBtns .bigbtn').forEach(b=>b.addEventListener('click',()=>{
+  const a=b.dataset.age;
+  if(state.ages.has(a)){ state.ages.delete(a); b.classList.remove('on'); }
+  else { state.ages.add(a); b.classList.add('on'); }
+  refreshNext();
+}));
+/* budget */
+document.querySelectorAll('#budgetBtns .bigbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#budgetBtns .bigbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); state.budget=b.dataset.budget; refreshNext();
+}));
+
+/* ===== weather ===== */
+async function fetchWeather(){
+  try{
+    const o=state.origin;
+    const url='https://api.open-meteo.com/v1/forecast?latitude='+o.lat+'&longitude='+o.lng+
+      '&daily=weather_code,temperature_2m_max,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=7';
+    const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),6000);
+    const r=await fetch(url,{signal:ctrl.signal}); clearTimeout(t);
+    if(!r.ok) return null;
+    const j=await r.json();
+    const td=targetDate(state.when);
+    const now=new Date(); now.setHours(0,0,0,0);
+    let idx=Math.round((td-now)/86400000); if(idx<0)idx=0; if(idx>6)idx=6;
+    const daily=j.daily||{};
+    return {
+      precip:(daily.precipitation_probability_max||[])[idx],
+      tmax:(daily.temperature_2m_max||[])[idx],
+      code:(daily.weather_code||[])[idx]
+    };
+  }catch(e){ return null; }
+}
+
+/* ===== plan generation ===== */
+function scoreSpot(s,date,w,arrivalMin){
+  let sc=0;
+  // age
+  const feats=(s.kid_features||[]).join(' ');
+  const pt=s.play_types||[];
+  if(state.ages.has('0-2')){
+    if(pt.includes('indoor')) sc+=2;
+    if(pt.includes('active')) sc+=1;
+    if(/おむつ替え|授乳|ベビー/.test(feats)) sc+=2;
+  }
+  if(state.ages.has('3-5')){
+    if(pt.includes('active')||pt.includes('animal')||pt.includes('water')) sc+=2;
+    if(pt.includes('indoor')) sc+=1;
+  }
+  if(state.ages.has('elem')){
+    if(pt.includes('create')||pt.includes('active')||pt.includes('vehicle')||pt.includes('museum_science')) sc+=2;
+  }
+  // heat preference (soft)
+  if(w&&w.tmax!=null&&w.tmax>=34){
+    if(pt.includes('water')) sc+=3;
+    else if(pt.includes('indoor')||s.rain_friendly) sc+=2;
+  }
+  // free preference on free budget
+  if(state.budget==='free'&&s.is_free) sc+=1;
+  // night park / evening handling
+  if(arrivalMin!=null){
+    const t=((arrivalMin%1440)+1440)%1440;
+    const outdoorPark=(s.indoor_or_outdoor==='outdoor')&&(pt.includes('active')||pt.includes('nature'));
+    if(outdoorPark){
+      if(t>=19*60) sc-=100; // pushed to bonus-only tier
+      else if(t>=18*60+30) sc-=6;
+    }
+    // water play after 16:00: lower priority in favor of indoor/light/near-meal
+    if(pt.includes('water')&&t>=16*60) sc-=4;
+  }
+  return sc;
+}
+// 児童館・子育て支援センター系(is_jidokan===true)はプランナーの対象外。
+// マップ上の🏠チップ専用スポットという設計であり、メイン/ランチ/余力のどの枠にも入れない。
+// 「遠出の帰り道に児童センター系には寄らない」というユーザー方針のガードをここに一本化する。
+function isJidokan(s){ return s&&s.is_jidokan===true; }
+function budgetPass(s){
+  if(state.budget==='any') return true;
+  if(state.budget==='free') return s.is_free===true;
+  const p=parsePrice(s);
+  if(p==null) return true; // unknown: keep
+  if(state.budget==='1000') return p<=1000;
+  if(state.budget==='3000') return p<=3000;
+  return true;
+}
+function shuffle(arr,seed){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function buildPool(date,w){
+  const o=state.origin;
+  const rain=w&&w.precip!=null&&w.precip>=50;
+  const start=startMinutes();
+  let cand=SPOTS.filter(s=>{
+    if(s.latitude==null) return false;
+    if(isJidokan(s)) return false; // 児童館・子育て支援センター系はプランナー対象外（🏠チップ専用）
+    const pt=s.play_types||[];
+    if(pt.length===1&&pt[0]==='food') return false; // pure food -> lunch only
+    const dm=driveMinutesFrom(o,s);
+    if(dm==null||dm>CURRENT_CAP) return false;
+    if(!budgetPass(s)) return false;
+    if(rain && !isRainOk(s)) return false;
+    if(isClosedOn(s,date)) return false;
+    // business-hours vs arrival-time consistency
+    const arrival=start+dm;
+    const ci=closingInfo(s,arrival);
+    if(ci.exclude) return false;
+    // outdoor park after 19:00 -> bonus tier only, excluded from main pool
+    const outdoorPark=(s.indoor_or_outdoor==='outdoor')&&(pt.includes('active')||pt.includes('nature'));
+    if(outdoorPark && ((arrival%1440+1440)%1440)>=19*60) return false;
+    // ages 0-2: no additional spots after dinner time -> exclude late main candidates for 0-2 only groups
+    if(state.ages.has('0-2')&&state.ages.size===1 && ((arrival%1440+1440)%1440)>=17*60+30) return false;
+    s.__closeNote=ci.note;
+    return true;
+  });
+  // score + attach distance
+  cand.forEach(s=>{ const dm=driveMinutesFrom(o,s); s.__sc=scoreSpot(s,date,w,start+dm); s.__dm=dm; });
+  // Drive-time preference is treated as "outing mood", not just an upper-limit filter:
+  // - 20分: near-first stays as-is (already a nearby/quick outing).
+  // - 40分: distance-neutral — shuffle away the near-first tiebreak so 20〜40分圏のA級 mixes in naturally.
+  // - 60分/any: tiering is applied afterward (see generatePlans), so a plain shuffle tiebreak is fine here too.
+  if(state.driveTime==='20'){
+    cand.sort((a,b)=> b.__sc-a.__sc || a.__dm-b.__dm);
+  } else {
+    cand=shuffle(cand);
+    cand.sort((a,b)=> b.__sc-a.__sc);
+  }
+  // full pool (candidate-count check for drive-time expansion needs the true count)
+  return cand;
+}
+// Reorder a scored pool so the drive-time "mood" is honored when picking mains:
+// - 60分 ("せっかくの遠出"): prefer A/S spots that are actually 30分+ away; only fall back to
+//   near/B spots if nothing qualifies (caller sets state.nearFallback in that case).
+// - any ("遠くてもOK"): put S級 (1日がかり目的地) spots first.
+function applyDriveMoodTier(pool){
+  state.nearFallback=false; state.sFeatured=false;
+  if(!pool.length) return pool;
+  if(state.driveTime==='60'){
+    const preferred=pool.filter(s=>(s.editorial_scale==='S'||s.editorial_scale==='A')&&s.__dm>=30);
+    if(preferred.length) return preferred;
+    state.nearFallback=true;
+    return pool;
+  }
+  if(state.driveTime==='any'){
+    const sTier=pool.filter(s=>s.editorial_scale==='S');
+    if(sTier.length){
+      state.sFeatured=true;
+      const rest=pool.filter(s=>s.editorial_scale!=='S');
+      return sTier.concat(rest);
+    }
+    return pool;
+  }
+  return pool;
+}
+// 雨天フォールバック: rain_friendly 未整備の県が多いため play_types に indoor を含む施設も屋内扱い
+function isRainOk(s){
+  const pt=s.play_types||[];
+  return s.indoor_or_outdoor==='indoor' || s.rain_friendly===true || pt.includes('indoor') || pt.includes('museum_science');
+}
+function pickLunch(main,date){
+  const o=state.origin;
+  const c=SPOTS.filter(s=>{
+    if(s===main||s.latitude==null) return false;
+    if(isJidokan(s)) return false; // 児童館・子育て支援センター系はプランナー対象外（🏠チップ専用）
+    if(isSameComplex(s,main)) return false; // 同一敷地はメイン↔ランチでも除外（距離は例外だが施設名一致は除外）
+    if(!(s.play_types||[]).includes('food')) return false;
+    if(isClosedOn(s,date)) return false;
+    const km=haversineKm(main.latitude,main.longitude,s.latitude,s.longitude);
+    if(km>15) return false;
+    const dmO=driveMinutesFrom(o,s);
+    if(dmO==null||dmO>CURRENT_CAP) return false;
+    s.__km=km; return true;
+  });
+  c.sort((a,b)=>a.__km-b.__km);
+  // 食事系スポットが圏内に3件未満のエリアでは、無理な遠距離ランチを出さず案内カードに置き換える
+  LUNCH_SPARSE = (c.length < 3);
+  return c.length ? c[0] : null;
+}
+let LUNCH_SPARSE=false;
+function pickSub(main,lunch,mainDriveMin,date,w){
+  const o=state.origin;
+  const rain=w&&w.precip!=null&&w.precip>=50;
+  const c=SPOTS.filter(s=>{
+    if(s===main||s.latitude==null) return false;
+    if(isJidokan(s)) return false; // 児童館・子育て支援センター系は余力枠からも除外（帰り道に寄らない）
+    if(s.is_free!==true) return false;
+    // 同一敷地・近接排除: メイン/ランチとの重複は不可（メイン↔ランチのみが距離例外）
+    if(isSamePlace(s,main,1.0)) return false;
+    if(lunch && isSamePlace(s,lunch,1.0)) return false;
+    const km=haversineKm(main.latitude,main.longitude,s.latitude,s.longitude);
+    // ~20 min ≈ within about 12km locally
+    if(km>12) return false;
+    if(isClosedOn(s,date)) return false;
+    if(rain && !isRainOk(s)) return false;
+    const dmO=driveMinutesFrom(o,s);
+    if(dmO==null||dmO>CURRENT_CAP) return false;
+    // 余力枠は「帰り道」原則: 出発地からの所要時間がメインより小さい（帰る方向）ものだけ
+    if(mainDriveMin!=null && dmO>=mainDriveMin) return false;
+    s.__subkm=km; s.__dmO=dmO; return true;
+  });
+  c.sort((a,b)=>a.__subkm-b.__subkm);
+  return c[0]||null;
+}
+function startMinutes(){
+  const d=state.depart;
+  if(state.when==='today'&&d&&d.mode==='offset'){
+    const now=new Date(); let m=now.getHours()*60+now.getMinutes()+d.min;
+    m=Math.round(m/30)*30; if(m>19*60)m=13*60; return m;
+  }
+  if(d&&d.mode==='slot') return d.slot==='noon'?13*60:9*60+30;
+  return 9*60+30; // 9:30 fallback
+}
+function buildPlan(main,date,w,shareOverride){
+  const o=state.origin;
+  let lunch=shareOverride?(shareOverride.lunch||null):pickLunch(main,date);
+  const lunchSparse=shareOverride?(lunch==null):LUNCH_SPARSE;
+  if(lunchSparse) lunch=null; // 圏内の食事系が3件未満 → 案内カードに置き換え
+  const dm=driveMinutesFrom(o,main)||30;
+  let sub=shareOverride?(shareOverride.sub||null):pickSub(main,lunch,dm,date,w);
+  let t=startMinutes();
+  const rows=[];
+  const originName=(o.name==='現在地')?'出発地周辺':(o.isAnjo?'出発地周辺':o.name+'周辺');
+  rows.push({type:'move',time:t,label:'🚗 移動（約'+dm+'分）',sub:transitLabel(originName,main.name,dm)});
+  t+=dm;
+  const stay=stayMinutes(main);
+  rows.push({type:'spot',time:t,spot:main,tag:'メイン',closeNote:main.__closeNote});
+  t+=stay;
+  let lastName=main.name, lastLat=main.latitude, lastLng=main.longitude;
+  const onlyToddler=state.ages.has('0-2')&&state.ages.size===1;
+  if(lunch){
+    const ldm=Math.max(5,Math.round(haversineKm(lastLat,lastLng,lunch.latitude,lunch.longitude)*2.2/5)*5);
+    rows.push({type:'move',time:t,label:'🚗 移動（約'+ldm+'分）',sub:transitLabel(lastName,lunch.name,ldm)});
+    t+=ldm;
+    const mealTag=mealLabelFor(t);
+    const arrivalCi=closingInfo(lunch,t);
+    let waterNote=null;
+    if((lunch.play_types||[]).includes('water')){
+      const tt=((t%1440)+1440)%1440;
+      if(tt>=16*60) waterNote='※水遊びする場合は着替え・タオル持参がおすすめです／※夕方のため、水遊びは短時間利用がおすすめです';
+    }
+    rows.push({type:'spot',time:t,spot:lunch,tag:mealTag,food:true,paynote:state.budget==='free',closeNote:arrivalCi.note,waterNote});
+    t+=60;
+    lastName=lunch.name; lastLat=lunch.latitude; lastLng=lunch.longitude;
+  } else {
+    // 食事系スポットが圏内に少ないエリア: 空枠や遠距離ランチの代わりに案内カード
+    rows.push({type:'mealnote',time:t,label:mealLabelFor(t)+'は途中の飲食で 🍴',
+      sub:'このあたりは掲載中の食事スポットが少ないため、移動途中のお店をご利用ください。'});
+    t+=60;
+  }
+  // age-based fatigue: 0-2 -> no additional post-meal spot, go home; 3-5 -> max 1 extra spot (bonus tier);
+  if(onlyToddler) sub=null;
+  let bonusNote=null;
+  if(sub){
+    // 帰路は一本化: 「🏠帰り道に寄るなら」の枝分かれ見出しの下に余力枠を置き、
+    // 通常の帰路行(直帰)は出さず、寄った場合の帰路は余力枠カード内に小さく表示する。
+    rows.push({type:'branch',time:t,label:'🏠 帰り道に寄るなら'});
+    let bt=t;
+    const sdm=Math.max(5,Math.round(haversineKm(lastLat,lastLng,sub.latitude,sub.longitude)*2.2/5)*5);
+    const arrival=bt+sdm;
+    const tt=((arrival%1440)+1440)%1440;
+    const pt=sub.play_types||[];
+    const outdoorPark=(sub.indoor_or_outdoor==='outdoor')&&(pt.includes('active')||pt.includes('nature'));
+    if(outdoorPark&&tt>=18*60+30&&state.ages.has('3-5')&&!state.ages.has('elem')){
+      bonusNote='※暗くなる時間帯のため、無理せず帰宅もおすすめです';
+    }
+    let waterNote=null;
+    if(pt.includes('water')&&tt>=16*60){
+      waterNote='※水遊びする場合は着替え・タオル持参がおすすめです／※夕方のため、水遊びは短時間利用がおすすめです';
+    }
+    const ci=closingInfo(sub,arrival);
+    rows.push({type:'move',time:bt,label:'🚗 移動（約'+sdm+'分）',sub:transitLabel(lastName,sub.name,sdm),opt:true});
+    bt=arrival;
+    const bdm=Math.max(5,Math.round(haversineKm(sub.latitude,sub.longitude,o.lat,o.lng)*2.2/5)*5);
+    rows.push({type:'spot',time:bt,spot:sub,tag:'余力があれば',opt:true,closeNote:ci.note,bonusNote,waterNote,returnNote:'寄った場合の帰路 約'+bdm+'分'});
+  } else {
+    // 余力枠が無い通常ケース: 帰路はここで1回だけ表示
+    rows.push({type:'move',time:t,label:'🚗 帰路（約'+dm+'分）',sub:transitLabel(lastName,'ご自宅',dm)});
+  }
+  // totals
+  const spotsUsed=[main].concat(lunch?[lunch]:[],sub?[sub]:[]);
+  let totalDrive=dm*2;
+  let known=0, hasUnknown=false, allFree=true;
+  spotsUsed.forEach(s=>{ const p=parsePrice(s); if(p==null)hasUnknown=true; else{known+=p; if(p>0)allFree=false;} });
+  let cost;
+  if(allFree&&!hasUnknown) cost='料金: 無料（大人1人あたり）';
+  else if(known===0&&hasUnknown) cost='料金は各公式サイトで確認';
+  else cost='大人1人あたり 目安 '+known.toLocaleString()+'円目安'+(hasUnknown?'（一部要確認）':'');
+  const homePriority = onlyToddler && !sub;
+  return {rows,main,totalDrive,cost,hasUnknown,homePriority};
+}
+function generatePlans(date,w){
+  let cap=capFor(state.driveTime);
+  CURRENT_CAP=cap;
+  let pool=buildPool(date,w);
+  state.expandedDrive=false;
+  // candidate shortage (fewer than 3 main candidates): widen the drive-time range a step at a
+  // time until enough choices appear (or we run out of room to widen), and note it honestly.
+  while(pool.length<3 && cap!==Infinity){
+    const widerCap=nextCap(cap);
+    CURRENT_CAP=widerCap;
+    const pool2=buildPool(date,w);
+    if(pool2.length>pool.length){ pool=pool2; state.expandedDrive=true; }
+    cap=widerCap;
+  }
+  CURRENT_CAP=cap;
+  if(!pool.length) return [];
+  const tiered=applyDriveMoodTier(pool);
+  // variety: distinct mains for up to 3 variants
+  const mains=[];
+  for(const s of tiered){ if(!mains.includes(s)) mains.push(s); if(mains.length>=3) break; }
+  state.shownMains=mains.slice();
+  return mains.map(m=>buildPlan(m,date,w));
+}
+// Regeneration for "別のプランにする": widen the main-spot pool to the top 10〜15 (quality floor
+// kept by ranking, not a fixed score cutoff) and shuffle-pick one that hasn't been shown yet this
+// session. When every reasonable candidate has already been shown, reset the history (but avoid
+// immediately repeating the very last one) and note that we've gone through a full cycle.
+function nextVarietyPlan(date,w){
+  let cap=capFor(state.driveTime);
+  CURRENT_CAP=cap;
+  let pool=buildPool(date,w);
+  while(pool.length<3 && cap!==Infinity){
+    const widerCap=nextCap(cap);
+    CURRENT_CAP=widerCap;
+    const pool2=buildPool(date,w);
+    if(pool2.length>pool.length){ pool=pool2; state.expandedDrive=true; }
+    cap=widerCap;
+  }
+  CURRENT_CAP=cap;
+  if(!pool.length) return null;
+  const tiered=applyDriveMoodTier(pool);
+  const uniq=[];
+  for(const s of tiered){ if(!uniq.includes(s)) uniq.push(s); }
+  if(!uniq.length) return null;
+  // top 10〜15 by score (already sorted desc within tiering) as the shuffle pool
+  const topN=uniq.slice(0, Math.min(15, uniq.length));
+  let candidates=topN.length>=3 ? topN : uniq;
+  let fresh=candidates.filter(s=>!state.shownMains.includes(s));
+  let cycled=false;
+  if(!fresh.length){
+    const last=state.shownMains[state.shownMains.length-1];
+    state.shownMains=[];
+    fresh=candidates.filter(s=>s!==last);
+    if(!fresh.length) fresh=candidates;
+    cycled=true;
+  }
+  const picked=shuffle(fresh)[0];
+  state.shownMains.push(picked);
+  state.cycledNote=cycled;
+  return buildPlan(picked,date,w);
+}
+
+/* ===== render result ===== */
+async function generate(){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('dots').style.display='none';
+  document.getElementById('loading').style.display='block';
+  document.getElementById('result').style.display='none';
+  if(typeof gtag==='function') gtag('event','plan_generate',{when:state.when,budget:state.budget});
+
+  state.weather=await fetchWeather();
+  const date=targetDate(state.when);
+  state.shownMains=[];
+  state.cycledNote=false;
+  state.isSharedView=false;
+  state.plans=generatePlans(date,state.weather);
+  state.variant=0;
+
+  document.getElementById('loading').style.display='none';
+  showResult();
+}
+function whenLabel(){
+  const map={today:'今日これから',tomorrow:'明日',sat:'今週末（土）',sun:'今週末（日）'};
+  const d=targetDate(state.when);
+  return map[state.when]+'・'+(d.getMonth()+1)+'/'+d.getDate()+'（'+WD[d.getDay()]+'）';
+}
+function weatherBadge(){
+  const w=state.weather;
+  if(!w) return '';
+  if(w.precip!=null&&w.precip>=50) return '<div class="wxbadge">☔ 雨予報なので室内プランにしました</div>';
+  if(w.tmax!=null&&w.tmax>=34) return '<div class="wxbadge">🥵 猛暑予報（最高'+Math.round(w.tmax)+'℃）水遊び・室内を優先しました</div>';
+  if(w.tmax!=null) return '<div class="wxbadge">☀ お天気よさそう（最高'+Math.round(w.tmax)+'℃）</div>';
+  return '';
+}
+// parent-perspective one-line summary, auto-generated from conditions
+function parentSummary(){
+  const w=state.weather;
+  const start=startMinutes();
+  const t=((start%1440)+1440)%1440;
+  const isToddlerOnly=state.ages.has('0-2')&&state.ages.size===1;
+  let base;
+  if(w&&w.precip!=null&&w.precip>=50){
+    base='雨予報のため、屋内スポット中心にしています。';
+  } else if(t>=16*60){
+    base='今日は夕方出発なので、短時間で遊んで夕食を済ませる軽めのプランです。';
+  } else if(w&&w.tmax!=null&&w.tmax>=34){
+    base='暑い時間帯を避け、涼しく遊べるスポットを中心にしたプランにしています。';
+  } else if(isToddlerOnly){
+    base='小さいお子さん連れなので、無理のない軽めのプランにしています。';
+  } else if(state.driveTime==='20'){
+    base='車20分圏内でまとめた、ご近所プランです。';
+  } else if(state.driveTime==='40'){
+    base='車40分圏内で無理なく楽しめるプランにしています。';
+  } else if(state.driveTime==='60'){
+    base='車60分圏内で少し足を延ばすプランにしています。';
+  } else {
+    base='お子さんの年齢に合わせて、無理なく楽しめるプランにしています。';
+  }
+  if(state.expandedDrive){
+    base+=' 近場に候補が少なかったので少し範囲を広げました。';
+  }
+  if(state.nearFallback){
+    base+=' 少し遠出向けの候補が見当たらなかったため、近場中心になりました。';
+  }
+  if(state.sFeatured){
+    base+=' せっかくなので1日たっぷり系を主役にしました。';
+  }
+  if(state.cycledNote){
+    base+=' （候補を一巡したので、また最初の方の候補から出しています）';
+  }
+  return base;
+}
+function rowHtml(r){
+  if(r.type==='branch'){
+    return '<div class="tl branch"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
+      '<span class="icon">🏠</span><span class="line"></span></div>'+
+      '<div class="body"><div class="sname">'+esc(r.label)+'</div></div></div>';
+  }
+  if(r.type==='mealnote'){
+    return '<div class="tl"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
+      '<span class="icon">🍴</span><span class="line"></span></div>'+
+      '<div class="body"><div class="sname">'+esc(r.label)+'</div>'+
+      '<div class="meta">'+esc(r.sub)+'</div></div></div>';
+  }
+  if(r.type==='move'){
+    return '<div class="tl move'+(r.opt?' bonus':'')+'"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
+      '<span class="icon">🚗</span><span class="line"></span></div>'+
+      '<div class="body"><div class="sname">'+esc(r.label)+'</div><div class="meta moveline">'+r.sub+'</div></div></div>';
+  }
+  const s=r.spot;
+  const isFood=(s.play_types||[]).includes('food');
+  const links='<div class="links">'+
+    (s.official_url?'<a href="'+esc(s.official_url)+'" target="_blank" rel="noopener" onclick="track(\'official\')">'+(/tabelog\.com/.test(s.official_url)?'詳細情報(食べログ)↗':'公式サイト↗')+'</a>':'')+
+    '<a class="map" href="'+esc('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.name+' '+(s.city||'')))+'" target="_blank" rel="noopener" onclick="track(\'maps\')">地図で見る↗</a>'+
+    '</div>';
+  let body='';
+  body+=(r.opt?'<span class="opt">⏱ 余力があれば</span><br>':'');
+  body+='<div class="sname">'+esc(s.name)+'<br><small style="font-weight:600;color:var(--sub);font-size:.75rem">'+esc(r.tag)+'・'+esc(s.city)+'</small>'+(r.paynote?'<br><small style="font-weight:600;color:var(--sub);font-size:.72rem">※飲食代は別途、1人あたりの目安です</small>':'')+'</div>';
+  if(isFood){
+    body+=foodTagLines(s);
+    if(s.kid_appeal) body+='<div class="appeal">'+esc(s.kid_appeal)+'</div>';
+    body+='<div class="foodnote">※営業時間・定休日は来店前に確認してください</div>';
+  } else if(s.kid_appeal){
+    body+='<div class="appeal">'+esc(s.kid_appeal)+'</div>';
+  }
+  body+='<div class="meta">💴 '+esc(priceLabel(s))+(s.business_hours?'　🕐 '+esc(s.business_hours):'')+'</div>';
+  if(r.closeNote) body+='<div class="hourwarn">'+esc(r.closeNote)+'</div>';
+  if(r.waterNote) body+='<div class="hourwarn">'+esc(r.waterNote)+'</div>';
+  if(r.bonusNote) body+='<div class="eveningwarn">'+esc(r.bonusNote)+'</div>';
+  if(r.returnNote) body+='<div class="meta" style="font-size:.72rem;opacity:.75">🚗 '+esc(r.returnNote)+'</div>';
+  body+=links;
+  return '<div class="tl'+(r.opt?' bonus':'')+'"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
+    '<span class="icon">'+spotEmoji(s)+'</span><span class="line"></span></div>'+
+    '<div class="body">'+body+'</div></div>';
+}
+function track(w){ if(typeof gtag==='function') gtag('event','plan_outlink',{link:w}); }
+// build a Google Maps directions URL for the plan's route: 出発地(現在地 or 市町村代表座標) -> メイン -> ランチ -> (余力枠)
+function buildRouteUrl(p){
+  const o=state.origin;
+  if(!o||o.lat==null||o.lng==null) return null;
+  const spots=p.rows.filter(r=>r.type==='spot').map(r=>r.spot).filter(Boolean);
+  if(!spots.length) return null;
+  const dest=spots[spots.length-1];
+  const waypoints=spots.slice(0,-1);
+  let url='https://www.google.com/maps/dir/?api=1'+
+    '&origin='+encodeURIComponent(o.lat+','+o.lng)+
+    '&destination='+encodeURIComponent(dest.latitude+','+dest.longitude)+
+    '&travelmode=driving';
+  if(waypoints.length){
+    url+='&waypoints='+encodeURIComponent(waypoints.map(s=>s.latitude+','+s.longitude).join('|'));
+  }
+  return url;
+}
+/* ===== share ===== */
+function buildShareUrl(p){
+  const parts=['share=1'];
+  const originName=state.origin?state.origin.name:'大津市';
+  parts.push('from='+encodeURIComponent(originName));
+  if(originName==='現在地'&&state.origin){
+    parts.push('lat='+state.origin.lat.toFixed(5));
+    parts.push('lng='+state.origin.lng.toFixed(5));
+  }
+  parts.push('drive='+encodeURIComponent(state.driveTime||'any'));
+  parts.push('when='+encodeURIComponent(state.when||'today'));
+  if(state.depart){
+    const d=state.depart;
+    parts.push('depart='+encodeURIComponent(d.mode==='offset'?('offset:'+d.min):('slot:'+d.slot)));
+  }
+  parts.push('age='+encodeURIComponent([...state.ages].join(',')));
+  parts.push('budget='+encodeURIComponent(state.budget||'any'));
+  const spots=p.rows.filter(r=>r.type==='spot');
+  const mainRow=spots.find(r=>r.tag==='メイン');
+  if(mainRow) parts.push('main='+encodeURIComponent(mainRow.spot.name));
+  const lunchRow=spots.find(r=>r!==mainRow&&!r.opt);
+  const subRow=spots.find(r=>r.opt);
+  if(lunchRow) parts.push('lunch='+encodeURIComponent(lunchRow.spot.name));
+  if(subRow) parts.push('sub='+encodeURIComponent(subRow.spot.name));
+  return location.origin+location.pathname+'?'+parts.join('&');
+}
+function showToast(msg){
+  let t=document.getElementById('shareToast');
+  if(!t){ t=document.createElement('div'); t.id='shareToast'; document.body.appendChild(t); }
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h=setTimeout(()=>{ t.classList.remove('show'); },2200);
+}
+function copyToClipboard(text){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    return navigator.clipboard.writeText(text);
+  }
+  return new Promise((resolve,reject)=>{
+    try{
+      const ta=document.createElement('textarea');
+      ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      const ok=document.execCommand('copy');
+      document.body.removeChild(ta);
+      ok?resolve():reject(new Error('copy failed'));
+    }catch(e){ reject(e); }
+  });
+}
+async function sharePlan(){
+  if(!state.plans.length) return;
+  const p=state.plans[state.variant%state.plans.length];
+  const url=buildShareUrl(p);
+  const text=parentSummary();
+  if(navigator.share){
+    try{
+      await navigator.share({title:'きょうのおでかけプラン',text,url});
+      if(typeof gtag==='function') gtag('event','plan_share',{method:'webshare'});
+    }catch(e){ /* user cancelled share sheet */ }
+    return;
+  }
+  try{
+    await copyToClipboard(url);
+    showToast('リンクをコピーしました');
+    if(typeof gtag==='function') gtag('event','plan_share',{method:'copy'});
+  }catch(e){
+    showToast('コピーに失敗しました');
+  }
+}
+// rebuild wizard state + a concrete plan from share URL params; returns the plan object or null
+function restoreFromShare(qs){
+  const mainName=qs.get('main');
+  const mainSpot=mainName?SPOTS.find(s=>s.name===mainName):null;
+  if(!mainSpot) return null;
+  const from=qs.get('from')||'大津市';
+  let lat=qs.has('lat')?parseFloat(qs.get('lat')):NaN;
+  let lng=qs.has('lng')?parseFloat(qs.get('lng')):NaN;
+  let originName=from;
+  if(isNaN(lat)||isNaN(lng)){
+    if(from==='大津市'){ lat=ANJO[0]; lng=ANJO[1]; }
+    else {
+      const c=CITIES.find(c=>c[0]===from);
+      if(c){ lat=c[1]; lng=c[2]; } else { lat=ANJO[0]; lng=ANJO[1]; originName='大津市'; }
+    }
+  }
+  state.origin={name:originName,lat,lng,isAnjo:originName==='大津市'};
+  const drive=qs.get('drive');
+  state.driveTime=['20','40','60'].includes(drive)?drive:'any';
+  const when=qs.get('when');
+  state.when=['today','tomorrow','sat','sun'].includes(when)?when:'today';
+  const departRaw=qs.get('depart')||'';
+  if(departRaw.indexOf('offset:')===0){
+    state.depart={mode:'offset',min:parseInt(departRaw.slice(7),10)||60};
+  } else if(departRaw.indexOf('slot:')===0){
+    state.depart={mode:'slot',slot:departRaw.slice(5)==='noon'?'noon':'am'};
+  } else {
+    state.depart=state.when==='today'?{mode:'offset',min:60}:{mode:'slot',slot:'am'};
+  }
+  const ageRaw=(qs.get('age')||'').split(',').filter(a=>['0-2','3-5','elem'].includes(a));
+  state.ages=new Set(ageRaw.length?ageRaw:['3-5']);
+  const budget=qs.get('budget');
+  state.budget=['free','1000','3000','any'].includes(budget)?budget:'any';
+  const lunchName=qs.get('lunch');
+  const subName=qs.get('sub');
+  const lunchSpot=lunchName?(SPOTS.find(s=>s.name===lunchName)||null):null;
+  const subSpot=subName?(SPOTS.find(s=>s.name===subName)||null):null;
+  return {mainSpot,lunchSpot,subSpot};
+}
+async function initFromShareOrWizard(){
+  const qs=new URLSearchParams(location.search);
+  if(qs.get('share')==='1'){
+    const r=restoreFromShare(qs);
+    if(r){
+      document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+      document.getElementById('dots').style.display='none';
+      document.getElementById('loading').style.display='block';
+      document.getElementById('result').style.display='none';
+      try{
+        state.weather=await fetchWeather();
+        const date=targetDate(state.when);
+        const plan=buildPlan(r.mainSpot,date,state.weather,{lunch:r.lunchSpot,sub:r.subSpot});
+        state.plans=[plan];
+        state.variant=0;
+        state.shownMains=[r.mainSpot];
+        state.isSharedView=true;
+        document.getElementById('loading').style.display='none';
+        showResult();
+        return;
+      }catch(e){
+        // fall through to normal wizard on unexpected failure
+      }
+    }
+  }
+  render(); refreshNext();
+}
+function showResult(){
+  const res=document.getElementById('result');
+  res.style.display='block';
+  if(!state.plans.length){
+    res.innerHTML='<div class="empty"><p>条件に合うスポットが見つかりませんでした。<br>予算や出発地を変えると見つかりやすくなります。</p>'+
+      '<button onclick="restart()">条件を変えてやり直す</button></div>';
+    window.scrollTo({top:0,behavior:'smooth'});
+    return;
+  }
+  const p=state.plans[state.variant%state.plans.length];
+  const routeUrl=buildRouteUrl(p);
+  const total=Math.floor(p.totalDrive/60), tm=p.totalDrive%60;
+  const driveStr=(total?total+'時間':'')+(tm?tm+'分':'')||'0分';
+  let html='';
+  if(state.isSharedView){
+    html+='<div class="sharedbanner">共有されたプランです ・ <a href="./plan.html">自分のプランを作る →</a></div>';
+  }
+  html+='<div style="text-align:center">'+weatherBadge()+'</div>';
+  html+='<div class="parentline">🗣 '+esc(parentSummary())+'</div>';
+  html+='<div class="plancard">';
+  html+='<div class="plantitle">🎯 '+esc(state.origin.name)+'発 きょうのプラン <small>'+esc(whenLabel())+' / 案'+(state.variant%state.plans.length+1)+'</small></div>';
+  // split main-tier rows and bonus-tier rows, insert a heading before the bonus tier
+  const mainRows=[], bonusRows=[];
+  p.rows.forEach(r=>{ (r.opt?bonusRows:mainRows).push(r); });
+  let tlHtml='<div class="timeline">'+mainRows.map(rowHtml).join('');
+  if(bonusRows.length){
+    tlHtml+='</div><div class="bonus-wrap"><div class="bonus-head">⏱ 余力があれば</div><div class="bonus-sub">無理せず帰宅でもOKです</div><div class="timeline">'+bonusRows.map(rowHtml).join('')+'</div>';
+  } else {
+    tlHtml+='</div>';
+  }
+  html+=tlHtml;
+  if(p.homePriority){
+    html+='<div class="homepriority">🏠 小さいお子さん連れならここで帰宅がおすすめです</div>';
+  } else if(bonusRows.length && state.ages.has('3-5')){
+    html+='<div class="homepriority" style="color:#8a7a4a;background:#f6ede0">👣 余力がある場合のみ、上の「余力があれば」スポットへどうぞ</div>';
+  }
+  html+='<div class="summary">🚗 移動の目安 <b>約'+driveStr+'</b>（往復）　／　💰 <b>'+esc(p.cost)+'</b></div>';
+  if((state.budget==='1000'||state.budget==='3000')&&p.hasUnknown){
+    html+='<div class="summary" style="color:var(--sub);font-size:.82rem;font-weight:600">※料金不明のスポットが含まれます。公式サイトでご確認ください</div>';
+  }
+  html+='</div>';
+  if(routeUrl){
+    html+='<div class="gmaps-route" style="text-align:center;margin:14px 0 18px">'+
+      '<a class="act-gmaps" href="'+esc(routeUrl)+'" target="_blank" rel="noopener" onclick="track(\'gmaps_route\')" '+
+      'style="display:inline-block;width:100%;box-sizing:border-box;padding:14px;border-radius:14px;background:#1a73e8;color:#fff;font-weight:800;font-size:.95rem;text-decoration:none">'+
+      '🚗 このルートをGoogleマップで開く</a>'+
+      '<div style="font-size:.72rem;color:var(--sub);margin-top:6px">※ルートはGoogleマップ上で編集できます</div>'+
+      '</div>';
+  }
+  html+='<div class="share">📸 スクショして家族に送ってね！</div>';
+  html+='<div class="actions">';
+  html+='<button class="act-share" onclick="sharePlan()">📤 このプランを共有</button>';
+  html+='<button class="act-reroll" onclick="reroll()">🔄 別のプランにする</button>';
+  html+='<a class="act-map" href="./index.html" onclick="track(\'map\')">🗺 地図でこのへんを見る</a>';
+  html+='<button class="act-restart" onclick="restart()">最初からやり直す</button>';
+  html+='</div>';
+  html+='<div class="notice">⚠ 所要時間・料金・営業時間は目安です。おでかけ前に各公式サイトをご確認ください。'+
+    (state.weather?'':'<br>※ 現在お天気情報を取得できなかったため、天気条件なしでプランを作成しています。')+'</div>';
+  html+='<div class="noticebottom">'+
+    '※飲食代は別途。表示金額は1人あたりの目安です<br>'+
+    '営業時間・料金・休業日は変更される場合があります。お出かけ前に公式サイト等で最新情報をご確認ください<br>'+
+    '移動時間は目安です。道路状況や駐車場の混雑により前後します'+
+    '</div>';
+  res.innerHTML=html;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function reroll(){
+  if(typeof gtag==='function') gtag('event','plan_reroll');
+  state.isSharedView=false;
+  const date=targetDate(state.when);
+  const newPlan=nextVarietyPlan(date,state.weather);
+  if(newPlan){
+    state.plans.push(newPlan);
+    state.variant=state.plans.length-1;
+  } else {
+    state.variant=state.plans.length?(state.variant+1)%state.plans.length:0;
+  }
+  showResult();
+}
+function restart(){
+  state.driveTime=null; state.when=null; state.depart=null; state.ages.clear(); state.budget=null; state.weather=null; state.variant=0; state.plans=[]; state.expandedDrive=false; state.isSharedView=false;
+  document.querySelectorAll('.bigbtn.on').forEach(b=>b.classList.remove('on'));
+  document.getElementById('departWrap').style.display='none';
+  document.getElementById('result').style.display='none';
+  document.getElementById('dots').style.display='flex';
+  step=0; render();
+  steps.forEach(s=>{ const n=s.querySelector('[data-next]'); if(n&&+s.dataset.step!==0) n.disabled=true; });
+  refreshNext();
+}
+
+/* init */
+initFromShareOrWizard();
+</script>
+</body>
+</html>
