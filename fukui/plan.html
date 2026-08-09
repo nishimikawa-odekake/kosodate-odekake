@@ -850,6 +850,7 @@ function generatePlans(date,w){
   // time until enough choices appear (or we run out of room to widen), and note it honestly.
   while(pool.length<3 && cap!==Infinity){
     const widerCap=nextCap(cap);
+    if(widerCap===cap) break;  // nextCap は90分で打ち止め。これ以上広がらないなら無限ループを避けて抜ける
     CURRENT_CAP=widerCap;
     const pool2=buildPool(date,w);
     if(pool2.length>pool.length){ pool=pool2; state.expandedDrive=true; }
@@ -874,6 +875,7 @@ function nextVarietyPlan(date,w){
   let pool=buildPool(date,w);
   while(pool.length<3 && cap!==Infinity){
     const widerCap=nextCap(cap);
+    if(widerCap===cap) break;  // nextCap は90分で打ち止め。これ以上広がらないなら無限ループを避けて抜ける
     CURRENT_CAP=widerCap;
     const pool2=buildPool(date,w);
     if(pool2.length>pool.length){ pool=pool2; state.expandedDrive=true; }
