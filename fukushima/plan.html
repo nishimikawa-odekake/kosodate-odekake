@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8CDXHXFG9F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8CDXHXFG9F');
+</script>
+<title>福島の子連れおでかけプランを自動作成｜ふくしま子育ておでかけマップ</title>
+<meta name="description" content="出発地・日程・お子さんの年齢・予算を選ぶだけで、福島の子連れおでかけプランを自動作成。天気予報も自動反映して雨の日は室内プランに。移動時間・費用の目安つきタイムラインで、きょうのおでかけがすぐ決まります。">
+<link rel="canonical" href="https://kosodate-odekake.jp/fukushima/plan.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="🎯きょうのプラン｜福島の子連れおでかけを自動作成">
+<meta property="og:description" content="質問に答えるだけ。天気も反映して、きょうの家族おでかけプランを自動作成します。">
+<meta property="og:url" content="https://kosodate-odekake.jp/fukushima/plan.html">
+<meta property="og:image" content="https://kosodate-odekake.jp/og-logo.png">
+<meta name="twitter:image" content="https://kosodate-odekake.jp/og-logo.png">
+<meta name="theme-color" content="#e08a5b">
+<style>
+:root{
+  --bg:#faf6ef; --card:#fffdf9; --ink:#3d3a34; --sub:#7a746a; --line:#e7ddcd;
+  --accent:#e08a5b; --accent-d:#c9713f;
+  --animal:#E9A23B; --active:#4CAF6E; --water:#3FA9D6; --create:#9B6DD6; --vehicle:#E06C75; --indoor:#7A8AA0; --food:#D95D77;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-text-size-adjust:100%}
+a{color:var(--accent-d)}
+.wrap{max-width:620px;margin:0 auto;padding:0 14px 40px}
+header.top{background:linear-gradient(160deg,#fbe6d3,#f6ede0);border-bottom:1px solid var(--line);padding:16px 14px 14px;text-align:center}
+header.top h1{font-size:1.18rem;margin:0 0 3px;color:var(--accent-d)}
+header.top p{font-size:.8rem;color:var(--sub);margin:0}
+header.top a.home{display:inline-block;margin-top:8px;font-size:.78rem;color:var(--sub);text-decoration:none}
+header.top a.home:hover{color:var(--accent-d)}
+.odemaru-mark{width:26px;height:26px;vertical-align:-6px;margin-right:5px;display:inline-block}
+
+/* progress dots */
+.dots{display:flex;gap:8px;justify-content:center;margin:18px 0 6px}
+.dots .d{width:10px;height:10px;border-radius:50%;background:var(--line);transition:.2s}
+.dots .d.on{background:var(--accent);transform:scale(1.15)}
+.dots .d.done{background:var(--accent-d)}
+
+/* wizard */
+.step{display:none;animation:fade .25s ease}
+.step.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.q{font-size:1.15rem;font-weight:800;text-align:center;margin:18px 0 4px;color:var(--ink)}
+.qsub{font-size:.8rem;color:var(--sub);text-align:center;margin:0 0 16px}
+.bigbtns{display:flex;flex-direction:column;gap:10px}
+.bigbtn{border:2px solid var(--line);background:var(--card);border-radius:16px;padding:16px;font-size:1.02rem;font-weight:700;color:var(--ink);cursor:pointer;text-align:center;transition:.12s;box-shadow:0 2px 6px rgba(160,140,110,.12)}
+.bigbtn:hover{border-color:var(--accent)}
+.bigbtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.bigbtn small{display:block;font-size:.72rem;font-weight:600;opacity:.8;margin-top:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+select.origin{width:100%;padding:14px;font-size:1rem;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font-weight:700}
+.geo{margin-top:10px;width:100%;border:2px dashed var(--accent);background:#fff6ee;border-radius:14px;padding:12px;font-size:.92rem;font-weight:700;color:var(--accent-d);cursor:pointer}
+.geo:active{background:#ffe9d8}
+.geonote{font-size:.72rem;color:var(--sub);text-align:center;margin:8px 0 0;min-height:1em}
+.navrow{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
+.back{border:none;background:transparent;color:var(--sub);font-size:.9rem;cursor:pointer;padding:8px 4px;text-decoration:underline}
+.next{border:none;background:var(--accent);color:#fff;font-weight:800;border-radius:999px;padding:12px 28px;font-size:1rem;cursor:pointer;box-shadow:0 3px 10px rgba(200,113,63,.3)}
+.next:disabled{opacity:.4;cursor:default;box-shadow:none}
+
+/* loading */
+.loading{text-align:center;padding:50px 10px}
+.spinner{width:44px;height:44px;border:4px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 16px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* result */
+#result{display:none}
+.wxbadge{display:inline-block;background:#fff6ee;border:1.5px solid var(--accent);color:var(--accent-d);border-radius:999px;padding:7px 14px;font-size:.82rem;font-weight:800;margin:4px 0 14px}
+.plancard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 14px;box-shadow:0 3px 12px rgba(160,140,110,.14);margin-bottom:16px}
+.plantitle{font-size:1.02rem;font-weight:800;color:var(--accent-d);margin:0 0 2px}
+.plantitle small{font-size:.74rem;font-weight:600;color:var(--sub)}
+.timeline{margin:14px 0 4px;position:relative}
+.tl{display:flex;gap:12px;padding:0 0 16px;position:relative}
+.tl:last-child{padding-bottom:0}
+.tl .rail{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;width:52px}
+.tl .time{font-size:.82rem;font-weight:800;color:var(--ink);white-space:nowrap}
+.tl .icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.05rem;margin-top:3px;background:#fff6ee;border:2px solid var(--accent)}
+.tl.move .icon{background:#eef2f6;border-color:#c9d3dd;font-size:.95rem}
+.tl .line{flex:1;width:2px;background:var(--line);margin-top:2px}
+.tl:last-child .line{display:none}
+.tl .body{flex:1;padding-bottom:4px;min-width:0}
+.tl .sname{font-weight:800;font-size:1rem;margin:2px 0 2px;color:var(--ink)}
+.tl.move .sname{font-weight:700;font-size:.9rem;color:var(--sub)}
+.tl .appeal{font-size:.85rem;color:#5a4632;background:#fff6ee;border-left:3px solid var(--accent);border-radius:5px;padding:5px 8px;margin:4px 0 6px}
+.tl .meta{font-size:.78rem;color:var(--sub);margin:0 0 6px}
+.tl .opt{display:inline-block;font-size:.7rem;font-weight:800;background:#f0ead9;color:#8a7a4a;border-radius:6px;padding:2px 7px;margin-bottom:4px}
+.tl .links{display:flex;gap:8px;flex-wrap:wrap}
+.tl .links a{font-size:.78rem;font-weight:700;text-decoration:none;border-radius:999px;padding:6px 12px;border:1.5px solid var(--accent);color:var(--accent-d)}
+.tl .links a.map{border-color:#c9d3dd;color:#5b6572}
+.summary{background:#f6ede0;border-radius:12px;padding:12px 14px;font-size:.86rem;color:#5a4632;margin-top:6px}
+.summary b{color:var(--accent-d)}
+.actions{display:flex;flex-direction:column;gap:10px;margin:18px 0 8px}
+.actions button,.actions a{display:block;text-align:center;text-decoration:none;border-radius:14px;padding:14px;font-size:1rem;font-weight:800;cursor:pointer;border:2px solid transparent}
+.act-reroll{background:var(--accent);color:#fff;border:none}
+.act-map{background:#fff;color:var(--accent-d);border:2px solid var(--accent)}
+.act-restart{background:transparent;color:var(--sub);border:none;text-decoration:underline;font-weight:600;font-size:.9rem;padding:6px}
+.act-share{background:#fff;color:var(--accent-d);border:2px solid var(--accent);width:100%;box-sizing:border-box}
+.sharedbanner{text-align:center;font-size:.8rem;font-weight:700;color:var(--accent-d);background:#fff6ee;border-radius:10px;padding:8px 10px;margin:0 0 10px}
+.sharedbanner a{color:var(--accent-d);text-decoration:underline}
+#shareToast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#333;color:#fff;padding:10px 18px;border-radius:20px;font-size:.85rem;font-weight:700;z-index:9999;box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .25s}
+#shareToast.show{opacity:1}
+.share{text-align:center;font-size:.86rem;color:var(--accent-d);font-weight:700;background:#fff6ee;border-radius:12px;padding:12px;margin:6px 0}
+.notice{font-size:.74rem;color:var(--sub);line-height:1.5;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:16px}
+.empty{text-align:center;padding:30px 14px;color:var(--sub)}
+.empty button{margin-top:14px;border:none;background:var(--accent);color:#fff;font-weight:800;border-radius:999px;padding:12px 24px;font-size:.95rem;cursor:pointer}
+footer{text-align:center;font-size:.72rem;color:var(--sub);padding:20px 0 30px}
+footer a{color:var(--sub)}
+
+/* --- added: parent summary / bonus tier / price / food tags / spacing polish --- */
+.parentline{background:#fff6ee;border:1.5px solid var(--accent);border-radius:14px;padding:12px 14px;font-size:.9rem;font-weight:700;color:#5a4632;margin:10px 0 14px;line-height:1.5}
+.tl .sname{margin-bottom:4px}
+.tl .body{padding-top:1px}
+.tl .appeal{line-height:1.5;word-break:break-word}
+.tl .meta{line-height:1.6;word-break:break-word}
+.foodtags{margin:2px 0 6px}
+.foodtags .ftline{font-size:.78rem;color:#5a4632;background:#fbeee0;display:inline-block;border-radius:6px;padding:2px 8px;margin:0 4px 4px 0}
+.foodnote{font-size:.72rem;color:var(--sub);margin:0 0 6px}
+.hourwarn{font-size:.74rem;color:#b5601f;font-weight:700;margin:2px 0 6px;background:#fff2e0;border-radius:6px;padding:4px 8px;display:inline-block}
+.eveningwarn{font-size:.74rem;color:#6b6248;font-weight:700;margin:2px 0 6px;background:#f0ead9;border-radius:6px;padding:4px 8px;display:inline-block}
+.moveline{font-size:.82rem;color:var(--sub)}
+.actions button,.actions a{margin:0}
+.actions{gap:12px}
+.bonus-wrap{margin-top:6px}
+.bonus-head{font-size:.86rem;font-weight:800;color:#8a7a4a;margin:14px 0 6px;padding-left:4px;border-left:4px solid #d8c98f}
+.bonus-sub{font-size:.74rem;color:var(--sub);font-weight:600;margin:-2px 0 8px 4px}
+.tl.bonus{opacity:.72}
+.tl.bonus .icon{background:#f3efe3;border-color:#d8c98f;font-size:.92rem;width:30px;height:30px}
+.tl.bonus .sname{font-size:.88rem;color:#6b6248}
+.tl.bonus .appeal{background:#f3efe3;border-left-color:#c9b976;font-size:.8rem}
+.tl.bonus .meta{font-size:.72rem}
+.homepriority{font-size:.8rem;color:#3a7d4f;font-weight:700;background:#eaf5ee;border-radius:8px;padding:6px 10px;margin:6px 0}
+.noticebottom{font-size:.72rem;color:var(--sub);line-height:1.6;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}
+@media (max-width:420px){
+  .tl .sname{font-size:.95rem}
+  .tl .appeal{padding:6px 9px;font-size:.83rem}
+  .actions button,.actions a{padding:15px 10px}
+}
+</style>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+</head>
+<body>
+<header class="top">
+  <h1><img class="odemaru-mark" src="/odemaru-mark.png" alt="おでまる" width="96" height="96" decoding="async">きょうのプラン</h1>
+  <p>質問に答えるだけ、家族のおでかけを自動作成</p>
+  <a class="home" href="./index.html">← マップにもどる</a>
+</header>
+
+<div class="wrap">
+  <div class="dots" id="dots" aria-hidden="true">
+    <span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
+  </div>
+
+  <p style="font-size:.78rem;color:var(--sub);text-align:center;line-height:1.6;margin:0 0 14px">出発地・出発時間・お子さんの年齢・予算・天気・営業時間・移動距離などをもとに、子育て家庭が回りやすいおでかけ候補を組み合わせて表示します。提案内容は目安です。お子さんの体調や混雑状況に合わせて、無理のない範囲でご利用ください。</p>
+
+  <!-- STEP 1: 出発地 -->
+  <section class="step" data-step="0">
+    <div class="q">どこから出発？</div>
+    <p class="qsub">おでかけのスタート地点を選んでね</p>
+    <select class="origin" id="originSel"></select>
+    <button class="geo" id="geoBtn">📍 現在地から探す</button>
+    <p class="geonote" id="geoNote"></p>
+    <div class="navrow">
+      <span></span>
+      <button class="next" data-next>次へ →</button>
+    </div>
+  </section>
+
+  <!-- STEP 2: 車での移動時間 -->
+  <section class="step" data-step="1">
+    <div class="q">車でどのくらいまで？</div>
+    <p class="qsub">出発地からの移動時間の目安を選んでね</p>
+    <div class="bigbtns" id="driveBtns">
+      <button class="bigbtn" data-drive="20">🏠 〜20分（ご近所）<small>近場でサクッと遊びたい</small></button>
+      <button class="bigbtn" data-drive="40">🚗 〜40分<small>ちょっとお出かけ気分で</small></button>
+      <button class="bigbtn" data-drive="60">🛣 〜60分<small>足を延ばしてしっかり遊ぶ</small></button>
+      <button class="bigbtn" data-drive="any">🗺 遠くてもOK<small>気になる場所ならどこでも</small></button>
+    </div>
+    <div class="navrow">
+      <button class="back" data-back>← もどる</button>
+      <button class="next" data-next disabled>次へ →</button>
+    </div>
+  </section>
+
+  <!-- STEP 3: いつ -->
+  <section class="step" data-step="2">
+    <div class="q">いつ出かける？</div>
+    <p class="qsub">お天気を自動でチェックします</p>
+    <div class="bigbtns" id="whenBtns">
+      <button class="bigbtn" data-when="today">今日これから<small>いまから準備してGO</small></button>
+      <button class="bigbtn" data-when="tomorrow">明日<small>あしたのおでかけ</small></button>
+      <button class="bigbtn" data-when="sat">今週末（土）</button>
+      <button class="bigbtn" data-when="sun">今週末（日）</button>
+    </div>
+    <div id="departWrap" style="display:none;margin-top:18px">
+      <div class="q" style="font-size:1.05rem" id="departQ">何時に出発？</div>
+      <div class="bigbtns" id="departTodayBtns" style="display:none">
+        <button class="bigbtn" data-depart="30">30分後くらい</button>
+        <button class="bigbtn" data-depart="60">1時間後</button>
+        <button class="bigbtn" data-depart="120">2時間後</button>
+        <button class="bigbtn" data-depart="180">3時間後</button>
+      </div>
+      <div class="bigbtns" id="departDayBtns" style="display:none">
+        <button class="bigbtn" data-slot="am">午前<small>9:30ごろ出発</small></button>
+        <button class="bigbtn" data-slot="noon">お昼から<small>13:00ごろ出発</small></button>
+      </div>
+    </div>
+    <div class="navrow">
+      <button class="back" data-back>← もどる</button>
+      <button class="next" data-next disabled>次へ →</button>
+    </div>
+  </section>
+
+  <!-- STEP 4: 年齢 -->
+  <section class="step" data-step="3">
+    <div class="q">お子さんの年齢は？</div>
+    <p class="qsub">あてはまるものを選んでね（複数OK）</p>
+    <div class="grid2" id="ageBtns">
+      <button class="bigbtn" data-age="0-2">0〜2歳<small>あかちゃん</small></button>
+      <button class="bigbtn" data-age="3-5">3〜5歳<small>未就学</small></button>
+      <button class="bigbtn" data-age="elem" style="grid-column:1/3">小学生</button>
+    </div>
+    <div class="navrow">
+      <button class="back" data-back>← もどる</button>
+      <button class="next" data-next disabled>次へ →</button>
+    </div>
+  </section>
+
+  <!-- STEP 5: 予算 -->
+  <section class="step" data-step="4">
+    <div class="q">予算は？</div>
+    <p class="qsub">1家族あたりの目安でOK</p>
+    <div class="bigbtns" id="budgetBtns">
+      <button class="bigbtn" data-budget="free">🆓 無料メイン<small>お金をかけずに遊びたい</small></button>
+      <button class="bigbtn" data-budget="1000">1人あたり〜1,000円</button>
+      <button class="bigbtn" data-budget="3000">1人あたり〜3,000円</button>
+      <button class="bigbtn" data-budget="any">予算は気にしない</button>
+    </div>
+    <div class="navrow">
+      <button class="back" data-back>← もどる</button>
+      <button class="next" data-next disabled id="genBtn">🎯 プランを作る</button>
+    </div>
+  </section>
+
+  <!-- LOADING -->
+  <div class="loading" id="loading" style="display:none">
+    <div class="spinner"></div>
+    <p style="color:var(--sub);font-size:.9rem">お天気とスポットを調べて<br>プランを組み立てています…</p>
+  </div>
+
+  <!-- RESULT -->
+  <section id="result"></section>
+</div>
+
+<footer>
+  <a href="./index.html">ふくしま子育ておでかけマップ</a><br>
+  データ・掲載情報は各公式サイトでご確認ください<br>
+  <p class="site-footer-links" style="margin-top:10px"><a href="./about.html">運営者情報</a> | <a href="./disclaimer.html">免責事項</a> | <a href="./privacy.html">プライバシーポリシー</a> | <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcSuUG_4MbFgNq-Ejn_cfDvXKhQdQZh4DxITrDiKlo4ocFfw/viewform" target="_blank" rel="noopener">お問い合わせ</a> | <a href="./request.html">掲載情報の修正・削除依頼</a></p>
+</footer>
+
+<script>
+/* ===== data ===== */
+const SPOTS=[{"name": "田島保育園子育て支援センター", "city": "南会津町", "latitude": 37.207397, "longitude": 139.77294, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "雪の日でも安心して過ごせる、南会津町の未就学児親子向け屋内遊び場です。", "business_hours": "10時00分～15時00分", "closed_days": "日曜日、祝祭日、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai39.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "びわのかげ子育て支援センター", "city": "南会津町", "latitude": 37.2000178, "longitude": 139.7594578, "play_types": ["indoor"], "is_free": true, "price_text": "無料（カフェ利用は100円）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "カフェスペースもある南会津町の子育て支援センターで、親子でゆったり遊べます。", "business_hours": "9:00～12:00、13:00～15:00", "closed_days": "土、日、祝、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai49.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "めごラボ", "city": "檜枝岐村", "latitude": 37.018917, "longitude": 139.384598, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "尾瀬の玄関口・檜枝岐村で中学生以下が無料で遊べる屋内あそび場です。", "business_hours": "9時00分～17時00分", "closed_days": "夏期は無休、11月以降は平日休み", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai100.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "下郷町地域子育て支援センター", "city": "下郷町", "latitude": 37.2559263, "longitude": 139.8666332, "play_types": ["indoor"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "下郷町の未就園児親子が平日に集える子育て支援の遊び場です。", "business_hours": "8時30分～12時、14時30分～16時（月～金）", "closed_days": "土日・祝祭日", "official_url": "https://www.town.shimogo.fukushima.jp/organization/kenkoufukushi/1/257.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "ただみ・ブナと川のミュージアム", "city": "只見町", "latitude": 37.3414165, "longitude": 139.312089, "play_types": ["create", "indoor"], "is_free": false, "price_text": "高校生以上310円、小・中学生210円、未就学児無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "ブナの森と川の生きものを標本やジオラマで学べる、雨の日にうれしい自然博物館です。", "business_hours": "9：00－17：00（最終入館16：00）", "closed_days": "火曜日（祝日の場合は翌平日）、年末・年始", "official_url": "https://www.tadami-buna.jp/visit.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "相馬こどものみんなの家", "city": "相馬市", "latitude": 37.8028561, "longitude": 140.9320164, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "未就学児がのびのび遊べる相馬市の無料屋内あそび場です。", "business_hours": "9時00分～12時00分、13時00分～16時00分", "closed_days": "月曜日（祝日にあたるときはその翌日）、年末年始（12月29日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai62.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "尾浜こども公園（尾浜交流館）", "city": "相馬市", "latitude": 37.8275469, "longitude": 140.961816, "play_types": ["active", "indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "海の近くの大型遊具と屋内交流館で一日中遊べる相馬市のこども公園です。", "business_hours": "9時～16時30分（季節により変動、7～8月は17時30分まで）", "closed_days": "12月31日、1月1日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/ohamakoryukan.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "南相馬みんなの遊び場", "city": "南相馬市", "latitude": 37.7001988, "longitude": 140.9759884, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "天候を気にせず体を動かせる南相馬市鹿島区の無料屋内遊び場です。", "business_hours": "9時00分～16時30分（12時～13時は準備中）", "closed_days": "水曜日、12月29日～1月3日", "official_url": "https://www.city.minamisoma.lg.jp/portal/childcare/shussan_kosodate/7/4/5027.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "小高区子どもの遊び場「NIKOパーク」", "city": "南相馬市", "latitude": 37.562719, "longitude": 140.984726, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "大型ネット遊具などで思いきり遊べる小高区の入替制屋内パークです。", "business_hours": "10時～11時30分／13時～14時30分／15時～16時30分（3クール入替制）", "closed_days": "毎週火曜日、年末年始（12月29日～1月3日）", "official_url": "https://minamisoma-playground.com/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "わくわくランド（新地発電所ふれあい施設）", "city": "新地町", "latitude": 37.8453507, "longitude": 140.9474077, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "屋内遊具と多目的ホールを無料で使える新地町の人気あそび場です。", "business_hours": "10：00〜16：00", "closed_days": "毎週月曜日（祝日の場合は翌平日）、年末年始（12月29日～1月3日）", "official_url": "https://www.somakyoka.co.jp/wakuwaku.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "なかよしランド", "city": "広野町", "latitude": 37.211803, "longitude": 140.990982, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "広野町保健センター内で乳幼児親子がゆったり遊べる屋内スペースです。", "business_hours": "9時00分～12時00分", "closed_days": "火曜、木曜、土曜、日曜、祝祭日、そのほか保健事業実施日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai60.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "ひろの未来館 交流ホールキッズコーナー", "city": "広野町", "latitude": 37.2122251, "longitude": 140.9947651, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "ひろの未来館の交流ホールにあるキッズコーナーで気軽に立ち寄れます。", "business_hours": "平日9:00～18:00、土日祝9:00～17:00", "closed_days": "月曜日（但し祝日の場合は翌日）、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/hironomiraikan.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "ならはスカイアリーナ キッズルーム", "city": "楢葉町", "latitude": 37.2849341, "longitude": 140.9880078, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料（キッズルームのみ利用の場合）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "アリーナ併設のキッズルームで雨の日も体を動かして遊べます。", "business_hours": "9時15分～12時00分、13時00分～17時00分", "closed_days": "毎週水曜日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/narahaskyarena.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "富岡町地域交流館「富岡わんぱくパーク」", "city": "富岡町", "latitude": 37.3400317, "longitude": 141.0148527, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "大型遊具のある屋内交流館で、小中学生まで無料で遊べる富岡町の拠点です。", "business_hours": "10時00分～18時00分", "closed_days": "火曜日（祝日の場合は翌日）、年末年始（12月29日～1月3日）", "official_url": "http://www.tom-wanpaku.org/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "クマSUNテラスキッズルーム", "city": "大熊町", "latitude": 37.4098895, "longitude": 140.9825867, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "大熊町の新しい交流施設内キッズルームで、無休で利用できます。", "business_hours": "9時00分～17時00分", "closed_days": "なし", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai103.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "ふれあいげんきパーク", "city": "浪江町", "latitude": 37.4910916, "longitude": 140.9874824, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料（ボルダリング用レンタルシューズ1足300円）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "キッズスペースとボルダリングが無料で楽しめる浪江町の屋内パークです。", "business_hours": "平日：キッズ10:00-17:00／ボルダリング13:30-20:00、土日祝10:00-17:00", "closed_days": "毎週水曜日及び年末年始", "official_url": "https://www.town.namie.fukushima.jp/soshiki/12/30833.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "ふかや風の子広場", "city": "飯舘村", "latitude": 37.698361, "longitude": 140.7354469, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "飯舘村の木のぬくもりある屋内広場で乳幼児から小学生まで遊べます。", "business_hours": "午前10時～正午、午後1時30分～4時（1日2回制）", "closed_days": "毎週水曜日、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/hukayakazenoko.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "スポーツプラザ（白河市屋内遊び場）", "city": "白河市", "latitude": 37.123438, "longitude": 140.2295309, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "未就学児が体を動かして遊べる白河市の無料屋内遊び場です。", "business_hours": "9:00-12:00、13:00-17:00（混雑時4部制）", "closed_days": "毎週水曜日・12月28日～1月4日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai05.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "白河市屋内遊び場「わんぱーく」", "city": "白河市", "latitude": 37.127201, "longitude": 140.214935, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "マイタウン白河4階の入替制屋内遊び場で、雨でも安心して遊べます。", "business_hours": "10時00分～11時30分／13時00分～14時30分／15時00分～16時30分（90分入替制）", "closed_days": "毎週木曜日（祝日の場合は翌平日）、年末年始（12月28日～1月4日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/wanpark.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "キッズランドにしごう", "city": "西郷村", "latitude": 37.1422911, "longitude": 140.1897013, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "0歳から小6まで無料で遊べる西郷村の大型屋内キッズランドです。", "business_hours": null, "closed_days": "火曜日、年末年始", "official_url": "https://www.vill.nishigo.fukushima.jp/kosodate_kyoiku/kosodate/sisetuannai/2143.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "こども子育ち応援センター", "city": "西郷村", "latitude": 37.1371288, "longitude": 140.1124661, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "西郷村の乳幼児親子が平日に集える子育て応援スペースです。", "business_hours": "10時00分～14時00分", "closed_days": "日曜日、祝日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai16.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "中島村健康づくり交流センター輝らフィット", "city": "中島村", "latitude": 37.1526052, "longitude": 140.3497062, "play_types": ["indoor", "active"], "is_free": false, "price_text": "未就学児は無料、小学生以上は有料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "キッズスペースを備えた中島村の健康づくり交流センターです。", "business_hours": "火17:00～21:00、水～金9:30～21:00、土日祝9:30～19:00", "closed_days": "毎週月曜日、年末年始（12月29日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/nakajimamura01.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "矢吹町屋内外運動場（未来くるやぶき）", "city": "矢吹町", "latitude": 37.2060934, "longitude": 140.3291147, "play_types": ["indoor", "active"], "is_free": false, "price_text": "町内利用者100円、町外200円。保護者は無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "屋内外の大型遊具で0歳から小3まで遊べる矢吹町の運動場です。", "business_hours": "10:00～11:30／13:00～14:30／15:00～16:30（3クール入替制）", "closed_days": "毎週月曜日、年末年始（12月29日～1月3日）", "official_url": "https://yabuki-playground.com/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "棚倉町子どもセンター", "city": "棚倉町", "latitude": 37.0286002, "longitude": 140.3875893, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "城跡近くにある棚倉町の子どもセンターで乳幼児から18歳まで利用できます。", "business_hours": "9時00分～17時00分", "closed_days": "日曜日、祝日、年末年始（12月29日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai71.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "子育て支援施設「ぽっぽ」", "city": "塙町", "latitude": 36.9600326, "longitude": 140.4106287, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "はなわこども園内の子育て支援施設で未就学児親子が集えます。", "business_hours": "午前9時15分～11時30分", "closed_days": "土・日・祝日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai68.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "トレーニングルーム（鮫川村）", "city": "鮫川村", "latitude": 37.0431103, "longitude": 140.5046864, "play_types": ["indoor", "active"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "鮫川村の屋内で体を動かして遊べるスペースです。", "business_hours": null, "closed_days": null, "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai47.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "大江戸温泉物語『こどもひろば』", "city": "会津若松市", "latitude": 37.5238237, "longitude": 139.8875528, "play_types": ["indoor", "active"], "is_free": false, "price_text": "こども60分500円、保護者200円", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "温泉ホテル内のキッズパークで土日祝に親子で遊べます。", "business_hours": "土日祝および長期休暇期間 10:00～17:00（最終受付16:00）", "closed_days": "平日（土日祝のみ営業）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai09.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "子育て支援センター「なのはな」", "city": "会津若松市", "latitude": 37.475536, "longitude": 139.932816, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "こども園内の子育て支援センターで乳幼児親子がゆっくり過ごせます。", "business_hours": "9時00分～12時00分、14時00分～16時00分", "closed_days": "土、日、祝、お盆、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai26.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "こどもの秘密基地 木育の森 もくれん", "city": "会津若松市", "latitude": 37.5038398, "longitude": 139.9303061, "play_types": ["indoor", "create"], "is_free": false, "price_text": "フリー利用は年齢により0円～1,500円、会員制あり", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "木のおもちゃがいっぱいの木育スペースで五感を使って遊べます。", "business_hours": "10:00-12:00、13:00-17:00（入替制）", "closed_days": "月曜日、年末年始、創立記念日（7月）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai38.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "ふれあいハウス・キッズスペース", "city": "会津若松市", "latitude": 37.5103858, "longitude": 139.9463764, "play_types": ["indoor"], "is_free": true, "price_text": "無料（キッズスペースのみ）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "年末年始以外は毎日開いている会津若松市の無料キッズスペースです。", "business_hours": "9時00分～17時00分", "closed_days": "年末年始（12月30日～1月5日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai98.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "福島県立博物館", "city": "会津若松市", "latitude": 37.4889865, "longitude": 139.9345131, "play_types": ["create", "indoor"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "鶴ヶ城のそばで福島の歴史や自然を体感できる、雨の日にもぴったりの博物館です。", "business_hours": "9：30～17：00（チケット販売は16：30まで）", "closed_days": "毎週月曜日（祝日の場合は翌火曜日）、祝日の翌日（土日除く）、館内整備日、年末年始", "official_url": "https://general-museum.fcs.ed.jp/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "屋内子ども遊び場 めごぷらざ", "city": "喜多方市", "latitude": 37.6580055, "longitude": 139.8767596, "play_types": ["indoor", "active"], "is_free": false, "price_text": "広域圏内（喜多方市・北塩原村・西会津町）小学生以下無料、圏外200円。1歳未満・保護者無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "複合施設内の入替制屋内遊び場で、雪国の冬でも思いきり遊べます。", "business_hours": "第1～4クール（75分入替制、10時～16時30分）", "closed_days": "毎月第2、第4火曜日（祝日の場合は翌日以降の最も近い平日）、12月29日～1月3日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/megoplaza.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "カイギュウランドたかさと", "city": "喜多方市", "latitude": 37.6008356, "longitude": 139.7555029, "play_types": ["create", "indoor"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "化石発掘体験ができる喜多方市高郷の体験型ミュージアムです。", "business_hours": null, "closed_days": null, "official_url": "https://www.city.kitakata.fukushima.jp/site/kaigyuu/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "子育てコミュニティ施設 キッズランド芝草", "city": "西会津町", "latitude": 37.5916673, "longitude": 139.6347566, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "週末に親子で集える西会津町の子育てコミュニティ施設です。", "business_hours": "9時00分～17時00分", "closed_days": "平日、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/kidsland.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "カメリーナ幼児室", "city": "猪苗代町", "latitude": 37.561383, "longitude": 140.1001934, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "総合体育館カメリーナ内の幼児室で夜まで無料で遊べます。", "business_hours": "9時00分～21時00分", "closed_days": "年末年始・施設メンテナンス・イベント開催時等", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai10.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "アクアマリンいなわしろカワセミ水族館", "city": "猪苗代町", "latitude": 37.5614387, "longitude": 140.0745716, "play_types": ["animal", "indoor"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "カワセミや川の生きものに出会える猪苗代の小さな水族館です。", "business_hours": "通常期9時30分～17時00分、冬季9時30分～16時00分", "closed_days": "年中無休", "official_url": "https://www.aquamarine.or.jp/kawasemi/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "磐梯山慧日寺資料館", "city": "磐梯町", "latitude": 37.5671971, "longitude": 139.9854575, "play_types": ["create", "indoor"], "is_free": false, "price_text": "一般・大学生300円、高校生以下無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "高校生以下無料で歴史体験ができる磐梯町の資料館です。", "business_hours": "9時00分～17時00分（受付16時30分まで、開館期間4月10日～11月30日）", "closed_days": "開館期間中無休（冬期休館）", "official_url": "https://www.town.bandai.fukushima.jp/site/enichiji/enichiji_0103_siryokan.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "会津坂下町子育てふれあい交流センター", "city": "会津坂下町", "latitude": 37.5514618, "longitude": 139.8438821, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "会津坂下町の親子がふれあえる無料の交流センターです。", "business_hours": "9時00分～17時00分", "closed_days": "月曜日、祝日、お盆期間（8月14日～16日）、年末年始（12月28日～1月4日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai69.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "三島町町民センター", "city": "三島町", "latitude": 37.483794, "longitude": 139.6653687, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "三島町の町民センターでこどもが自由に遊べるスペースがあります。", "business_hours": "8時30分～17時00分", "closed_days": "無休（年末年始除く）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai70.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "会津美里町子育て支援センター「すくすくハウス」", "city": "会津美里町", "latitude": 37.463001, "longitude": 139.846349, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "会津美里町の未就学児親子が集えるすくすくハウスです。", "business_hours": "9時00分～11時30分、13時30分～16時30分", "closed_days": "日曜日・祝日、年末年始（12月29日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/sukusukuhouse.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "わんぱく広場（会津総合運動公園）", "city": "会津若松市", "latitude": 37.4601354, "longitude": 139.9301904, "play_types": ["active"], "is_free": true, "price_text": "無料", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "大型遊具で思いきり遊べる会津総合運動公園内の無料広場です。", "business_hours": null, "closed_days": null, "official_url": "https://aizu-sportspark.jp/facilities/a_wanpaku/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "あづま総合体育館 軽運動室", "city": "福島市", "latitude": 37.7247635, "longitude": 140.3649537, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "広い体育館の軽運動室で、雨の日も思いきり体を動かして遊べます。", "business_hours": "9時00分～21時00分（土日祝日及び春・夏・冬休み期間17時まで、入れ替え制）", "closed_days": "火曜日、年末年始（12月29日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai14.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "のびのび広場（こむこむ館）", "city": "福島市", "latitude": 37.751984, "longitude": 140.461044, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "福島駅近くのこむこむ館3階にある、未就学児親子向けの無料屋内広場です。", "business_hours": "平日9時30分～17時00分、土日祝9時30分～17時30分（最終入場は終了15分前）", "closed_days": "火曜日（祝日の場合は翌平日、学校の長期休業日を除く）、12月31日・1月1日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai-dokuzi3.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "ももRabiキッズパーク", "city": "福島市", "latitude": 37.8040577, "longitude": 140.4111243, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "道の駅ふくしまの中にある入替制の屋内遊び場で、買い物ついでに遊べます。", "business_hours": "10時00分～16時30分（3部入れ替え制）", "closed_days": "なし（メンテナンスのための臨時休館あり）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunaikodomoasobiba.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "げんきキッズパークにほんまつ", "city": "二本松市", "latitude": 37.5951279, "longitude": 140.4646982, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "安達ヶ原ふるさと村にある屋内遊び場で、赤ちゃんから小学生まで無料で遊べます。", "business_hours": "9時30分～10時45分、11時15分～12時30分、14時00分～15時15分、15時45分～17時00分", "closed_days": "1月1日・毎週水曜日（祝日の場合は翌日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai37.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "スマイルパークほばら", "city": "伊達市", "latitude": 37.8130806, "longitude": 140.5452854, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "3部入替制でゆったり遊べる、伊達市保原の無料屋内遊び場です。", "business_hours": "（1）10時00分～11時30分（2）13時30分～14時40分（3）15時30分～16時40分", "closed_days": "毎週水曜日（休日にあたるときは、その直後の平日）、年末年始（12月29日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai64.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "パレオパークやながわ", "city": "伊達市", "latitude": 37.8541829, "longitude": 140.603338, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "梁川にある無料の屋内遊び場で、雨や雪の日ものびのび遊べます。", "business_hours": "10時00分～11時30分、13時00分～14時30分、15時00分～16時30分", "closed_days": "毎週木曜日（休日にあたるときは、その直後の平日）、年末年始（12月29日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai63.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "ファミリーパークだて", "city": "伊達市", "latitude": 37.8247108, "longitude": 140.4958949, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "定員制で混雑しにくい、小学生以下向けの無料屋内遊び場です。", "business_hours": "10時00分～11時30分、14時00分～15時50分（各回定員80人）", "closed_days": "毎週金曜日（休日にあたるときは、その直後の平日）、年末年始（12月29日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/familyparkdate.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "プリンス・ウィリアムズ・パーク 屋内あそび場", "city": "本宮市", "latitude": 37.5092131, "longitude": 140.4438447, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "英国王子の名を冠した公園内の屋内あそび場で、乳幼児から小学生まで遊べます。", "business_hours": "1回目10時00分～12時30分、2回目13時00分～16時00分（夏休み期間中は～17時00分）", "closed_days": "毎週水曜日（祝日の場合は翌日）、年末年始（12月28日～1月4日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai02.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "さくらんぼひろば", "city": "本宮市", "latitude": 37.5133794, "longitude": 140.4014988, "play_types": ["indoor"], "is_free": null, "price_text": "市内在住者は無料、市外の方は登録料500円", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "ソレイユ本宮2階にある、就学前の親子がゆったり過ごせるひろばです。", "business_hours": "10時00分～16時00分", "closed_days": "毎週土曜日・日曜日・月曜日、祝日、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/sakuranbo-hiroba.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "本宮市民元気いきいき応援プラザ（えぽか）子育てサロン", "city": "本宮市", "latitude": 37.5167198, "longitude": 140.3958624, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "夕方まで開いている本宮市のプラザ内子育てサロンで、就学前親子が遊べます。", "business_hours": "9時00分～18時00分（最終受付17時45分）", "closed_days": "毎週火曜日（祝日の際は別日）、年末年始（12月29日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/epoka.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "桑折町屋内温水プール・多目的スタジオ「イコーゼ！」（屋内遊び場）", "city": "桑折町", "latitude": 37.8477722, "longitude": 140.5276901, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "温水プール施設イコーゼ！の中にある、乳幼児と小学生向けの無料遊び場です。", "business_hours": "10時00分～11時30分、13時30分～16時30分", "closed_days": "毎週火曜日（祝日または振替休日の場合は直後の平日）、年末年始（12月29日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai65.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "くにみももたん広場", "city": "国見町", "latitude": 37.8681124, "longitude": 140.5650013, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "入替制で安心して遊べる、国見町の無料屋内遊び場です。", "business_hours": "第1回10時30分～11時30分、第2回13時15分～14時15分、第3回15時00分～16時00分", "closed_days": "毎週水曜日（祝日の場合は開館し翌日休館）、年末年始（12月29日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai56.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "こども木育広場 つながる～む", "city": "国見町", "latitude": 37.8725435, "longitude": 140.5465065, "play_types": ["indoor", "create"], "is_free": true, "price_text": "無料（ワークショップ等は実費負担あり）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "道の駅国見あつかしの郷にある、木のおもちゃで遊べる木育広場です。", "business_hours": "9時30分～12時00分、13時00分～16時00分", "closed_days": "毎週火曜日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/tunagaroom.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "おてひめわくわくランド（川俣町子どもの屋内運動場）", "city": "川俣町", "latitude": 37.6599777, "longitude": 140.6060405, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "小学6年生まで遊べる川俣町の屋内運動場で、雪の日も元気に走り回れます。", "business_hours": "第1部10時00分～11時30分、第2部13時00分～14時15分、第3部14時45分～16時00分", "closed_days": "毎週木曜日（祝日にあたるときは翌日等の平日）、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai61.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "ペップキッズこおりやま（郡山市元気な遊びのひろば）", "city": "郡山市", "latitude": 37.3972064, "longitude": 140.396648, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料（ペップキッチンのみ材料費500円）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "県内最大級の屋内遊び場で、砂場やトランポリンなど遊びが盛りだくさんです。", "business_hours": null, "closed_days": "第2水曜日とその翌日、第3水曜日とその翌日、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai03.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "キッズスタジオ コスタ", "city": "郡山市", "latitude": 37.407608, "longitude": 140.342224, "play_types": ["indoor", "active"], "is_free": false, "price_text": "1時間100円（3歳以下は無料）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "スポーツクラブ内のキッズスタジオで、体を動かす遊びが楽しめます。", "business_hours": "月～金・日曜10時30分～14時00分、土曜11時00分～14時00分", "closed_days": "毎月末29～31日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai19.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "なかよしキッズ柴宮（柴宮幼稚園）", "city": "郡山市", "latitude": 37.3726998, "longitude": 140.3416276, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "幼稚園の施設を開放した、未就学児が安心して遊べるスペースです。", "business_hours": "火～金14時00分～16時30分、土曜13時00分～14時00分（要予約）", "closed_days": "第2土曜、日、月、祝祭日、年末年始 他", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai43.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "はなさと保育園ホール", "city": "郡山市", "latitude": 37.4117543, "longitude": 140.4026441, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "保育園のホールを開放しており、就学前の親子が気軽に遊べます。", "business_hours": "10時30分～11時30分、16時00分～17時00分", "closed_days": "日、月、金、土（園行事等で利用不可の場合あり）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai22.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "プチママンキッズひろば", "city": "郡山市", "latitude": 37.4083449, "longitude": 140.33783, "play_types": ["indoor"], "is_free": true, "price_text": "無料（イベント、講座は有料）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "平日に毎日開いている、小学生以下の親子向け屋内ひろばです。", "business_hours": "10時00分～16時00分", "closed_days": "土曜、日曜、祝日、年末年始、お盆期間", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai23.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "ユーパロつつみ分園", "city": "郡山市", "latitude": 37.3961794, "longitude": 140.3335296, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "保育園の分園を開放した、小学生以下の親子向け遊び場です。", "business_hours": "11時00分～13時00分", "closed_days": "土曜日、日曜日、祝祭日、お盆休み、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai44.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "ユーパロ室ノ木保育園", "city": "郡山市", "latitude": 37.3754951, "longitude": 140.3328851, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "保育園開放型のスペースで、未就学児が午後にゆっくり遊べます。", "business_hours": "13時00分～15時00分", "closed_days": "日曜日、祝日、お盆、年末年始、プール利用時（6月～8月）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai45.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "カルチャーパーク屋内子どもの遊び場", "city": "郡山市", "latitude": 37.3672501, "longitude": 140.3292356, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "カルチャーパーク内の屋内遊び場で、0歳から15歳まで無料で遊べます。", "business_hours": "9時00分～17時00分", "closed_days": "毎週月曜日（祝日に当たるときは最も近い平日）、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/ko-riyama1.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "大槻公園子どもの遊び場（体験学習施設）", "city": "郡山市", "latitude": 37.3961528, "longitude": 140.30428, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "大槻公園にある体験学習施設型の遊び場で、広い公園遊びと合わせて楽しめます。", "business_hours": "9時00分～17時00分", "closed_days": "毎週月曜日（祝日に当たるときは最も近い平日）、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/ko-riyama2.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "八山田こども公園子どもの遊び場（体験学習施設）", "city": "郡山市", "latitude": 37.4326735, "longitude": 140.375162, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "八山田こども公園内の屋内遊び場で、雨の日も外遊び気分で過ごせます。", "business_hours": "9時00分～17時00分", "closed_days": "毎週月曜日（祝日に当たるときは最も近い平日）、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/ko-riyama3.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "わいわいパーク", "city": "須賀川市", "latitude": 37.2889681, "longitude": 140.3754023, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "須賀川市中心部にある入替制の屋内遊び場で、未就学児が安心して遊べます。", "business_hours": "9時00分～10時10分、10時40分～11時50分、13時30分～14時40分、15時10分～16時20分", "closed_days": "火曜日（祝日の場合はその翌日以降の最初の平日）、年末年始（12月29日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/waiwaipark.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "長沼保育所内子育て支援センター", "city": "須賀川市", "latitude": 37.289802, "longitude": 140.219283, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "保育所内の支援センターで、午前中に施設開放を行っています。", "business_hours": "施設開放9時00分～12時00分、子育て相談14時00分～16時00分", "closed_days": "土曜、日曜、祝日、12月29日～1月3日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai-dokuzi5.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "白江こども園内子育て支援センター", "city": "須賀川市", "latitude": 37.299851, "longitude": 140.2850293, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "こども園内の支援センターで、未就学児親子が一日遊べます。", "business_hours": "9時00分～12時00分、13時00分～16時00分", "closed_days": "土曜、日曜、祝日、12月29日～1月3日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai-dokuzi6.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "大東こども園内子育て支援センター", "city": "須賀川市", "latitude": 37.2660431, "longitude": 140.4222327, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "こども園に併設された支援センターで、親子でのんびり過ごせます。", "business_hours": "9時00分～12時00分、14時00分～16時00分", "closed_days": "土曜、日曜、祝日、12月29日～1月3日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/daitoukodomoen.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "プリムラこども園 子育て支援センターにこにこひろば", "city": "須賀川市", "latitude": 37.3189151, "longitude": 140.3627234, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "午前も午後も開放している、未就学児親子向けのひろばです。", "business_hours": "ほっとタイム9時00分～11時30分、おてんとさま13時30分～16時00分", "closed_days": "土日祝日、年末年始、園行事の場合", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai30.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "天泉こども園子育て支援センター「つぼみ」", "city": "須賀川市", "latitude": 37.2928192, "longitude": 140.3753958, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "妊婦さんも利用できる、こども園併設の子育て支援センターです。", "business_hours": "9時30分～12時00分、13時30分～16時00分", "closed_days": "土・日・祝日、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/tsubomi.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "白鳩保育園子育て支援センター「ぽっぽクラブ」", "city": "須賀川市", "latitude": 37.283139, "longitude": 140.371672, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "保育園併設の支援センターで、午前は施設開放、午後は相談ができます。", "business_hours": "9時30分～16時00分（9時30分～11時30分施設開放、13時00分～16時00分子育て相談）", "closed_days": "土・日・祝日、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/poppoclub.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "認定こども園くるみの木 子育て支援センター「くるみ」", "city": "須賀川市", "latitude": 37.2981829, "longitude": 140.3529057, "play_types": ["indoor"], "is_free": true, "price_text": "無料（参加費が必要なイベントもあります）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "こども園併設の支援センターで、未就園児親子の遊びと相談の場です。", "business_hours": "9時30分～11時00分（13時00分～17時00分は子育て相談・電話相談）", "closed_days": "不定休（毎月25日発行の予定表で案内）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/kurumi.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "おひさまドーム", "city": "田村市", "latitude": 37.4453462, "longitude": 140.5814651, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "船引運動場内のドーム型屋内遊び場で、天候を気にせず体を動かせます。", "business_hours": "10時00分～11時30分、13時00分～14時30分、15時00分～16時30分", "closed_days": "毎週木曜日（祝日の場合はその翌日以降の最初の平日）、年末年始（12月29日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/ohisamadome.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "つどいの広場（鏡石町健康福祉センターほがらかん内）", "city": "鏡石町", "latitude": 37.2431422, "longitude": 140.3504169, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "健康福祉センター内のひろばで、就学前の親子が一日過ごせます。", "business_hours": "9時00分～16時00分", "closed_days": "毎週月曜日（祝日の場合は翌平日）、毎月第4土曜日、年末年始（12月29日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/tudoinohiroba.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "いしかわスキッズひろば", "city": "石川町", "latitude": 37.145908, "longitude": 140.457733, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "モトガッコ1階にある屋内ひろばで、小学2年生まで無料で遊べます。", "business_hours": "10時00分～12時00分、13時00分～16時00分", "closed_days": "火曜日（祝日はオープン）、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/ishikawaskids.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "わくわくらんどたまかわ", "city": "玉川村", "latitude": 37.2267701, "longitude": 140.433333, "play_types": ["indoor", "active"], "is_free": false, "price_text": "100円/回（玉川村民と生後半年までの乳児は無料）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "福島空港ターミナルビル内の遊び場で、飛行機を見たあとに遊べます。", "business_hours": "10時00分～11時30分、13時00分～14時30分、15時00分～16時30分（90分入替制）", "closed_days": "なし", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai25.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "ひらたこども園 子育て広場", "city": "平田村", "latitude": 37.217949, "longitude": 140.5702919, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "こども園の広場開放で、就学前の子どもが保護者と遊べます。", "business_hours": "9時45分～11時00分", "closed_days": "月・水・土・日・年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai67.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "平田村こども家庭センター「あるくす」", "city": "平田村", "latitude": 37.217949, "longitude": 140.5702919, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "高校生以下まで利用できる、平田村のこども家庭センターです。", "business_hours": "8時30分～17時00分", "closed_days": "土日・祝祭日・年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai99.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "古殿町地域福祉センター（コスモス荘）内キッズスペース", "city": "古殿町", "latitude": 37.0862468, "longitude": 140.558703, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "福祉センター内のキッズスペースで、年齢を問わず親子で利用できます。", "business_hours": "8時30分～17時30分", "closed_days": "日、祝日、お盆（8月14日～8月16日）、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/furudonotiiki.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "三春町子育て支援センター", "city": "三春町", "latitude": 37.4417544, "longitude": 140.4915753, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "三春町中心部にある支援センターで、就学前の親子が平日に遊べます。", "business_hours": "月～金曜日9時00分～12時00分、13時00分～16時30分", "closed_days": "土、日、祝日、年末年始、臨時休業日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai32.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "岩江こども園子育て支援室", "city": "三春町", "latitude": 37.422454, "longitude": 140.440048, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "こども園の支援室で、火・水曜の午前に親子で遊べます。", "business_hours": "毎週火・水曜日10時00分～12時00分", "closed_days": "祝日及び年末年始のほか臨時休館あり", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai101.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "こどもの笑顔ひろば", "city": "小野町", "latitude": 37.279453, "longitude": 140.633469, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "乳幼児親子向けの定員制ひろばで、ゆったり遊べます。", "business_hours": "9時30分～17時00分（定員制）", "closed_days": "月曜日、月末、12月28日～1月4日、臨時休業日あり", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/kodomonoegaohiroba.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "小野町町民体育館 幼児体育室", "city": "小野町", "latitude": 37.2891843, "longitude": 140.6220075, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "町民体育館の幼児体育室で、幼児が思いきり体を動かせます。", "business_hours": "9時00分～17時00分（定員制）", "closed_days": "12月28日～1月4日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/onomachichoumintaiikukan.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "いわきっず もりもり", "city": "いわき市", "latitude": 37.013184, "longitude": 140.8481898, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "石炭・化石館ほるるの中にある入替制の屋内遊び場です。", "business_hours": "平日9時30分～16時00分（80分入替制）、土日祝・小学校長期休業期間9時30分～16時40分（70分入替制）", "closed_days": "毎週火曜日（祝日・振替休日の場合はその翌日）、12月29日～1月3日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai35.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "いちごぐみ・園庭開放（勿来カトリック幼稚園）", "city": "いわき市", "latitude": 36.903202, "longitude": 140.789078, "play_types": ["indoor"], "is_free": null, "price_text": "いちごぐみは1回150円（初回入会金1,000円）、園庭開放は無料", "rain_friendly": false, "indoor_or_outdoor": null, "kid_appeal": "幼稚園の親子教室と園庭開放で、入園前の子どもが遊べます。", "business_hours": "いちごぐみ・園庭開放とも月1～2回、午前10時から", "closed_days": "幼稚園が定めた日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai53.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "すくのび広場", "city": "いわき市", "latitude": 37.050274, "longitude": 140.889313, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "いわきアリオスなどで開かれる、多世代が集える無料ひろばです。", "business_hours": "10時00分～13時00分（平日）、10時00分～15時00分（日曜祝日）", "closed_days": "火・木・土、不定期（日）、お盆、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai06.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "まことっこ広場", "city": "いわき市", "latitude": 37.014481, "longitude": 140.840652, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "幼稚園開放型の広場で、小学生以下の子どもが遊べます。", "business_hours": "10時00分～12時00分、15時00分～17時00分", "closed_days": "水、土、日、祝祭日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai55.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "チャイルドハウスふくまる", "city": "いわき市", "latitude": 37.1073566, "longitude": 140.9943616, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "四倉にある無料の屋内遊び場で、小学生まで一日遊べます。", "business_hours": "10時00分～16時00分", "closed_days": "第3火曜日、年末年始（12月30日～1月3日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai29.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "わんぱくひろば みゅうみゅう", "city": "いわき市", "latitude": 36.9440668, "longitude": 140.9051903, "play_types": ["indoor", "active"], "is_free": false, "price_text": "1人300円（平日は600円のフリーパスあり。1歳未満、誕生日の人、障害者手帳所持者は無料）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "いわき・ら・ら・ミュウ内の遊び場で、港の観光と一緒に楽しめます。", "business_hours": "平日10時00分～17時40分（100分制）、繁忙日10時00分～17時50分（50分入替制）", "closed_days": "いわき・ら・ら・ミュウの休館日に準ずる", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai11.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "いわき市こども元気センター", "city": "いわき市", "latitude": 36.9148934, "longitude": 140.796742, "play_types": ["indoor", "active"], "is_free": true, "price_text": "無料（昼間。夜間の屋内運動場は960円/時間）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "遊戯室や屋内運動場を備えた、いわき市南部の大型こども施設です。", "business_hours": "9時00分～21時00分（夜間は一部施設のみ）", "closed_days": "毎月最終日曜日、12月29日～1月3日", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/iwakikodomo.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "霊山こどもの村", "city": "伊達市", "latitude": 37.759003, "longitude": 140.688415, "play_types": ["active", "create"], "is_free": false, "price_text": "子ども（3歳～中学生）300円、大人（高校生～）600円、0～2歳無料", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "大型遊具と遊びと学びのミュージアムがある、霊山の高原レジャーランドです。", "business_hours": "9時～16時30分（最終入園16時）", "closed_days": "毎週水曜日（祝日・GW・お盆期間を除く）、冬期休園（12月中旬～3月中旬）", "official_url": "https://kodomo-ryozen.org/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "十六沼公園（ぴょんぴょんドーム）", "city": "福島市", "latitude": 37.815472, "longitude": 140.415985, "play_types": ["active"], "is_free": true, "price_text": "無料（ぴょんぴょんドーム。運動施設は有料）", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "ふわふわのぴょんぴょんドームで跳びはねて遊べる大きな公園です。", "business_hours": "午前9時～午後5時（ぴょんぴょんドーム）", "closed_days": "年末年始", "official_url": "https://www.city.fukushima.fukushima.jp/shisetsu/koen-sports/2140.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "四季の里", "city": "福島市", "latitude": 37.7130128, "longitude": 140.3623872, "play_types": ["active", "create"], "is_free": true, "price_text": "入園無料", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "広い芝生とクラフト体験が楽しめる、入園無料の農村公園です。", "business_hours": "9時00分～21時00分（施設ごとに異なる）", "closed_days": "年末年始及び施設点検日を除き無休", "official_url": "https://www.f-shikinosato.com/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "じょーもぴあ宮畑", "city": "福島市", "latitude": 37.7891209, "longitude": 140.5158964, "play_types": ["create", "active"], "is_free": null, "price_text": "公園区域は無料。体験学習施設は一般200円・高校生以下100円・未就学児無料", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "火おこしや勾玉づくりなど縄文体験と屋外遊具で遊べる史跡公園です。", "business_hours": "午前9時～午後5時", "closed_days": "体験学習施設・露出展示棟は火曜日（祝日の場合は翌日以降の祝日にあたらない日）、年末年始（12月29日～1月3日）。公園区域は定休日なし", "official_url": "https://www.city.fukushima.fukushima.jp/shisetsu/shogaigakushu-bunka/1611.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "信夫山公園", "city": "福島市", "latitude": 37.7662057, "longitude": 140.4665371, "play_types": ["active"], "is_free": null, "price_text": "利用無料の記載なし（都市公園）", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "タコ型すべり台など遊具がそろう、福島市街を望む信夫山の公園です。", "business_hours": null, "closed_days": null, "official_url": "https://www.city.fukushima.fukushima.jp/shisetsu/koen-sports/2146.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "UFOふれあい館", "city": "福島市", "latitude": 37.6877032, "longitude": 140.5341586, "play_types": ["create", "indoor"], "is_free": false, "price_text": "一般400円、小・中学生200円", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "UFO資料がいっぱいの展示館で、親子で不思議な世界を楽しめます。", "business_hours": "午前9時から午後5時まで", "closed_days": "月曜日（祝日の場合は翌日）、12月29日～1月3日", "official_url": "https://www.city.fukushima.fukushima.jp/shisetsu/kanko/2187.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "東北サファリパーク", "city": "二本松市", "latitude": 37.6389354, "longitude": 140.3661367, "play_types": ["animal"], "is_free": false, "price_text": "大人2,900円、小人1,800円", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "車の中から動物たちを間近に見られる放し飼いのサファリパークです。", "business_hours": "9時00分～17時00分（最終入場受付16時00分）", "closed_days": "不定（悪天候・メンテナンス等により休園する場合あり）", "official_url": "https://tohoku-safaripark.co.jp/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "安達ヶ原ふるさと村", "city": "二本松市", "latitude": 37.5948986, "longitude": 140.4643802, "play_types": ["active", "create"], "is_free": true, "price_text": "入園無料（先人館など一部有料）", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "昔の家並みと広場で遊べる公園で、げんきキッズパークも隣接しています。", "business_hours": "開園時間9時00分～17時00分（12月～2月は16時00分まで）", "closed_days": "ふるさと館・先人館は毎週水曜日（祝日を除く）", "official_url": "http://www.michinoeki-adachi.jp/furusato/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "やながわ希望の森公園", "city": "伊達市", "latitude": 37.8543856, "longitude": 140.6239324, "play_types": ["active"], "is_free": null, "price_text": "入園無料の記載なし（施設ごとに料金あり）", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "丸太のフィールドアスレチックやミニSLがある森の公園です。", "business_hours": "管理棟受付時間9時～17時", "closed_days": "毎週水曜。11月中旬から3月31日までは閉園期間（散策やアスレチック利用は可能）", "official_url": "https://www.city.fukushima-date.lg.jp/soshiki/30/901.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "保原総合公園", "city": "伊達市", "latitude": 37.81857, "longitude": 140.5698747, "play_types": ["active"], "is_free": true, "price_text": "遊具エリアは無料（運動施設は有料）", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "くだもの広場や大型スライダーなど年齢別の遊具広場がそろう公園です。", "business_hours": null, "closed_days": null, "official_url": "https://www.city.fukushima-date.lg.jp/soshiki/23/899.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "みずいろ公園", "city": "本宮市", "latitude": 37.5184309, "longitude": 140.4005338, "play_types": ["water", "active"], "is_free": true, "price_text": "無料", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "夏は滝や噴水で水遊びができる、安達太良川沿いの親水公園です。", "business_hours": "終日開放", "closed_days": "なし", "official_url": "https://www.city.motomiya.lg.jp/map/065.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "アクアマリンふくしま（環境水族館）", "city": "いわき市", "latitude": 36.9431029, "longitude": 140.901476, "play_types": ["animal", "water", "indoor"], "is_free": false, "price_text": "大人1,850円、小～高校生900円、未就学児無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "潮目の海の大水槽や蛇の目ビーチの磯遊びが人気の体験型水族館です。", "business_hours": "通常期（3月21日～11月30日）9時～17時30分、冬季9時～17時（最終入場は閉館1時間前）", "closed_days": "無休", "official_url": "https://www.aquamarine.or.jp/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "いわき市石炭・化石館ほるる", "city": "いわき市", "latitude": 37.0126168, "longitude": 140.8484916, "play_types": ["create", "indoor"], "is_free": false, "price_text": "大人660円、中・高・大学生440円、小学生330円、未就学児無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "恐竜の化石と炭鉱の歴史を見学できる博物館で、屋内遊び場も併設です。", "business_hours": "9時00分～17時00分（入館は16時30分まで）", "closed_days": "第3火曜日（祝日・振替休日の場合は翌日）、1月1日", "official_url": "https://www.sekitankasekikan.or.jp/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "三崎公園", "city": "いわき市", "latitude": 36.938235, "longitude": 140.9202791, "play_types": ["active"], "is_free": true, "price_text": "無料（バーベキュー広場等も使用料無料）", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "全長74.8メートルの巨大ローラーすべり台がある海辺の大型公園です。", "business_hours": "バーベキュー広場・ピクニックガーデンは午前9時から午後4時まで", "closed_days": null, "official_url": "http://www.city.iwaki.lg.jp/www/contents/1001000001262/index.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "いわきマリンタワー", "city": "いわき市", "latitude": 36.939396, "longitude": 140.92001, "play_types": ["vehicle", "indoor"], "is_free": false, "price_text": "一般330円、中高大生220円、小学生170円", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "海抜106メートルの展望室から海と街を見渡せる三崎公園のタワーです。", "business_hours": "9時00分～17時00分（最終入館16時30分）", "closed_days": "毎月第3火曜日（祝日の場合翌日）、1月1日（8月は無休）", "official_url": "https://kankou-iwaki.or.jp/spot/10051", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "スパリゾートハワイアンズ", "city": "いわき市", "latitude": 36.9935302, "longitude": 140.8156638, "play_types": ["water", "indoor"], "is_free": false, "price_text": "大人3,570円、小人2,250円、幼児1,640円（通常期）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "一年中水遊びができる大型屋内プールとフラダンスショーが名物です。", "business_hours": "10時00分～21時30分（時期により変動あり）", "closed_days": "不定期（全館休館日あり。公式サイトの施設カレンダー参照）", "official_url": "https://www.hawaiians.co.jp/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "21世紀の森公園", "city": "いわき市", "latitude": 37.0172033, "longitude": 140.8623239, "play_types": ["active"], "is_free": null, "price_text": "利用無料の記載なし（わんぱく広場等は自由利用）", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "わんぱく広場や広い芝生で一日遊べる、いわき最大級の公園です。", "business_hours": null, "closed_days": "火曜日（ヨークいわきスタジアム、屋内多目的広場等の有料施設のみ）", "official_url": "https://kankou-iwaki.or.jp/spot/10226", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "県営いわき公園", "city": "いわき市", "latitude": 37.0113223, "longitude": 140.9203053, "play_types": ["active"], "is_free": null, "price_text": "利用無料の記載なし（県営都市公園）", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "アスレチックと大型遊具の『遊びのゾーン』がある県営の大きな公園です。", "business_hours": null, "closed_days": null, "official_url": "https://www.pref.fukushima.lg.jp/sec/41380a/iwakikouen-top.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "勿来の関公園", "city": "いわき市", "latitude": 36.8674403, "longitude": 140.7816107, "play_types": ["active"], "is_free": null, "price_text": "利用無料の記載なし（文学歴史館等は有料）", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "ピクニック広場の複合遊具と歴史散策が楽しめる公園です。", "business_hours": null, "closed_days": null, "official_url": "https://kankou-iwaki.or.jp/spot/10217", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "松ヶ岡公園", "city": "いわき市", "latitude": 37.0555116, "longitude": 140.8826943, "play_types": ["active"], "is_free": null, "price_text": "利用無料の記載なし（都市公園）", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "複合遊具と桜の名所で知られる、いわき平地区の公園です。", "business_hours": null, "closed_days": null, "official_url": "https://kankou-iwaki.or.jp/spot/10265", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "いわき市フラワーセンター", "city": "いわき市", "latitude": 37.0897816, "longitude": 140.9038633, "play_types": ["active", "create"], "is_free": true, "price_text": "入場無料", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "ドーム型温室と花いっぱいの園内を親子で散策できる無料施設です。", "business_hours": "園内9時00分～17時00分、展示温室9時00分～16時30分", "closed_days": "毎週火曜日（祝日の場合は翌日）、12月29日～1月3日", "official_url": "https://kankou-iwaki.or.jp/spot/10041", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "いわき市暮らしの伝承郷", "city": "いわき市", "latitude": 37.0077914, "longitude": 140.9158135, "play_types": ["create", "indoor"], "is_free": false, "price_text": "大人340円、高・大学生220円、小・中学生170円", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "茅葺きの古民家で昔の暮らしを体験しながら学べる施設です。", "business_hours": "4月～9月9時00分～17時00分、10月～3月9時00分～16時30分（最終入場は閉館30分前）", "closed_days": "火曜日（祝日の場合は翌平日）、12月29日～1月1日", "official_url": "https://kankou-iwaki.or.jp/spot/10035", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "いわき市アンモナイトセンター", "city": "いわき市", "latitude": 37.1756046, "longitude": 140.943455, "play_types": ["create", "indoor"], "is_free": false, "price_text": "一般260円、大学・高専・高校生190円、中学・小学生110円（発掘体験含むは一般730円等）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "本物の地層で化石の発掘体験ができる、めずらしい体験型施設です。", "business_hours": "9時00分～17時00分（最終入場は閉館30分前）", "closed_days": "月曜日（祝日の場合は翌日）、1月1日", "official_url": "https://kankou-iwaki.or.jp/spot/10031", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "ワンダーファーム", "city": "いわき市", "latitude": 37.1241854, "longitude": 140.9465875, "play_types": ["food", "create"], "is_free": null, "price_text": "入場料の記載なし。体験ごとに料金設定（トマト収穫体験800円など）", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "トマトの収穫体験やレストランが楽しめる観光農場です。", "business_hours": null, "closed_days": null, "official_url": "https://www.wonder-farm.co.jp/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "道の駅裏磐梯", "city": "北塩原村", "latitude": 37.6650112, "longitude": 140.0440332, "play_types": ["outdoor"], "is_free": true, "price_text": "入場無料", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "裏磐梯の自然の入口にある道の駅。だんご屋や森のアイス工房があり、ドライブ休憩がてら家族で立ち寄れます。", "business_hours": "売店9:00～17:00、食堂11:00～15:00", "closed_days": "冬期間毎週水曜定休", "official_url": "https://michinoeki-urabandai.com/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "東日本大震災・原子力災害伝承館", "city": "双葉町", "latitude": 37.458039, "longitude": 141.0264269, "play_types": ["indoor"], "is_free": false, "price_text": "小中高生300円（一般600円）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "震災と復興を親子で学べる展示施設。屋内で天候を問わず見学でき、小中学生の学びの場に適しています。", "business_hours": "9:00～17:00（最終入館16:30）", "closed_days": "毎週火曜日（祝日の場合は開館し直後の平日休館）、12月29日～1月3日", "official_url": "https://www.fipo.or.jp/lore/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "フォレストパークあだたら", "city": "大玉村", "latitude": 37.5812993, "longitude": 140.3289791, "play_types": ["outdoor"], "is_free": false, "price_text": "オートキャンプ場日帰り: 大人660円・小中学生330円・幼児無料", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "森林体験プログラムやキャンプが楽しめる大型の森林公園。幼児は無料で、日帰りでも森遊びデビューにぴったりです。", "business_hours": "問い合わせ受付9:00～17:00（日帰り入浴12:00～21:00）", "closed_days": null, "official_url": "https://www.fpadatara.com/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "道の駅 季の里天栄", "city": "天栄村", "latitude": 37.2436106, "longitude": 140.2438447, "play_types": ["outdoor"], "is_free": true, "price_text": "入場無料", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "天栄村の直売所併設の道の駅。地元の食材やソフトクリームを楽しみながら家族でひと休みできます。", "business_hours": "9:00～17:30", "closed_days": "第1水曜日", "official_url": "https://www.kinosato.fukushima.jp/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "川内村室内型村民プール（もりたろうプール）", "city": "川内村", "latitude": 37.3314291, "longitude": 140.8151478, "play_types": ["indoor", "water"], "is_free": false, "price_text": "有料（料金は公式で要確認）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "天候を問わず遊べる川内村の室内温水プール。夜まで営業しており親子で水遊びが楽しめます。", "business_hours": "9:30～20:30（最終受付19:30、遊泳終了20:15）", "closed_days": "毎週木曜日（祝祭日の場合は翌営業日）", "official_url": "http://www.fep0294.co.jp/kawauchi/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "道の駅 からむし織の里しょうわ", "city": "昭和村", "latitude": 37.3261559, "longitude": 139.6297677, "play_types": ["indoor"], "is_free": true, "price_text": "入場無料（体験は有料）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "からむし織のコースター作り体験ができる道の駅。ベビーベッド完備で赤ちゃん連れでも安心です。", "business_hours": "9:00～17:00", "closed_days": "12月29日～1月3日", "official_url": "https://www.michi-no-eki.jp/stations/views/19043", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "やないづ町立斎藤清美術館", "city": "柳津町", "latitude": 37.5284262, "longitude": 139.7217198, "play_types": ["indoor"], "is_free": false, "price_text": "小・中学生無料（一般510円、高校・大学生300円）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "版画家・斎藤清の作品を親子で鑑賞できる町立美術館。小中学生は無料で、雨の日のおでかけにも向いています。", "business_hours": "9:00～16:30（最終入館16:00）", "closed_days": "毎週月曜日（祝日の場合は翌日）、年末年始、展示替え時", "official_url": "https://www.town.yanaizu.fukushima.jp/bijutsu/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "さつき公園", "city": "泉崎村", "latitude": 37.1571862, "longitude": 140.3195154, "play_types": ["outdoor", "water"], "is_free": true, "price_text": "入園無料（プール等一部施設は有料）", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "プールや運動施設がそろう泉崎村の総合公園。夏はさつき公園プールで親子の水遊びが楽しめます。", "business_hours": null, "closed_days": null, "official_url": "https://www.vill.izumizaki.fukushima.jp/kyoiku-bunka-sports/sports/satsukikoen/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "吉田富三記念館", "city": "浅川町", "latitude": 37.071738, "longitude": 140.414648, "play_types": ["indoor"], "is_free": false, "price_text": "有料（料金は公式で要確認）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "がん研究で世界的に知られる浅川町出身の医学者・吉田富三の記念館。科学に興味を持つきっかけになる学びスポットです。", "business_hours": null, "closed_days": null, "official_url": "https://www.tomizo.or.jp/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "道の駅 あいづ 湯川・会津坂下", "city": "湯川村", "latitude": 37.5570724, "longitude": 139.8623613, "play_types": ["outdoor"], "is_free": true, "price_text": "入場無料", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "公園が併設された会津の大型道の駅。ベビーベッドも完備で、買い物ついでに子どもを外遊びさせられます。", "business_hours": "9:00～18:00（施設により異なる）", "closed_days": "1月1日、2月第3水曜日（臨時休業あり）", "official_url": "http://heso-aizu.jp/", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "矢祭山友情の森", "city": "矢祭町", "latitude": 36.8507455, "longitude": 140.3984057, "play_types": ["outdoor"], "is_free": false, "price_text": "入園料: 大人400円/日・小中学生200円/日", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "バンガローやキャンプ場、ハイキングコースを備えたレクリエーション施設。矢祭山の自然の中で親子のアウトドア体験ができます。", "business_hours": "総合案内施設9:00～17:00（営業期間4月1日～11月30日）", "closed_days": "12月1日～3月31日（冬期閉園）", "official_url": "https://www.town.yamatsuri.fukushima.jp/page/page000540.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "もりもりランド・かつらお", "city": "葛尾村", "latitude": 37.5219844, "longitude": 140.7250202, "play_types": ["outdoor"], "is_free": false, "price_text": "有料（キャンプ・バンガロー等、料金は公式で要確認）", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "キャンプ場・バンガロー・マウンテンバイクコースを備えた葛尾村のアウトドア拠点。家族で自然遊びが楽しめます。", "business_hours": "利用期間4月中旬～11月30日（チェックイン13:00～17:00）", "closed_days": "12月～4月中旬（冬期閉鎖）", "official_url": "https://katsurao-village.com/feature/morimoriland", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "道の駅 奥会津かねやま", "city": "金山町", "latitude": 37.4717795, "longitude": 139.5300682, "play_types": ["outdoor"], "is_free": true, "price_text": "入場無料", "rain_friendly": false, "indoor_or_outdoor": "outdoor", "kid_appeal": "奥会津の特産品がそろう道の駅。ベビーベッド完備で、只見川沿いドライブの休憩に家族で立ち寄れます。", "business_hours": "9:00～18:30", "closed_days": "12月30日～1月2日", "official_url": "https://www.michi-no-eki.jp/stations/views/19040", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": false}, {"name": "相馬市中央児童センター", "city": "相馬市", "latitude": 37.805187, "longitude": 140.914142, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "相馬市の中央児童センターで未就学児から中学生まで遊べます。", "business_hours": "10時00分～12時00分、13時00分～17時00分", "closed_days": "日・祝・年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai27.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": true}, {"name": "猪苗代町児童館（子育てサロン日向ぼっこ）", "city": "猪苗代町", "latitude": 37.5664732, "longitude": 140.1145297, "play_types": ["indoor"], "is_free": true, "price_text": "無料（一部イベントは参加費あり）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "猪苗代町の児童館で乳幼児親子と小学生が過ごせます。", "business_hours": "10時00分～16時00分", "closed_days": "日曜日、祝日、週1日不定休、お盆、年末年始", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/tudoiinawashiro.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": true}, {"name": "小野町児童館 キラッと☆おの", "city": "小野町", "latitude": 37.2815604, "longitude": 140.6316314, "play_types": ["indoor"], "is_free": true, "price_text": "無料（事業で使用する材料等の費用負担の場合あり）", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "18歳未満なら誰でも利用できる小野町の児童館です。", "business_hours": "9時00分～18時00分", "closed_days": "日曜日、祝日、その他（1月1日～4日、8月13日～16日、12月29日～31日）", "official_url": "https://www.pref.fukushima.lg.jp/sec/21055a/okunai102.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": true}, {"name": "蓬莱児童センター", "city": "福島市", "latitude": 37.6986113, "longitude": 140.4746691, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "地域の子どもが自由に遊べる福島市の児童センターです。", "business_hours": "月曜日から土曜日の午前10時から午後6時まで", "closed_days": "日曜日、祝日、年末年始", "official_url": "https://www.city.fukushima.fukushima.jp/kseisaku-shien/kosodate/kosodate/hoikuen/seido07.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": true}, {"name": "清水児童センター", "city": "福島市", "latitude": 37.782103, "longitude": 140.434345, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "地域の子どもが自由に遊べる福島市の児童センターです。", "business_hours": "月曜日から土曜日の午前10時から午後6時まで", "closed_days": "日曜日、祝日、年末年始", "official_url": "https://www.city.fukushima.fukushima.jp/kseisaku-shien/kosodate/kosodate/hoikuen/seido07.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": true}, {"name": "東浜児童センター", "city": "福島市", "latitude": 37.763167, "longitude": 140.4857469, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "地域の子どもが自由に遊べる福島市の児童センターです。", "business_hours": "月曜日から土曜日の午前10時から午後6時まで", "closed_days": "日曜日、祝日、年末年始", "official_url": "https://www.city.fukushima.fukushima.jp/kseisaku-shien/kosodate/kosodate/hoikuen/seido07.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": true}, {"name": "野田児童センター", "city": "福島市", "latitude": 37.7689237, "longitude": 140.4243742, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "地域の子どもが自由に遊べる福島市の児童センターです。", "business_hours": "月曜日から土曜日の午前10時から午後6時まで", "closed_days": "日曜日、祝日、年末年始", "official_url": "https://www.city.fukushima.fukushima.jp/kseisaku-shien/kosodate/kosodate/hoikuen/seido07.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": true}, {"name": "渡利児童センター", "city": "福島市", "latitude": 37.747599, "longitude": 140.481101, "play_types": ["indoor"], "is_free": true, "price_text": "無料", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "地域の子どもが自由に遊べる福島市の児童センターです。", "business_hours": "月曜日から土曜日の午前10時から午後6時まで", "closed_days": "日曜日、祝日、年末年始", "official_url": "https://www.city.fukushima.fukushima.jp/kseisaku-shien/kosodate/kosodate/hoikuen/seido07.html", "google_maps_url": null, "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "editorial_scale": null, "has_kids_space": null, "has_zashiki": null, "has_kids_chair": null, "is_jidokan": true}];
+const CITIES=[["福島市", 37.7608, 140.4747, "県北"], ["郡山市", 37.4004, 140.3597, "県中"], ["いわき市", 37.0505, 140.8878, "いわき"], ["会津若松市", 37.4948, 139.9298, "会津"], ["須賀川市", 37.2861, 140.3728, "県中"], ["白河市", 37.1262, 140.2109, "県南"], ["伊達市", 37.8189, 140.5628, "県北"], ["南相馬市", 37.6422, 140.9576, "相双"], ["二本松市", 37.5849, 140.4314, "県北"], ["喜多方市", 37.6511, 139.8746, "会津"], ["相馬市", 37.7969, 140.9195, "相双"], ["田村市", 37.4408, 140.5763, "県中"], ["本宮市", 37.5131, 140.3936, "県北"], ["西郷村", 37.1408, 140.1561, "県南"], ["会津美里町", 37.4586, 139.8391, "会津"], ["矢吹町", 37.2012, 140.3387, "県南"], ["三春町", 37.441, 140.493, "県中"], ["会津坂下町", 37.5615, 139.8213, "会津"], ["石川町", 37.1441, 140.4271, "県中"], ["南会津町", 37.2007, 139.7735, "南会津"], ["鏡石町", 37.2486, 140.3446, "県中"], ["棚倉町", 37.0322, 140.3789, "県南"], ["猪苗代町", 37.5203, 140.1039, "会津"], ["川俣町", 37.665, 140.5967, "県北"], ["桑折町", 37.8484, 140.5177, "県北"], ["大玉村", 37.5333, 140.369, "県北"], ["小野町", 37.2882, 140.6288, "県中"], ["国見町", 37.8772, 140.5497, "県北"], ["新地町", 37.8757, 140.9184, "相双"], ["塙町", 36.9573, 140.4092, "県南"], ["泉崎村", 37.1573, 140.2977, "県南"], ["玉川村", 37.2131, 140.4076, "県中"], ["浅川町", 37.0801, 140.4103, "県中"], ["平田村", 37.2182, 140.5721, "県中"], ["西会津町", 37.5867, 139.6501, "会津"], ["天栄村", 37.2536, 140.2825, "県中"], ["広野町", 37.2153, 140.9944, "相双"], ["矢祭町", 36.8672, 140.4322, "県南"], ["楢葉町", 37.2823, 140.9926, "相双"], ["中島村", 37.1518, 140.3583, "県南"], ["下郷町", 37.2377, 139.8797, "南会津"], ["古殿町", 37.0899, 140.5606, "県中"], ["只見町", 37.3477, 139.3149, "南会津"], ["磐梯町", 37.5581, 140.0243, "会津"], ["富岡町", 37.3457, 141.0068, "相双"], ["湯川村", 37.5478, 139.8983, "会津"], ["鮫川村", 37.0424, 140.5085, "県南"], ["柳津町", 37.5279, 139.7188, "会津"], ["浪江町", 37.4939, 140.9931, "相双"], ["北塩原村", 37.6115, 139.974, "会津"], ["川内村", 37.3374, 140.8087, "相双"], ["金山町", 37.4543, 139.5253, "会津"], ["大熊町", 37.3907, 140.9631, "相双"], ["飯舘村", 37.6791, 140.7351, "相双"], ["三島町", 37.4696, 139.6427, "会津"], ["昭和村", 37.3271, 139.6249, "会津"], ["檜枝岐村", 37.0248, 139.3891, "南会津"], ["葛尾村", 37.5019, 140.7666, "相双"], ["双葉町", 37.4497, 141.0092, "相双"]];
+const ANJO=[37.7608, 140.4747];
+
+/* ===== helpers ===== */
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function haversineKm(la1,lo1,la2,lo2){
+  const R=6371,d2r=Math.PI/180;
+  const dLa=(la2-la1)*d2r,dLo=(lo2-lo1)*d2r;
+  const a=Math.sin(dLa/2)**2+Math.cos(la1*d2r)*Math.cos(la2*d2r)*Math.sin(dLo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a));
+}
+// same-complex / too-close detection (bug fix: prevent same-site facilities from
+// being treated as distinct stops in a single plan)
+function isSameComplex(a,b){
+  if(!a||!b) return false;
+  if(a===b) return true;
+  const na=(a.name||'').trim(), nb=(b.name||'').trim();
+  const da=a.description||'', db=b.description||'';
+  if(na.length>=3 && nb.length>=3){
+    if(na.includes(nb)||nb.includes(na)) return true;
+  }
+  if(na.length>=3 && db.includes(na)) return true;
+  if(nb.length>=3 && da.includes(nb)) return true;
+  return false;
+}
+function tooClose(a,b,minKm){
+  if(!a||!b||a.latitude==null||a.longitude==null||b.latitude==null||b.longitude==null) return false;
+  return haversineKm(a.latitude,a.longitude,b.latitude,b.longitude)<minKm;
+}
+// combined "same place, should not both appear in one plan" check
+function isSamePlace(a,b,minKm){
+  if(isSameComplex(a,b)) return true;
+  return tooClose(a,b,minKm==null?1.0:minKm);
+}
+// minutes ≈ 18.3 + 1.244*km (回帰式)
+function driveMinutesFrom(o,s){
+  if(s.latitude==null||s.longitude==null) return null;
+  if(o.isAnjo && s.estimated_drive_minutes_from_anjo!=null) return s.estimated_drive_minutes_from_anjo;
+  const km=haversineKm(o.lat,o.lng,s.latitude,s.longitude);
+  let m=Math.round((18.3+1.244*km)/5)*5;
+  return m<5?5:m;
+}
+const PLAY={
+  animal:{e:'🦁'},active:{e:'🛝'},water:{e:'💦'},create:{e:'🔬'},
+  vehicle:{e:'🚃'},indoor:{e:'☔'},food:{e:'🍽'},nature:{e:'🌳'},museum_science:{e:'🔬'}
+};
+function spotEmoji(s){
+  const p=(s.play_types||[])[0]||'indoor';
+  return (PLAY[p]||PLAY.indoor).e;
+}
+// price parse: return representative per-person upper number, or null(unknown)
+function parsePrice(s){
+  if(s.is_free) return 0;
+  const t=s.price_text||'';
+  if(!t) return null;
+  if(/無料|入館無料|入園無料|入場無料/.test(t) && !/有料|円/.test(t.replace(/無料/g,''))) return 0;
+  const nums=[];
+  const re=/([0-9,]+)\s*円/g; let m;
+  while((m=re.exec(t))){ const n=parseInt(m[1].replace(/,/g,''),10); if(!isNaN(n)) nums.push(n); }
+  if(!nums.length) return null;
+  return Math.max(...nums);
+}
+const WD=['日','月','火','水','木','金','土'];
+// target Date for a "when" choice
+function targetDate(when){
+  const d=new Date(); d.setHours(0,0,0,0);
+  if(when==='today') return d;
+  if(when==='tomorrow'){ d.setDate(d.getDate()+1); return d; }
+  const dow=d.getDay();
+  if(when==='sat'){ let add=(6-dow+7)%7; if(add===0&&new Date().getDay()!==6)add=7; d.setDate(d.getDate()+add); return d; }
+  if(when==='sun'){ let add=(0-dow+7)%7; if(add===0&&new Date().getDay()!==0)add=7; d.setDate(d.getDate()+add); return d; }
+  return d;
+}
+// closed check: exclude if closed_days encodes a weekday == target weekday (simple pattern only)
+function isClosedOn(s,date){
+  const dow=date.getDay();               // 0=日 ... 6=土
+  const isWeekend=(dow===0||dow===6);
+  const tw=WD[dow];
+  const cd=s.closed_days||'';
+  const bh=s.business_hours||'';
+
+  // (1) closed_days: weekday chars immediately followed by 曜 （既存: 「日曜」「月曜」等）
+  const re=/([日月火水木金土])曜/g; let m; const days=new Set();
+  while((m=re.exec(cd))) days.add(m[1]);
+  if(days.has(tw)) return true;
+
+  // (2) closed_days: 「土日祝」「土日」「日祝」等 曜なしの週末表記
+  //     （例: 防災教育センター=土日祝, トヨタ会館の日祝系）
+  if(/土日祝|土日|週末/.test(cd)){ if(isWeekend) return true; }
+  else if(/日祝/.test(cd)){ if(dow===0) return true; }        // 日祝→日曜休
+  // 「日・祝」「日曜・祝日」等は(1)の日曜で拾えるが、念のため
+  if(/(^|[^平])日休|日曜休|日祝休/.test(cd) && dow===0) return true;
+
+  // (3) 週末に平日限定営業の施設を除外
+  //     business_hours/closed_days が「月〜金」「平日のみ」等を示し、
+  //     かつ土日営業（土日/週末/年中無休）の記載が無い場合
+  if(isWeekend){
+    const txt=bh+' '+cd;
+    const weekdayOnly=/(月[〜～ー\-]金|平日のみ|平日限定|平日のみ営業|平日 ?\d|要予約.*平日|平日 ?要予約)/.test(txt)
+      || /^平日/.test(bh.trim());
+    const weekendOpen=/土日|週末|土曜|年中無休|土祝|日祝日?営業|土日祝.*(営業|\d{1,2}:\d{2})/.test(txt);
+    if(weekdayOnly && !weekendOpen) return true;
+  }
+  return false;
+}
+// main stay minutes
+function stayMinutes(s){
+  const name=s.name||'', pt=s.play_types||[];
+  if(/パーク|ランド|ワールド|牧場|ズー|水族館|動物園/.test(name)) return 120;
+  if(pt.includes('indoor')&&/遊び|キッズ|プレイ|あそび/.test(name)) return 120;
+  if(pt.includes('museum_science')||pt.includes('create')) return 90;
+  if(pt.includes('active')||pt.includes('nature')) return 90;
+  if(pt.includes('indoor')) return 90;
+  return 90;
+}
+function fmtTime(mins){
+  mins=((mins%1440)+1440)%1440;
+  const h=Math.floor(mins/60), m=mins%60;
+  return h+':'+String(m).padStart(2,'0');
+}
+function priceLabel(s){
+  const p=parsePrice(s);
+  const isFood=(s.play_types||[]).includes('food');
+  if(p===0) return isFood?'食事代: 実費（店舗により異なります）':'料金: 無料';
+  if(p==null) return isFood?'食事代: 実費（店舗により異なります）':'料金は公式サイトで確認';
+  if(isFood) return '食事代: 1人あたり '+p.toLocaleString()+'円〜目安';
+  return '大人1人あたり '+p.toLocaleString()+'円目安';
+}
+// parse "9:00〜17:00" style business_hours into {openMin,closeMin} in minutes-of-day. null if unparseable.
+function parseBusinessHours(s){
+  const bh=s.business_hours||'';
+  if(!bh) return null;
+  const m=bh.match(/(\d{1,2}):(\d{2})\s*[〜～\-ー~]\s*(\d{1,2}):(\d{2})/);
+  if(!m) return null;
+  const openMin=(+m[1])*60+(+m[2]);
+  let closeMin=(+m[3])*60+(+m[4]);
+  if(closeMin<=openMin) closeMin+=24*60; // overnight edge-case, keep simple
+  return {openMin,closeMin};
+}
+// meal label auto-switch by arrival time (minutes-of-day)
+function mealLabelFor(arrivalMin){
+  const t=((arrivalMin%1440)+1440)%1440;
+  if(t>=630&&t<870) return 'ランチ';       // 10:30-14:30
+  if(t>=870&&t<990) return 'カフェ・休憩';   // 14:30-16:30
+  if(t>=990) return '夕食';                // 16:30-
+  return '食事';
+}
+// business-hours vs arrival-time consistency check
+// returns {exclude:bool, bonus:bool, note:string|null}
+function closingInfo(s,arrivalMin){
+  const bh=parseBusinessHours(s);
+  if(!bh) return {exclude:false,bonus:false,note:null}; // unparseable -> skip silently
+  const t=((arrivalMin%1440)+1440)%1440;
+  const remain=bh.closeMin-t;
+  if(t<bh.openMin||remain<=0) return {exclude:true,bonus:false,note:null};
+  if(remain<30) return {exclude:true,bonus:false,note:null};
+  if(remain<60) return {exclude:false,bonus:false,note:'※閉館まで時間が短いため、短時間利用がおすすめです'};
+  return {exclude:false,bonus:false,note:null};
+}
+// short tag-line rendering for kid_features (2-3 lines instead of one long sentence)
+function foodTagLines(s){
+  const feats=s.kid_features||[];
+  if(!feats.length) return '';
+  const chunks=[]; const per=Math.ceil(feats.length/Math.min(3,Math.max(1,Math.ceil(feats.length/2))));
+  for(let i=0;i<feats.length;i+=2) chunks.push(feats.slice(i,i+2).join('・'));
+  const lim=chunks.slice(0,3);
+  return '<div class="foodtags">'+lim.map(c=>'<span class="ftline">'+esc(c)+'</span>').join('')+'</div>';
+}
+function transitLabel(fromName,toName,minutes){
+  return esc(fromName)+' → '+esc(toName)+' 約'+minutes+'分目安';
+}
+
+/* ===== state ===== */
+const state={origin:null,driveTime:null,when:null,depart:null,ages:new Set(),budget:null,weather:null,variant:0,plans:[],expandedDrive:false,shownMains:[],cycledNote:false};
+let step=0;
+let CURRENT_CAP=Infinity;
+function capFor(dt){
+  if(dt==='20') return 20;
+  if(dt==='40') return 40;
+  if(dt==='60') return 60;
+  return Infinity;
+}
+function nextCap(cap){
+  // 自動拡大は段階的に。全国版は県内でも距離が出るため、上限90分で打ち止め（無制限にしない）
+  if(cap===20) return 40;
+  if(cap===40) return 60;
+  if(cap===60) return 90;
+  return cap;
+}
+
+/* ===== wizard nav ===== */
+const steps=[...document.querySelectorAll('.step')];
+const dots=[...document.querySelectorAll('#dots .d')];
+function render(){
+  steps.forEach(s=>s.classList.toggle('active',+s.dataset.step===step));
+  dots.forEach((d,i)=>{ d.classList.toggle('on',i===step); d.classList.toggle('done',i<step); });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function canNext(){
+  if(step===0) return !!state.origin;
+  if(step===1) return !!state.driveTime;
+  if(step===2) return !!state.when&&!!state.depart;
+  if(step===3) return state.ages.size>0;
+  if(step===4) return !!state.budget;
+  return false;
+}
+function refreshNext(){
+  const btn=steps[step].querySelector('[data-next]');
+  if(btn) btn.disabled=!canNext();
+}
+document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>{
+  if(!canNext()) return;
+  if(step===4){ generate(); return; }
+  step++; render(); refreshNext();
+}));
+document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>{
+  if(step>0){ step--; render(); refreshNext(); }
+}));
+
+/* origin select */
+const originSel=document.getElementById('originSel');
+CITIES.forEach(([nm,lat,lng])=>{
+  const o=document.createElement('option'); o.value=lat+','+lng; o.textContent=nm; originSel.appendChild(o);
+});
+originSel.value=CITIES[0][1]+','+CITIES[0][2];
+state.origin={name:'福島市',lat:ANJO[0],lng:ANJO[1],isAnjo:true};
+originSel.addEventListener('change',()=>{
+  const [lat,lng]=originSel.value.split(',').map(Number);
+  const nm=originSel.options[originSel.selectedIndex].textContent;
+  state.origin={name:nm,lat,lng,isAnjo:(nm==='福島市')};
+  document.getElementById('geoNote').textContent='';
+  refreshNext();
+});
+document.getElementById('geoBtn').addEventListener('click',()=>{
+  const note=document.getElementById('geoNote');
+  if(!navigator.geolocation){ note.textContent='この端末では現在地を取得できません'; return; }
+  note.textContent='現在地を取得中…';
+  navigator.geolocation.getCurrentPosition(pos=>{
+    state.origin={name:'現在地',lat:pos.coords.latitude,lng:pos.coords.longitude,isAnjo:false};
+    // nearest city label for friendliness
+    let best=null,bd=1e9;
+    CITIES.forEach(([nm,la,ln])=>{const d=haversineKm(pos.coords.latitude,pos.coords.longitude,la,ln); if(d<bd){bd=d;best=nm;}});
+    note.textContent='📍 現在地を設定しました（最寄り: '+best+'付近）';
+    refreshNext();
+  },()=>{ note.textContent='現在地を取得できませんでした。市町村を選んでください'; });
+});
+
+/* drive time preference */
+document.querySelectorAll('#driveBtns .bigbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#driveBtns .bigbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); state.driveTime=b.dataset.drive; refreshNext();
+}));
+
+/* when */
+document.querySelectorAll('#whenBtns .bigbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#whenBtns .bigbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); state.when=b.dataset.when;
+  // reset departure sub-question when the date changes
+  state.depart=null;
+  document.querySelectorAll('#departTodayBtns .bigbtn,#departDayBtns .bigbtn').forEach(x=>x.classList.remove('on'));
+  const isToday=state.when==='today';
+  document.getElementById('departWrap').style.display='block';
+  document.getElementById('departQ').textContent=isToday?'何時に出発？':'出発は？';
+  document.getElementById('departTodayBtns').style.display=isToday?'':'none';
+  document.getElementById('departDayBtns').style.display=isToday?'none':'';
+  refreshNext();
+}));
+/* departure time (today: offset from now) */
+document.querySelectorAll('#departTodayBtns .bigbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#departTodayBtns .bigbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); state.depart={mode:'offset',min:parseInt(b.dataset.depart,10)}; refreshNext();
+}));
+/* departure time (tomorrow/weekend: am or noon slot) */
+document.querySelectorAll('#departDayBtns .bigbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#departDayBtns .bigbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); state.depart={mode:'slot',slot:b.dataset.slot}; refreshNext();
+}));
+/* ages (multi) */
+document.querySelectorAll('#ageBtns .bigbtn').forEach(b=>b.addEventListener('click',()=>{
+  const a=b.dataset.age;
+  if(state.ages.has(a)){ state.ages.delete(a); b.classList.remove('on'); }
+  else { state.ages.add(a); b.classList.add('on'); }
+  refreshNext();
+}));
+/* budget */
+document.querySelectorAll('#budgetBtns .bigbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#budgetBtns .bigbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); state.budget=b.dataset.budget; refreshNext();
+}));
+
+/* ===== weather ===== */
+async function fetchWeather(){
+  try{
+    const o=state.origin;
+    const url='https://api.open-meteo.com/v1/forecast?latitude='+o.lat+'&longitude='+o.lng+
+      '&daily=weather_code,temperature_2m_max,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=7';
+    const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),6000);
+    const r=await fetch(url,{signal:ctrl.signal}); clearTimeout(t);
+    if(!r.ok) return null;
+    const j=await r.json();
+    const td=targetDate(state.when);
+    const now=new Date(); now.setHours(0,0,0,0);
+    let idx=Math.round((td-now)/86400000); if(idx<0)idx=0; if(idx>6)idx=6;
+    const daily=j.daily||{};
+    return {
+      precip:(daily.precipitation_probability_max||[])[idx],
+      tmax:(daily.temperature_2m_max||[])[idx],
+      code:(daily.weather_code||[])[idx]
+    };
+  }catch(e){ return null; }
+}
+
+/* ===== plan generation ===== */
+function scoreSpot(s,date,w,arrivalMin){
+  let sc=0;
+  // age
+  const feats=(s.kid_features||[]).join(' ');
+  const pt=s.play_types||[];
+  if(state.ages.has('0-2')){
+    if(pt.includes('indoor')) sc+=2;
+    if(pt.includes('active')) sc+=1;
+    if(/おむつ替え|授乳|ベビー/.test(feats)) sc+=2;
+  }
+  if(state.ages.has('3-5')){
+    if(pt.includes('active')||pt.includes('animal')||pt.includes('water')) sc+=2;
+    if(pt.includes('indoor')) sc+=1;
+  }
+  if(state.ages.has('elem')){
+    if(pt.includes('create')||pt.includes('active')||pt.includes('vehicle')||pt.includes('museum_science')) sc+=2;
+  }
+  // heat preference (soft)
+  if(w&&w.tmax!=null&&w.tmax>=34){
+    if(pt.includes('water')) sc+=3;
+    else if(pt.includes('indoor')||s.rain_friendly) sc+=2;
+  }
+  // free preference on free budget
+  if(state.budget==='free'&&s.is_free) sc+=1;
+  // night park / evening handling
+  if(arrivalMin!=null){
+    const t=((arrivalMin%1440)+1440)%1440;
+    const outdoorPark=(s.indoor_or_outdoor==='outdoor')&&(pt.includes('active')||pt.includes('nature'));
+    if(outdoorPark){
+      if(t>=19*60) sc-=100; // pushed to bonus-only tier
+      else if(t>=18*60+30) sc-=6;
+    }
+    // water play after 16:00: lower priority in favor of indoor/light/near-meal
+    if(pt.includes('water')&&t>=16*60) sc-=4;
+  }
+  return sc;
+}
+// 児童館・子育て支援センター系(is_jidokan===true)はプランナーの対象外。
+// マップ上の🏠チップ専用スポットという設計であり、メイン/ランチ/余力のどの枠にも入れない。
+// 「遠出の帰り道に児童センター系には寄らない」というユーザー方針のガードをここに一本化する。
+function isJidokan(s){ return s&&s.is_jidokan===true; }
+function budgetPass(s){
+  if(state.budget==='any') return true;
+  if(state.budget==='free') return s.is_free===true;
+  const p=parsePrice(s);
+  if(p==null) return true; // unknown: keep
+  if(state.budget==='1000') return p<=1000;
+  if(state.budget==='3000') return p<=3000;
+  return true;
+}
+function shuffle(arr,seed){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function buildPool(date,w){
+  const o=state.origin;
+  const rain=w&&w.precip!=null&&w.precip>=50;
+  const start=startMinutes();
+  let cand=SPOTS.filter(s=>{
+    if(s.latitude==null) return false;
+    if(isJidokan(s)) return false; // 児童館・子育て支援センター系はプランナー対象外（🏠チップ専用）
+    const pt=s.play_types||[];
+    if(pt.length===1&&pt[0]==='food') return false; // pure food -> lunch only
+    const dm=driveMinutesFrom(o,s);
+    if(dm==null||dm>CURRENT_CAP) return false;
+    if(!budgetPass(s)) return false;
+    if(rain && !isRainOk(s)) return false;
+    if(isClosedOn(s,date)) return false;
+    // business-hours vs arrival-time consistency
+    const arrival=start+dm;
+    const ci=closingInfo(s,arrival);
+    if(ci.exclude) return false;
+    // outdoor park after 19:00 -> bonus tier only, excluded from main pool
+    const outdoorPark=(s.indoor_or_outdoor==='outdoor')&&(pt.includes('active')||pt.includes('nature'));
+    if(outdoorPark && ((arrival%1440+1440)%1440)>=19*60) return false;
+    // ages 0-2: no additional spots after dinner time -> exclude late main candidates for 0-2 only groups
+    if(state.ages.has('0-2')&&state.ages.size===1 && ((arrival%1440+1440)%1440)>=17*60+30) return false;
+    s.__closeNote=ci.note;
+    return true;
+  });
+  // score + attach distance
+  cand.forEach(s=>{ const dm=driveMinutesFrom(o,s); s.__sc=scoreSpot(s,date,w,start+dm); s.__dm=dm; });
+  // Drive-time preference is treated as "outing mood", not just an upper-limit filter:
+  // - 20分: near-first stays as-is (already a nearby/quick outing).
+  // - 40分: distance-neutral — shuffle away the near-first tiebreak so 20〜40分圏のA級 mixes in naturally.
+  // - 60分/any: tiering is applied afterward (see generatePlans), so a plain shuffle tiebreak is fine here too.
+  if(state.driveTime==='20'){
+    cand.sort((a,b)=> b.__sc-a.__sc || a.__dm-b.__dm);
+  } else {
+    cand=shuffle(cand);
+    cand.sort((a,b)=> b.__sc-a.__sc);
+  }
+  // full pool (candidate-count check for drive-time expansion needs the true count)
+  return cand;
+}
+// Reorder a scored pool so the drive-time "mood" is honored when picking mains:
+// - 60分 ("せっかくの遠出"): prefer A/S spots that are actually 30分+ away; only fall back to
+//   near/B spots if nothing qualifies (caller sets state.nearFallback in that case).
+// - any ("遠くてもOK"): put S級 (1日がかり目的地) spots first.
+function applyDriveMoodTier(pool){
+  state.nearFallback=false; state.sFeatured=false;
+  if(!pool.length) return pool;
+  if(state.driveTime==='60'){
+    const preferred=pool.filter(s=>(s.editorial_scale==='S'||s.editorial_scale==='A')&&s.__dm>=30);
+    if(preferred.length) return preferred;
+    state.nearFallback=true;
+    return pool;
+  }
+  if(state.driveTime==='any'){
+    const sTier=pool.filter(s=>s.editorial_scale==='S');
+    if(sTier.length){
+      state.sFeatured=true;
+      const rest=pool.filter(s=>s.editorial_scale!=='S');
+      return sTier.concat(rest);
+    }
+    return pool;
+  }
+  return pool;
+}
+// 雨天フォールバック: rain_friendly 未整備の県が多いため play_types に indoor を含む施設も屋内扱い
+function isRainOk(s){
+  const pt=s.play_types||[];
+  return s.indoor_or_outdoor==='indoor' || s.rain_friendly===true || pt.includes('indoor') || pt.includes('museum_science');
+}
+function pickLunch(main,date){
+  const o=state.origin;
+  const c=SPOTS.filter(s=>{
+    if(s===main||s.latitude==null) return false;
+    if(isJidokan(s)) return false; // 児童館・子育て支援センター系はプランナー対象外（🏠チップ専用）
+    if(isSameComplex(s,main)) return false; // 同一敷地はメイン↔ランチでも除外（距離は例外だが施設名一致は除外）
+    if(!(s.play_types||[]).includes('food')) return false;
+    if(isClosedOn(s,date)) return false;
+    const km=haversineKm(main.latitude,main.longitude,s.latitude,s.longitude);
+    if(km>15) return false;
+    const dmO=driveMinutesFrom(o,s);
+    if(dmO==null||dmO>CURRENT_CAP) return false;
+    s.__km=km; return true;
+  });
+  c.sort((a,b)=>a.__km-b.__km);
+  // 食事系スポットが圏内に3件未満のエリアでは、無理な遠距離ランチを出さず案内カードに置き換える
+  LUNCH_SPARSE = (c.length < 3);
+  return c.length ? c[0] : null;
+}
+let LUNCH_SPARSE=false;
+function pickSub(main,lunch,mainDriveMin,date,w){
+  const o=state.origin;
+  const rain=w&&w.precip!=null&&w.precip>=50;
+  const c=SPOTS.filter(s=>{
+    if(s===main||s.latitude==null) return false;
+    if(isJidokan(s)) return false; // 児童館・子育て支援センター系は余力枠からも除外（帰り道に寄らない）
+    if(s.is_free!==true) return false;
+    // 同一敷地・近接排除: メイン/ランチとの重複は不可（メイン↔ランチのみが距離例外）
+    if(isSamePlace(s,main,1.0)) return false;
+    if(lunch && isSamePlace(s,lunch,1.0)) return false;
+    const km=haversineKm(main.latitude,main.longitude,s.latitude,s.longitude);
+    // ~20 min ≈ within about 12km locally
+    if(km>12) return false;
+    if(isClosedOn(s,date)) return false;
+    if(rain && !isRainOk(s)) return false;
+    const dmO=driveMinutesFrom(o,s);
+    if(dmO==null||dmO>CURRENT_CAP) return false;
+    // 余力枠は「帰り道」原則: 出発地からの所要時間がメインより小さい（帰る方向）ものだけ
+    if(mainDriveMin!=null && dmO>=mainDriveMin) return false;
+    s.__subkm=km; s.__dmO=dmO; return true;
+  });
+  c.sort((a,b)=>a.__subkm-b.__subkm);
+  return c[0]||null;
+}
+function startMinutes(){
+  const d=state.depart;
+  if(state.when==='today'&&d&&d.mode==='offset'){
+    const now=new Date(); let m=now.getHours()*60+now.getMinutes()+d.min;
+    m=Math.round(m/30)*30; if(m>19*60)m=13*60; return m;
+  }
+  if(d&&d.mode==='slot') return d.slot==='noon'?13*60:9*60+30;
+  return 9*60+30; // 9:30 fallback
+}
+function buildPlan(main,date,w,shareOverride){
+  const o=state.origin;
+  let lunch=shareOverride?(shareOverride.lunch||null):pickLunch(main,date);
+  const lunchSparse=shareOverride?(lunch==null):LUNCH_SPARSE;
+  if(lunchSparse) lunch=null; // 圏内の食事系が3件未満 → 案内カードに置き換え
+  const dm=driveMinutesFrom(o,main)||30;
+  let sub=shareOverride?(shareOverride.sub||null):pickSub(main,lunch,dm,date,w);
+  let t=startMinutes();
+  const rows=[];
+  const originName=(o.name==='現在地')?'出発地周辺':(o.isAnjo?'出発地周辺':o.name+'周辺');
+  rows.push({type:'move',time:t,label:'🚗 移動（約'+dm+'分）',sub:transitLabel(originName,main.name,dm)});
+  t+=dm;
+  const stay=stayMinutes(main);
+  rows.push({type:'spot',time:t,spot:main,tag:'メイン',closeNote:main.__closeNote});
+  t+=stay;
+  let lastName=main.name, lastLat=main.latitude, lastLng=main.longitude;
+  const onlyToddler=state.ages.has('0-2')&&state.ages.size===1;
+  if(lunch){
+    const ldm=Math.max(5,Math.round(haversineKm(lastLat,lastLng,lunch.latitude,lunch.longitude)*2.2/5)*5);
+    rows.push({type:'move',time:t,label:'🚗 移動（約'+ldm+'分）',sub:transitLabel(lastName,lunch.name,ldm)});
+    t+=ldm;
+    const mealTag=mealLabelFor(t);
+    const arrivalCi=closingInfo(lunch,t);
+    let waterNote=null;
+    if((lunch.play_types||[]).includes('water')){
+      const tt=((t%1440)+1440)%1440;
+      if(tt>=16*60) waterNote='※水遊びする場合は着替え・タオル持参がおすすめです／※夕方のため、水遊びは短時間利用がおすすめです';
+    }
+    rows.push({type:'spot',time:t,spot:lunch,tag:mealTag,food:true,paynote:state.budget==='free',closeNote:arrivalCi.note,waterNote});
+    t+=60;
+    lastName=lunch.name; lastLat=lunch.latitude; lastLng=lunch.longitude;
+  } else {
+    // 食事系スポットが圏内に少ないエリア: 空枠や遠距離ランチの代わりに案内カード
+    rows.push({type:'mealnote',time:t,label:mealLabelFor(t)+'は途中の飲食で 🍴',
+      sub:'このあたりは掲載中の食事スポットが少ないため、移動途中のお店をご利用ください。'});
+    t+=60;
+  }
+  // age-based fatigue: 0-2 -> no additional post-meal spot, go home; 3-5 -> max 1 extra spot (bonus tier);
+  if(onlyToddler) sub=null;
+  let bonusNote=null;
+  if(sub){
+    // 帰路は一本化: 「🏠帰り道に寄るなら」の枝分かれ見出しの下に余力枠を置き、
+    // 通常の帰路行(直帰)は出さず、寄った場合の帰路は余力枠カード内に小さく表示する。
+    rows.push({type:'branch',time:t,label:'🏠 帰り道に寄るなら'});
+    let bt=t;
+    const sdm=Math.max(5,Math.round(haversineKm(lastLat,lastLng,sub.latitude,sub.longitude)*2.2/5)*5);
+    const arrival=bt+sdm;
+    const tt=((arrival%1440)+1440)%1440;
+    const pt=sub.play_types||[];
+    const outdoorPark=(sub.indoor_or_outdoor==='outdoor')&&(pt.includes('active')||pt.includes('nature'));
+    if(outdoorPark&&tt>=18*60+30&&state.ages.has('3-5')&&!state.ages.has('elem')){
+      bonusNote='※暗くなる時間帯のため、無理せず帰宅もおすすめです';
+    }
+    let waterNote=null;
+    if(pt.includes('water')&&tt>=16*60){
+      waterNote='※水遊びする場合は着替え・タオル持参がおすすめです／※夕方のため、水遊びは短時間利用がおすすめです';
+    }
+    const ci=closingInfo(sub,arrival);
+    rows.push({type:'move',time:bt,label:'🚗 移動（約'+sdm+'分）',sub:transitLabel(lastName,sub.name,sdm),opt:true});
+    bt=arrival;
+    const bdm=Math.max(5,Math.round(haversineKm(sub.latitude,sub.longitude,o.lat,o.lng)*2.2/5)*5);
+    rows.push({type:'spot',time:bt,spot:sub,tag:'余力があれば',opt:true,closeNote:ci.note,bonusNote,waterNote,returnNote:'寄った場合の帰路 約'+bdm+'分'});
+  } else {
+    // 余力枠が無い通常ケース: 帰路はここで1回だけ表示
+    rows.push({type:'move',time:t,label:'🚗 帰路（約'+dm+'分）',sub:transitLabel(lastName,'ご自宅',dm)});
+  }
+  // totals
+  const spotsUsed=[main].concat(lunch?[lunch]:[],sub?[sub]:[]);
+  let totalDrive=dm*2;
+  let known=0, hasUnknown=false, allFree=true;
+  spotsUsed.forEach(s=>{ const p=parsePrice(s); if(p==null)hasUnknown=true; else{known+=p; if(p>0)allFree=false;} });
+  let cost;
+  if(allFree&&!hasUnknown) cost='料金: 無料（大人1人あたり）';
+  else if(known===0&&hasUnknown) cost='料金は各公式サイトで確認';
+  else cost='大人1人あたり 目安 '+known.toLocaleString()+'円目安'+(hasUnknown?'（一部要確認）':'');
+  const homePriority = onlyToddler && !sub;
+  return {rows,main,totalDrive,cost,hasUnknown,homePriority};
+}
+function generatePlans(date,w){
+  let cap=capFor(state.driveTime);
+  CURRENT_CAP=cap;
+  let pool=buildPool(date,w);
+  state.expandedDrive=false;
+  // candidate shortage (fewer than 3 main candidates): widen the drive-time range a step at a
+  // time until enough choices appear (or we run out of room to widen), and note it honestly.
+  while(pool.length<3 && cap!==Infinity){
+    const widerCap=nextCap(cap);
+    if(widerCap===cap) break;  // nextCap は90分で打ち止め。これ以上広がらないなら無限ループを避けて抜ける
+    CURRENT_CAP=widerCap;
+    const pool2=buildPool(date,w);
+    if(pool2.length>pool.length){ pool=pool2; state.expandedDrive=true; }
+    cap=widerCap;
+  }
+  CURRENT_CAP=cap;
+  if(!pool.length) return [];
+  const tiered=applyDriveMoodTier(pool);
+  // variety: distinct mains for up to 3 variants
+  const mains=[];
+  for(const s of tiered){ if(!mains.includes(s)) mains.push(s); if(mains.length>=3) break; }
+  state.shownMains=mains.slice();
+  return mains.map(m=>buildPlan(m,date,w));
+}
+// Regeneration for "別のプランにする": widen the main-spot pool to the top 10〜15 (quality floor
+// kept by ranking, not a fixed score cutoff) and shuffle-pick one that hasn't been shown yet this
+// session. When every reasonable candidate has already been shown, reset the history (but avoid
+// immediately repeating the very last one) and note that we've gone through a full cycle.
+function nextVarietyPlan(date,w){
+  let cap=capFor(state.driveTime);
+  CURRENT_CAP=cap;
+  let pool=buildPool(date,w);
+  while(pool.length<3 && cap!==Infinity){
+    const widerCap=nextCap(cap);
+    if(widerCap===cap) break;  // nextCap は90分で打ち止め。これ以上広がらないなら無限ループを避けて抜ける
+    CURRENT_CAP=widerCap;
+    const pool2=buildPool(date,w);
+    if(pool2.length>pool.length){ pool=pool2; state.expandedDrive=true; }
+    cap=widerCap;
+  }
+  CURRENT_CAP=cap;
+  if(!pool.length) return null;
+  const tiered=applyDriveMoodTier(pool);
+  const uniq=[];
+  for(const s of tiered){ if(!uniq.includes(s)) uniq.push(s); }
+  if(!uniq.length) return null;
+  // top 10〜15 by score (already sorted desc within tiering) as the shuffle pool
+  const topN=uniq.slice(0, Math.min(15, uniq.length));
+  let candidates=topN.length>=3 ? topN : uniq;
+  let fresh=candidates.filter(s=>!state.shownMains.includes(s));
+  let cycled=false;
+  if(!fresh.length){
+    const last=state.shownMains[state.shownMains.length-1];
+    state.shownMains=[];
+    fresh=candidates.filter(s=>s!==last);
+    if(!fresh.length) fresh=candidates;
+    cycled=true;
+  }
+  const picked=shuffle(fresh)[0];
+  state.shownMains.push(picked);
+  state.cycledNote=cycled;
+  return buildPlan(picked,date,w);
+}
+
+/* ===== render result ===== */
+async function generate(){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('dots').style.display='none';
+  document.getElementById('loading').style.display='block';
+  document.getElementById('result').style.display='none';
+  if(typeof gtag==='function') gtag('event','plan_generate',{when:state.when,budget:state.budget});
+
+  state.weather=await fetchWeather();
+  const date=targetDate(state.when);
+  state.shownMains=[];
+  state.cycledNote=false;
+  state.isSharedView=false;
+  state.plans=generatePlans(date,state.weather);
+  state.variant=0;
+
+  document.getElementById('loading').style.display='none';
+  showResult();
+}
+function whenLabel(){
+  const map={today:'今日これから',tomorrow:'明日',sat:'今週末（土）',sun:'今週末（日）'};
+  const d=targetDate(state.when);
+  return map[state.when]+'・'+(d.getMonth()+1)+'/'+d.getDate()+'（'+WD[d.getDay()]+'）';
+}
+function weatherBadge(){
+  const w=state.weather;
+  if(!w) return '';
+  if(w.precip!=null&&w.precip>=50) return '<div class="wxbadge">☔ 雨予報なので室内プランにしました</div>';
+  if(w.tmax!=null&&w.tmax>=34) return '<div class="wxbadge">🥵 猛暑予報（最高'+Math.round(w.tmax)+'℃）水遊び・室内を優先しました</div>';
+  if(w.tmax!=null) return '<div class="wxbadge">☀ お天気よさそう（最高'+Math.round(w.tmax)+'℃）</div>';
+  return '';
+}
+// parent-perspective one-line summary, auto-generated from conditions
+function parentSummary(){
+  const w=state.weather;
+  const start=startMinutes();
+  const t=((start%1440)+1440)%1440;
+  const isToddlerOnly=state.ages.has('0-2')&&state.ages.size===1;
+  let base;
+  if(w&&w.precip!=null&&w.precip>=50){
+    base='雨予報のため、屋内スポット中心にしています。';
+  } else if(t>=16*60){
+    base='今日は夕方出発なので、短時間で遊んで夕食を済ませる軽めのプランです。';
+  } else if(w&&w.tmax!=null&&w.tmax>=34){
+    base='暑い時間帯を避け、涼しく遊べるスポットを中心にしたプランにしています。';
+  } else if(isToddlerOnly){
+    base='小さいお子さん連れなので、無理のない軽めのプランにしています。';
+  } else if(state.driveTime==='20'){
+    base='車20分圏内でまとめた、ご近所プランです。';
+  } else if(state.driveTime==='40'){
+    base='車40分圏内で無理なく楽しめるプランにしています。';
+  } else if(state.driveTime==='60'){
+    base='車60分圏内で少し足を延ばすプランにしています。';
+  } else {
+    base='お子さんの年齢に合わせて、無理なく楽しめるプランにしています。';
+  }
+  if(state.expandedDrive){
+    base+=' 近場に候補が少なかったので少し範囲を広げました。';
+  }
+  if(state.nearFallback){
+    base+=' 少し遠出向けの候補が見当たらなかったため、近場中心になりました。';
+  }
+  if(state.sFeatured){
+    base+=' せっかくなので1日たっぷり系を主役にしました。';
+  }
+  if(state.cycledNote){
+    base+=' （候補を一巡したので、また最初の方の候補から出しています）';
+  }
+  return base;
+}
+function rowHtml(r){
+  if(r.type==='branch'){
+    return '<div class="tl branch"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
+      '<span class="icon">🏠</span><span class="line"></span></div>'+
+      '<div class="body"><div class="sname">'+esc(r.label)+'</div></div></div>';
+  }
+  if(r.type==='mealnote'){
+    return '<div class="tl"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
+      '<span class="icon">🍴</span><span class="line"></span></div>'+
+      '<div class="body"><div class="sname">'+esc(r.label)+'</div>'+
+      '<div class="meta">'+esc(r.sub)+'</div></div></div>';
+  }
+  if(r.type==='move'){
+    return '<div class="tl move'+(r.opt?' bonus':'')+'"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
+      '<span class="icon">🚗</span><span class="line"></span></div>'+
+      '<div class="body"><div class="sname">'+esc(r.label)+'</div><div class="meta moveline">'+r.sub+'</div></div></div>';
+  }
+  const s=r.spot;
+  const isFood=(s.play_types||[]).includes('food');
+  const links='<div class="links">'+
+    (s.official_url?'<a href="'+esc(s.official_url)+'" target="_blank" rel="noopener" onclick="track(\'official\')">'+(/tabelog\.com/.test(s.official_url)?'詳細情報(食べログ)↗':'公式サイト↗')+'</a>':'')+
+    '<a class="map" href="'+esc('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.name+' '+(s.city||'')))+'" target="_blank" rel="noopener" onclick="track(\'maps\')">地図で見る↗</a>'+
+    '</div>';
+  let body='';
+  body+=(r.opt?'<span class="opt">⏱ 余力があれば</span><br>':'');
+  body+='<div class="sname">'+esc(s.name)+'<br><small style="font-weight:600;color:var(--sub);font-size:.75rem">'+esc(r.tag)+'・'+esc(s.city)+'</small>'+(r.paynote?'<br><small style="font-weight:600;color:var(--sub);font-size:.72rem">※飲食代は別途、1人あたりの目安です</small>':'')+'</div>';
+  if(isFood){
+    body+=foodTagLines(s);
+    if(s.kid_appeal) body+='<div class="appeal">'+esc(s.kid_appeal)+'</div>';
+    body+='<div class="foodnote">※営業時間・定休日は来店前に確認してください</div>';
+  } else if(s.kid_appeal){
+    body+='<div class="appeal">'+esc(s.kid_appeal)+'</div>';
+  }
+  body+='<div class="meta">💴 '+esc(priceLabel(s))+(s.business_hours?'　🕐 '+esc(s.business_hours):'')+'</div>';
+  if(r.closeNote) body+='<div class="hourwarn">'+esc(r.closeNote)+'</div>';
+  if(r.waterNote) body+='<div class="hourwarn">'+esc(r.waterNote)+'</div>';
+  if(r.bonusNote) body+='<div class="eveningwarn">'+esc(r.bonusNote)+'</div>';
+  if(r.returnNote) body+='<div class="meta" style="font-size:.72rem;opacity:.75">🚗 '+esc(r.returnNote)+'</div>';
+  body+=links;
+  return '<div class="tl'+(r.opt?' bonus':'')+'"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
+    '<span class="icon">'+spotEmoji(s)+'</span><span class="line"></span></div>'+
+    '<div class="body">'+body+'</div></div>';
+}
+function track(w){ if(typeof gtag==='function') gtag('event','plan_outlink',{link:w}); }
+// build a Google Maps directions URL for the plan's route: 出発地(現在地 or 市町村代表座標) -> メイン -> ランチ -> (余力枠)
+function buildRouteUrl(p){
+  const o=state.origin;
+  if(!o||o.lat==null||o.lng==null) return null;
+  const spots=p.rows.filter(r=>r.type==='spot').map(r=>r.spot).filter(Boolean);
+  if(!spots.length) return null;
+  const dest=spots[spots.length-1];
+  const waypoints=spots.slice(0,-1);
+  let url='https://www.google.com/maps/dir/?api=1'+
+    '&origin='+encodeURIComponent(o.lat+','+o.lng)+
+    '&destination='+encodeURIComponent(dest.latitude+','+dest.longitude)+
+    '&travelmode=driving';
+  if(waypoints.length){
+    url+='&waypoints='+encodeURIComponent(waypoints.map(s=>s.latitude+','+s.longitude).join('|'));
+  }
+  return url;
+}
+/* ===== share ===== */
+function buildShareUrl(p){
+  const parts=['share=1'];
+  const originName=state.origin?state.origin.name:'福島市';
+  parts.push('from='+encodeURIComponent(originName));
+  if(originName==='現在地'&&state.origin){
+    parts.push('lat='+state.origin.lat.toFixed(5));
+    parts.push('lng='+state.origin.lng.toFixed(5));
+  }
+  parts.push('drive='+encodeURIComponent(state.driveTime||'any'));
+  parts.push('when='+encodeURIComponent(state.when||'today'));
+  if(state.depart){
+    const d=state.depart;
+    parts.push('depart='+encodeURIComponent(d.mode==='offset'?('offset:'+d.min):('slot:'+d.slot)));
+  }
+  parts.push('age='+encodeURIComponent([...state.ages].join(',')));
+  parts.push('budget='+encodeURIComponent(state.budget||'any'));
+  const spots=p.rows.filter(r=>r.type==='spot');
+  const mainRow=spots.find(r=>r.tag==='メイン');
+  if(mainRow) parts.push('main='+encodeURIComponent(mainRow.spot.name));
+  const lunchRow=spots.find(r=>r!==mainRow&&!r.opt);
+  const subRow=spots.find(r=>r.opt);
+  if(lunchRow) parts.push('lunch='+encodeURIComponent(lunchRow.spot.name));
+  if(subRow) parts.push('sub='+encodeURIComponent(subRow.spot.name));
+  return location.origin+location.pathname+'?'+parts.join('&');
+}
+function showToast(msg){
+  let t=document.getElementById('shareToast');
+  if(!t){ t=document.createElement('div'); t.id='shareToast'; document.body.appendChild(t); }
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h=setTimeout(()=>{ t.classList.remove('show'); },2200);
+}
+function copyToClipboard(text){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    return navigator.clipboard.writeText(text);
+  }
+  return new Promise((resolve,reject)=>{
+    try{
+      const ta=document.createElement('textarea');
+      ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      const ok=document.execCommand('copy');
+      document.body.removeChild(ta);
+      ok?resolve():reject(new Error('copy failed'));
+    }catch(e){ reject(e); }
+  });
+}
+async function sharePlan(){
+  if(!state.plans.length) return;
+  const p=state.plans[state.variant%state.plans.length];
+  const url=buildShareUrl(p);
+  const text=parentSummary();
+  if(navigator.share){
+    try{
+      await navigator.share({title:'きょうのおでかけプラン',text,url});
+      if(typeof gtag==='function') gtag('event','plan_share',{method:'webshare'});
+    }catch(e){ /* user cancelled share sheet */ }
+    return;
+  }
+  try{
+    await copyToClipboard(url);
+    showToast('リンクをコピーしました');
+    if(typeof gtag==='function') gtag('event','plan_share',{method:'copy'});
+  }catch(e){
+    showToast('コピーに失敗しました');
+  }
+}
+// rebuild wizard state + a concrete plan from share URL params; returns the plan object or null
+function restoreFromShare(qs){
+  const mainName=qs.get('main');
+  const mainSpot=mainName?SPOTS.find(s=>s.name===mainName):null;
+  if(!mainSpot) return null;
+  const from=qs.get('from')||'福島市';
+  let lat=qs.has('lat')?parseFloat(qs.get('lat')):NaN;
+  let lng=qs.has('lng')?parseFloat(qs.get('lng')):NaN;
+  let originName=from;
+  if(isNaN(lat)||isNaN(lng)){
+    if(from==='福島市'){ lat=ANJO[0]; lng=ANJO[1]; }
+    else {
+      const c=CITIES.find(c=>c[0]===from);
+      if(c){ lat=c[1]; lng=c[2]; } else { lat=ANJO[0]; lng=ANJO[1]; originName='福島市'; }
+    }
+  }
+  state.origin={name:originName,lat,lng,isAnjo:originName==='福島市'};
+  const drive=qs.get('drive');
+  state.driveTime=['20','40','60'].includes(drive)?drive:'any';
+  const when=qs.get('when');
+  state.when=['today','tomorrow','sat','sun'].includes(when)?when:'today';
+  const departRaw=qs.get('depart')||'';
+  if(departRaw.indexOf('offset:')===0){
+    state.depart={mode:'offset',min:parseInt(departRaw.slice(7),10)||60};
+  } else if(departRaw.indexOf('slot:')===0){
+    state.depart={mode:'slot',slot:departRaw.slice(5)==='noon'?'noon':'am'};
+  } else {
+    state.depart=state.when==='today'?{mode:'offset',min:60}:{mode:'slot',slot:'am'};
+  }
+  const ageRaw=(qs.get('age')||'').split(',').filter(a=>['0-2','3-5','elem'].includes(a));
+  state.ages=new Set(ageRaw.length?ageRaw:['3-5']);
+  const budget=qs.get('budget');
+  state.budget=['free','1000','3000','any'].includes(budget)?budget:'any';
+  const lunchName=qs.get('lunch');
+  const subName=qs.get('sub');
+  const lunchSpot=lunchName?(SPOTS.find(s=>s.name===lunchName)||null):null;
+  const subSpot=subName?(SPOTS.find(s=>s.name===subName)||null):null;
+  return {mainSpot,lunchSpot,subSpot};
+}
+async function initFromShareOrWizard(){
+  const qs=new URLSearchParams(location.search);
+  if(qs.get('share')==='1'){
+    const r=restoreFromShare(qs);
+    if(r){
+      document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+      document.getElementById('dots').style.display='none';
+      document.getElementById('loading').style.display='block';
+      document.getElementById('result').style.display='none';
+      try{
+        state.weather=await fetchWeather();
+        const date=targetDate(state.when);
+        const plan=buildPlan(r.mainSpot,date,state.weather,{lunch:r.lunchSpot,sub:r.subSpot});
+        state.plans=[plan];
+        state.variant=0;
+        state.shownMains=[r.mainSpot];
+        state.isSharedView=true;
+        document.getElementById('loading').style.display='none';
+        showResult();
+        return;
+      }catch(e){
+        // fall through to normal wizard on unexpected failure
+      }
+    }
+  }
+  render(); refreshNext();
+}
+function showResult(){
+  const res=document.getElementById('result');
+  res.style.display='block';
+  if(!state.plans.length){
+    res.innerHTML='<div class="empty"><p>条件に合うスポットが見つかりませんでした。<br>予算や出発地を変えると見つかりやすくなります。</p>'+
+      '<button onclick="restart()">条件を変えてやり直す</button></div>';
+    window.scrollTo({top:0,behavior:'smooth'});
+    return;
+  }
+  const p=state.plans[state.variant%state.plans.length];
+  const routeUrl=buildRouteUrl(p);
+  const total=Math.floor(p.totalDrive/60), tm=p.totalDrive%60;
+  const driveStr=(total?total+'時間':'')+(tm?tm+'分':'')||'0分';
+  let html='';
+  if(state.isSharedView){
+    html+='<div class="sharedbanner">共有されたプランです ・ <a href="./plan.html">自分のプランを作る →</a></div>';
+  }
+  html+='<div style="text-align:center">'+weatherBadge()+'</div>';
+  html+='<div class="parentline">🗣 '+esc(parentSummary())+'</div>';
+  html+='<div class="plancard">';
+  html+='<div class="plantitle">🎯 '+esc(state.origin.name)+'発 きょうのプラン <small>'+esc(whenLabel())+' / 案'+(state.variant%state.plans.length+1)+'</small></div>';
+  // split main-tier rows and bonus-tier rows, insert a heading before the bonus tier
+  const mainRows=[], bonusRows=[];
+  p.rows.forEach(r=>{ (r.opt?bonusRows:mainRows).push(r); });
+  let tlHtml='<div class="timeline">'+mainRows.map(rowHtml).join('');
+  if(bonusRows.length){
+    tlHtml+='</div><div class="bonus-wrap"><div class="bonus-head">⏱ 余力があれば</div><div class="bonus-sub">無理せず帰宅でもOKです</div><div class="timeline">'+bonusRows.map(rowHtml).join('')+'</div>';
+  } else {
+    tlHtml+='</div>';
+  }
+  html+=tlHtml;
+  if(p.homePriority){
+    html+='<div class="homepriority">🏠 小さいお子さん連れならここで帰宅がおすすめです</div>';
+  } else if(bonusRows.length && state.ages.has('3-5')){
+    html+='<div class="homepriority" style="color:#8a7a4a;background:#f6ede0">👣 余力がある場合のみ、上の「余力があれば」スポットへどうぞ</div>';
+  }
+  html+='<div class="summary">🚗 移動の目安 <b>約'+driveStr+'</b>（往復）　／　💰 <b>'+esc(p.cost)+'</b></div>';
+  if((state.budget==='1000'||state.budget==='3000')&&p.hasUnknown){
+    html+='<div class="summary" style="color:var(--sub);font-size:.82rem;font-weight:600">※料金不明のスポットが含まれます。公式サイトでご確認ください</div>';
+  }
+  html+='</div>';
+  if(routeUrl){
+    html+='<div class="gmaps-route" style="text-align:center;margin:14px 0 18px">'+
+      '<a class="act-gmaps" href="'+esc(routeUrl)+'" target="_blank" rel="noopener" onclick="track(\'gmaps_route\')" '+
+      'style="display:inline-block;width:100%;box-sizing:border-box;padding:14px;border-radius:14px;background:#1a73e8;color:#fff;font-weight:800;font-size:.95rem;text-decoration:none">'+
+      '🚗 このルートをGoogleマップで開く</a>'+
+      '<div style="font-size:.72rem;color:var(--sub);margin-top:6px">※ルートはGoogleマップ上で編集できます</div>'+
+      '</div>';
+  }
+  html+='<div class="share">📸 スクショして家族に送ってね！</div>';
+  html+='<div class="actions">';
+  html+='<button class="act-share" onclick="sharePlan()">📤 このプランを共有</button>';
+  html+='<button class="act-reroll" onclick="reroll()">🔄 別のプランにする</button>';
+  html+='<a class="act-map" href="./index.html" onclick="track(\'map\')">🗺 地図でこのへんを見る</a>';
+  html+='<button class="act-restart" onclick="restart()">最初からやり直す</button>';
+  html+='</div>';
+  html+='<div class="notice">⚠ 所要時間・料金・営業時間は目安です。おでかけ前に各公式サイトをご確認ください。'+
+    (state.weather?'':'<br>※ 現在お天気情報を取得できなかったため、天気条件なしでプランを作成しています。')+'</div>';
+  html+='<div class="noticebottom">'+
+    '※飲食代は別途。表示金額は1人あたりの目安です<br>'+
+    '営業時間・料金・休業日は変更される場合があります。お出かけ前に公式サイト等で最新情報をご確認ください<br>'+
+    '移動時間は目安です。道路状況や駐車場の混雑により前後します'+
+    '</div>';
+  res.innerHTML=html;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function reroll(){
+  if(typeof gtag==='function') gtag('event','plan_reroll');
+  state.isSharedView=false;
+  const date=targetDate(state.when);
+  const newPlan=nextVarietyPlan(date,state.weather);
+  if(newPlan){
+    state.plans.push(newPlan);
+    state.variant=state.plans.length-1;
+  } else {
+    state.variant=state.plans.length?(state.variant+1)%state.plans.length:0;
+  }
+  showResult();
+}
+function restart(){
+  state.driveTime=null; state.when=null; state.depart=null; state.ages.clear(); state.budget=null; state.weather=null; state.variant=0; state.plans=[]; state.expandedDrive=false; state.isSharedView=false;
+  document.querySelectorAll('.bigbtn.on').forEach(b=>b.classList.remove('on'));
+  document.getElementById('departWrap').style.display='none';
+  document.getElementById('result').style.display='none';
+  document.getElementById('dots').style.display='flex';
+  step=0; render();
+  steps.forEach(s=>{ const n=s.querySelector('[data-next]'); if(n&&+s.dataset.step!==0) n.disabled=true; });
+  refreshNext();
+}
+
+/* init */
+initFromShareOrWizard();
+</script>
+</body>
+</html>
