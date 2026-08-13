@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8CDXHXFG9F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8CDXHXFG9F');
+</script>
+<meta name="google-site-verification" content="Nfs_SxbXHLkNUnpUxyqPTuQx__y9nLNq0hhPFKrpB_E" />
+<title>おおいた子育ておでかけマップ｜大分の子連れチェーン店・子連れランチ検索</title>
+<meta name="description" content="大分県の子連れで行きやすいチェーン飲食店39店を地図で検索。地域のおでかけスポット情報は順次追加しています。">
+<link rel="canonical" href="https://kosodate-odekake.jp/oita/">
+<meta property="og:title" content="おおいた子育ておでかけマップ">
+<meta property="og:description" content="大分県の子連れで行きやすいチェーン飲食店39店を地図で検索。地域のおでかけスポット情報は順次追加しています。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kosodate-odekake.jp/oita/">
+<meta property="og:site_name" content="おおいた子育ておでかけマップ">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:image" content="https://kosodate-odekake.jp/og-logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="おおいた子育ておでかけマップ">
+<meta name="twitter:description" content="大分県の子連れで行きやすいチェーン飲食店39店を地図で検索。地域のおでかけスポット情報は順次追加しています。">
+<meta name="twitter:image" content="https://kosodate-odekake.jp/og-logo.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "おおいた子育ておでかけマップ",
+  "url": "https://kosodate-odekake.jp/oita/",
+  "description": "大分県の子連れで行きやすいチェーン飲食店39店を地図で検索。地域のおでかけスポット情報は順次追加しています。",
+  "inLanguage": "ja"
+}
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" referrerpolicy="no-referrer">
+<style>
+:root{
+  --bg:#faf6ef; --card:#fffdf9; --ink:#3d3a34; --sub:#7a746a; --line:#e7ddcd;
+  --accent:#e08a5b; --accent-d:#c9713f;
+  --animal:#E9A23B; --active:#4CAF6E; --water:#3FA9D6; --create:#9B6DD6; --vehicle:#E06C75; --indoor:#7A8AA0; --food:#D95D77;
+  --animal-b:#fbeccd; --active-b:#d9f0e2; --water-b:#d5edf8; --create-b:#ece0f7; --vehicle-b:#f9dcde; --indoor-b:#e3e8ef; --food-b:#f9dbe2;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-text-size-adjust:100%}
+a{color:var(--accent-d)}
+img{max-width:100%;display:block}
+.wrap{max-width:1100px;margin:0 auto;padding:0 14px}
+
+/* header */
+header.hero{background:linear-gradient(160deg,#fbe6d3,#f6ede0);padding:22px 0 18px;border-bottom:1px solid var(--line)}
+header.hero h1{font-size:1.5rem;margin:0 0 6px;letter-spacing:.02em}
+header.hero .catch{font-size:1.02rem;color:var(--accent-d);font-weight:700;margin:0 0 4px}
+header.hero .note{font-size:.8rem;color:var(--sub);margin:0}
+header.hero .creator{font-size:.72rem;color:var(--sub);margin:2px 0 4px;opacity:.85}
+
+/* mascot: おでまる */
+.odemaru-mark{width:30px;height:30px;vertical-align:-7px;margin-right:6px;display:inline-block}
+.odemaru-note{display:flex;align-items:center;justify-content:center;gap:8px;margin:2px 0 12px;
+  color:var(--sub);font-size:.76rem;opacity:.9}
+.odemaru-note img{width:34px;height:auto;flex:none}
+
+/* mood buttons */
+.moods{padding:14px 0 4px}
+.moods h2{font-size:.95rem;margin:0 0 8px;color:var(--sub)}
+.mood-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+.mood-btn{flex:0 0 auto;border:none;border-radius:18px;padding:14px 16px;min-width:104px;font-size:.95rem;font-weight:700;color:#4a4640;background:var(--card);box-shadow:0 2px 6px rgba(160,140,110,.18);cursor:pointer;text-align:center;line-height:1.35;transition:transform .1s}
+.mood-btn:active{transform:scale(.96)}
+.mood-btn .emo{font-size:1.5rem;display:block;margin-bottom:4px}
+
+/* filter bar */
+.filterbar{position:sticky;top:0;z-index:900;background:rgba(250,246,239,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 0}
+.frow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+.frow:last-child{margin-bottom:0}
+.flabel{font-size:.75rem;color:var(--sub);margin-right:2px;flex:0 0 auto}
+.chip{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer;color:var(--ink);white-space:nowrap;transition:.12s}
+.chip:active{transform:scale(.95)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.chip.play.on{color:#fff}
+.chip.play[data-t="animal"].on{background:var(--animal);border-color:var(--animal)}
+.chip.play[data-t="active"].on{background:var(--active);border-color:var(--active)}
+.chip.play[data-t="water"].on{background:var(--water);border-color:var(--water)}
+.chip.play[data-t="create"].on{background:var(--create);border-color:var(--create)}
+.chip.play[data-t="vehicle"].on{background:var(--vehicle);border-color:var(--vehicle)}
+.chip.play[data-t="indoor"].on{background:var(--indoor);border-color:var(--indoor)}
+.chip.play[data-t="food"].on{background:var(--food);border-color:var(--food)}
+.count{font-size:.85rem;font-weight:700;color:var(--accent-d)}
+.reset{border:none;background:transparent;color:var(--sub);text-decoration:underline;font-size:.8rem;cursor:pointer;padding:6px 4px}
+
+/* layout */
+.main{display:flex;flex-direction:column;gap:16px;padding:16px 0}
+#mapwrap{width:100%;position:relative}
+#fullscreenMapBtn{position:absolute;top:10px;right:10px;z-index:400;background:#fff;color:var(--accent-d);font-size:.78rem;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:8px 12px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+#fullscreenMapBtn:active{transform:scale(.96)}
+#map{width:100%;height:45vh;min-height:360px;border-radius:16px;box-shadow:0 2px 10px rgba(160,140,110,.18);z-index:1}
+.listwrap{width:100%;min-width:0}
+.section-title{font-size:1.1rem;margin:6px 0 2px;display:flex;align-items:baseline;gap:8px}
+.section-title small{font-size:.8rem;color:var(--sub);font-weight:400}
+
+/* cards */
+.cards{display:grid;grid-template-columns:1fr;gap:14px;max-width:700px;margin:0 auto;width:100%}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(160,140,110,.12);transition:box-shadow .15s,transform .15s}
+.card.hl{box-shadow:0 0 0 3px var(--accent),0 4px 14px rgba(200,113,63,.28)}
+.card .photo{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#eee}
+.card .photo img{width:100%;height:100%;object-fit:cover}
+.credit{position:absolute;left:0;bottom:0;right:0;font-size:.62rem;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.55));padding:10px 8px 3px}
+.card .body{padding:12px 14px 14px}
+.card:not(:has(.photo)) .body{padding-top:16px}
+.card h3{font-size:1.08rem;margin:0 0 2px}
+.card .city{font-size:.8rem;color:var(--sub);margin:0 0 8px}
+.appeal{background:#fff6ee;border-left:4px solid var(--accent);border-radius:6px;padding:8px 10px;font-size:.95rem;font-weight:700;color:#5a4632;margin:0 0 10px}
+.badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.badge{font-size:.74rem;border-radius:999px;padding:3px 9px;font-weight:700;white-space:nowrap}
+.badge.play{color:#fff}
+.badge.drive{background:#efe7da;color:#6a5c46}
+.badge.free{background:#dff0e4;color:#2e7d47}
+.badge.rain{background:#e3e8ef;color:#4a586c}
+.info{font-size:.78rem;color:var(--sub);margin:0 0 3px;display:flex;gap:5px}
+.info b{color:#665e50;font-weight:700;flex:0 0 auto}
+.actions{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+.btn{flex:1 1 auto;text-align:center;text-decoration:none;border-radius:10px;padding:10px 8px;font-size:.86rem;font-weight:700;white-space:nowrap}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.map{background:#eef2f6;color:#41556e;border:1px solid #d8e0ea}
+.checked{font-size:.68rem;color:#a89f90;margin:9px 0 0}
+.kidfeat{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 10px}
+.kidfeat .kf{font-size:.72rem;background:var(--food-b);color:#a13a54;border-radius:999px;padding:3px 9px;font-weight:700;white-space:nowrap}
+.srcnote{font-size:.72rem;color:var(--sub);margin:0 0 6px}
+.foodnote{font-size:.68rem;color:#b08a92;margin:7px 0 0;line-height:1.4}
+
+/* weekend card */
+.weekend{background:linear-gradient(135deg,#fbe6d3,#f3e7d6);border-radius:16px;padding:18px 16px;text-align:center;border:1px solid var(--line)}
+.weekend h3{margin:0 0 6px;font-size:1.15rem}
+.weekend p{margin:0 0 12px;font-size:.9rem;color:#6a5c46}
+.weekend .actions{justify-content:center}
+.weekend .btn.insta{background:#d6588a;color:#fff;flex:0 1 auto;padding:10px 18px}
+.weekend .btn.links{background:#fff;color:var(--accent-d);border:1px solid var(--accent);flex:0 1 auto;padding:10px 18px}
+
+/* listing inquiry */
+.listing{max-width:700px;margin:24px auto 8px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 18px;text-align:center;box-shadow:0 2px 8px rgba(160,140,110,.12)}
+.listing h3{margin:0 0 6px;font-size:1.08rem}
+.listing p{margin:0 0 14px;font-size:.86rem;color:var(--sub)}
+.listing .btn.contact{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;border-radius:10px;padding:11px 22px;font-size:.9rem;font-weight:700}
+.listing .contact-msg{font-size:.8rem;color:var(--accent-d);font-weight:700;margin:12px 0 0}
+
+footer{margin-top:8px;padding:22px 0 40px;border-top:1px solid var(--line);color:var(--sub);font-size:.78rem}
+footer p{margin:0 0 6px}
+
+.leaflet-popup-content{margin:10px 12px;font-family:inherit}
+.pop h4{margin:0 0 4px;font-size:.95rem}
+.pop .pa{font-size:.8rem;color:#5a4632;margin:0 0 6px}
+.pop a{font-size:.82rem;font-weight:700}
+/* rich mini-card popup */
+.leaflet-popup.minipop .leaflet-popup-content-wrapper{border-radius:16px;box-shadow:0 6px 22px rgba(120,90,50,.28);padding:0;overflow:hidden;background:var(--card)}
+.leaflet-popup.minipop .leaflet-popup-content{margin:0;width:auto!important;font-family:inherit}
+.leaflet-popup.minipop .leaflet-popup-tip{background:var(--card)}
+.leaflet-popup.minipop a.leaflet-popup-close-button{color:var(--sub);text-shadow:none;font-size:20px;padding:5px 8px 0 0;z-index:3}
+#backToMap{position:fixed;right:16px;bottom:22px;z-index:1200;background:#E8823C;color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:700;box-shadow:0 4px 14px rgba(120,70,20,.35);display:none;align-items:center;gap:6px;cursor:pointer}
+#backToMap.show{display:inline-flex}
+#backToMap:active{transform:scale(.97)}
+.minicard.no-photo .mc-body{padding:26px 11px 4px}
+.minicard{cursor:pointer;width:100%;max-width:290px}
+.mc-photo{height:90px;overflow:hidden}
+.mc-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.mc-ph{width:100%;height:90px;display:flex;align-items:center;justify-content:center;font-size:2.4rem}
+.mc-body{padding:9px 11px 4px}
+.mc-name{font-weight:800;font-size:.95rem;color:var(--ink);line-height:1.3}
+.mc-city{font-size:.72rem;color:var(--sub);margin:1px 0 5px}
+.mc-appeal{font-size:.82rem;font-weight:700;color:#5a4632;background:#fff6ee;border-left:3px solid var(--accent);border-radius:5px;padding:5px 8px;margin:0 0 7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mc-badges{display:flex;flex-wrap:wrap;gap:4px}
+.mc-badge{font-size:.68rem;border-radius:999px;padding:2px 7px;font-weight:700;white-space:nowrap}
+.mc-badge.play{color:#fff}
+.mc-badge.drive{background:#efe7da;color:#6a5c46}
+.mc-badge.free{background:#dff0e4;color:#2e7d47}
+.mc-badge.rain{background:#e3e8ef;color:#4a586c}
+.mc-kf{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.mc-kf .kf{font-size:.66rem;background:var(--food-b);color:#a13a54;border-radius:999px;padding:2px 7px;font-weight:700}
+.mc-more{background:var(--accent);color:#fff;text-align:center;font-size:.8rem;font-weight:800;padding:7px;margin-top:7px;letter-spacing:.02em}
+.minicard:active .mc-more{background:var(--accent-d)}
+.pin{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 5px rgba(0,0,0,.3);border:2px solid #fff}
+.pin span{transform:rotate(45deg);font-size:16px}
+.pin.home{border-radius:50%;background:#4a4640}
+.pin.home span{transform:none}
+
+/* home/origin marker: bigger, distinct, pulsing */
+.home-wrap{position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center}
+.home-pulse{position:absolute;inset:0;border-radius:50%;background:var(--accent);opacity:.55;animation:home-pulse 2.2s ease-out infinite}
+.home-pin{position:relative;width:48px;height:48px;border-radius:50%;background:#fff;border:3px solid var(--accent-d);box-shadow:0 3px 10px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-size:24px}
+.home-label{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:2px;background:var(--accent-d);color:#fff;font-size:.72rem;font-weight:700;white-space:nowrap;padding:2px 8px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.25);pointer-events:none}
+
+#recenterBtn{position:absolute;right:10px;bottom:10px;z-index:410;width:40px;height:40px;border-radius:50%;background:#fff;border:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.18);font-size:19px;line-height:1;color:var(--accent-d);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+#recenterBtn:active{transform:scale(.94)}
+.geo-dot{width:16px;height:16px;position:relative}
+.geo-dot-ring{position:absolute;inset:-7px;border-radius:50%;background:rgba(66,133,244,.25)}
+.geo-dot-core{position:absolute;inset:0;border-radius:50%;background:#4285F4;border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.4)}
+.geo-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(10px);background:rgba(30,28,24,.92);color:#fff;font-size:.8rem;font-weight:600;padding:9px 16px;border-radius:999px;z-index:2000;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:86vw;text-align:center}
+.geo-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@keyframes home-pulse{0%{transform:scale(.6);opacity:.55}100%{transform:scale(2.1);opacity:0}}
+@media(prefers-reduced-motion:reduce){.home-pulse{animation:none;display:none}}
+
+.empty{text-align:center;color:var(--sub);padding:30px;font-size:.9rem}
+
+/* origin selector */
+.origin-sel{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 10px;font-size:.85rem;color:var(--ink);font-family:inherit;cursor:pointer;max-width:9.5em}
+.origin-btn{border:1.5px solid var(--accent);background:var(--card);color:var(--accent-d);border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer;font-weight:700;white-space:nowrap}
+.origin-btn:active{transform:scale(.95)}
+.origin-note{font-size:.7rem;color:var(--sub)}
+.origin-msg{font-size:.75rem;color:var(--accent-d);font-weight:700;flex-basis:100%;margin:2px 0 0}
+
+.readings{max-width:700px;margin:24px auto 0}
+.readings h2.section-title{margin-bottom:8px}
+.readings-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+.reading-card{flex:0 0 auto;width:220px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 2px 6px rgba(160,140,110,.15);text-decoration:none;color:#4a4640;transition:transform .1s}
+.reading-card:active{transform:scale(.97)}
+.reading-card .emo{font-size:1.4rem;display:block;margin-bottom:6px}
+.reading-card .rt{font-size:.92rem;font-weight:800;line-height:1.4;color:#4a4640}
+.reading-card .rd{font-size:.76rem;color:var(--sub);margin-top:6px;line-height:1.4}
+
+@media(min-width:900px){
+  .readings{max-width:none}
+}
+
+@media(min-width:820px){
+  header.hero h1{font-size:1.8rem}
+}
+
+@media(min-width:900px){
+  .main{flex-direction:row;align-items:flex-start;gap:24px}
+  #mapwrap{flex:0 0 57%;max-width:57%;position:sticky;top:12px;align-self:flex-start}
+  #map{width:100%;height:calc(100vh - 24px);min-height:520px;max-height:none}
+  .listwrap{flex:1 1 43%;max-width:43%;min-width:0}
+  .cards{grid-template-columns:1fr;max-width:none}
+  .listing{max-width:none}
+}
+/* スポットカード内アフィリボタン */
+.card .aff{display:inline-flex;align-items:center;gap:5px;margin:8px 0 0;padding:6px 12px;font-size:.76rem;font-weight:700;color:#8a7f6e;background:#fbf6ee;border:1px solid var(--line);border-radius:8px;text-decoration:none;transition:.12s}
+.card .aff:hover{border-color:var(--accent);color:var(--accent-d)}
+.card .aff .pr{font-size:.6rem;color:#b0a695;font-weight:700}
+/* 週末天気ウィジェット */
+.wxbar{display:none;margin:12px auto 0;max-width:700px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:9px 13px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.wxbar.show{display:block}
+.wxbar-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.wxbar-title{font-size:.78rem;font-weight:800;color:#5a4632;white-space:nowrap}
+.wxbar-days{display:flex;gap:10px;flex:1 1 auto;flex-wrap:wrap}
+.wxday{display:inline-flex;align-items:center;gap:5px;background:#fbf6ee;border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:.8rem;font-weight:700;color:#6a5c46;white-space:nowrap}
+.wxday .wxd-emo{font-size:1rem}
+.wxday .wxd-t{color:#c9713f}
+.wxday .wxd-tn{color:#3FA9D6}
+.wxday .wxd-p{color:#7a746a;font-size:.72rem}
+.wxday .wxd-label{color:#a89f90;font-weight:800}
+.wxbar-rain{flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;background:#d5edf8;border:1.5px solid #9cd0ea;border-radius:999px;padding:5px 12px;font-size:.76rem;font-weight:800;color:#2a7aa0;cursor:pointer;transition:.12s;white-space:nowrap}
+.wxbar-rain:hover{background:#c2e4f3}
+.wxbar-src{font-size:.56rem;color:#c3baaa;margin:5px 0 0}
+.topbanner{display:block;max-width:700px;margin:10px auto 0;background:#fff6ee;border:1.5px solid var(--accent);border-radius:999px;padding:9px 16px;text-align:center;font-size:.85rem;font-weight:800;color:var(--accent-d);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbanner:hover{background:var(--accent);color:#fff}
+.topbanner.planbanner{margin-top:8px;background:var(--accent);color:#fff;border-color:var(--accent)}
+.topbanner.planbanner:hover{background:var(--accent-d);border-color:var(--accent-d)}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <h1><img class="odemaru-mark" src="/odemaru-mark.png" alt="おでまる" width="96" height="96" decoding="async">おおいた子育ておでかけマップ</h1>
+    <p class="catch">大分の"子連れで入りやすいお店"を集めたおでかけマップ</p>
+    <p class="creator">大分県内の子連れチェーン店39店を掲載。二児のパパが個人で運営しています。</p>
+    <p class="note">キッズメニューやおむつ替え台のあるチェーン店を、出発地と地図から選べます。</p><p class="topbanner" style="white-space:normal;cursor:default">🚧 現在このページは子連れチェーン店のみ掲載しています。地域のスポット情報は順次追加しています。</p>
+    <div class="wxbar" id="wxbar" aria-live="polite">
+      <div class="wxbar-top">
+        <span class="wxbar-title" id="wxbarTitle">📅 今週末の天気</span>
+        <span class="wxbar-days" id="wxbarDays"></span>
+        <button class="wxbar-rain" id="wxbarRain" type="button" style="display:none">☔ 雨でも室内のスポットを見る</button>
+      </div>
+      <p class="wxbar-src">天気: Open-Meteo</p>
+    </div>
+    <p class="topbanner planbanner" style="white-space:normal;cursor:default">🎯 おでかけプランナーは準備中です（地域スポットの追加とあわせて公開予定）</p>
+  </div>
+</header>
+
+<section class="moods">
+  <div class="wrap">
+    <h2>気分で選ぶ</h2>
+    <div class="mood-scroll" id="moods" role="list">
+      <button class="mood-btn" data-mood="rain"    role="listitem"><span class="emo">☔</span>雨でも室内</button>
+      <button class="mood-btn" data-mood="free"    role="listitem"><span class="emo">🆓</span>無料</button>
+      <button class="mood-btn" data-mood="animal"  role="listitem"><span class="emo">🦁</span>動物とふれあう</button>
+      <button class="mood-btn" data-mood="active"  role="listitem"><span class="emo">🛝</span>からだを動かす</button>
+      <button class="mood-btn" data-mood="water"   role="listitem"><span class="emo">💦</span>水であそぶ</button>
+      <button class="mood-btn" data-mood="create"  role="listitem"><span class="emo">🔬</span>つくる・体験</button>
+      <button class="mood-btn" data-mood="vehicle" role="listitem"><span class="emo">🚃</span>のりもの・電車</button>
+      <button class="mood-btn" data-mood="food"    role="listitem"><span class="emo">🍽</span>子連れランチ</button>
+    </div>
+  </div>
+</section>
+
+<div class="filterbar" id="filterbar">
+  <div class="wrap">
+    <div class="frow" role="group" aria-label="出発地を選ぶ">
+      <span class="flabel">🚗 どこから行く？</span>
+      <select class="origin-sel" id="originSel" aria-label="出発地の街"></select>
+      <button class="origin-btn" id="originGeo" type="button">📍現在地から</button>
+      <span class="origin-note">※所要時間は目安です</span>
+      <span class="origin-msg" id="originMsg" role="status" aria-live="polite" style="display:none"></span>
+    </div>
+    <div class="frow" role="group" aria-label="遊びタイプで絞り込み">
+      <span class="flabel">遊び</span>
+      <button class="chip play" data-t="animal"  aria-pressed="false">🦁 動物</button>
+      <button class="chip play" data-t="active"  aria-pressed="false">🛝 からだ</button>
+      <button class="chip play" data-t="water"   aria-pressed="false">💦 水</button>
+      <button class="chip play" data-t="create"  aria-pressed="false">🔬 つくる</button>
+      <button class="chip play" data-t="vehicle" aria-pressed="false">🚃 のりもの</button>
+      <button class="chip play" data-t="indoor"  aria-pressed="false">☔ 室内</button>
+      <button class="chip play" data-t="food"    aria-pressed="false">🍽 ごはん</button>
+    </div>
+    <div class="frow" role="group" aria-label="出発地からの所要時間で絞り込み">
+      <span class="flabel" id="driveLabel">大分市から</span>
+      <button class="chip drive" data-d="20" aria-pressed="false">20分</button>
+      <button class="chip drive" data-d="30" aria-pressed="false">30分</button>
+      <button class="chip drive" data-d="40" aria-pressed="false">40分</button>
+      <button class="chip drive" data-d="50" aria-pressed="false">50分</button>
+      <button class="chip drive" data-d="60" aria-pressed="false">60分</button>
+    </div>
+    <div class="frow">
+      <button class="chip" data-f="rain" aria-pressed="false">☔ 雨でもOK</button>
+      <button class="chip" data-f="free" aria-pressed="false">🆓 無料</button>
+      <button class="chip" data-f="kids" aria-pressed="false">🧸 キッズスペース</button>
+      <button class="chip on" data-f="chain" aria-pressed="true">🍴 子連れチェーン店</button>
+      <span class="count" id="count" aria-live="polite">該当32件</span>
+      <button class="reset" id="reset">リセット</button>
+    </div>
+    <div class="frow" id="foodSubChips" role="group" aria-label="ごはん店の追加条件" style="display:none">
+      <span class="flabel">ごはん店の条件</span>
+      <button class="chip" data-f="zashiki" aria-pressed="false">🍵 座敷あり</button>
+      <button class="chip" data-f="kids_chair" aria-pressed="false">🪑 子ども椅子</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="main">
+    <div id="mapwrap">
+      <div id="map" role="application" aria-label="スポットの地図"></div>
+      <button id="fullscreenMapBtn" type="button">⛶ 全画面で見る</button>
+      <button id="recenterBtn" type="button" aria-label="現在地へ戻る" title="現在地へ戻る">⌖</button>
+    </div>
+    <button id="backToMap" type="button" aria-label="マップに戻る">🗺 マップに戻る</button>
+    <div class="listwrap">
+      <h2 class="section-title">スポット一覧 <small id="listcount"></small></h2>
+      <div class="cards" id="cards"></div>
+      <div class="empty" id="empty" style="display:none">条件に合うスポットがありません。条件をゆるめてみてください。</div>
+
+      <p style="font-size:.74rem;color:var(--sub);line-height:1.6;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:14px 0 0">掲載情報は公式サイト・自治体サイト等の公開情報をもとに確認していますが、営業時間・料金・休業日・設備情報は変更される場合があります。お出かけ前に、必ず公式サイト等で最新情報をご確認ください。<br><a href="./request.html">情報の修正・削除依頼はこちら</a></p>
+
+      <div class="weekend" style="margin-top:18px">
+        <h3>今週末のおでかけ 🎪</h3>
+        <p>最新イベント情報はInstagramでお知らせ！</p>
+        <div class="actions">
+          <a class="btn insta" href="#" target="_blank" rel="noopener">📷 Instagram</a>
+          <a class="btn links" href="./links.html">今週末のリンク集 →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="madeby" aria-label="運営者について" style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;margin:18px 0">
+    <h2 style="font-size:1.05rem;margin:0 0 8px;color:var(--accent-d)">二児のパパが個人で運営しています</h2>
+    <p style="font-size:.88rem;color:#5c574e;line-height:1.7;margin:0 0 12px">週末や雨の日に「子どもをどこへ連れて行こう？」と悩んだ経験から、大分県内の子連れスポットを地図で探せるサイトを作りました。まずは子連れで入りやすいチェーン飲食店39店を掲載しています。公園や室内遊び場などの地域スポット情報は順次追加していきます。</p>
+    <a href="./about.html" style="display:inline-block;background:var(--accent);color:#fff;text-decoration:none;padding:10px 18px;border-radius:999px;font-size:.85rem;font-weight:700">運営者情報を見る →</a>
+  </section>
+</div>
+
+<div class="wrap">
+  
+</div>
+
+<div class="wrap">
+  
+</div>
+
+<div class="wrap">
+  <!-- 掲載のお問い合わせ導線 -->
+  <section class="listing" aria-label="掲載のご案内">
+    <h3>掲載をご検討の施設・イベント主催者さまへ</h3>
+    <p>子育て世帯向けの施設・イベント情報を随時掲載しています。掲載のご相談や掲載内容の修正はお気軽にご連絡ください。</p>
+    <a class="btn contact" id="contactBtn" href="./request.html">掲載についてのご相談はこちら →</a>
+  </section>
+  <p style="text-align:center;margin:18px auto 6px;font-size:.86rem;color:var(--sub)">📅 週末イベントは毎週木曜にInstagramで配信中 → <a href="#" target="_blank" rel="noopener" style="font-weight:700"></a></p>
+</div>
+
+
+<footer>
+  <div class="wrap">
+    <p class="odemaru-note"><img src="/odemaru-guide.png" alt="おでまる" width="160" height="186" loading="lazy" decoding="async"><span>案内役の「おでまる」がおでかけをお手伝いします。</span></p>
+    <p>掲載情報は変わることがあります。おでかけ前に各公式サイトで最終確認をお願いします。</p>
+    <p>写真: Wikimedia Commons（各写真にクレジットを表示しています）</p>
+    <p>当サイトはアフィリエイトプログラムに参加しており、リンクを経由した予約・購入により収入を得ることがあります（PR）。</p>
+    <p>Amazonのアソシエイトとして、おおいた子育ておでかけマップは適格販売により収入を得ています。</p>
+    <p style="color:#bcb3a3">おおいた子育ておでかけマップ</p>
+    <p class="site-footer-links"><a href="./about.html">運営者情報</a> | <a href="./disclaimer.html">免責事項</a> | <a href="./privacy.html">プライバシーポリシー</a> | <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcSuUG_4MbFgNq-Ejn_cfDvXKhQdQZh4DxITrDiKlo4ocFfw/viewform" target="_blank" rel="noopener">お問い合わせ</a> | <a href="./request.html">掲載情報の修正・削除依頼</a></p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" referrerpolicy="no-referrer"></script>
+<script>
+const SPOTS=[{"name": "ガスト 南大分店（から好し取扱店）", "city": "大分市", "latitude": 33.209263, "longitude": 131.599801, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011683/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.209263,131.599801", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 中津店（から好し取扱店）", "city": "中津市", "latitude": 33.588861, "longitude": 131.211755, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011686/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.588861,131.211755", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 宇佐店（から好し取扱店）", "city": "宇佐市", "latitude": 33.527837, "longitude": 131.340405, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011850/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.527837,131.340405", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 大分日田店（から好し取扱店）", "city": "日田市", "latitude": 33.334284, "longitude": 130.933613, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011877/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.334284,130.933613", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 別府店（から好し取扱店）", "city": "別府市", "latitude": 33.282716, "longitude": 131.505004, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011969/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.282716,131.505004", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 大分駅前店（から好し取扱店）", "city": "大分市", "latitude": 33.232264, "longitude": 131.611061, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/012684/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.232264,131.611061", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 大分木ノ上店（から好し取扱店）", "city": "大分市", "latitude": 33.184467, "longitude": 131.569046, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/012918/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.184467,131.569046", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 大分森町店（から好し取扱店）", "city": "大分市", "latitude": 33.229431, "longitude": 131.681327, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/012954/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.229431,131.681327", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 佐伯店（から好し取扱店）", "city": "佐伯市", "latitude": 32.961009, "longitude": 131.865506, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/017832/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=32.961009,131.865506", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ステーキガスト 東大分店", "city": "大分市", "latitude": 33.242147, "longitude": 131.645498, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのステーキ・ハンバーグのファミリーレストランです。お子様メニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/018051/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.242147,131.645498", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ステーキガスト"}, {"name": "くら寿司 大分中津店", "city": "中津市", "latitude": 33.5930667, "longitude": 131.1972345, "play_types": ["food"], "is_free": null, "price_text": "１皿115円～", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。", "business_hours": null, "closed_days": null, "official_url": "https://shop.kurasushi.co.jp/detail/213", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.5930667,131.1972345", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "くら寿司"}, {"name": "くら寿司 大分森町店", "city": "大分市", "latitude": 33.2191954, "longitude": 131.6807523, "play_types": ["food"], "is_free": null, "price_text": "１皿115円～", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。", "business_hours": null, "closed_days": null, "official_url": "https://shop.kurasushi.co.jp/detail/460", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.2191954,131.6807523", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "くら寿司"}, {"name": "くら寿司 D・plaza大分店", "city": "大分市", "latitude": 33.2462459, "longitude": 131.605823, "play_types": ["food"], "is_free": null, "price_text": "１皿115円～", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。", "business_hours": null, "closed_days": null, "official_url": "https://shop.kurasushi.co.jp/detail/543", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.2462459,131.605823", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "くら寿司"}, {"name": "くら寿司 別府上人ケ浜店", "city": "別府市", "latitude": 33.31643, "longitude": 131.49977, "play_types": ["food"], "is_free": null, "price_text": "１皿115円～", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。", "business_hours": null, "closed_days": null, "official_url": "https://shop.kurasushi.co.jp/detail/633", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.31643,131.49977", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "くら寿司"}, {"name": "くら寿司 別府店", "city": "別府市", "latitude": 33.2857727, "longitude": 131.5042661, "play_types": ["food"], "is_free": null, "price_text": "１皿115円～", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。", "business_hours": null, "closed_days": null, "official_url": "https://shop.kurasushi.co.jp/detail/564", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.2857727,131.5042661", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "くら寿司"}, {"name": "くら寿司 南大分店", "city": "大分市", "latitude": 33.2029046, "longitude": 131.6003264, "play_types": ["food"], "is_free": null, "price_text": "１皿115円～", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。", "business_hours": null, "closed_days": null, "official_url": "https://shop.kurasushi.co.jp/detail/439", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.2029046,131.6003264", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "くら寿司"}, {"name": "ココス 大分浜町店", "city": "大分市", "latitude": 33.2462464098058, "longitude": 131.603826141399, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/3048.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.2462464098058,131.603826141399", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "スシロー 大分大在店", "city": "大分市", "latitude": 33.245766, "longitude": 131.713789, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。公式のお子さま連れ向け案内「こどもスシロー」があります。", "business_hours": null, "closed_days": null, "official_url": "https://www.akindo-sushiro.co.jp/shop/detail.php?id=1835", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.245766,131.713789", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替えシート"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "スシロー"}, {"name": "スシロー 大分中戸次店", "city": "大分市", "latitude": 33.15522783, "longitude": 131.6543385, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。公式のお子さま連れ向け案内「こどもスシロー」があります。", "business_hours": null, "closed_days": null, "official_url": "https://www.akindo-sushiro.co.jp/shop/detail.php?id=1919", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.15522783,131.6543385", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替えシート"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "スシロー"}, {"name": "スシロー 大分元町店", "city": "大分市", "latitude": 33.22265, "longitude": 131.61866, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。公式のお子さま連れ向け案内「こどもスシロー」があります。", "business_hours": null, "closed_days": null, "official_url": "https://www.akindo-sushiro.co.jp/shop/detail.php?id=239", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.22265,131.61866", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替えシート"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "スシロー"}, {"name": "スシロー 大分わさだ店", "city": "大分市", "latitude": 33.185164, "longitude": 131.570839, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。公式のお子さま連れ向け案内「こどもスシロー」があります。", "business_hours": null, "closed_days": null, "official_url": "https://www.akindo-sushiro.co.jp/shop/detail.php?id=226", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.185164,131.570839", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替えシート"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "スシロー"}, {"name": "スシロー コスモタウン佐伯店", "city": "佐伯市", "latitude": 32.961114, "longitude": 131.864436, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。公式のお子さま連れ向け案内「こどもスシロー」があります。", "business_hours": null, "closed_days": null, "official_url": "https://www.akindo-sushiro.co.jp/shop/detail.php?id=347", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=32.961114,131.864436", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替えシート"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "スシロー"}, {"name": "スシロー 大分中津店", "city": "中津市", "latitude": 33.588733, "longitude": 131.212692, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。公式のお子さま連れ向け案内「こどもスシロー」があります。", "business_hours": null, "closed_days": null, "official_url": "https://www.akindo-sushiro.co.jp/shop/detail.php?id=245", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.588733,131.212692", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替えシート"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "スシロー"}, {"name": "スシロー 日田玉川店", "city": "日田市", "latitude": 33.322054, "longitude": 130.926961, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。公式のお子さま連れ向け案内「こどもスシロー」があります。", "business_hours": null, "closed_days": null, "official_url": "https://www.akindo-sushiro.co.jp/shop/detail.php?id=194", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.322054,130.926961", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替えシート"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "スシロー"}, {"name": "はま寿司 大分高城店", "city": "大分市", "latitude": 33.2437383702673, "longitude": 131.652996062258, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/4137.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.2437383702673,131.652996062258", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 宇佐店", "city": "宇佐市", "latitude": 33.52898418529055, "longitude": 131.3374745623183, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/5495.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.52898418529055,131.3374745623183", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 別府店", "city": "別府市", "latitude": 33.31409626239195, "longitude": 131.47575843612162, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/5692.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.31409626239195,131.47575843612162", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 中津店", "city": "中津市", "latitude": 33.591333, "longitude": 131.203026, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/6151.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.591333,131.203026", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 日田店", "city": "日田市", "latitude": 33.318047, "longitude": 130.93251, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/6243.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.318047,130.93251", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 大分賀来店", "city": "大分市", "latitude": 33.21275395, "longitude": 131.5573689, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/6594.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.21275395,131.5573689", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "丸亀製麺大分王子", "city": "大分市", "latitude": 33.2404128, "longitude": 131.5938905, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110460", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.2404128,131.5938905", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺大分", "city": "大分市", "latitude": 33.2210901, "longitude": 131.6809, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110406", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.2210901,131.6809", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺豊後にわさき市場", "city": "大分市", "latitude": 33.2322411, "longitude": 131.6064917, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110679", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.2322411,131.6064917", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺大分わさだ", "city": "大分市", "latitude": 33.1915312, "longitude": 131.5955061, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/111151", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.1915312,131.5955061", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺別府", "city": "別府市", "latitude": 33.30338655903553, "longitude": 131.50190216322244, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110618", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.30338655903553,131.50190216322244", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺中津", "city": "中津市", "latitude": 33.59319362584059, "longitude": 131.19713432233482, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110426", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.59319362584059,131.19713432233482", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "サイゼリヤ トキハわさだタウン", "city": "大分市", "latitude": 33.188679, "longitude": 131.581497, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=1600", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.188679,131.581497", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ イオン高城", "city": "大分市", "latitude": 33.241634, "longitude": 131.651596, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=1624", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.241634,131.651596", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ 大分オーパ", "city": "大分市", "latitude": 33.236164, "longitude": 131.607193, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=1645", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=33.236164,131.607193", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}];
+
+const ANJO=[33.226,131.6068];
+
+// --- origin selector data & calibration ---
+const CITIES=[["大分市", 33.226, 131.6068, ""], ["中津市", 33.5913, 131.203, ""], ["別府市", 33.3034, 131.5019, ""], ["日田市", 33.3221, 130.9325, ""], ["佐伯市", 32.9611, 131.865, ""], ["宇佐市", 33.5284, 131.3389, ""]];
+function haversineKm(la1,lo1,la2,lo2){
+  const R=6371,d2r=Math.PI/180;
+  const dLa=(la2-la1)*d2r,dLo=(lo2-lo1)*d2r;
+  const a=Math.sin(dLa/2)**2+Math.cos(la1*d2r)*Math.cos(la2*d2r)*Math.sin(dLo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a));
+}
+// Fit minutes ≈ a + b*km using the 32 Anjo-based samples (single linear regression)
+const REG=(function(){
+  const xs=[],ys=[];
+  SPOTS.forEach(s=>{
+    if(s.latitude!=null&&s.longitude!=null&&s.estimated_drive_minutes_from_anjo!=null){
+      xs.push(haversineKm(ANJO[0],ANJO[1],s.latitude,s.longitude));
+      ys.push(s.estimated_drive_minutes_from_anjo);
+    }
+  });
+  const n=xs.length;
+  if(n<2) return {a:0,b:1.5,n};
+  const mx=xs.reduce((a,b)=>a+b,0)/n, my=ys.reduce((a,b)=>a+b,0)/n;
+  let num=0,den=0;
+  for(let i=0;i<n;i++){num+=(xs[i]-mx)*(ys[i]-my);den+=(xs[i]-mx)**2;}
+  const b=den?num/den:0, a=my-b*mx;
+  return {a,b,n};
+})();
+console.log('drive-time regression: minutes ≈ '+REG.a.toFixed(2)+' + '+REG.b.toFixed(3)+' * km (n='+REG.n+')');
+
+const origin={name:'大分市',lat:ANJO[0],lng:ANJO[1],isAnjo:true};
+function driveMinutes(s){
+  if(origin.isAnjo && s.estimated_drive_minutes_from_anjo!=null) return s.estimated_drive_minutes_from_anjo;
+  if(s.latitude==null||s.longitude==null) return null;
+  const km=haversineKm(origin.lat,origin.lng,s.latitude,s.longitude);
+  let m=Math.round((REG.a+REG.b*km)/5)*5;
+  if(m<5)m=5;
+  return m;
+}
+
+const PLAY={
+  animal:{c:'#E9A23B',e:'🦁',label:'動物'},
+  active:{c:'#4CAF6E',e:'🛝',label:'からだ'},
+  water:{c:'#3FA9D6',e:'💦',label:'水'},
+  create:{c:'#9B6DD6',e:'🔬',label:'つくる'},
+  vehicle:{c:'#E06C75',e:'🚃',label:'のりもの'},
+  indoor:{c:'#7A8AA0',e:'☔',label:'室内'},
+  food:{c:'#D95D77',e:'🍽',label:'ごはん'}
+};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const primary=s=>(s.play_types&&s.play_types[0])||'indoor';
+
+// state
+const state={play:new Set(),drive:null,rain:false,free:false,kids:false,jidokan:false,zashiki:false,kids_chair:false,chain:true};
+
+// --- map init (isolated: map failures must never block cards/filters) ---
+let map=null;
+const markers={};
+try{
+  map=L.map('map',{scrollWheelZoom:false}).setView([33.2421,131.5939],9);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:18,
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+  map.on('click',()=>map.scrollWheelZoom.enable());
+
+  // home/origin marker is created once and moved on origin change (see updateOriginMarker below)
+
+  // spot markers
+  SPOTS.forEach((s,i)=>{
+    if(s.latitude==null||s.longitude==null) return;
+    const p=primary(s), col=(s.is_chain===true?'#e8853d':PLAY[p].c), emo=(s.is_chain===true?'🍴':PLAY[p].e);
+    const icon=L.divIcon({className:'',html:`<div class="pin" style="background:${col}"><span>${emo}</span></div>`,iconSize:[34,34],iconAnchor:[17,34],popupAnchor:[0,-30]});
+    const m=L.marker([s.latitude,s.longitude],{icon,title:s.name});
+    // popup content is generated on each open so drive-minutes always reflect the current origin
+    m.bindPopup(()=>popupHTML(s,i),{maxWidth:290,minWidth:220,autoPan:false,closeOnClick:false,className:'minipop',maxHeight:Math.max(180,Math.round(window.innerHeight*0.34)),offset:[0,-6]});
+    m._spotIndex=i;
+    markers[i]=m;
+    m.addTo(map);
+  });
+  // whole mini-card is tappable: close popup + scroll to the detail card
+  map.on('popupopen',e=>{
+    const el=e.popup.getElement(); if(!el) return;
+    const mc=el.querySelector('.minicard'); if(!mc) return;
+    const go=()=>{ const i=+mc.dataset.i; map.closePopup(); focusCard(i); };
+    mc.addEventListener('click',go);
+    mc.addEventListener('keydown',ev=>{ if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();go();} });
+  });
+}catch(e){
+  console.warn('map init failed',e);
+  map=null;
+}
+
+// --- back-to-map floating button: show only when map is scrolled out of view above ---
+(function(){
+  const btn=document.getElementById('backToMap');
+  const mapEl=document.getElementById('mapwrap')||document.getElementById('map');
+  if(!btn||!mapEl) return;
+  btn.addEventListener('click',()=>{
+    mapEl.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){ btn.classList.remove('show'); }
+        else if(entry.boundingClientRect.top<0){ btn.classList.add('show'); }
+        else { btn.classList.remove('show'); }
+      });
+    },{threshold:0});
+    io.observe(mapEl);
+  }else{
+    window.addEventListener('scroll',()=>{
+      const r=mapEl.getBoundingClientRect();
+      if(r.bottom<0||r.top>window.innerHeight) btn.classList.remove('show');
+      else if(r.top<0) btn.classList.add('show'); else btn.classList.remove('show');
+    },{passive:true});
+  }
+})();
+
+function focusCard(i){
+  const el=document.getElementById('card-'+i);
+  if(!el) return;
+  document.querySelectorAll('.card.hl').forEach(c=>c.classList.remove('hl'));
+  el.classList.add('hl');
+  // offset the smooth scroll by the sticky filter bar so the card lands fully visible
+  const bar=document.getElementById('filterbar');
+  const off=(bar?bar.offsetHeight:0)+14;
+  const y=el.getBoundingClientRect().top+window.pageYOffset-off;
+  window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+  setTimeout(()=>el.classList.remove('hl'),2600);
+}
+
+// rich mini-card popup (rendered on demand → always current origin/minutes)
+function popupHTML(s,i){
+  const p=primary(s), col=PLAY[p].c;
+  let badges=`<span class="mc-badge play" style="background:${col}">${PLAY[p].label}</span>`;
+  const dm=driveMinutes(s);
+  if(dm!=null) badges+=`<span class="mc-badge drive">🚗 ${esc(origin.name)}から約${dm}分</span>`;
+  if(s.is_free===true) badges+=`<span class="mc-badge free">🆓 無料</span>`;
+  if(s.rain_friendly===true||s.indoor_or_outdoor==='indoor') badges+=`<span class="mc-badge rain">☔ 室内</span>`;
+  const isFood=(s.play_types||[]).includes('food');
+  let kidfeat='';
+  if(isFood && Array.isArray(s.kid_features) && s.kid_features.length){
+    kidfeat='<div class="mc-kf">'+s.kid_features.slice(0,3).map(f=>`<span class="kf">${esc(f)}</span>`).join('')+'</div>';
+  }
+  return `<div class="minicard no-photo" data-i="${i}" role="button" tabindex="0" aria-label="${esc(s.name)}の詳細をみる">
+    <div class="mc-body">
+      <div class="mc-name">${esc(s.name)}</div>
+      <div class="mc-city">${esc(s.city||'')}</div>
+      <div class="mc-badges">${badges}</div>
+      ${kidfeat}
+    </div>
+    <div class="mc-more">詳しくみる ▼</div>
+  </div>`;
+}
+
+// --- rendering ---
+const cardsEl=document.getElementById('cards');
+function cardHTML(s,i){
+  const p=primary(s), col=PLAY[p].c;
+  let photoBlock='';
+  if(s.image_url){
+    let photo=`<img loading="lazy" src="${esc(s.image_url)}" alt="${esc(s.name)}の写真" onerror="this.closest('.photo').remove()">`;
+    if(s.image_credit) photo+=`<div class="credit">${esc(s.image_credit)}</div>`;
+    photoBlock=`<div class="photo">${photo}</div>`;
+  }
+  // badges
+  let badges='';
+  (s.play_types||[]).forEach(t=>{if(PLAY[t])badges+=`<span class="badge play" style="background:${PLAY[t].c}">${PLAY[t].e} ${PLAY[t].label}</span>`;});
+  const dm=driveMinutes(s);
+  if(dm!=null) badges+=`<span class="badge drive">🚗 ${esc(origin.name)}から約${dm}分</span>`;
+  if(s.is_free===true) badges+=`<span class="badge free">🆓 無料</span>`;
+  if(s.rain_friendly===true||s.indoor_or_outdoor==='indoor') badges+=`<span class="badge rain">☔ 屋内・雨OK</span>`;
+  const kfHasKidsSpace=Array.isArray(s.kid_features)&&s.kid_features.some(f=>/キッズスペース|キッズルーム|キッズコーナー|プレイスペース/.test(f));
+  if(s.has_kids_space===true&&!kfHasKidsSpace) badges+=`<span class="badge free">🧸 キッズスペース</span>`;
+  const kfHasZashiki=Array.isArray(s.kid_features)&&s.kid_features.some(f=>/座敷|小上がり|掘りごたつ/.test(f));
+  if(s.has_zashiki===true&&!kfHasZashiki) badges+=`<span class="badge free">🍵 座敷あり</span>`;
+  const kfHasKidsChair=Array.isArray(s.kid_features)&&s.kid_features.some(f=>/キッズチェア|子ども椅子|子供椅子|ハイチェア|ベビーチェア|まめイス/.test(f));
+  if(s.has_kids_chair===true&&!kfHasKidsChair) badges+=`<span class="badge free">🪑 子ども椅子</span>`;
+  if(s.is_jidokan===true) badges+=`<span class="badge free">🏠 児童館</span>`;
+  if(s.is_chain===true&&s.chain_name) badges+=`<span class="badge free">🍴 チェーン店</span>`;
+  // info
+  let info='';
+  if(s.price_text) info+=`<p class="info"><b>料金</b><span>${esc(s.price_text)}</span></p>`;
+  if(s.business_hours) info+=`<p class="info"><b>時間</b><span>${esc(s.business_hours)}</span></p>`;
+  if(s.closed_days) info+=`<p class="info"><b>休み</b><span>${esc(s.closed_days)}</span></p>`;
+  if(s.parking) info+=`<p class="info"><b>駐車場</b><span>${esc(s.parking)}</span></p>`;
+  // actions
+  let actions='';
+  if(s.official_url){
+    const isTabelog=/tabelog\.com/.test(s.official_url);
+    const linkLabel=s.url_label ? s.url_label+' →' : (isTabelog ? '詳細情報(食べログ) →' : '公式サイト →');
+    actions+=`<a class="btn primary" href="${esc(s.official_url)}" target="_blank" rel="noopener">${esc(linkLabel)} </a>`;
+  }
+  const gmapsSearchUrl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.name+' '+(s.city||''));
+  actions+=`<a class="btn map" href="${esc(gmapsSearchUrl)}" target="_blank" rel="noopener">🗺 Googleマップ</a>`;
+  // 文脈アフィリボタン（PR）: water優先、次に屋外active
+  const pt=s.play_types||[];
+  let aff='';
+  if(pt.includes('water')){
+    aff=`<a class="aff" href="//af.moshimo.com/af/c/click?a_id=5711058&p_id=54&pc_id=54&pl_id=616&url=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F%25E6%25B0%25B4%25E9%2581%258A%25E3%2581%25B3%2B%25E3%2581%258A%25E3%2582%2582%25E3%2581%25A1%25E3%2582%2583%2B%25E5%25AD%2590%25E4%25BE%259B%2F" target="_blank" rel="noopener sponsored">🛒 水遊びグッズを見る <span class="pr">[PR]</span></a>`;
+  }else if(pt.includes('active')&&!pt.includes('indoor')){
+    aff=`<a class="aff" href="//af.moshimo.com/af/c/click?a_id=5711058&p_id=54&pc_id=54&pl_id=616&url=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F%25E3%2583%25AC%25E3%2582%25B8%25E3%2583%25A3%25E3%2583%25BC%25E3%2582%25B7%25E3%2583%25BC%25E3%2583%2588%2B%25E5%258E%259A%25E6%2589%258B%2F" target="_blank" rel="noopener sponsored">🛒 レジャーシートなど公園グッズ <span class="pr">[PR]</span></a>`;
+  }
+  const isFood=(s.play_types||[]).includes('food');
+  // food-specific: kid feature tags + source note
+  let kidfeat='';
+  if(isFood && Array.isArray(s.kid_features) && s.kid_features.length){
+    kidfeat='<div class="kidfeat">'+s.kid_features.map(f=>`<span class="kf">${esc(f)}</span>`).join('')+'</div>';
+  }
+  let srcnote='';
+  if(isFood && s.source_note){
+    srcnote=`<p class="srcnote">紹介: Instagram @nishimika_waiwai</p>`;
+  }
+  const foodDisclaimer=isFood?`<p class="foodnote">※営業情報は変わりやすいため、お店の最新の発信をご確認ください。</p>`:'';
+  const checked=(s.checked_at?`<p class="checked">情報確認日: ${esc(s.checked_at)}</p>`:'')+foodDisclaimer;
+  return `<article class="card" id="card-${i}" data-i="${i}">
+    ${photoBlock}
+    <div class="body">
+      <h3>${esc(s.name)}</h3>
+      <p class="city">${esc(s.city||'')}</p>
+      ${s.kid_appeal?`<p class="appeal">${esc(s.kid_appeal)}</p>`:''}
+      <div class="badges">${badges}</div>
+      ${kidfeat}
+      ${info}
+      ${srcnote}
+      <div class="actions">${actions}</div>
+      ${aff}
+      ${checked}
+    </div>
+  </article>`;
+}
+
+function matches(s){
+  // チェーン飲食店は「子連れチェーン店」チップON時のみ表示（本県は初期ON）。
+  if(s.is_chain===true && state.chain!==true) return false;
+  if(state.play.size){
+    const pts=s.play_types||[];
+    if(![...state.play].some(t=>pts.includes(t))) return false;
+  }
+  if(state.drive!=null){
+    const dm=driveMinutes(s);
+    if(dm==null||dm>state.drive) return false;
+  }
+  if(state.rain){ if(!(s.rain_friendly===true||s.indoor_or_outdoor==='indoor')) return false; }
+  if(state.free){ if(s.is_free!==true) return false; }
+  if(state.kids){ if(s.has_kids_space!==true) return false; }
+  if(state.jidokan){ if(s.is_jidokan!==true) return false; }
+  else { if(s.is_jidokan===true) return false; }
+  if(state.zashiki){ if(s.has_zashiki!==true) return false; }
+  if(state.kids_chair){ if(s.has_kids_chair!==true) return false; }
+  // 条件チップ単独時（ごはんチップ未選択）は、foodのみのスポット（飲食店）を除外
+  const pts0=s.play_types||[];
+  if(pts0.length&&pts0.every(t=>t==='food')&&!state.play.has('food')&&(state.rain||state.free||state.kids||state.drive!=null)) return false;
+  return true;
+}
+
+function apply(){
+  let n=0;
+  const frag=[];
+  SPOTS.forEach((s,i)=>{
+    const ok=matches(s);
+    if(ok){n++;frag.push(cardHTML(s,i));}
+  });
+  // card list rendering must always happen, regardless of map state
+  cardsEl.innerHTML=frag.join('');
+  document.getElementById('count').textContent='該当'+n+'件';
+  document.getElementById('listcount').textContent='('+n+'件)';
+  document.getElementById('empty').style.display=n?'none':'block';
+
+  // map marker sync is best-effort and isolated from card rendering
+  try{
+    if(map){
+      SPOTS.forEach((s,i)=>{
+        const ok=matches(s);
+        const m=markers[i];
+        if(m){ if(ok){ if(!map.hasLayer(m))m.addTo(map);} else { if(map.hasLayer(m))map.removeLayer(m);} }
+      });
+    }
+  }catch(e){
+    console.warn('map update failed',e);
+  }
+}
+
+// --- filter chip wiring ---
+function updateFoodSubChips(){
+  const el=document.getElementById('foodSubChips');
+  if(!el) return;
+  const show=state.play.has('food');
+  el.style.display=show?'':'none';
+  if(!show){
+    let changed=false;
+    ['zashiki','kids_chair'].forEach(f=>{
+      if(state[f]){ state[f]=false; changed=true; }
+    });
+    document.querySelectorAll('#foodSubChips .chip').forEach(c=>{c.classList.remove('on');c.setAttribute('aria-pressed','false')});
+  }
+}
+document.querySelectorAll('.chip.play').forEach(c=>{
+  c.addEventListener('click',()=>{
+    const t=c.dataset.t;
+    if(state.play.has(t))state.play.delete(t);else state.play.add(t);
+    c.classList.toggle('on');c.setAttribute('aria-pressed',state.play.has(t));
+    updateFoodSubChips();
+    apply();
+  });
+});
+document.querySelectorAll('.chip.drive').forEach(c=>{
+  c.addEventListener('click',()=>{
+    const d=+c.dataset.d;
+    document.querySelectorAll('.chip.drive').forEach(x=>{x.classList.remove('on');x.setAttribute('aria-pressed','false')});
+    if(state.drive===d){state.drive=null;}else{state.drive=d;c.classList.add('on');c.setAttribute('aria-pressed','true');}
+    apply();
+  });
+});
+document.querySelectorAll('.chip[data-f]').forEach(c=>{
+  c.addEventListener('click',()=>{
+    const f=c.dataset.f;state[f]=!state[f];
+    c.classList.toggle('on');c.setAttribute('aria-pressed',state[f]);
+    apply();
+  });
+});
+document.getElementById('reset').addEventListener('click',resetAll);
+function resetAll(){
+  state.play.clear();state.drive=null;state.rain=false;state.free=false;state.kids=false;state.jidokan=false;state.zashiki=false;state.kids_chair=false;state.chain=true;
+  document.querySelectorAll('.chip.on').forEach(c=>{c.classList.remove('on');c.setAttribute('aria-pressed','false')});
+  updateFoodSubChips();
+  apply();
+}
+
+// --- mood buttons ---
+document.querySelectorAll('.mood-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    resetAll();
+    const mood=b.dataset.mood;
+    if(mood==='rain'){ state.rain=true; setChip('[data-f="rain"]'); }
+    else if(mood==='free'){ state.free=true; setChip('[data-f="free"]'); }
+    else { state.play.add(mood); setChip('.chip.play[data-t="'+mood+'"]'); }
+    updateFoodSubChips();
+    apply();
+    document.getElementById('filterbar').scrollIntoView({behavior:'smooth',block:'start'});
+    setTimeout(()=>{try{if(map)map.invalidateSize();}catch(e){console.warn('map invalidateSize failed',e);}},400);
+  });
+});
+function setChip(sel){const c=document.querySelector(sel);if(c){c.classList.add('on');c.setAttribute('aria-pressed','true');}}
+
+// --- fullscreen map button: hand off current filter + origin city to map.html ---
+(function(){
+  const btn=document.getElementById('fullscreenMapBtn');
+  if(!btn) return;
+  btn.addEventListener('click',()=>{
+    const params=new URLSearchParams();
+    if(state.rain) params.set('filter','rain');
+    else if(state.free) params.set('filter','free');
+    else if(state.kids) params.set('filter','kids');
+    else if(state.jidokan) params.set('filter','jidokan');
+    else if(state.play.size) params.set('filter',[...state.play][0]);
+    if(!origin.isAnjo){
+      params.set('from',origin.name);
+      // 現在地はCITIESに無いため座標も渡し、全画面側で現在地設定を維持する
+      if(origin.name==='現在地'){ params.set('flat',origin.lat.toFixed(5)); params.set('flng',origin.lng.toFixed(5)); }
+    }
+    const qs=params.toString();
+    location.href='./map.html'+(qs?('?'+qs):'');
+  });
+})();
+
+// --- origin selector wiring ---
+const originSel=document.getElementById('originSel');
+const cityOptGroups={};
+CITIES.forEach(([nm,lat,lng,grp])=>{
+  const o=document.createElement('option');
+  o.value=lat+','+lng; o.dataset.name=nm; o.textContent=nm;
+  let parent=originSel;
+  if(grp){
+    if(!cityOptGroups[grp]){
+      const g=document.createElement('optgroup'); g.label=grp;
+      originSel.appendChild(g); cityOptGroups[grp]=g;
+    }
+    parent=cityOptGroups[grp];
+  }
+  parent.appendChild(o);
+});
+originSel.value=CITIES[0][1]+','+CITIES[0][2]; // 大分市
+originSel.querySelector(`option[value="${CITIES[0][1]},${CITIES[0][2]}"]`).selected=true;
+
+const originMsg=document.getElementById('originMsg');
+function showMsg(t){originMsg.textContent=t;originMsg.style.display='';}
+function hideMsg(){originMsg.style.display='none';}
+
+// single home/origin marker: created once, moved+relabeled on every origin change (never duplicated)
+let originMarker=null;
+function homeDivIcon(label){
+  const emo=origin.isAnjo?'🏠':(origin.name==='現在地'?'📍':'🚗');
+  return L.divIcon({
+    className:'',
+    html:`<div class="home-wrap"><div class="home-pulse"></div><div class="home-pin"><span>${emo}</span></div><div class="home-label">📍${esc(label)}</div></div>`,
+    iconSize:[48,48],
+    iconAnchor:[24,24]
+  });
+}
+function updateOriginMarker(){
+  try{
+    if(!map) return;
+    const icon=homeDivIcon(origin.name);
+    if(originMarker){
+      originMarker.setLatLng([origin.lat,origin.lng]);
+      originMarker.setIcon(icon);
+      originMarker.setPopupContent(`<div class="pop"><h4>🏠 ${esc(origin.name)}</h4><div class="pa">ここからの所要時間の目安を表示しています</div></div>`);
+      originMarker.options.title=origin.name;
+    }else{
+      originMarker=L.marker([origin.lat,origin.lng],{icon,zIndexOffset:2000,title:origin.name})
+        .addTo(map)
+        .bindPopup(`<div class="pop"><h4>🏠 ${esc(origin.name)}</h4><div class="pa">ここからの所要時間の目安を表示しています</div></div>`);
+    }
+  }catch(e){ console.warn('origin marker update failed',e); }
+}
+updateOriginMarker(); // place initial marker (大分市) once map/origin are ready
+
+// --- 現在地UX: 青ドット表示・初回自動パン・トースト通知（alert不使用） ---
+let userLatLng=null, userDotMarker=null, autoPannedOnce=false;
+function showToast(msg){
+  let t=document.getElementById('geoToast');
+  if(!t){ t=document.createElement('div'); t.id='geoToast'; t.className='geo-toast'; document.body.appendChild(t); }
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(showToast._tm);
+  showToast._tm=setTimeout(()=>t.classList.remove('show'),2600);
+}
+function blueDotIcon(){
+  return L.divIcon({className:'',html:'<div class="geo-dot"><div class="geo-dot-ring"></div><div class="geo-dot-core"></div></div>',iconSize:[16,16],iconAnchor:[8,8]});
+}
+function placeUserDot(lat,lng){
+  userLatLng=[lat,lng];
+  if(!map) return;
+  try{
+    if(userDotMarker){ userDotMarker.setLatLng(userLatLng); }
+    else{ userDotMarker=L.marker(userLatLng,{icon:blueDotIcon(),zIndexOffset:3000,interactive:false,keyboard:false}).addTo(map); }
+  }catch(e){ console.warn('user dot update failed',e); }
+}
+function requestGeolocation(onOk){
+  if(!navigator.geolocation){ showToast('位置情報が許可されていません'); return; }
+  let done=false;
+  const watchdog=setTimeout(()=>{ if(done)return; done=true; showToast('位置情報が許可されていません'); },9000);
+  navigator.geolocation.getCurrentPosition(
+    pos=>{ if(done)return; done=true; clearTimeout(watchdog); onOk(pos.coords.latitude,pos.coords.longitude); },
+    ()=>{ if(done)return; done=true; clearTimeout(watchdog); showToast('位置情報が許可されていません'); },
+    {timeout:8000,maximumAge:60000}
+  );
+}
+const recenterBtn=document.getElementById('recenterBtn');
+if(recenterBtn){
+  recenterBtn.addEventListener('click',()=>{
+    if(userLatLng){
+      if(map) map.setView(userLatLng,13,{animate:true});
+      setOrigin('現在地',userLatLng[0],userLatLng[1]);
+      placeUserDot(userLatLng[0],userLatLng[1]);
+      return;
+    }
+    requestGeolocation((lat,lng)=>{
+      setOrigin('現在地',lat,lng);
+      placeUserDot(lat,lng);
+      if(map) map.setView([lat,lng],13,{animate:true});
+      autoPannedOnce=true;
+    });
+  });
+}
+
+function setOrigin(name,lat,lng){
+  origin.name=name; origin.lat=lat; origin.lng=lng; origin.isAnjo=(name==='大分市');
+  const dl=document.getElementById('driveLabel'); if(dl) dl.textContent=origin.name+'から';
+  apply();               // re-renders cards with new minutes + re-applies current 分以内 filter + count
+  updateOriginMarker();  // best-effort, guarded inside
+  updateWeather();       // best-effort, self-hides on any failure
+}
+
+originSel.addEventListener('change',()=>{
+  hideMsg();
+  const opt=originSel.selectedOptions[0];
+  const parts=originSel.value.split(',');
+  setOrigin(opt.dataset.name, +parts[0], +parts[1]);
+});
+
+document.getElementById('originGeo').addEventListener('click',()=>{
+  hideMsg();
+  const backToAnjo=()=>{ originSel.value=CITIES[0][1]+','+CITIES[0][2]; setOrigin('大分市',ANJO[0],ANJO[1]); };
+  if(!navigator.geolocation){ backToAnjo(); showMsg('現在地を取得できませんでした'); return; }
+  let done=false;
+  const fail=()=>{ if(done)return; done=true; backToAnjo(); showMsg('現在地を取得できませんでした'); };
+  // watchdog: if neither callback fires (e.g. prompt dismissed / headless), fall back gracefully
+  const watchdog=setTimeout(fail,9000);
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      if(done)return; done=true; clearTimeout(watchdog);
+      const lat=pos.coords.latitude, lng=pos.coords.longitude;
+      setOrigin('現在地',lat,lng);
+      placeUserDot(lat,lng);
+      if(!autoPannedOnce && map){ map.setView([lat,lng],13,{animate:true}); autoPannedOnce=true; }
+    },
+    ()=>{ clearTimeout(watchdog); fail(); },
+    {timeout:8000,maximumAge:60000}
+  );
+});
+
+// --- 週末天気ウィジェット (Open-Meteo, キー不要 / 失敗時は完全非表示) ---
+const wxCache=Object.create(null); // メモリのみ: "lat,lng" -> {sat,sun} （localStorage不使用）
+function wxEmoji(c){
+  if(c==null) return '☁️';
+  if(c===0) return '☀️';
+  if(c<=2) return '🌤';
+  if(c===3) return '☁️';
+  if(c<=48) return '🌫';
+  if(c<=67) return '🌧';
+  if(c<=77) return '❄️';
+  if(c<=82) return '🌧';
+  if(c<=86) return '❄️';
+  return '⛈';
+}
+function wxWeekendDates(){
+  // 直近の土曜・日曜（今日が土/日ならその週末=今日を含む）
+  const now=new Date();
+  const dow=now.getDay(); // 0=日,6=土
+  const fmt=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  let sat,sun;
+  if(dow===0){ // 日曜: 昨日(土)と今日(日)
+    sun=new Date(now); sat=new Date(now); sat.setDate(now.getDate()-1);
+  }else if(dow===6){ // 土曜: 今日(土)と明日(日)
+    sat=new Date(now); sun=new Date(now); sun.setDate(now.getDate()+1);
+  }else{ // 平日: 次の土曜・日曜
+    const toSat=(6-dow+7)%7; sat=new Date(now); sat.setDate(now.getDate()+toSat);
+    sun=new Date(sat); sun.setDate(sat.getDate()+1);
+  }
+  return {sat:fmt(sat),sun:fmt(sun)};
+}
+let wxReqSeq=0;
+async function updateWeather(){
+  const bar=document.getElementById('wxbar');
+  if(!bar) return;
+  const key=origin.lat.toFixed(4)+','+origin.lng.toFixed(4);
+  const seq=++wxReqSeq;
+  try{
+    let data=wxCache[key];
+    if(!data){
+      const url=`https://api.open-meteo.com/v1/forecast?latitude=${origin.lat}&longitude=${origin.lng}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=10`;
+      const res=await fetch(url);
+      if(!res.ok) throw new Error('http '+res.status);
+      const json=await res.json();
+      const t=json&&json.daily&&json.daily.time;
+      if(!t||!t.length) throw new Error('no daily');
+      const {sat,sun}=wxWeekendDates();
+      const pick=day=>{
+        const i=t.indexOf(day);
+        if(i<0) return null;
+        return {
+          code:json.daily.weather_code[i],
+          tmax:json.daily.temperature_2m_max[i],
+          tmin:json.daily.temperature_2m_min[i],
+          pop:json.daily.precipitation_probability_max[i]
+        };
+      };
+      data={sat:pick(sat),sun:pick(sun)};
+      if(!data.sat&&!data.sun) throw new Error('no weekend');
+      wxCache[key]=data;
+    }
+    if(seq!==wxReqSeq) return; // 連打対策: 古いレスポンスは破棄
+    const daysEl=document.getElementById('wxbarDays');
+    const mk=(label,d)=>{
+      if(!d) return '';
+      const tmax=d.tmax==null?'--':Math.round(d.tmax);
+      const tmin=d.tmin==null?'--':Math.round(d.tmin);
+      const pop=d.pop==null?'--':d.pop;
+      return `<span class="wxday"><span class="wxd-label">${label}</span><span class="wxd-emo">${wxEmoji(d.code)}</span><span class="wxd-t">${tmax}°</span><span class="wxd-tn">${tmin}°</span><span class="wxd-p">☔${pop}%</span></span>`;
+    };
+    daysEl.innerHTML=mk('土',data.sat)+mk('日',data.sun);
+    document.getElementById('wxbarTitle').textContent=`📅 今週末の天気（${origin.name}）`;
+    const rainy=[data.sat,data.sun].some(d=>d&&d.pop!=null&&d.pop>=50);
+    document.getElementById('wxbarRain').style.display=rainy?'':'none';
+    bar.classList.add('show');
+  }catch(e){
+    if(seq===wxReqSeq) bar.classList.remove('show'); // フェイルセーフ: 非表示のみ
+  }
+}
+(function(){
+  const rb=document.getElementById('wxbarRain');
+  if(rb) rb.addEventListener('click',()=>{
+    state.rain=true; setChip('[data-f="rain"]'); apply();
+    const list=document.querySelector('.listwrap')||document.querySelector('.cards');
+    if(list) list.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+})();
+
+apply();
+updateWeather();
+setTimeout(()=>{try{if(map)map.invalidateSize();}catch(e){console.warn('map invalidateSize failed',e);}},300);
+</script>
+</body>
+</html>
