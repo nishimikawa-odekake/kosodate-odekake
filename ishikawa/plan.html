@@ -308,6 +308,26 @@ function haversineKm(la1,lo1,la2,lo2){
   const a=Math.sin(dLa/2)**2+Math.cos(la1*d2r)*Math.cos(la2*d2r)*Math.sin(dLo/2)**2;
   return 2*R*Math.asin(Math.sqrt(a));
 }
+/* ===== 県別ストレージ分離 (同一ドメインに28県ぶんのプランナーがあるため、
+   localStorage の保存値が県をまたいで復元されるのを防ぐ) ===== */
+const PREF_SCOPE='ishikawa';
+function pkey(k){ return k+'_'+PREF_SCOPE; }
+// 出発地の妥当性: 当県の市町村なら座標ごと当県の値にスナップ。
+// 座標直指定(現在地など)は当県の範囲内のときだけ許可し、県外なら破棄。
+const ORIGIN_MAX_KM=(function(){
+  let m=0;
+  try{ CITIES.forEach(c=>{ const d=haversineKm(ANJO[0],ANJO[1],c[1],c[2]); if(d>m) m=d; }); }catch(e){}
+  return Math.max(60,m+40);
+})();
+function sanitizeOrigin(o){
+  if(!o||typeof o.name!=='string'||!o.name) return null;
+  if(o.name==='金沢市') return {name:'金沢市',lat:ANJO[0],lng:ANJO[1],isAnjo:true};
+  const c=CITIES.find(x=>x[0]===o.name);
+  if(c) return {name:c[0],lat:c[1],lng:c[2],isAnjo:c[0]==='金沢市'};
+  if(!isFinite(o.lat)||!isFinite(o.lng)) return null;
+  if(haversineKm(ANJO[0],ANJO[1],o.lat,o.lng)<=ORIGIN_MAX_KM) return {name:o.name,lat:o.lat,lng:o.lng,isAnjo:false};
+  return null;
+}
 // same-complex / too-close detection (bug fix: prevent same-site facilities from
 // being treated as distinct stops in a single plan)
 function isSameComplex(a,b){
@@ -777,7 +797,7 @@ function shuffle(arr,seed){
   for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
   return a;
 }
-const RECENT_MAINS_KEY='odemaru_recent_mains_v1';
+const RECENT_MAINS_KEY=pkey('odemaru_recent_mains_v1');
 function recentMains(){ try{ return JSON.parse(localStorage.getItem(RECENT_MAINS_KEY)||'[]'); }catch(e){ return []; } }
 function rememberMains(names){
   try{
@@ -2021,7 +2041,7 @@ function restoreFromShare(qs){
 }
 
 /* ===== 自分で選ぶ（カスタム）プラン ===== */
-const CUSTOM_KEY='odemaru_custom_sel_v1';
+const CUSTOM_KEY=pkey('odemaru_custom_sel_v1');
 const SLOT_LABELS=['午前','お昼','午後'];
 function cpLabels(len){
   let li=cpLunchIdx(len);
@@ -2083,9 +2103,9 @@ function customAutoAssign(items){
   });
   return slots;
 }
-const MYPLACE_KEY='odemaru_myplaces_v1';
+const MYPLACE_KEY=pkey('odemaru_myplaces_v1');
 // 出発地の保持: 編集⇄マップ⇄結果で一貫させる。保存値が不正・旧形式のときだけ金沢市に戻す
-const ORIGIN_KEY='odemaru_custom_origin_v1';
+const ORIGIN_KEY=pkey('odemaru_custom_origin_v1');
 function cpSaveOrigin(){
   try{
     const o=state.origin;
@@ -2097,7 +2117,9 @@ function cpSaveOrigin(){
 function cpLoadOrigin(){
   try{
     const d=JSON.parse(localStorage.getItem(ORIGIN_KEY)||'null');
-    if(d&&typeof d.name==='string'&&d.name&&isFinite(d.lat)&&isFinite(d.lng)) return {name:d.name,lat:d.lat,lng:d.lng,isAnjo:!!d.isAnjo};
+    const ok=sanitizeOrigin(d);
+    if(ok) return ok;
+    if(d) localStorage.removeItem(ORIGIN_KEY);   // 県外の保存値は破棄
   }catch(e){}
   return null;
 }
@@ -2963,7 +2985,7 @@ function showResult(){
   state.keepScroll=false;
 }
 /* ===== 前回条件の保存・復元 (localStorage / ログイン不要) ===== */
-const PREF_KEY='odemaru_prefs_v1';
+const PREF_KEY=pkey('odemaru_prefs_v1');
 function savePrefs(){
   try{
     const o=state.origin||{};
@@ -2981,16 +3003,20 @@ function loadPrefs(){
     if(!raw) return;
     const p=JSON.parse(raw);
     // 出発地(市町村選択のみ復元。現在地は毎回取り直し)
-    if(p.origin&&p.origin.name){
+    const __o=sanitizeOrigin(p.origin);
+    if(__o){
       const sel=document.getElementById('originSel');
       if(sel){
         for(const opt of sel.options){
-          if(opt.textContent===p.origin.name){ sel.value=opt.value; break; }
+          if(opt.textContent===__o.name){ sel.value=opt.value; break; }
         }
       }
-      state.origin={name:p.origin.name,lat:p.origin.lat,lng:p.origin.lng,isAnjo:!!p.origin.isAnjo};
+      state.origin=__o;
       const note=document.getElementById('geoNote');
       if(note) note.textContent='前回の出発地を選択しています（変更もできます）';
+    } else if(p.origin){
+      // 他県ページで保存された出発地 → 破棄し、当県の初期値のまま進む
+      try{ localStorage.removeItem(PREF_KEY); }catch(e2){}
     }
     if(p.driveTime){
       const btn=document.querySelector('#driveBtns .bigbtn[data-drive="'+p.driveTime+'"]');
