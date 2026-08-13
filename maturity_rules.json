@@ -1,0 +1,23 @@
+{
+  "status_rule": {"version": "1.0", "date": "2026-08-13"},
+  "max_score": 8,
+  "threshold_mature": 6,
+  "score_components": {
+    "volume": {"desc": "地域スポット件数(チェーン除く)", "tiers": [[250, 2], [180, 1]]},
+    "jidokan": {"desc": "児童館件数", "tiers": [[30, 2], [10, 1]]},
+    "category": {"desc": "非foodのplay_typeで5件以上あるカテゴリ数", "tiers": [[6, 2], [5, 1]]},
+    "food": {"desc": "地域(非チェーン)のfoodスポット件数", "tiers": [[10, 1]]},
+    "free": {"desc": "is_free=true の件数", "tiers": [[30, 1]]}
+  },
+  "classification": {
+    "chain_first": "local件数が0（チェーンのみ公開）",
+    "growing": "local>0 かつ score<6",
+    "mature": "local>0 かつ score>=6"
+  },
+  "display_names": {
+    "mature": "おでかけ+ランチ充実",
+    "growing": "おでかけスポット拡充中",
+    "chain_first": "子連れランチ先行公開"
+  },
+  "aichi": {"status": "mature", "note": "別リポジトリのため固定値定義(aichi_fixed.json)を使用"}
+}
