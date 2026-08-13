@@ -445,7 +445,7 @@ console.log('drive-time regression: minutes ≈ '+REG.a.toFixed(2)+' + '+REG.b.t
 
 const origin={name:'高松市',lat:ANJO[0],lng:ANJO[1],isAnjo:true};
 function driveMinutes(s){
-  if(origin.isAnjo) return s.estimated_drive_minutes_from_anjo;
+  if(origin.isAnjo && s.estimated_drive_minutes_from_anjo!=null) return s.estimated_drive_minutes_from_anjo;
   if(s.latitude==null||s.longitude==null) return null;
   const km=haversineKm(origin.lat,origin.lng,s.latitude,s.longitude);
   let m=Math.round((REG.a+REG.b*km)/5)*5;
@@ -472,7 +472,7 @@ const state={play:new Set(),drive:null,rain:false,free:false,kids:false,jidokan:
 let map=null;
 const markers={};
 try{
-  map=L.map('map',{scrollWheelZoom:false}).setView([34.8,133.85],9);
+  map=L.map('map',{scrollWheelZoom:false}).setView([34.267,134.0065],9);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
     maxZoom:18,
     attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
