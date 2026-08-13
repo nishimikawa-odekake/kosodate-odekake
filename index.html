@@ -3,18 +3,32 @@
 
 <html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>子育ておでかけマップ（全国版）</title>
-<meta name="description" content="全国47都道府県の子育ておでかけスポットとチェーン飲食店を地図で検索。地域のおでかけスポット7,275件（児童館を含む）に加え、子連れで行きやすいチェーン飲食店5,458店を掲載しています。">
+<title>おでまる｜子育ておでかけマップ（全国版）- 子連れスポット・おでかけプランナー</title>
+<meta name="description" content="今日のおでかけプランを自動作成。全国47都道府県の子育ておでかけスポットとチェーン飲食店を地図で検索。地域のおでかけスポット7,275件（児童館を含む）に加え、子連れで行きやすいチェーン飲食店5,458店を掲載しています。">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<meta property="og:title" content="子育ておでかけマップ">
+<link rel="canonical" href="https://kosodate-odekake.jp/">
+<meta property="og:url" content="https://kosodate-odekake.jp/">
+<meta property="og:description" content="質問に答えるだけで、今日のおでかけプランを自動作成。全国47都道府県の子連れスポットを地図で検索できます。無料・登録不要。">
+<meta property="og:title" content="おでまる｜子育ておでかけマップ">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://kosodate-odekake.jp/og-logo.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://kosodate-odekake.jp/og-logo.png">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "WebSite",
+ "name": "おでまる｜子育ておでかけマップ",
+ "alternateName": "子育ておでかけマップ",
+ "url": "https://kosodate-odekake.jp/",
+ "description": "質問に答えるだけで、今日のおでかけプランを自動作成。全国47都道府県の子連れおでかけスポットを地図で検索できます。無料・登録不要。",
+ "inLanguage": "ja"
+}
+</script>
 <style>
 :root{--accent:#e8802a;--accent-d:#c96a1c;--card:#fff8f0;--line:#efe4d4;--sub:#8a8172;--bg:#fffdf9}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,'Hiragino Sans',sans-serif;background:var(--bg);color:#3a352d}
@@ -34,9 +48,146 @@ footer{text-align:center;color:var(--sub);font-size:.78rem;padding:24px 18px;lin
 .odemaru-mark{width:28px;height:28px;vertical-align:-6px;margin-right:6px;display:inline-block}
 .odemaru-hero{width:112px;height:auto;margin:8px auto 0;display:block;
 filter:drop-shadow(0 3px 6px rgba(0,0,0,.08))}
+
+.hero{padding:18px 18px 6px;text-align:center;max-width:760px;margin:0 auto}
+.hero h2{font-size:1.32rem;line-height:1.45;margin:0 0 8px;font-weight:800;letter-spacing:.01em}
+.hero .lead{margin:0 0 14px;font-size:.92rem;line-height:1.6;color:#5c554a}
+.cta-main{display:block;max-width:420px;margin:0 auto 6px;padding:16px 18px;border-radius:14px;
+background:var(--accent);color:#fff;text-decoration:none;font-weight:800;font-size:1.06rem;
+box-shadow:0 4px 12px rgba(232,128,42,.28)}
+.cta-main:hover{background:var(--accent-d)}
+.cta-note{margin:0 auto 12px;max-width:420px;font-size:.72rem;line-height:1.6;color:var(--sub)}
+.cta-sub{display:block;max-width:420px;margin:0 auto 12px;padding:12px 16px;border-radius:14px;
+background:#fff;color:var(--accent-d);text-decoration:none;font-weight:700;font-size:.94rem;
+border:1.5px solid var(--line)}
+.cta-sub:hover{border-color:var(--accent)}
+.facts{margin:0 auto;max-width:520px;font-size:.78rem;color:var(--sub);line-height:1.7}
+.sec{max-width:760px;margin:0 auto;padding:26px 18px 0}
+.sec h2{font-size:1.12rem;margin:0 0 4px}
+.sec .sec-lead{margin:0 0 14px;font-size:.84rem;color:var(--sub);line-height:1.6}
+.grp-title{font-size:.9rem;font-weight:700;margin:18px 0 8px;color:var(--accent-d)}
+.grp-note{font-size:.76rem;color:var(--sub);margin:0 0 8px;line-height:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 4px}
+.chip{display:inline-block;padding:7px 12px;border-radius:999px;background:var(--card);
+border:1px solid var(--line);color:#3a352d;text-decoration:none;font-size:.86rem;line-height:1.2}
+.chip:hover{border-color:var(--accent);color:var(--accent-d)}
+.reg{font-size:.74rem;color:var(--sub);margin:10px 0 4px}
+.owner{max-width:760px;margin:26px auto 0;padding:16px 18px;text-align:center;
+color:var(--sub);font-size:.82rem;line-height:1.8}
+.owner a{color:var(--accent-d)}
+@media(max-width:420px){
+ header{padding:14px 14px 4px}
+ h1{font-size:1.06rem}
+ .odemaru-mark{width:24px;height:24px;vertical-align:-5px}
+ .odemaru-hero{display:none}
+ header .sub{display:none}
+ .hero{padding:8px 14px 4px}
+ .hero h2{font-size:1.18rem;margin-bottom:6px}
+ .hero .lead{font-size:.84rem;margin-bottom:11px}
+ .cta-main{padding:14px 14px;font-size:1rem}
+ .cta-sub{padding:11px 14px;font-size:.88rem;margin-bottom:10px}
+ .facts{font-size:.74rem}
+}
 </style></head>
 <body>
 <header><h1><img class="odemaru-mark" src="/odemaru-mark.png" alt="おでまる" width="96" height="96" decoding="async">子育ておでかけマップ</h1><p class="sub">お住まいの都道府県を選んでください</p><img class="odemaru-hero" src="/odemaru-wave.png" alt="おでまる" width="420" height="447" decoding="async"></header>
+<section class="hero">
+<h2>子どもとの「今日どこ行く？」を、もっとラクに。</h2>
+<p class="lead">質問に答えるだけで、今日のおでかけプランを自動作成。無料・登録不要。</p>
+<a class="cta-main" href="#plan-select">🎯 30秒でおでかけを決める</a>
+<p class="cta-note">30秒プランナーは28都道府県＋愛知版で利用できます・対応エリア順次拡大中</p>
+<a class="cta-sub" href="#pref-list">🗺 マップ・スポット検索（全国47都道府県）</a>
+<p class="facts">47都道府県｜<span data-stat="total">13,859</span>スポット｜無料・登録不要</p>
+</section>
+<section class="sec" id="plan-select">
+<h2>どこから出発しますか？</h2>
+<p class="sec-lead">都道府県を選ぶと、その地域のおでかけプランナーが開きます。</p>
+<p class="grp-title">🎯 30秒プラン対応</p>
+<p class="grp-note">質問に答えるだけで、今日のおでかけプランを自動作成します。</p>
+<p class="reg">北海道・東北</p>
+<div class="chips">
+<a class="chip" href="./miyagi/plan.html">宮城県</a>
+<a class="chip" href="./fukushima/plan.html">福島県</a>
+</div>
+<p class="reg">関東</p>
+<div class="chips">
+<a class="chip" href="./kanagawa/plan.html">神奈川県</a>
+</div>
+<p class="reg">中部</p>
+<div class="chips">
+<a class="chip" href="./niigata/plan.html">新潟県</a>
+<a class="chip" href="./toyama/plan.html">富山県</a>
+<a class="chip" href="./ishikawa/plan.html">石川県</a>
+<a class="chip" href="./fukui/plan.html">福井県</a>
+<a class="chip" href="./yamanashi/plan.html">山梨県</a>
+<a class="chip" href="./nagano/plan.html">長野県</a>
+<a class="chip" href="./gifu/plan.html">岐阜県</a>
+<a class="chip" href="./shizuoka/plan.html">静岡県</a>
+<a class="chip" href="https://nishimikawa-odekake.com/plan.html">愛知県 ↗</a>
+<a class="chip" href="./mie/plan.html">三重県</a>
+</div>
+<p class="reg">近畿</p>
+<div class="chips">
+<a class="chip" href="./shiga/plan.html">滋賀県</a>
+<a class="chip" href="./kyoto/plan.html">京都府</a>
+<a class="chip" href="./osaka/plan.html">大阪府</a>
+<a class="chip" href="./hyogo/plan.html">兵庫県</a>
+<a class="chip" href="./nara/plan.html">奈良県</a>
+<a class="chip" href="./wakayama/plan.html">和歌山県</a>
+</div>
+<p class="reg">中国</p>
+<div class="chips">
+<a class="chip" href="./tottori/plan.html">鳥取県</a>
+<a class="chip" href="./shimane/plan.html">島根県</a>
+<a class="chip" href="./okayama/plan.html">岡山県</a>
+<a class="chip" href="./hiroshima/plan.html">広島県</a>
+<a class="chip" href="./yamaguchi/plan.html">山口県</a>
+</div>
+<p class="reg">四国</p>
+<div class="chips">
+<a class="chip" href="./tokushima/plan.html">徳島県</a>
+<a class="chip" href="./kagawa/plan.html">香川県</a>
+<a class="chip" href="./ehime/plan.html">愛媛県</a>
+<a class="chip" href="./kochi/plan.html">高知県</a>
+</div>
+<p class="reg">九州</p>
+<div class="chips">
+<a class="chip" href="./fukuoka/plan.html">福岡県</a>
+</div>
+<p class="grp-title">🗺 マップ・ランチ検索対応（プランナー準備中）</p>
+<p class="grp-note">地図からスポット・子連れランチを検索できます。30秒プランナーは順次対応予定です。</p>
+<p class="reg">北海道・東北</p>
+<div class="chips">
+<a class="chip" href="./hokkaido/index.html">北海道</a>
+<a class="chip" href="./aomori/index.html">青森県</a>
+<a class="chip" href="./iwate/index.html">岩手県</a>
+<a class="chip" href="./akita/index.html">秋田県</a>
+<a class="chip" href="./yamagata/index.html">山形県</a>
+</div>
+<p class="reg">関東</p>
+<div class="chips">
+<a class="chip" href="./ibaraki/index.html">茨城県</a>
+<a class="chip" href="./tochigi/index.html">栃木県</a>
+<a class="chip" href="./gunma/index.html">群馬県</a>
+<a class="chip" href="./saitama/index.html">埼玉県</a>
+<a class="chip" href="./chiba/index.html">千葉県</a>
+<a class="chip" href="./tokyo/index.html">東京都</a>
+</div>
+<p class="reg">九州・沖縄</p>
+<div class="chips">
+<a class="chip" href="./saga/index.html">佐賀県</a>
+<a class="chip" href="./nagasaki/index.html">長崎県</a>
+<a class="chip" href="./kumamoto/index.html">熊本県</a>
+<a class="chip" href="./oita/index.html">大分県</a>
+<a class="chip" href="./miyazaki/index.html">宮崎県</a>
+<a class="chip" href="./kagoshima/index.html">鹿児島県</a>
+<a class="chip" href="./okinawa/index.html">沖縄県</a>
+</div>
+</section>
+<section class="sec" id="pref-list">
+<h2>都道府県から探す</h2>
+<p class="sec-lead">地図・スポット検索は全国47都道府県で使えます。</p>
+</section>
 <div class="wrap"><div class="grid">
 <a class="pref-card" href="https://nishimikawa-odekake.com/"><span class="pref-name">愛知県</span><span class="pref-site">あいち子育ておでかけマップ</span><span class="pref-count">685スポット</span><span class="pref-ext">あいち子育ておでかけマップへ　↗</span></a>
 <a class="pref-card" href="./shizuoka/index.html"><span class="pref-name">静岡県</span><span class="pref-site">しずおか子育ておでかけマップ</span><span class="pref-count">274スポット</span><span class="pref-chain">＋チェーン店172店</span></a>
@@ -88,6 +239,10 @@ filter:drop-shadow(0 3px 6px rgba(0,0,0,.08))}
 <a class="pref-card" href="./kagoshima/index.html"><span class="pref-name">鹿児島県</span><span class="pref-site">かごしま子育ておでかけマップ</span><span class="pref-count">チェーン店45店</span><span class="pref-ext">地域スポット順次追加</span></a>
 <a class="pref-card" href="./okinawa/index.html"><span class="pref-name">沖縄県</span><span class="pref-site">おきなわ子育ておでかけマップ</span><span class="pref-count">チェーン店51店</span><span class="pref-ext">地域スポット順次追加</span></a>
 </div></div>
+<div class="owner">
+<p>二児のパパが個人で運営。西三河（愛知）から始まり、全国47都道府県へ。</p>
+<p><a href="./about.html">運営者について</a></p>
+</div>
 <footer>
 <p>全国46都道府県＋愛知版で総掲載 <span data-stat="total">13,859</span>スポット</p>
 <p>掲載情報は作成時点のものです。最新情報は公式サイトをご確認ください。</p>
