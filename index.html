@@ -89,8 +89,10 @@ filter:drop-shadow(0 3px 6px rgba(0,0,0,.08))}
 <a class="pref-card" href="./okinawa/index.html"><span class="pref-name">沖縄県</span><span class="pref-site">おきなわ子育ておでかけマップ</span><span class="pref-count">チェーン店51店</span><span class="pref-ext">地域スポット順次追加</span></a>
 </div></div>
 <footer>
+<p>全国46都道府県＋愛知版で総掲載 <span data-stat="total">13,859</span>スポット</p>
 <p>掲載情報は作成時点のものです。最新情報は公式サイトをご確認ください。</p>
 <p>お問い合わせ: <a href="mailto:info@kosodate-odekake.jp">info@kosodate-odekake.jp</a></p>
 <p><a href="./about.html">運営者情報</a> | <a href="./disclaimer.html">免責事項</a> | <a href="./privacy.html">プライバシーポリシー</a> | <a href="./request.html">掲載情報の修正・削除依頼</a></p>
 </footer>
+<script>(function(){try{fetch('https://kosodate-odekake.jp/stats.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(s){if(!s)return;document.querySelectorAll('[data-stat]').forEach(function(el){var k=el.getAttribute('data-stat');if(s[k]!=null)el.textContent=Number(s[k]).toLocaleString('ja-JP');});}).catch(function(){});}catch(e){}})();</script>
 </body></html>
