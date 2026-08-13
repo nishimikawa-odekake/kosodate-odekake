@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<!-- deploy 8県体制 20260808 / 愛知カード追加 20260808 / 神奈川追加・12県体制 20260809 / 大阪追加・13県体制 20260809 / 奈良追加・14県体制 20260810 / 兵庫追加・15県体制 20260809 / 和歌山追加・16県体制 20260810 / 岡山追加・17県体制 20260810 / 広島追加・18県体制 20260810 / 山口追加・19県体制 20260810 / 香川追加・20県体制 20260810 / 愛媛追加・21県体制 20260810 / 徳島追加・22県体制 20260810 / 高知追加・23県体制 20260810 / 島根追加・24県体制 20260811 / 鳥取追加・25県体制 20260812 / 福岡追加・26県体制 20260812 -->
+<!-- deploy 8県体制 20260808 / 愛知カード追加 20260808 / 神奈川追加・12県体制 20260809 / 大阪追加・13県体制 20260809 / 奈良追加・14県体制 20260810 / 兵庫追加・15県体制 20260809 / 和歌山追加・16県体制 20260810 / 岡山追加・17県体制 20260810 / 広島追加・18県体制 20260810 / 山口追加・19県体制 20260810 / 香川追加・20県体制 20260810 / 愛媛追加・21県体制 20260810 / 徳島追加・22県体制 20260810 / 高知追加・23県体制 20260810 / 島根追加・24県体制 20260811 / 鳥取追加・25県体制 20260812 / 福岡追加・26県体制 20260812 / 宮城・福島追加・28県体制 20260813 / チェーン店全国展開・新規18県追加・46都道府県体制 20260813 -->
 
 <html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>子育ておでかけマップ（全国版）</title>
+<meta name="description" content="全国47都道府県の子育ておでかけスポットとチェーン飲食店を地図で検索。地域のおでかけスポット7,275件（児童館を含む）に加え、子連れで行きやすいチェーン飲食店5,458店を掲載しています。">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -27,6 +28,8 @@ background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1
 .pref-name{font-size:1.1rem;font-weight:700;color:var(--accent-d)}
 .pref-site{font-size:.82rem;color:var(--sub)}.pref-count{font-size:.82rem;font-weight:700}
 .pref-ext{font-size:.72rem;color:var(--sub)}
+.pref-chain{font-size:.72rem;color:var(--sub)}
+.grid-note{grid-column:1/-1;margin:10px 2px 0;color:var(--sub);font-size:.8rem;line-height:1.6}
 footer{text-align:center;color:var(--sub);font-size:.78rem;padding:24px 18px;line-height:1.8}
 .odemaru-mark{width:28px;height:28px;vertical-align:-6px;margin-right:6px;display:inline-block}
 .odemaru-hero{width:112px;height:auto;margin:8px auto 0;display:block;
@@ -36,34 +39,54 @@ filter:drop-shadow(0 3px 6px rgba(0,0,0,.08))}
 <header><h1><img class="odemaru-mark" src="/odemaru-mark.png" alt="おでまる" width="96" height="96" decoding="async">子育ておでかけマップ</h1><p class="sub">お住まいの都道府県を選んでください</p><img class="odemaru-hero" src="/odemaru-wave.png" alt="おでまる" width="420" height="447" decoding="async"></header>
 <div class="wrap"><div class="grid">
 <a class="pref-card" href="https://nishimikawa-odekake.com/"><span class="pref-name">愛知県</span><span class="pref-site">あいち子育ておでかけマップ</span><span class="pref-count">685スポット</span><span class="pref-ext">あいち子育ておでかけマップへ　↗</span></a>
-<a class="pref-card" href="./shizuoka/index.html"><span class="pref-name">静岡県</span><span class="pref-site">しずおか子育ておでかけマップ</span><span class="pref-count">274スポット</span></a>
-<a class="pref-card" href="./gifu/index.html"><span class="pref-name">岐阜県</span><span class="pref-site">ぎふ子育ておでかけマップ</span><span class="pref-count">252スポット</span></a>
-<a class="pref-card" href="./mie/index.html"><span class="pref-name">三重県</span><span class="pref-site">みえ子育ておでかけマップ</span><span class="pref-count">237スポット</span></a>
-<a class="pref-card" href="./nagano/index.html"><span class="pref-name">長野県</span><span class="pref-site">ながの子育ておでかけマップ</span><span class="pref-count">252スポット</span></a>
-<a class="pref-card" href="./ishikawa/index.html"><span class="pref-name">石川県</span><span class="pref-site">いしかわ子育ておでかけマップ</span><span class="pref-count">295スポット</span></a>
-<a class="pref-card" href="./fukui/index.html"><span class="pref-name">福井県</span><span class="pref-site">ふくい子育ておでかけマップ</span><span class="pref-count">286スポット</span></a>
-<a class="pref-card" href="./toyama/index.html"><span class="pref-name">富山県</span><span class="pref-site">とやま子育ておでかけマップ</span><span class="pref-count">255スポット</span></a>
-<a class="pref-card" href="./shiga/index.html"><span class="pref-name">滋賀県</span><span class="pref-site">しが子育ておでかけマップ</span><span class="pref-count">205スポット</span></a>
-<a class="pref-card" href="./kyoto/index.html"><span class="pref-name">京都府</span><span class="pref-site">きょうと子育ておでかけマップ</span><span class="pref-count">312スポット</span></a>
-<a class="pref-card" href="./yamanashi/index.html"><span class="pref-name">山梨県</span><span class="pref-site">やまなし子育ておでかけマップ</span><span class="pref-count">121スポット</span></a>
-<a class="pref-card" href="./niigata/index.html"><span class="pref-name">新潟県</span><span class="pref-site">にいがた子育ておでかけマップ</span><span class="pref-count">252スポット</span></a>
-<a class="pref-card" href="./kanagawa/index.html"><span class="pref-name">神奈川県</span><span class="pref-site">かながわ子育ておでかけマップ</span><span class="pref-count">544スポット</span></a>
-<a class="pref-card" href="./osaka/index.html"><span class="pref-name">大阪府</span><span class="pref-site">おおさか子育ておでかけマップ</span><span class="pref-count">510スポット</span></a>
-<a class="pref-card" href="./nara/index.html"><span class="pref-name">奈良県</span><span class="pref-site">なら子育ておでかけマップ</span><span class="pref-count">220スポット</span></a>
-<a class="pref-card" href="./hyogo/index.html"><span class="pref-name">兵庫県</span><span class="pref-site">ひょうご子育ておでかけマップ</span><span class="pref-count">302スポット</span></a>
-<a class="pref-card" href="./wakayama/index.html"><span class="pref-name">和歌山県</span><span class="pref-site">わかやま子育ておでかけマップ</span><span class="pref-count">212スポット</span></a>
-<a class="pref-card" href="./okayama/index.html"><span class="pref-name">岡山県</span><span class="pref-site">おかやま子育ておでかけマップ</span><span class="pref-count">253スポット</span></a>
-<a class="pref-card" href="./hiroshima/index.html"><span class="pref-name">広島県</span><span class="pref-site">ひろしま子育ておでかけマップ</span><span class="pref-count">314スポット</span></a>
-<a class="pref-card" href="./yamaguchi/index.html"><span class="pref-name">山口県</span><span class="pref-site">やまぐち子育ておでかけマップ</span><span class="pref-count">257スポット</span></a>
-<a class="pref-card" href="./kagawa/index.html"><span class="pref-name">香川県</span><span class="pref-site">かがわ子育ておでかけマップ</span><span class="pref-count">209スポット</span></a>
-<a class="pref-card" href="./ehime/index.html"><span class="pref-name">愛媛県</span><span class="pref-site">えひめ子育ておでかけマップ</span><span class="pref-count">255スポット</span></a>
-<a class="pref-card" href="./tokushima/index.html"><span class="pref-name">徳島県</span><span class="pref-site">とくしま子育ておでかけマップ</span><span class="pref-count">208スポット</span></a>
-<a class="pref-card" href="./kochi/index.html"><span class="pref-name">高知県</span><span class="pref-site">こうち子育ておでかけマップ</span><span class="pref-count">220スポット</span></a>
-<a class="pref-card" href="./shimane/index.html"><span class="pref-name">島根県</span><span class="pref-site">しまね子育ておでかけマップ</span><span class="pref-count">186スポット</span></a>
-<a class="pref-card" href="./tottori/index.html"><span class="pref-name">鳥取県</span><span class="pref-site">とっとり子育ておでかけマップ</span><span class="pref-count">183スポット</span></a>
-<a class="pref-card" href="./fukuoka/index.html"><span class="pref-name">福岡県</span><span class="pref-site">ふくおか子育ておでかけマップ</span><span class="pref-count">341スポット</span></a>
-      <a class="pref-card" href="./miyagi/index.html"><span class="pref-name">宮城県</span><span class="pref-site">みやぎ子育ておでかけマップ</span><span class="pref-count">184スポット</span></a>
-      <a class="pref-card" href="./fukushima/index.html"><span class="pref-name">福島県</span><span class="pref-site">ふくしま子育ておでかけマップ</span><span class="pref-count">136スポット</span></a>
+<a class="pref-card" href="./shizuoka/index.html"><span class="pref-name">静岡県</span><span class="pref-site">しずおか子育ておでかけマップ</span><span class="pref-count">274スポット</span><span class="pref-chain">＋チェーン店172店</span></a>
+<a class="pref-card" href="./gifu/index.html"><span class="pref-name">岐阜県</span><span class="pref-site">ぎふ子育ておでかけマップ</span><span class="pref-count">252スポット</span><span class="pref-chain">＋チェーン店97店</span></a>
+<a class="pref-card" href="./mie/index.html"><span class="pref-name">三重県</span><span class="pref-site">みえ子育ておでかけマップ</span><span class="pref-count">237スポット</span><span class="pref-chain">＋チェーン店101店</span></a>
+<a class="pref-card" href="./nagano/index.html"><span class="pref-name">長野県</span><span class="pref-site">ながの子育ておでかけマップ</span><span class="pref-count">252スポット</span><span class="pref-chain">＋チェーン店90店</span></a>
+<a class="pref-card" href="./ishikawa/index.html"><span class="pref-name">石川県</span><span class="pref-site">いしかわ子育ておでかけマップ</span><span class="pref-count">295スポット</span><span class="pref-chain">＋チェーン店57店</span></a>
+<a class="pref-card" href="./fukui/index.html"><span class="pref-name">福井県</span><span class="pref-site">ふくい子育ておでかけマップ</span><span class="pref-count">286スポット</span><span class="pref-chain">＋チェーン店42店</span></a>
+<a class="pref-card" href="./toyama/index.html"><span class="pref-name">富山県</span><span class="pref-site">とやま子育ておでかけマップ</span><span class="pref-count">255スポット</span><span class="pref-chain">＋チェーン店62店</span></a>
+<a class="pref-card" href="./shiga/index.html"><span class="pref-name">滋賀県</span><span class="pref-site">しが子育ておでかけマップ</span><span class="pref-count">205スポット</span><span class="pref-chain">＋チェーン店81店</span></a>
+<a class="pref-card" href="./kyoto/index.html"><span class="pref-name">京都府</span><span class="pref-site">きょうと子育ておでかけマップ</span><span class="pref-count">312スポット</span><span class="pref-chain">＋チェーン店134店</span></a>
+<a class="pref-card" href="./yamanashi/index.html"><span class="pref-name">山梨県</span><span class="pref-site">やまなし子育ておでかけマップ</span><span class="pref-count">121スポット</span><span class="pref-chain">＋チェーン店51店</span></a>
+<a class="pref-card" href="./niigata/index.html"><span class="pref-name">新潟県</span><span class="pref-site">にいがた子育ておでかけマップ</span><span class="pref-count">252スポット</span><span class="pref-chain">＋チェーン店78店</span></a>
+<a class="pref-card" href="./kanagawa/index.html"><span class="pref-name">神奈川県</span><span class="pref-site">かながわ子育ておでかけマップ</span><span class="pref-count">544スポット</span><span class="pref-chain">＋チェーン店477店</span></a>
+<a class="pref-card" href="./osaka/index.html"><span class="pref-name">大阪府</span><span class="pref-site">おおさか子育ておでかけマップ</span><span class="pref-count">510スポット</span><span class="pref-chain">＋チェーン店436店</span></a>
+<a class="pref-card" href="./nara/index.html"><span class="pref-name">奈良県</span><span class="pref-site">なら子育ておでかけマップ</span><span class="pref-count">220スポット</span><span class="pref-chain">＋チェーン店76店</span></a>
+<a class="pref-card" href="./hyogo/index.html"><span class="pref-name">兵庫県</span><span class="pref-site">ひょうご子育ておでかけマップ</span><span class="pref-count">302スポット</span><span class="pref-chain">＋チェーン店259店</span></a>
+<a class="pref-card" href="./wakayama/index.html"><span class="pref-name">和歌山県</span><span class="pref-site">わかやま子育ておでかけマップ</span><span class="pref-count">212スポット</span><span class="pref-chain">＋チェーン店43店</span></a>
+<a class="pref-card" href="./okayama/index.html"><span class="pref-name">岡山県</span><span class="pref-site">おかやま子育ておでかけマップ</span><span class="pref-count">253スポット</span><span class="pref-chain">＋チェーン店71店</span></a>
+<a class="pref-card" href="./hiroshima/index.html"><span class="pref-name">広島県</span><span class="pref-site">ひろしま子育ておでかけマップ</span><span class="pref-count">314スポット</span><span class="pref-chain">＋チェーン店114店</span></a>
+<a class="pref-card" href="./yamaguchi/index.html"><span class="pref-name">山口県</span><span class="pref-site">やまぐち子育ておでかけマップ</span><span class="pref-count">257スポット</span><span class="pref-chain">＋チェーン店54店</span></a>
+<a class="pref-card" href="./kagawa/index.html"><span class="pref-name">香川県</span><span class="pref-site">かがわ子育ておでかけマップ</span><span class="pref-count">209スポット</span><span class="pref-chain">＋チェーン店42店</span></a>
+<a class="pref-card" href="./ehime/index.html"><span class="pref-name">愛媛県</span><span class="pref-site">えひめ子育ておでかけマップ</span><span class="pref-count">255スポット</span><span class="pref-chain">＋チェーン店47店</span></a>
+<a class="pref-card" href="./tokushima/index.html"><span class="pref-name">徳島県</span><span class="pref-site">とくしま子育ておでかけマップ</span><span class="pref-count">208スポット</span><span class="pref-chain">＋チェーン店33店</span></a>
+<a class="pref-card" href="./kochi/index.html"><span class="pref-name">高知県</span><span class="pref-site">こうち子育ておでかけマップ</span><span class="pref-count">220スポット</span><span class="pref-chain">＋チェーン店25店</span></a>
+<a class="pref-card" href="./shimane/index.html"><span class="pref-name">島根県</span><span class="pref-site">しまね子育ておでかけマップ</span><span class="pref-count">186スポット</span><span class="pref-chain">＋チェーン店24店</span></a>
+<a class="pref-card" href="./tottori/index.html"><span class="pref-name">鳥取県</span><span class="pref-site">とっとり子育ておでかけマップ</span><span class="pref-count">183スポット</span><span class="pref-chain">＋チェーン店19店</span></a>
+<a class="pref-card" href="./fukuoka/index.html"><span class="pref-name">福岡県</span><span class="pref-site">ふくおか子育ておでかけマップ</span><span class="pref-count">341スポット</span><span class="pref-chain">＋チェーン店167店</span></a>
+      <a class="pref-card" href="./miyagi/index.html"><span class="pref-name">宮城県</span><span class="pref-site">みやぎ子育ておでかけマップ</span><span class="pref-count">184スポット</span><span class="pref-chain">＋チェーン店90店</span></a>
+      <a class="pref-card" href="./fukushima/index.html"><span class="pref-name">福島県</span><span class="pref-site">ふくしま子育ておでかけマップ</span><span class="pref-count">136スポット</span><span class="pref-chain">＋チェーン店75店</span></a>
+
+<div class="grid-note">下記の都道府県は、まず子連れで行きやすいチェーン飲食店から公開しています。地域のスポット情報は順次追加しています。</div>
+<a class="pref-card" href="./hokkaido/index.html"><span class="pref-name">北海道</span><span class="pref-site">ほっかいどう子育ておでかけマップ</span><span class="pref-count">チェーン店138店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./aomori/index.html"><span class="pref-name">青森県</span><span class="pref-site">あおもり子育ておでかけマップ</span><span class="pref-count">チェーン店44店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./iwate/index.html"><span class="pref-name">岩手県</span><span class="pref-site">いわて子育ておでかけマップ</span><span class="pref-count">チェーン店38店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./akita/index.html"><span class="pref-name">秋田県</span><span class="pref-site">あきた子育ておでかけマップ</span><span class="pref-count">チェーン店39店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./yamagata/index.html"><span class="pref-name">山形県</span><span class="pref-site">やまがた子育ておでかけマップ</span><span class="pref-count">チェーン店51店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./ibaraki/index.html"><span class="pref-name">茨城県</span><span class="pref-site">いばらき子育ておでかけマップ</span><span class="pref-count">チェーン店185店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./tochigi/index.html"><span class="pref-name">栃木県</span><span class="pref-site">とちぎ子育ておでかけマップ</span><span class="pref-count">チェーン店99店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./gunma/index.html"><span class="pref-name">群馬県</span><span class="pref-site">ぐんま子育ておでかけマップ</span><span class="pref-count">チェーン店76店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./saitama/index.html"><span class="pref-name">埼玉県</span><span class="pref-site">さいたま子育ておでかけマップ</span><span class="pref-count">チェーン店383店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./chiba/index.html"><span class="pref-name">千葉県</span><span class="pref-site">ちば子育ておでかけマップ</span><span class="pref-count">チェーン店406店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./tokyo/index.html"><span class="pref-name">東京都</span><span class="pref-site">とうきょう子育ておでかけマップ</span><span class="pref-count">チェーン店700店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./saga/index.html"><span class="pref-name">佐賀県</span><span class="pref-site">さが子育ておでかけマップ</span><span class="pref-count">チェーン店27店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./nagasaki/index.html"><span class="pref-name">長崎県</span><span class="pref-site">ながさき子育ておでかけマップ</span><span class="pref-count">チェーン店36店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./kumamoto/index.html"><span class="pref-name">熊本県</span><span class="pref-site">くまもと子育ておでかけマップ</span><span class="pref-count">チェーン店53店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./oita/index.html"><span class="pref-name">大分県</span><span class="pref-site">おおいた子育ておでかけマップ</span><span class="pref-count">チェーン店39店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./miyazaki/index.html"><span class="pref-name">宮崎県</span><span class="pref-site">みやざき子育ておでかけマップ</span><span class="pref-count">チェーン店31店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./kagoshima/index.html"><span class="pref-name">鹿児島県</span><span class="pref-site">かごしま子育ておでかけマップ</span><span class="pref-count">チェーン店45店</span><span class="pref-ext">地域スポット順次追加</span></a>
+<a class="pref-card" href="./okinawa/index.html"><span class="pref-name">沖縄県</span><span class="pref-site">おきなわ子育ておでかけマップ</span><span class="pref-count">チェーン店51店</span><span class="pref-ext">地域スポット順次追加</span></a>
 </div></div>
 <footer>
 <p>掲載情報は作成時点のものです。最新情報は公式サイトをご確認ください。</p>
