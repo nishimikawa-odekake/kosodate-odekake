@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8CDXHXFG9F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8CDXHXFG9F');
+</script>
+<title>全画面マップ｜とちぎ子育ておでかけマップ</title>
+<meta name="description" content="栃木県の子連れで行きやすいチェーン飲食店99店を全画面地図で検索。出発地を選んで近い順に探せます。地域のおでかけスポット情報は順次追加しています。">
+<link rel="canonical" href="https://kosodate-odekake.jp/tochigi/map.html">
+<meta property="og:title" content="全画面マップ｜とちぎ子育ておでかけマップ">
+<meta property="og:description" content="栃木県の子連れで行きやすいチェーン飲食店99店を全画面地図で検索。出発地を選んで近い順に探せます。地域のおでかけスポット情報は順次追加しています。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kosodate-odekake.jp/tochigi/map.html">
+<meta property="og:site_name" content="とちぎ子育ておでかけマップ">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:image" content="https://kosodate-odekake.jp/og-logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kosodate-odekake.jp/og-logo.png">
+<meta name="twitter:title" content="全画面マップ｜とちぎ子育ておでかけマップ">
+<meta name="twitter:description" content="栃木県の子連れで行きやすいチェーン飲食店99店を全画面地図で検索。出発地を選んで近い順に探せます。地域のおでかけスポット情報は順次追加しています。">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" referrerpolicy="no-referrer">
+<style>
+:root{
+  --bg:#faf6ef; --card:#fffdf9; --ink:#3d3a34; --sub:#7a746a; --line:#e7ddcd;
+  --accent:#e08a5b; --accent-d:#c9713f;
+  --animal:#E9A23B; --active:#4CAF6E; --water:#3FA9D6; --create:#9B6DD6; --vehicle:#E06C75; --indoor:#7A8AA0; --food:#D95D77;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;color:var(--ink)}
+#map{position:fixed;inset:0;width:100%;height:100dvh;z-index:1}
+
+/* top bar */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;background:linear-gradient(to bottom,rgba(250,246,239,.96),rgba(250,246,239,.75));backdrop-filter:blur(4px)}
+.topbar a.back{font-size:.8rem;font-weight:700;color:var(--accent-d);text-decoration:none;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 10px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.topbar .logo{font-size:.82rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* origin bar */
+.originbar{position:fixed;top:calc(40px + env(safe-area-inset-top));left:0;right:0;z-index:490;display:flex;align-items:center;gap:6px;padding:6px 10px;overflow-x:auto}
+.originbar select{font-size:.78rem;padding:6px 8px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);max-width:38vw}
+.originbar button{font-size:.78rem;font-weight:700;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--accent-d);white-space:nowrap}
+.originbar button:active{transform:scale(.95)}
+
+/* pins (same design as index.html) */
+.pin{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 5px rgba(0,0,0,.3);border:2px solid #fff}
+.pin span{transform:rotate(45deg);font-size:16px}
+.home-wrap{position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center}
+.home-pulse{position:absolute;inset:0;border-radius:50%;background:var(--accent);opacity:.55;animation:home-pulse 2.2s ease-out infinite}
+.home-pin{position:relative;width:48px;height:48px;border-radius:50%;background:#fff;border:3px solid var(--accent-d);box-shadow:0 3px 10px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-size:24px}
+.home-label{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:2px;background:var(--accent-d);color:#fff;font-size:.72rem;font-weight:700;white-space:nowrap;padding:2px 8px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.25);pointer-events:none}
+@keyframes home-pulse{0%{transform:scale(.6);opacity:.6}100%{transform:scale(1.8);opacity:0}}
+@media(prefers-reduced-motion:reduce){.home-pulse{animation:none;display:none}}
+
+#recenterBtn{position:fixed;right:10px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:1100;width:42px;height:42px;border-radius:50%;background:#fff;border:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.25);font-size:19px;line-height:1;color:var(--accent-d);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+#recenterBtn:active{transform:scale(.94)}
+.geo-dot{width:16px;height:16px;position:relative}
+.geo-dot-ring{position:absolute;inset:-7px;border-radius:50%;background:rgba(66,133,244,.25)}
+.geo-dot-core{position:absolute;inset:0;border-radius:50%;background:#4285F4;border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.4)}
+.geo-toast{position:fixed;left:50%;bottom:calc(70px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(10px);background:rgba(30,28,24,.92);color:#fff;font-size:.8rem;font-weight:600;padding:9px 16px;border-radius:999px;z-index:2000;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:86vw;text-align:center}
+.geo-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* count badge */
+.countbadge{position:fixed;left:50%;transform:translateX(-50%);top:calc(84px + env(safe-area-inset-top));z-index:480;background:rgba(61,58,52,.85);color:#fff;font-size:.72rem;font-weight:700;padding:5px 12px;border-radius:999px;pointer-events:none}
+
+/* bottom filter chip row */
+.chipbar{position:fixed;left:0;right:0;bottom:0;z-index:500;display:flex;gap:6px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));overflow-x:auto;background:linear-gradient(to top,rgba(250,246,239,.97),rgba(250,246,239,.8));backdrop-filter:blur(4px);-webkit-overflow-scrolling:touch}
+.chipbar::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;font-size:.78rem;font-weight:700;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);white-space:nowrap}
+.chip:active{transform:scale(.95)}
+.chip.on{color:#fff;border-color:transparent}
+.chip.play[data-t="animal"].on{background:var(--animal)}
+.chip.play[data-t="active"].on{background:var(--active)}
+.chip.play[data-t="water"].on{background:var(--water)}
+.chip.play[data-t="create"].on{background:var(--create)}
+.chip.play[data-t="vehicle"].on{background:var(--vehicle)}
+.chip.play[data-t="indoor"].on{background:var(--indoor)}
+.chip.play[data-t="food"].on{background:var(--food)}
+.chip[data-f="rain"].on{background:#3FA9D6}
+.chip[data-f="free"].on{background:var(--accent-d)}
+.chip[data-f="zashiki"].on,.chip[data-f="kids_chair"].on,.chip[data-f="chain"].on{background:var(--accent)}
+
+/* bottom sheet */
+.sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:600;opacity:0;pointer-events:none;transition:opacity .2s}
+.sheet-backdrop.show{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:601;background:var(--card);border-radius:18px 18px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.25);transform:translateY(105%);transition:transform .25s cubic-bezier(.2,.8,.3,1);max-height:70dvh;overflow-y:auto;padding:10px 16px calc(18px + env(safe-area-inset-bottom))}
+.sheet.show{transform:translateY(0)}
+.sheet-handle{width:40px;height:5px;background:var(--line);border-radius:99px;margin:2px auto 10px}
+.sheet-close{position:absolute;top:10px;right:12px;font-size:22px;line-height:1;color:var(--sub);background:none;border:none;padding:6px}
+.sheet h3{margin:0 0 4px;font-size:1.05rem;padding-right:28px}
+.sheet .city{margin:0 0 8px;font-size:.82rem;color:var(--sub)}
+.sheet .appeal{font-size:.86rem;margin:0 0 10px;line-height:1.5}
+.sheet .badges{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.sheet .badge{font-size:.7rem;font-weight:700;color:#fff;border-radius:999px;padding:3px 9px}
+.sheet .badge.play{filter:brightness(.95)}
+.sheet .badge.drive{background:var(--accent-d)}
+.sheet .badge.free{background:#4CAF6E}
+.sheet .badge.rain{background:#3FA9D6}
+.sheet .actions{display:flex;gap:8px;margin-top:8px}
+.sheet .btn{flex:1;text-align:center;font-size:.86rem;font-weight:700;padding:11px 8px;border-radius:12px;text-decoration:none;border:1px solid var(--line)}
+.sheet .btn.primary{background:var(--accent-d);color:#fff;border-color:var(--accent-d)}
+.sheet .btn.map{background:#fff;color:var(--accent-d)}
+
+.leaflet-popup{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="./index.html">← トップへ</a>
+  <span class="logo">とちぎ子育ておでかけマップ</span>
+</div>
+<div class="originbar">
+  <select id="originSel" aria-label="出発地の街"></select>
+  <button id="originGeo" type="button">📍現在地</button>
+</div>
+<div class="countbadge" id="countBadge">該当99件</div>
+
+<div id="map" role="application" aria-label="スポットの地図"></div>
+<button id="recenterBtn" type="button" aria-label="現在地へ戻る" title="現在地へ戻る">⌖</button>
+
+<div class="chipbar" id="chipbar">
+  <button class="chip play" data-t="animal">🦁 動物</button>
+  <button class="chip play" data-t="active">🛝 からだ</button>
+  <button class="chip play" data-t="water">💦 水</button>
+  <button class="chip play" data-t="create">🔬 つくる</button>
+  <button class="chip play" data-t="vehicle">🚃 のりもの</button>
+  <button class="chip play" data-t="indoor">☔ 室内</button>
+  <button class="chip play" data-t="food">🍽 ごはん</button>
+  <button class="chip" data-f="rain">☔ 雨でもOK</button>
+  <button class="chip" data-f="free">🆓 無料</button>
+  <button class="chip" data-f="kids">🧸 キッズスペース</button>
+  <button class="chip on" data-f="chain" aria-pressed="true">🍴 子連れチェーン店</button>
+  <span id="foodSubChipsM" style="display:none">
+    <button class="chip" data-f="zashiki">🍵 座敷あり</button>
+    <button class="chip" data-f="kids_chair">🪑 子ども椅子</button>
+  </span>
+</div>
+
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
+<div class="sheet" id="sheet" aria-hidden="true">
+  <button class="sheet-close" id="sheetClose" aria-label="閉じる">×</button>
+  <div class="sheet-handle"></div>
+  <div id="sheetBody"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" referrerpolicy="no-referrer"></script>
+<script>
+const SPOTS=[{"name": "ガスト 小山犬塚店（から好し取扱店）", "city": "小山市", "latitude": 36.310003, "longitude": 139.831327, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011300/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.310003,139.831327", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 真岡店（から好し取扱店）", "city": "真岡市", "latitude": 36.440066, "longitude": 139.984442, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011391/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.440066,139.984442", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 矢板店（から好し取扱店）", "city": "矢板市", "latitude": 36.798714, "longitude": 139.943095, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011396/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.798714,139.943095", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 今市店（から好し取扱店）", "city": "日光市", "latitude": 36.7268, "longitude": 139.694349, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011411/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.7268,139.694349", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 栃木店（から好し取扱店）", "city": "栃木市", "latitude": 36.393776, "longitude": 139.724694, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011553/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.393776,139.724694", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 上三川店（から好し取扱店）", "city": "河内郡上三川町", "latitude": 36.442678, "longitude": 139.907073, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011594/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.442678,139.907073", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 宇都宮岩曽店（から好し取扱店）", "city": "宇都宮市", "latitude": 36.582762, "longitude": 139.911129, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011611/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.582762,139.911129", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 高根沢店（から好し取扱店）", "city": "塩谷郡高根沢町", "latitude": 36.622184, "longitude": 139.992279, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011627/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.622184,139.992279", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 氏家店（から好し取扱店）", "city": "さくら市", "latitude": 36.68118, "longitude": 139.959073, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011720/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.68118,139.959073", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 鬼怒川店（から好し取扱店）", "city": "日光市", "latitude": 36.802329, "longitude": 139.707067, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011857/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.802329,139.707067", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 黒磯店（から好し取扱店）", "city": "那須塩原市", "latitude": 36.961548, "longitude": 140.049619, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011935/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.961548,140.049619", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト おもちゃのまち駅前店（から好し取扱店）", "city": "下都賀郡壬生町", "latitude": 36.466501, "longitude": 139.826237, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011937/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.466501,139.826237", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 宇都宮簗瀬店（から好し取扱店）", "city": "宇都宮市", "latitude": 36.543193, "longitude": 139.901351, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011940/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.543193,139.901351", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 日光店（から好し取扱店）", "city": "日光市", "latitude": 36.750357, "longitude": 139.611631, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011952/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.750357,139.611631", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 栃木田沼町店（から好し取扱店）", "city": "佐野市", "latitude": 36.367231, "longitude": 139.574482, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/011998/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.367231,139.574482", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 自治医大前店（から好し取扱店）", "city": "下野市", "latitude": 36.393423, "longitude": 139.857986, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/017872/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.393423,139.857986", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 鹿沼店（から好し取扱店）", "city": "鹿沼市", "latitude": 36.561855, "longitude": 139.766681, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/018746/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.561855,139.766681", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 宇都宮江曽島店（から好し取扱店）", "city": "宇都宮市", "latitude": 36.526926, "longitude": 139.871099, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/018756/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.526926,139.871099", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 栃木大平店（から好し取扱店）", "city": "栃木市", "latitude": 36.319433, "longitude": 139.712146, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/018760/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.319433,139.712146", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "ガスト 宇都宮駒生店（から好し取扱店）", "city": "宇都宮市", "latitude": 36.57607, "longitude": 139.851748, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://store-info.skylark.co.jp/gusto/map/018981/", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.57607,139.851748", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替え台", "キッズ／お子様メニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ガスト"}, {"name": "くら寿司 宇都宮インターパーク店", "city": "宇都宮市", "latitude": 36.492217, "longitude": 139.9046568, "play_types": ["food"], "is_free": null, "price_text": "１皿115円～", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。", "business_hours": null, "closed_days": null, "official_url": "https://shop.kurasushi.co.jp/detail/242", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.492217,139.9046568", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "くら寿司"}, {"name": "くら寿司 宇都宮鶴田店", "city": "宇都宮市", "latitude": 36.5536252, "longitude": 139.8514141, "play_types": ["food"], "is_free": null, "price_text": "１皿115円～", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。", "business_hours": null, "closed_days": null, "official_url": "https://shop.kurasushi.co.jp/detail/393", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5536252,139.8514141", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "くら寿司"}, {"name": "くら寿司 佐野高萩店", "city": "佐野市", "latitude": 36.3008195, "longitude": 139.5918621, "play_types": ["food"], "is_free": null, "price_text": "１皿115円～", "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。", "business_hours": null, "closed_days": null, "official_url": "https://shop.kurasushi.co.jp/detail/520", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.3008195,139.5918621", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "くら寿司"}, {"name": "ココス 小山店", "city": "小山市", "latitude": 36.2988841199564, "longitude": 139.812807162269, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2580.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.2988841199564,139.812807162269", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 鹿沼鳥居跡町店", "city": "鹿沼市", "latitude": 36.5574494847461, "longitude": 139.747224036127, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2622.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5574494847461,139.747224036127", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 宇都宮鶴田店", "city": "宇都宮市", "latitude": 36.5469665446705, "longitude": 139.864573106432, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2631.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5469665446705,139.864573106432", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 宇都宮駅東店", "city": "宇都宮市", "latitude": 36.5551686819533, "longitude": 139.909935905855, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2633.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5551686819533,139.909935905855", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 栃木店", "city": "栃木市", "latitude": 36.3899474801585, "longitude": 139.735860748316, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2697.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.3899474801585,139.735860748316", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 自治医大前店", "city": "下野市", "latitude": 36.3950021428087, "longitude": 139.858818637357, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2698.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.3950021428087,139.858818637357", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 矢板店", "city": "矢板市", "latitude": 36.7976463760017, "longitude": 139.926898054077, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2708.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.7976463760017,139.926898054077", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 真岡店", "city": "真岡市", "latitude": 36.4449206843249, "longitude": 140.001481990709, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2711.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.4449206843249,140.001481990709", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 大田原店", "city": "大田原市", "latitude": 36.8652765985297, "longitude": 140.019812501242, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2726.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.8652765985297,140.019812501242", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 野木店", "city": "下都賀郡野木町", "latitude": 36.2286358843487, "longitude": 139.738098545899, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2727.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.2286358843487,139.738098545899", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 黒磯店", "city": "那須塩原市", "latitude": 36.96767331808, "longitude": 140.045560370091, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2729.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.96767331808,140.045560370091", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス おもちゃのまち店", "city": "下都賀郡壬生町", "latitude": 36.468819244203, "longitude": 139.826836783273, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2737.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.468819244203,139.826836783273", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 今市店", "city": "日光市", "latitude": 36.736850227287, "longitude": 139.695586174895, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2738.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.736850227287,139.695586174895", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 宇都宮上戸祭店", "city": "宇都宮市", "latitude": 36.5889284428819, "longitude": 139.86443535233, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2756.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5889284428819,139.86443535233", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 宇都宮大曽店", "city": "宇都宮市", "latitude": 36.5747417766353, "longitude": 139.88890675103, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2810.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5747417766353,139.88890675103", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 宇都宮今泉店", "city": "宇都宮市", "latitude": 36.5623700299968, "longitude": 139.903986623894, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2814.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5623700299968,139.903986623894", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 小山駅東店", "city": "小山市", "latitude": 36.3158864521013, "longitude": 139.811894510717, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2842.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.3158864521013,139.811894510717", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 那須高原店", "city": "那須郡那須町", "latitude": 37.0435188224787, "longitude": 140.01408532496, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2851.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=37.0435188224787,140.01408532496", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 佐野新都市店", "city": "佐野市", "latitude": 36.3002914511154, "longitude": 139.605023520375, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2860.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.3002914511154,139.605023520375", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 宇都宮インターパーク店", "city": "宇都宮市", "latitude": 36.489043996135, "longitude": 139.90467522091, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2872.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.489043996135,139.90467522091", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 烏山店", "city": "那須烏山市", "latitude": 36.65387969408, "longitude": 140.158863465104, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2902.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.65387969408,140.158863465104", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "ココス 足利芳町店", "city": "足利市", "latitude": 36.33618388185, "longitude": 139.470984666117, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのファミリーレストランです。お子様メニューと低アレルゲンメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.cocos-jpn.co.jp/jp/detail/2905.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.33618388185,139.470984666117", "estimated_drive_minutes_from_anjo": null, "kid_features": ["お子様メニュー", "ベビーシートあり"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "ココス"}, {"name": "スシロー 足利店", "city": "足利市", "latitude": 36.3354246, "longitude": 139.4726606, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。公式のお子さま連れ向け案内「こどもスシロー」があります。", "business_hours": null, "closed_days": null, "official_url": "https://www.akindo-sushiro.co.jp/shop/detail.php?id=184", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.3354246,139.4726606", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替えシート"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "スシロー"}, {"name": "スシロー 宇都宮今泉店", "city": "宇都宮市", "latitude": 36.5677812, "longitude": 139.9005966, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。公式のお子さま連れ向け案内「こどもスシロー」があります。", "business_hours": null, "closed_days": null, "official_url": "https://www.akindo-sushiro.co.jp/shop/detail.php?id=51", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5677812,139.9005966", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替えシート"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "スシロー"}, {"name": "スシロー 宇都宮鶴田店", "city": "宇都宮市", "latitude": 36.563205, "longitude": 139.8519506, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。公式のお子さま連れ向け案内「こどもスシロー」があります。", "business_hours": null, "closed_days": null, "official_url": "https://www.akindo-sushiro.co.jp/shop/detail.php?id=161", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.563205,139.8519506", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替えシート"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "スシロー"}, {"name": "スシロー 大田原店", "city": "大田原市", "latitude": 36.85798714, "longitude": 140.0146228, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。公式のお子さま連れ向け案内「こどもスシロー」があります。", "business_hours": null, "closed_days": null, "official_url": "https://www.akindo-sushiro.co.jp/shop/detail.php?id=2619", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.85798714,140.0146228", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替えシート"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "スシロー"}, {"name": "スシロー 小山店", "city": "小山市", "latitude": 36.297734, "longitude": 139.820455, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。公式のお子さま連れ向け案内「こどもスシロー」があります。", "business_hours": null, "closed_days": null, "official_url": "https://www.akindo-sushiro.co.jp/shop/detail.php?id=43", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.297734,139.820455", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替えシート"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "スシロー"}, {"name": "スシロー 佐野大橋店", "city": "佐野市", "latitude": 36.32114628, "longitude": 139.5653192, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。公式のお子さま連れ向け案内「こどもスシロー」があります。", "business_hours": null, "closed_days": null, "official_url": "https://www.akindo-sushiro.co.jp/shop/detail.php?id=1846", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.32114628,139.5653192", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替えシート"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "スシロー"}, {"name": "スシロー 栃木箱森町店", "city": "栃木市", "latitude": 36.39411259, "longitude": 139.7259142, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。公式のお子さま連れ向け案内「こどもスシロー」があります。", "business_hours": null, "closed_days": null, "official_url": "https://www.akindo-sushiro.co.jp/shop/detail.php?id=1996", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.39411259,139.7259142", "estimated_drive_minutes_from_anjo": null, "kid_features": ["おむつ替えシート"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "スシロー"}, {"name": "はま寿司 足利店", "city": "足利市", "latitude": 36.3354531140033, "longitude": 139.470258926705, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/4064.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.3354531140033,139.470258926705", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 真岡店", "city": "真岡市", "latitude": 36.4361271947063, "longitude": 139.986396148486, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/4065.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.4361271947063,139.986396148486", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 宇都宮インターパーク店", "city": "宇都宮市", "latitude": 36.4888042970237, "longitude": 139.904530521742, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/4067.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.4888042970237,139.904530521742", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 宇都宮今泉店", "city": "宇都宮市", "latitude": 36.5697027990426, "longitude": 139.916583295658, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/4072.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5697027990426,139.916583295658", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 イオンモール佐野新都市店", "city": "佐野市", "latitude": 36.2986652510472, "longitude": 139.605875468947, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/4090.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.2986652510472,139.605875468947", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 小山喜沢店", "city": "小山市", "latitude": 36.3336431417302, "longitude": 139.810622687592, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/4147.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.3336431417302,139.810622687592", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 鹿沼西茂呂店", "city": "鹿沼市", "latitude": 36.5504550150656, "longitude": 139.766559696835, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/4148.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5504550150656,139.766559696835", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 大田原美原店", "city": "大田原市", "latitude": 36.8658796134731, "longitude": 140.005277291723, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/4170.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.8658796134731,140.005277291723", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 宇都宮中戸祭店", "city": "宇都宮市", "latitude": 36.5771009320459, "longitude": 139.870903137582, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/4204.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5771009320459,139.870903137582", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 さくら氏家店", "city": "さくら市", "latitude": 36.6828228212315, "longitude": 139.958529603246, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/4314.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.6828228212315,139.958529603246", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 日光今市店", "city": "日光市", "latitude": 36.7245727357484, "longitude": 139.700403284621, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/4414.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.7245727357484,139.700403284621", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 那須塩原店", "city": "那須塩原市", "latitude": 36.9772175082778, "longitude": 140.04174024787, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/4423.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.9772175082778,140.04174024787", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 佐野赤坂店", "city": "佐野市", "latitude": 36.3028094055704, "longitude": 139.566946011179, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/4505.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.3028094055704,139.566946011179", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 小山雨ヶ谷店", "city": "小山市", "latitude": 36.28316426933044, "longitude": 139.81286671088662, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/5633.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.28316426933044,139.81286671088662", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "はま寿司 宇都宮西川田店", "city": "宇都宮市", "latitude": 36.534939, "longitude": 139.857873, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンの回転寿司店です。お子様向けの「はまっこセット」があります。", "business_hours": null, "closed_days": null, "official_url": "https://maps.hama-sushi.co.jp/jp/detail/6152.html", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.534939,139.857873", "estimated_drive_minutes_from_anjo": null, "kid_features": ["はまっこセット（お子様セット）"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "はま寿司"}, {"name": "丸亀製麺佐野", "city": "佐野市", "latitude": 36.3056846, "longitude": 139.6061277, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110217", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.3056846,139.6061277", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺小山", "city": "小山市", "latitude": 36.2984993, "longitude": 139.8182669, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110219", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.2984993,139.8182669", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺ジョイホン小山駅前", "city": "小山市", "latitude": 36.3137018, "longitude": 139.808894, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/113252", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.3137018,139.808894", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺真岡", "city": "真岡市", "latitude": 36.440068631528305, "longitude": 139.98592860302733, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110235", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.440068631528305,139.98592860302733", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺宇都宮", "city": "宇都宮市", "latitude": 36.5183079, "longitude": 139.877887, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110272", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5183079,139.877887", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺宇都宮上戸祭", "city": "宇都宮市", "latitude": 36.5894634, "longitude": 139.8640487, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110614", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5894634,139.8640487", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺宇都宮インターパーク", "city": "宇都宮市", "latitude": 36.488117, "longitude": 139.905569, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110652", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.488117,139.905569", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺宇都宮元今泉", "city": "宇都宮市", "latitude": 36.5635223, "longitude": 139.9155884, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110412", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5635223,139.9155884", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺宇都宮パセオ", "city": "宇都宮市", "latitude": 36.5597186, "longitude": 139.8981416, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110445", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5597186,139.8981416", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺宇都宮鶴田", "city": "宇都宮市", "latitude": 36.54999114645882, "longitude": 139.8562531558374, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/111288", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.54999114645882,139.8562531558374", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺足利", "city": "足利市", "latitude": 36.3235948, "longitude": 139.4497804, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110395", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.3235948,139.4497804", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺栃木", "city": "栃木市", "latitude": 36.3944079, "longitude": 139.743984, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110732", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.3944079,139.743984", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺黒磯", "city": "那須塩原市", "latitude": 36.9638431, "longitude": 140.0507011, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110737", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.9638431,140.0507011", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺鹿沼", "city": "鹿沼市", "latitude": 36.5587232, "longitude": 139.7662596, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110526", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.5587232,139.7662596", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺大田原", "city": "大田原市", "latitude": 36.8718508, "longitude": 140.0230186, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/110292", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.8718508,140.0230186", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "丸亀製麺ベイシア壬生", "city": "下都賀郡壬生町", "latitude": 36.46262808900907, "longitude": 139.83625530923157, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのうどん専門店です。", "business_hours": null, "closed_days": null, "official_url": "https://stores.marugame.com/111536", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.46262808900907,139.83625530923157", "estimated_drive_minutes_from_anjo": null, "kid_features": null, "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "丸亀製麺"}, {"name": "サイゼリヤ 宇都宮元今泉店", "city": "宇都宮市", "latitude": 36.55904, "longitude": 139.913223, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=0143", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.55904,139.913223", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ 小山神鳥谷店", "city": "小山市", "latitude": 36.29966, "longitude": 139.788895, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=0184", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.29966,139.788895", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ 鹿沼茂呂店", "city": "鹿沼市", "latitude": 36.552868, "longitude": 139.776901, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=0188", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.552868,139.776901", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ 足利八幡店", "city": "足利市", "latitude": 36.324833, "longitude": 139.445541, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=0211", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.324833,139.445541", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ 宇都宮上横田店", "city": "宇都宮市", "latitude": 36.525028, "longitude": 139.881897, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=0221", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.525028,139.881897", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ 栃木石橋店", "city": "下野市", "latitude": 36.469063, "longitude": 139.868515, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=0249", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.469063,139.868515", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ 佐野浅沼店", "city": "佐野市", "latitude": 36.312733, "longitude": 139.590576, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=0283", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.312733,139.590576", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ 宇都宮岩曽店", "city": "宇都宮市", "latitude": 36.582287, "longitude": 139.909927, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=0406", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.582287,139.909927", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ 大田原店", "city": "大田原市", "latitude": 36.863228, "longitude": 140.0103, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=0454", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.863228,140.0103", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ イオンタウン真岡店", "city": "真岡市", "latitude": 36.430023, "longitude": 140.000687, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=1045", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.430023,140.000687", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ イオン栃木店", "city": "栃木市", "latitude": 36.39436, "longitude": 139.725586, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=1057", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.39436,139.725586", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ イオンモール小山店", "city": "小山市", "latitude": 36.321819, "longitude": 139.840454, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=1197", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.321819,139.840454", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ アシコタウンあしかが店", "city": "足利市", "latitude": 36.3368, "longitude": 139.477295, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=1328", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.3368,139.477295", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ おやまゆうえんハーヴェストウォーク店", "city": "小山市", "latitude": 36.334133, "longitude": 139.806915, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=1357", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.334133,139.806915", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ イオンモール佐野新都市店", "city": "佐野市", "latitude": 36.298794, "longitude": 139.606155, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=1398", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.298794,139.606155", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}, {"name": "サイゼリヤ 宇都宮トナリエ", "city": "宇都宮市", "latitude": 36.55999, "longitude": 139.897095, "play_types": ["food"], "is_free": null, "price_text": null, "rain_friendly": true, "indoor_or_outdoor": "indoor", "kid_appeal": "全国チェーンのイタリアンレストランです。キッズメニューがあります。", "business_hours": null, "closed_days": null, "official_url": "https://shop.saizeriya.co.jp/sz_restaurant/spot/detail?code=1563", "google_maps_url": "https://www.google.com/maps/search/?api=1&query=36.55999,139.897095", "estimated_drive_minutes_from_anjo": null, "kid_features": ["キッズメニュー"], "image_url": null, "checked_at": "2026-08-13", "has_kids_space": false, "has_zashiki": false, "has_kids_chair": null, "is_jidokan": false, "is_chain": true, "chain_name": "サイゼリヤ"}];
+
+const ANJO=[36.5594,139.8976];
+const CITIES=[["宇都宮市", 36.5594, 139.8976, ""], ["小山市", 36.31, 139.8128, ""], ["佐野市", 36.3028, 139.5919, ""], ["栃木市", 36.3939, 139.7258, ""], ["足利市", 36.3354, 139.4706, ""], ["大田原市", 36.8653, 140.0146, ""], ["日光市", 36.7369, 139.6956, ""], ["真岡市", 36.4401, 139.9864, ""], ["鹿沼市", 36.5574, 139.7666, ""], ["那須塩原市", 36.9658, 140.0476, ""], ["下都賀郡壬生町", 36.4665, 139.8268, ""], ["下野市", 36.395, 139.8588, ""], ["さくら市", 36.682, 139.9588, ""], ["矢板市", 36.7982, 139.935, ""], ["下都賀郡野木町", 36.2286, 139.7381, ""], ["塩谷郡高根沢町", 36.6222, 139.9923, ""], ["河内郡上三川町", 36.4427, 139.9071, ""], ["那須烏山市", 36.6539, 140.1589, ""], ["那須郡那須町", 37.0435, 140.0141, ""]];
+
+function haversineKm(la1,lo1,la2,lo2){
+  const R=6371,d2r=Math.PI/180;
+  const dLa=(la2-la1)*d2r,dLo=(lo2-lo1)*d2r;
+  const a=Math.sin(dLa/2)**2+Math.cos(la1*d2r)*Math.cos(la2*d2r)*Math.sin(dLo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a));
+}
+const REG=(function(){
+  const xs=[],ys=[];
+  SPOTS.forEach(s=>{
+    if(s.latitude!=null&&s.longitude!=null&&s.estimated_drive_minutes_from_anjo!=null){
+      xs.push(haversineKm(ANJO[0],ANJO[1],s.latitude,s.longitude));
+      ys.push(s.estimated_drive_minutes_from_anjo);
+    }
+  });
+  const n=xs.length;
+  if(n<2) return {a:0,b:1.5,n};
+  const mx=xs.reduce((a,b)=>a+b,0)/n, my=ys.reduce((a,b)=>a+b,0)/n;
+  let num=0,den=0;
+  for(let i=0;i<n;i++){num+=(xs[i]-mx)*(ys[i]-my);den+=(xs[i]-mx)**2;}
+  const b=den?num/den:0, a=my-b*mx;
+  return {a,b,n};
+})();
+
+const origin={name:'宇都宮市',lat:ANJO[0],lng:ANJO[1],isAnjo:true};
+function driveMinutes(s){
+  if(origin.isAnjo && s.estimated_drive_minutes_from_anjo!=null) return s.estimated_drive_minutes_from_anjo;
+  if(s.latitude==null||s.longitude==null) return null;
+  const km=haversineKm(origin.lat,origin.lng,s.latitude,s.longitude);
+  let m=Math.round((REG.a+REG.b*km)/5)*5;
+  if(m<5)m=5;
+  return m;
+}
+
+const PLAY={
+  animal:{c:'#E9A23B',e:'🦁',label:'動物'},
+  active:{c:'#4CAF6E',e:'🛝',label:'からだ'},
+  water:{c:'#3FA9D6',e:'💦',label:'水'},
+  create:{c:'#9B6DD6',e:'🔬',label:'つくる'},
+  vehicle:{c:'#E06C75',e:'🚃',label:'のりもの'},
+  indoor:{c:'#7A8AA0',e:'☔',label:'室内'},
+  food:{c:'#D95D77',e:'🍽',label:'ごはん'}
+};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const primary=s=>(s.play_types&&s.play_types[0])||'indoor';
+
+const state={play:new Set(),rain:false,free:false,kids:false,jidokan:false,zashiki:false,kids_chair:false,chain:true};
+
+let map=null;
+const markers={};
+try{
+  map=L.map('map',{scrollWheelZoom:true,zoomControl:false}).setView([36.5183,139.8563],9);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:18,
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+  L.control.zoom({position:'bottomright'}).addTo(map);
+
+  SPOTS.forEach((s,i)=>{
+    if(s.latitude==null||s.longitude==null) return;
+    const p=primary(s), col=(s.is_chain===true?'#e8853d':PLAY[p].c), emo=(s.is_chain===true?'🍴':PLAY[p].e);
+    const icon=L.divIcon({className:'',html:'<div class="pin" style="background:'+col+'"><span>'+emo+'</span></div>',iconSize:[34,34],iconAnchor:[17,34],popupAnchor:[0,-30]});
+    const m=L.marker([s.latitude,s.longitude],{icon,title:s.name});
+    m._spotIndex=i;
+    m.on('click',()=>openSheet(i));
+    markers[i]=m;
+    m.addTo(map);
+  });
+}catch(e){
+  console.warn('map init failed',e);
+  map=null;
+}
+
+let originMarker=null;
+function homeDivIcon(label){
+  const emo=origin.isAnjo?'🏠':(origin.name==='現在地'?'📍':'🚗');
+  return L.divIcon({
+    className:'',
+    html:'<div class="home-wrap"><div class="home-pulse"></div><div class="home-pin"><span>'+emo+'</span></div><div class="home-label">📍'+esc(label)+'</div></div>',
+    iconSize:[48,48],
+    iconAnchor:[24,24]
+  });
+}
+function updateOriginMarker(){
+  try{
+    if(!map) return;
+    const icon=homeDivIcon(origin.name);
+    if(originMarker){
+      originMarker.setLatLng([origin.lat,origin.lng]);
+      originMarker.setIcon(icon);
+    }else{
+      originMarker=L.marker([origin.lat,origin.lng],{icon,zIndexOffset:2000,title:origin.name}).addTo(map);
+    }
+  }catch(e){ console.warn('origin marker update failed',e); }
+}
+
+function matches(s){
+  // チェーン飲食店は初期非表示。🍽ごはん配下の「子連れチェーン店」チップON時のみ表示する。
+  if(s.is_chain===true && state.chain!==true) return false;
+  if(state.play.size){
+    const pts=s.play_types||[];
+    if(![...state.play].some(t=>pts.includes(t))) return false;
+  }
+  if(state.rain){ if(!(s.rain_friendly===true||s.indoor_or_outdoor==='indoor')) return false; }
+  if(state.free){ if(s.is_free!==true) return false; }
+  if(state.kids){ if(s.has_kids_space!==true) return false; }
+  if(state.jidokan){ if(s.is_jidokan!==true) return false; }
+  else { if(s.is_jidokan===true) return false; }
+  if(state.zashiki){ if(s.has_zashiki!==true) return false; }
+  if(state.kids_chair){ if(s.has_kids_chair!==true) return false; }
+  // 条件チップ単独時（ごはんチップ未選択）は、foodのみのスポット（飲食店）を除外
+  const pts0=s.play_types||[];
+  if(pts0.length&&pts0.every(t=>t==='food')&&!state.play.has('food')&&(state.rain||state.free||state.kids)) return false;
+  return true;
+}
+
+function apply(){
+  let n=0;
+  SPOTS.forEach((s,i)=>{
+    const ok=matches(s);
+    if(ok)n++;
+    const m=markers[i];
+    if(m && map){ if(ok){ if(!map.hasLayer(m))m.addTo(map);} else { if(map.hasLayer(m))map.removeLayer(m);} }
+  });
+  document.getElementById('countBadge').textContent='該当'+n+'件';
+}
+
+function updateFoodSubChipsM(){
+  const el=document.getElementById('foodSubChipsM');
+  if(!el) return;
+  const show=state.play.has('food');
+  el.style.display=show?'':'none';
+  if(!show){
+    ['zashiki','kids_chair'].forEach(f=>{ state[f]=false; });
+    el.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  }
+}
+document.querySelectorAll('.chip.play').forEach(c=>{
+  c.addEventListener('click',()=>{
+    const t=c.dataset.t;
+    if(state.play.has(t))state.play.delete(t);else state.play.add(t);
+    c.classList.toggle('on');
+    updateFoodSubChipsM();
+    apply();
+  });
+});
+document.querySelectorAll('.chip[data-f]').forEach(c=>{
+  c.addEventListener('click',()=>{
+    const f=c.dataset.f;state[f]=!state[f];
+    c.classList.toggle('on');
+    apply();
+  });
+});
+
+// --- bottom sheet ---
+const sheet=document.getElementById('sheet');
+const sheetBackdrop=document.getElementById('sheetBackdrop');
+const sheetBody=document.getElementById('sheetBody');
+function sheetHTML(s){
+  let badges='';
+  (s.play_types||[]).forEach(t=>{if(PLAY[t])badges+='<span class="badge play" style="background:'+PLAY[t].c+'">'+PLAY[t].e+' '+PLAY[t].label+'</span>';});
+  const dm=driveMinutes(s);
+  if(dm!=null) badges+='<span class="badge drive">🚗 '+esc(origin.name)+'から約'+dm+'分</span>';
+  if(s.is_free===true) badges+='<span class="badge free">🆓 無料</span>';
+  if(s.rain_friendly===true||s.indoor_or_outdoor==='indoor') badges+='<span class="badge rain">☔ 屋内・雨OK</span>';
+  var kfHasKidsSpace=Array.isArray(s.kid_features)&&s.kid_features.some(function(f){return /キッズスペース|キッズルーム|キッズコーナー|プレイスペース/.test(f);});
+  if(s.has_kids_space===true&&!kfHasKidsSpace) badges+='<span class="badge free">🧸 キッズスペース</span>';
+  var kfHasZashiki=Array.isArray(s.kid_features)&&s.kid_features.some(function(f){return /座敷|小上がり|掘りごたつ/.test(f);});
+  if(s.has_zashiki===true&&!kfHasZashiki) badges+='<span class="badge free">🍵 座敷あり</span>';
+  var kfHasKidsChair=Array.isArray(s.kid_features)&&s.kid_features.some(function(f){return /キッズチェア|子ども椅子|子供椅子|ハイチェア|ベビーチェア|まめイス/.test(f);});
+  if(s.has_kids_chair===true&&!kfHasKidsChair) badges+='<span class="badge free">🪑 子ども椅子</span>';
+  if(s.is_jidokan===true) badges+='<span class="badge free">🏠 児童館</span>';
+  if(s.is_chain===true&&s.chain_name) badges+='<span class="badge free">🍴 チェーン店</span>';
+  let actions='';
+  if(s.official_url) actions+='<a class="btn primary" href="'+esc(s.official_url)+'" target="_blank" rel="noopener">公式サイト →</a>';
+  var gmapsSearchUrl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.name+' '+(s.city||''));
+  actions+='<a class="btn map" href="'+esc(gmapsSearchUrl)+'" target="_blank" rel="noopener">🗺 Googleマップ</a>';
+  return '<h3>'+esc(s.name)+'</h3>'+
+    '<p class="city">'+esc(s.city||'')+'</p>'+
+    (s.kid_appeal?'<p class="appeal">'+esc(s.kid_appeal)+'</p>':'')+
+    '<div class="badges">'+badges+'</div>'+
+    '<div class="actions">'+actions+'</div>';
+}
+function openSheet(i){
+  const s=SPOTS[i];
+  if(!s) return;
+  sheetBody.innerHTML=sheetHTML(s);
+  sheet.classList.add('show');
+  sheet.setAttribute('aria-hidden','false');
+  sheetBackdrop.classList.add('show');
+}
+function closeSheet(){
+  sheet.classList.remove('show');
+  sheet.setAttribute('aria-hidden','true');
+  sheetBackdrop.classList.remove('show');
+}
+document.getElementById('sheetClose').addEventListener('click',closeSheet);
+sheetBackdrop.addEventListener('click',closeSheet);
+// swipe-down to close
+(function(){
+  let startY=null;
+  sheet.addEventListener('touchstart',e=>{startY=e.touches[0].clientY;},{passive:true});
+  sheet.addEventListener('touchmove',e=>{
+    if(startY==null) return;
+    const dy=e.touches[0].clientY-startY;
+    if(dy>80){ closeSheet(); startY=null; }
+  },{passive:true});
+  sheet.addEventListener('touchend',()=>{startY=null;});
+})();
+
+// --- origin selector ---
+const originSel=document.getElementById('originSel');
+const cityOptGroups={};
+CITIES.forEach(([nm,lat,lng,grp])=>{
+  const o=document.createElement('option');
+  o.value=lat+','+lng; o.dataset.name=nm; o.textContent=nm;
+  let parent=originSel;
+  if(grp){
+    if(!cityOptGroups[grp]){
+      const g=document.createElement('optgroup'); g.label=grp;
+      originSel.appendChild(g); cityOptGroups[grp]=g;
+    }
+    parent=cityOptGroups[grp];
+  }
+  parent.appendChild(o);
+});
+originSel.value=CITIES[0][1]+','+CITIES[0][2];
+
+function setOrigin(name,lat,lng){
+  origin.name=name; origin.lat=lat; origin.lng=lng; origin.isAnjo=(name==='宇都宮市');
+  apply();
+  updateOriginMarker();
+}
+
+// --- 現在地UX: 青ドット表示・初回自動パン・トースト通知（alert不使用） ---
+let userLatLng=null, userDotMarker=null, autoPannedOnce=false;
+function showToast(msg){
+  let t=document.getElementById('geoToast');
+  if(!t){ t=document.createElement('div'); t.id='geoToast'; t.className='geo-toast'; document.body.appendChild(t); }
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(showToast._tm);
+  showToast._tm=setTimeout(()=>t.classList.remove('show'),2600);
+}
+function blueDotIcon(){
+  return L.divIcon({className:'',html:'<div class="geo-dot"><div class="geo-dot-ring"></div><div class="geo-dot-core"></div></div>',iconSize:[16,16],iconAnchor:[8,8]});
+}
+function placeUserDot(lat,lng){
+  userLatLng=[lat,lng];
+  if(!map) return;
+  try{
+    if(userDotMarker){ userDotMarker.setLatLng(userLatLng); }
+    else{ userDotMarker=L.marker(userLatLng,{icon:blueDotIcon(),zIndexOffset:3000,interactive:false,keyboard:false}).addTo(map); }
+  }catch(e){ console.warn('user dot update failed',e); }
+}
+function requestGeolocation(onOk,onFail){
+  if(!navigator.geolocation){ showToast('位置情報が許可されていません'); if(onFail)onFail(); return; }
+  let done=false;
+  const watchdog=setTimeout(()=>{ if(done)return; done=true; showToast('位置情報が許可されていません'); if(onFail)onFail(); },9000);
+  navigator.geolocation.getCurrentPosition(
+    pos=>{ if(done)return; done=true; clearTimeout(watchdog); onOk(pos.coords.latitude,pos.coords.longitude); },
+    ()=>{ if(done)return; done=true; clearTimeout(watchdog); showToast('位置情報が許可されていません'); if(onFail)onFail(); },
+    {timeout:8000,maximumAge:60000}
+  );
+}
+
+originSel.addEventListener('change',()=>{
+  const opt=originSel.selectedOptions[0];
+  const parts=originSel.value.split(',');
+  setOrigin(opt.dataset.name, +parts[0], +parts[1]);
+});
+document.getElementById('originGeo').addEventListener('click',()=>{
+  const backToAnjo=()=>{ originSel.value=CITIES[0][1]+','+CITIES[0][2]; setOrigin('宇都宮市',ANJO[0],ANJO[1]); };
+  requestGeolocation((lat,lng)=>{
+    setOrigin('現在地',lat,lng);
+    placeUserDot(lat,lng);
+    if(!autoPannedOnce && map){ map.setView([lat,lng],13,{animate:true}); autoPannedOnce=true; }
+  }, backToAnjo);
+});
+const recenterBtn=document.getElementById('recenterBtn');
+if(recenterBtn){
+  recenterBtn.addEventListener('click',()=>{
+    if(userLatLng){
+      if(map) map.setView(userLatLng,13,{animate:true});
+      setOrigin('現在地',userLatLng[0],userLatLng[1]);
+      placeUserDot(userLatLng[0],userLatLng[1]);
+      return;
+    }
+    requestGeolocation((lat,lng)=>{
+      setOrigin('現在地',lat,lng);
+      placeUserDot(lat,lng);
+      if(map) map.setView([lat,lng],13,{animate:true});
+      autoPannedOnce=true;
+    });
+  });
+}
+
+// --- URL param handoff ---
+(function(){
+  const qs=new URLSearchParams(location.search);
+  const filter=qs.get('filter');
+  const from=qs.get('from');
+  if(filter){
+    if(filter==='rain'||filter==='free'||filter==='kids'||filter==='jidokan'){
+      state[filter]=true;
+      const c=document.querySelector('.chip[data-f="'+filter+'"]');
+      if(c){c.classList.add('on');}
+    }else if(PLAY[filter]){
+      state.play.add(filter);
+      const c=document.querySelector('.chip.play[data-t="'+filter+'"]');
+      if(c){c.classList.add('on');}
+    }
+    updateFoodSubChipsM();
+  }
+  if(from==='現在地'){
+    // index.htmlで現在地を選んだまま全画面にした場合: 座標を引き継ぎ現在地設定を維持する
+    const flat=parseFloat(qs.get('flat')), flng=parseFloat(qs.get('flng'));
+    if(isFinite(flat)&&isFinite(flng)){
+      setOrigin('現在地',flat,flng);
+      placeUserDot(flat,flng);
+    }
+  }else if(from){
+    const match=CITIES.find(c=>c[0]===from);
+    if(match){
+      originSel.value=match[1]+','+match[2];
+      setOrigin(match[0],match[1],match[2]);
+    }
+  }
+  updateOriginMarker();
+  apply();
+})();
+</script>
+</body>
+</html>
