@@ -587,8 +587,30 @@ const originSel=document.getElementById('originSel');
 CITIES.forEach(([nm,lat,lng])=>{
   const o=document.createElement('option'); o.value=lat+','+lng; o.textContent=nm; originSel.appendChild(o);
 });
-originSel.value=CITIES[0][1]+','+CITIES[0][2];
-state.origin={name:'山口市',lat:ANJO[0],lng:ANJO[1],isAnjo:true};
+// 初期出発地: selectの初期選択とstate.originを必ず一致させる。
+// 1) 名前が山口市のエントリ 2) 座標がANJOと一致するエントリ 3) ANJO最近傍のエントリ
+const INIT_CITY=(function(){
+  try{
+    if(!CITIES||!CITIES.length) return null;
+    // 1) 名前一致: 座標は従来どおりANJOを維持(生成結果を変えない)
+    let c=CITIES.find(x=>x[0]==='山口市');
+    if(c) return [c[0],ANJO[0],ANJO[1],c];
+    // 2) 座標一致
+    c=CITIES.find(x=>Math.abs(x[1]-ANJO[0])<1e-6&&Math.abs(x[2]-ANJO[1])<1e-6);
+    if(c) return [c[0],c[1],c[2],c];
+    // 3) ANJO最近傍
+    let best=null,bd=Infinity;
+    CITIES.forEach(x=>{ const d=haversineKm(ANJO[0],ANJO[1],x[1],x[2]); if(d<bd){ bd=d; best=x; } });
+    return best?[best[0],best[1],best[2],best]:null;
+  }catch(e){ return null; }
+})();
+if(INIT_CITY){
+  const _e=INIT_CITY[3];
+  originSel.value=_e[1]+','+_e[2];   // optionのvalueは必ずCITIESエントリの座標
+  state.origin={name:INIT_CITY[0],lat:INIT_CITY[1],lng:INIT_CITY[2],isAnjo:(INIT_CITY[0]==='山口市')};
+}else{
+  state.origin={name:'山口市',lat:ANJO[0],lng:ANJO[1],isAnjo:true};
+}
 originSel.addEventListener('change',()=>{
   const [lat,lng]=originSel.value.split(',').map(Number);
   const nm=originSel.options[originSel.selectedIndex].textContent;
@@ -2182,7 +2204,7 @@ function initCustom(){
   // 保存済みの出発地(マップ・前回のカスタムで選んだもの)を最優先。無ければ既存値→山口市
   const __so=cpLoadOrigin();
   if(__so) state.origin=__so;
-  else if(!state.origin) state.origin={name:'山口市',lat:ANJO[0],lng:ANJO[1],isAnjo:true};
+  else if(!state.origin) state.origin=INIT_CITY?{name:INIT_CITY[0],lat:INIT_CITY[1],lng:INIT_CITY[2],isAnjo:(INIT_CITY[0]==='山口市')}:{name:'山口市',lat:ANJO[0],lng:ANJO[1],isAnjo:true};
   if(!state.when||state.when==='sat'||state.when==='sun') state.when=state.when||'today';
   state.cpScrolledOnce=false; state.cpAddOpen=null; state.cpTarget=null; state.cpSug={}; state.cpSugSeen={}; state.cpSugCycled={};
   cpSaveSlots();
