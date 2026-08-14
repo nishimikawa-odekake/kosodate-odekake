@@ -524,6 +524,90 @@ function closingInfo(s,arrivalMin){
   if(remain<need+30) return {exclude:false,bonus:false,note:'※閉館まで時間が短いため、短時間利用がおすすめです'};
   return {exclude:false,bonus:false,note:null};
 }
+/* ===== P0 fix: 営業時間未登録スポットを確定枠に自動採用しない ===== */
+// 公式に「常時開園」とみなせる屋外公園だけを例外にする(保守的に判定。迷ったら例外にしない)。
+const AO_PARK=/(公園|広場|緑地|河川敷|親水|児童遊園)/;
+const AO_NEG=/(館|センター|ホール|プラザ|ミュージアム|美術|博物|資料|記念|科学|図書|温泉|温浴|スパ|プール|体育|アリーナ|ドーム|工房|工場|カフェ|レストラン|食堂|直売|物産|道の駅|モール|牧場|動物|植物|水族|遊園地|ランド|ワールド|パーク|サーキット|キャンプ|スキー|ゴルフ|海水浴|国営|森林公園|自然公園|園地|農園|果樹|観光|遊覧|城跡|文化の森|スタジアム|球場|競技場|サファリ)/;
+const AO_NOCLOSE=/^(年中無休|無休|なし|無し|特になし|定休日なし|[-―ー])$/;
+const AO_YEN=/[0-9０-９][0-9０-９,，]*\s*円/;
+function alwaysOpenPark(s){
+  if(!s) return false;
+  if(s.is_chain===true||s.is_jidokan===true) return false;
+  if(s.indoor_or_outdoor!=='outdoor') return false;
+  const n=String(s.name||'');
+  if(!AO_PARK.test(n)) return false;
+  if(AO_NEG.test(n)) return false;                      // 屋内・ゲート・季節営業を示す語があれば例外にしない
+  const cd=String(s.closed_days||'').trim();
+  if(cd&&!AO_NOCLOSE.test(cd)) return false;            // 定休日があるなら常時開園ではない
+  const pt=String(s.price_text||'');
+  if(s.is_free!==true&&AO_YEN.test(pt)&&!/無料/.test(pt)) return false; // 有料ゲートの疑い
+  return true;
+}
+// ユーザーが明示的に選ぶ画面(1か所変更)では未確認スポットも提示してよい
+let ALLOW_UNKNOWN_HOURS=false;
+// true = 営業時間が未登録で、自動で確定枠に入れてはいけないスポット
+function hoursUnknown(s){
+  if(!s) return false;
+  if(ALLOW_UNKNOWN_HOURS) return false;
+  if(s.business_hours) return false;      // 登録あり -> 通常の closingInfo 判定へ
+  if(alwaysOpenPark(s)) return false;     // 常時開園の公園
+  if(s.is_chain===true) return false;     // チェーンは全国共通の標準営業時間(店舗別データ未収集)
+  return true;
+}
+// 除外された候補は「営業状況未確認の予備候補」として結果画面下部に別表示する
+let RESERVE_SPOTS=[];
+function resetReserve(){ RESERVE_SPOTS=[]; }
+function noteReserve(s){ if(s&&RESERVE_SPOTS.indexOf(s)<0&&RESERVE_SPOTS.length<24) RESERVE_SPOTS.push(s); }
+/* ===== P0 fix stage2: 予備候補(営業状況が未確認のスポット)の共通UI ===== */
+// 文言はサイト全体で1種類に統一する(断定しない・正直に)。
+const HOURS_UNVERIFIED_LINE='おでかけ前に公式サイトで営業時間をご確認ください';
+let RESERVE_SHOWN=[];
+// 未確認スポットをどの枠の代替として提示するか(飲食系はランチ枠、それ以外はメイン枠)
+function reserveSlotFor(s){
+  try{ if((s.play_types||[]).includes('food')||s.is_chain===true) return 'lunch'; }catch(e){}
+  return 'main';
+}
+// 予備候補セクションのHTML。ctx: 'plan'(プラン成立時) / 'empty'(候補不足時)
+function reserveHtml(ctx,exclude){
+  if(typeof RESERVE_SPOTS==='undefined'||!RESERVE_SPOTS.length) return '';
+  const ex=exclude||[];
+  const rs=RESERVE_SPOTS.filter(function(s){ return s&&s.name&&ex.indexOf(s)<0; }).slice(0,5);
+  RESERVE_SHOWN=rs;
+  if(!rs.length) return '';
+  const lead=(ctx==='empty')
+    ? '条件には合うのですが、営業時間の情報が取れていないためプランには入れていません。'
+    : '営業時間の情報が取れていないため、上のプランには入れていません。';
+  const tail=(ctx==='empty')
+    ? '公式サイトで営業日・営業時間をご確認ください。'
+    : '公式サイトで確認して行けそうなら、「この枠の候補に出す」から差し替えられます。';
+  let h='<div class="reservebox" style="margin:14px 0 8px;background:#f6f1e7;border:1px solid #d8c9b0;border-radius:12px;padding:11px 13px;font-size:.82rem;text-align:left">'
+    +'<div style="font-weight:800;margin-bottom:4px">🕒 営業状況が未確認のスポット</div>'
+    +'<div style="color:var(--sub);margin-bottom:7px">'+lead+tail+'</div>';
+  h+=rs.map(function(s,i){
+    const u=s.official_url?('<a href="'+esc(s.official_url)+'" target="_blank" rel="noopener" onclick="track(\u0027reserve_official\u0027)" style="color:#1a73e8;font-weight:700">公式サイト↗</a>'):'<span style="color:var(--sub)">公式サイト未登録</span>';
+    const btn=(ctx==='plan')?('<button type="button" onclick="openReserveSwap('+i+')" style="margin-left:8px;background:#fff;color:#b45f1d;border:1.5px solid #e8853d;border-radius:9px;padding:3px 9px;font-weight:800;font-size:.74rem">この枠の候補に出す</button>'):'';
+    return '<div style="padding:5px 0;border-top:1px solid #e6dcc9">'
+      +'<div style="font-weight:700">'+esc(s.name)+'<small style="color:var(--sub);font-weight:600">　'+esc(s.city||'')+'</small></div>'
+      +'<div style="margin-top:2px">'+u+btn+'</div></div>';
+  }).join('');
+  h+='<div style="color:var(--sub);margin-top:7px;border-top:1px solid #e6dcc9;padding-top:6px">※'+HOURS_UNVERIFIED_LINE+'</div></div>';
+  if(typeof gtag==='function') gtag('event','reserve_shown',seoP({reserve_count:rs.length,context:ctx}));
+  return h;
+}
+// 予備候補を「1か所変更」パネルの先頭候補として提示する(確定枠には自動で入れない)
+function openReserveSwap(i){
+  const s=RESERVE_SHOWN[i]; if(!s) return;
+  const slot=reserveSlotFor(s);
+  let wrap=document.querySelector('.swapwrap[data-swapslot="'+slot+'"]');
+  if(!wrap&&slot==='lunch') wrap=document.querySelector('.swapwrap[data-swapslot="main"]');
+  if(!wrap) return;
+  if(typeof gtag==='function') gtag('event','reserve_swap_open',{slot:slot});
+  let cands=[];
+  try{ cands=(swapCandidates(slot,0)||[]).filter(function(x){ return x!==s; }).slice(0,2); }catch(e){ cands=[]; }
+  setSwapGroup(slot,[s].concat(cands),false);
+  renderSwapPanel(slot,wrap);
+  try{ wrap.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+}
 // short tag-line rendering for kid_features (2-3 lines instead of one long sentence)
 function foodTagLines(s){
   const feats=s.kid_features||[];
@@ -888,6 +972,7 @@ function buildPool(date,w){
     if(outdoorPark && ((arrival%1440+1440)%1440)>=19*60) return false;
     // ages 0-2: no additional spots after dinner time -> exclude late main candidates for 0-2 only groups
     if(state.ages.has('0-2')&&state.ages.size===1 && ((arrival%1440+1440)%1440)>=17*60+30) return false;
+    if(hoursUnknown(s)){ noteReserve(s); return false; } // P0: 営業時間未登録は確定枠に入れない
     s.__closeNote=ci.note;
     return true;
   });
@@ -1002,6 +1087,7 @@ function lunchCandidates(main,date){
     // 営業時間: ランチ到着時刻に閉店済み／開店前の店は除外（チェーン・地元店とも同じ扱い）
     const arr=lunchBase+legMinutes(main.latitude,main.longitude,s.latitude,s.longitude);
     if(closingInfo(s,arr).exclude) return false;
+    if(hoursUnknown(s)){ noteReserve(s); return false; } // P0: 営業時間未登録の飲食店は確定枠に入れない
     s.__km=km; return true;
   });
   // 適合スコア: 近さを基本に、座敷・キッズ対応で加点。上位10前後からシャッフル選択で多様化。
@@ -1045,6 +1131,12 @@ function subCandidates(main,lunch,mainDriveMin,date,w){
   // 余力枠は「直前のスポットから近くでもう一箇所」の趣旨。実際に直前になる地点(ランチがあればランチ)からの
   // 移動が SUB_MAX_DRIVE_MIN を超えるものは除外する。
   const prev=lunch||main;
+  // 余力枠の到着時刻の目安(出発→メイン→滞在→(ランチ)→余力枠)。営業時間チェックに使う。
+  const __dmMain=driveMinutesFrom(o,main);
+  let __subBase=startMinutes()+(__dmMain==null?30:__dmMain)+stayMinutes(main);
+  if(lunch&&lunch.latitude!=null&&main.latitude!=null){
+    __subBase+=legMinutes(main.latitude,main.longitude,lunch.latitude,lunch.longitude)+60;
+  }
   const c=SPOTS.filter(s=>{
     if(s===main||s.latitude==null) return false;
     if(isJidokan(s)) return false; // 児童館・子育て支援センター系は余力枠からも除外（帰り道に寄らない）
@@ -1063,6 +1155,10 @@ function subCandidates(main,lunch,mainDriveMin,date,w){
     if(legMinutes(prev.latitude,prev.longitude,s.latitude,s.longitude)>SUB_MAX_DRIVE_MIN) return false;
     if(isClosedOn(s,date)) return false;
     if(rain && !(s.indoor_or_outdoor==='indoor'||s.rain_friendly)) return false;
+    // 営業時間: 余力枠にも到着時刻ベースの営業時間検査をかける(従来ここだけ検査が無かった)
+    const __subArr=__subBase+legMinutes(prev.latitude,prev.longitude,s.latitude,s.longitude);
+    if(closingInfo(s,__subArr).exclude) return false;
+    if(hoursUnknown(s)){ noteReserve(s); return false; } // P0: 営業時間未登録は確定枠に入れない
     const dmO=driveMinutesFrom(o,s);
     if(dmO==null||dmO>CURRENT_CAP) return false;
     s.__subkm=km; s.__dmO=dmO;
@@ -1267,6 +1363,7 @@ function buildPlan(main,date,w,shareOverride){
   return {rows,main,lunch,sub,totalDrive,cost,hasUnknown,homePriority,bonusExtra:rows.__bonusExtra||0,bonusReturn:rows.__bonusReturn||null,retHome:rows.__retHome||null,costKnown:known,bonusPrice:(rows.__bonusIsBonus?rows.__bonusPrice:null)};
 }
 function generatePlans(date,w){
+  resetReserve();
   let cap=capFor(state.driveTime);
   CURRENT_CAP=cap;
   let pool=buildPool(date,w);
@@ -1601,7 +1698,7 @@ function rowHtml(r){
     body+='<div class="meta" style="color:#b45309;font-weight:700">📞 予約が必要な場合があります。事前に公式サイトでご確認ください</div>';
   }
   if(!s.business_hours&&!s.closed_days&&!isFood){
-    body+='<div class="meta" style="color:#8a7a5a">ℹ️ 営業時間の登録がないスポットです。おでかけ前に公式サイトで営業状況をご確認ください</div>';
+    body+='<div class="meta" style="color:#8a7a5a">🕒 営業時間が未確認のスポットです。'+HOURS_UNVERIFIED_LINE+'</div>';
   }
   if(typeof isActiveSportSpot==='function'&&isActiveSportSpot(s)){
     body+='<div class="meta" style="color:#b45309;font-weight:700">⚠️ 年齢・身長制限がある場合があります。対象年齢を公式サイトでご確認ください</div>';
@@ -1650,6 +1747,8 @@ function swapListFor(slot,cap){
   const date=targetDate(state.when), w=state.weather;
   const savedCap=CURRENT_CAP;
   CURRENT_CAP=cap;
+  const savedAllow=ALLOW_UNKNOWN_HOURS;
+  ALLOW_UNKNOWN_HOURS=true; // 1か所変更はユーザーの明示選択なので未確認スポットも候補に出す(カードに明示)
   let list=[];
   try{
     if(slot==='main'){
@@ -1666,6 +1765,7 @@ function swapListFor(slot,cap){
     }
   }catch(e){ list=[]; }
   CURRENT_CAP=savedCap;
+  ALLOW_UNKNOWN_HOURS=savedAllow;
   return list;
 }
 function swapFilter(list,extra){
@@ -1756,7 +1856,8 @@ function swapCardHtml(slot,s,i){
   if(s.has_zashiki===true||/座敷/.test(feats)) tags.push('🍵 座敷あり');
   else if(s.has_kids_chair===true||/キッズチェア|子供椅子/.test(feats)) tags.push('🪑 子ども椅子');
   else if(s.rain_friendly===true||s.indoor_or_outdoor==='indoor') tags.push('☔ 屋内');
-  const farNote=s.__swapFar?'<span class="sc-far">📍 ご指定の移動圏より少し遠めです</span>':'';
+  const farNote=(s.__swapFar?'<span class="sc-far">📍 ご指定の移動圏より少し遠めです</span>':'')
+    +((!s.business_hours&&!alwaysOpenPark(s)&&s.is_chain!==true)?'<span class="sc-far" style="color:#8a7a5a">🕒 営業時間が未確認です。'+HOURS_UNVERIFIED_LINE+'</span>':'');
   return '<button type="button" class="swapcard" onclick="applySwap(\''+slot+'\','+i+')">'+
     '<span class="sc-name">'+esc(s.name)+'<span class="sc-choose">これに変更 →</span></span>'+
     '<span class="sc-meta">'+esc(s.city||'')+(tags.length?'・'+tags.join('・'):'')+'</span>'+farNote+'</button>';
@@ -2852,8 +2953,10 @@ function showResult(){
     const widenBtn=nxtDrive?('<button onclick="approveWiden(\''+nxtDrive+'\')" style="margin:6px 0;background:#e8853d;color:#fff;border:none;border-radius:12px;padding:13px 18px;font-weight:800">🚗 移動時間を'+(nxtDrive==='any'?'「遠くても大丈夫」':'〜'+nxtDrive+'分')+'まで広げて探す</button><br>'):'';
     // 無料中心のときは「予算だけ緩めて近場を守る」選択肢も出す(どちらを守るかをユーザーが選ぶ)
     const freeBtn=(state.budget==='free')?('<button onclick="relaxBudgetRegen()" style="margin:6px 0;background:#fff;color:#b45f1d;border:1.5px solid #e8853d;border-radius:12px;padding:13px 18px;font-weight:800">💴 無料条件を外して'+(state.driveTime&&state.driveTime!=='any'?state.driveTime+'分圏内':'近場')+'で探す</button><br>'):'';
-    res.innerHTML='<div class="empty"><p>ご指定の移動時間の範囲では、条件に合うスポットが見つかりませんでした。<br>条件は勝手に変えないので、緩める場合は下のボタンからどうぞ。</p>'+
-      widenBtn+freeBtn+
+    // P0: 営業時間未登録で確定枠から外した候補は「予備候補」として提示する(自動採用はしない)
+    const __rsv=reserveHtml('empty',null);
+    res.innerHTML='<div class="empty"><p>ご指定の移動時間の範囲では、<b>営業時間を確認できたスポット</b>のなかに条件に合うものが見つかりませんでした。<br>条件は勝手に変えないので、緩める場合は下のボタンからどうぞ。</p>'+
+      __rsv+widenBtn+freeBtn+
       '<button onclick="restart()">条件を変えてやり直す</button></div>';
     window.scrollTo({top:0,behavior:'smooth'});
     return;
@@ -2997,6 +3100,10 @@ function showResult(){
   if(state.expandedDrive){
     const dlab=['20','40','60'].includes(state.driveTime)?('〜'+state.driveTime+'分'):'ご希望';
     html+='<div class="notice">※ '+esc(dlab)+'圏内では条件に合う候補が少なかったため、少し範囲を広げています。</div>';
+  }
+  // P0: 営業時間が未登録で確定枠から外したスポットを「予備候補」として別表示する(確定枠には入れない)
+  if(!state.isSharedView&&!state.isCustomView){
+    html+=reserveHtml('plan',[p.main,p.lunch,p.sub].filter(Boolean));
   }
   html+='<div class="noticebottom">'+
     '※飲食代は別途。表示金額は1人あたりの目安です<br>'+
