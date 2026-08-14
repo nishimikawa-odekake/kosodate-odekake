@@ -270,7 +270,7 @@ footer p{margin:0 0 6px}
   <div class="wrap">
     <h1><img class="odemaru-mark" src="/odemaru-mark.png" alt="おでまる" width="96" height="96" decoding="async">あきた子育ておでかけマップ</h1>
     <p class="catch">秋田の"子どもが喜ぶ場所"だけを集めたおでかけマップ</p>
-    <p class="creator">秋田県内約86カ所を掲載（おでかけスポット47＋児童館0館＋子連れチェーン店39店）。二児のパパが個人で運営しています。</p>
+    <p class="creator">秋田県内約<span data-stat="by_pref:akita:total">86</span>カ所を掲載（おでかけスポット47＋児童館0館＋子連れチェーン店<span data-stat="by_pref:akita:chain">39</span>店）。二児のパパが個人で運営しています。</p>
     <p class="note">公園・水遊び・室内遊び場から子連れランチまで、今日の気分と出発地で選べます。</p>
     <div class="wxbar" id="wxbar" aria-live="polite">
       <div class="wxbar-top">
@@ -1007,5 +1007,6 @@ apply();
 updateWeather();
 setTimeout(()=>{try{if(map)map.invalidateSize();}catch(e){console.warn('map invalidateSize failed',e);}},300);
 </script>
+<script>(function(){try{fetch('https://kosodate-odekake.jp/stats.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(s){if(!s)return;document.querySelectorAll('[data-stat]').forEach(function(el){var k=el.getAttribute('data-stat');var v=s;var parts=k.split(':');for(var i=0;i<parts.length;i++){if(v==null)return;v=v[parts[i]];}if(v==null||isNaN(Number(v)))return;el.textContent=Number(v).toLocaleString('ja-JP');});}).catch(function(){});}catch(e){}})();</script>
 </body>
 </html>
