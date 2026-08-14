@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- deploy 8県体制 20260808 / 愛知カード追加 20260808 / 神奈川追加・12県体制 20260809 / 大阪追加・13県体制 20260809 / 奈良追加・14県体制 20260810 / 兵庫追加・15県体制 20260809 / 和歌山追加・16県体制 20260810 / 岡山追加・17県体制 20260810 / 広島追加・18県体制 20260810 / 山口追加・19県体制 20260810 / 香川追加・20県体制 20260810 / 愛媛追加・21県体制 20260810 / 徳島追加・22県体制 20260810 / 高知追加・23県体制 20260810 / 島根追加・24県体制 20260811 / 鳥取追加・25県体制 20260812 / 福岡追加・26県体制 20260812 / 宮城・福島追加・28県体制 20260813 / チェーン店全国展開・新規18県追加・46都道府県体制 20260813 / 北海道・東北5県プランナー公開・全47都道府県体制 20260814 -->
+<!-- deploy 8県体制 20260808 / 愛知カード追加 20260808 / 神奈川追加・12県体制 20260809 / 大阪追加・13県体制 20260809 / 奈良追加・14県体制 20260810 / 兵庫追加・15県体制 20260809 / 和歌山追加・16県体制 20260810 / 岡山追加・17県体制 20260810 / 広島追加・18県体制 20260810 / 山口追加・19県体制 20260810 / 香川追加・20県体制 20260810 / 愛媛追加・21県体制 20260810 / 徳島追加・22県体制 20260810 / 高知追加・23県体制 20260810 / 島根追加・24県体制 20260811 / 鳥取追加・25県体制 20260812 / 福岡追加・26県体制 20260812 / 宮城・福島追加・28県体制 20260813 / チェーン店全国展開・新規18県追加・46都道府県体制 20260813 / 北海道・東北5県プランナー公開・全47都道府県体制 20260814 / S2 30秒主役化 20260814 -->
 
 <html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>おでまる｜子育ておでかけマップ（全国版）- 子連れスポット・おでかけプランナー</title>
-<meta name="description" content="今日のおでかけプランを自動作成。全国47都道府県の子育ておでかけスポットとチェーン飲食店を地図で検索。地域のおでかけスポット7,275件（児童館を含む）に加え、子連れで行きやすいチェーン飲食店5,458店を掲載しています。">
+<meta name="description" content="質問に答えるだけで、今日のおでかけプランが30秒で完成。全国47都道府県すべてでプランナーが使えます。地域のおでかけスポット7,275件（児童館を含む）に加え、子連れで行きやすいチェーン飲食店5,458店を地図で検索できます。">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="canonical" href="https://kosodate-odekake.jp/">
 <meta property="og:url" content="https://kosodate-odekake.jp/">
-<meta property="og:description" content="質問に答えるだけで、今日のおでかけプランを自動作成。全国47都道府県の子連れスポットを地図で検索できます。無料・登録不要。">
+<meta property="og:description" content="質問に答えるだけで、今日のおでかけプランが30秒で完成。全国47都道府県の子連れスポットを地図で検索できます。無料・登録不要。">
 <meta property="og:title" content="おでまる｜子育ておでかけマップ">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://kosodate-odekake.jp/og-logo.png">
@@ -25,15 +25,14 @@
  "name": "おでまる｜子育ておでかけマップ",
  "alternateName": "子育ておでかけマップ",
  "url": "https://kosodate-odekake.jp/",
- "description": "質問に答えるだけで、今日のおでかけプランを自動作成。全国47都道府県の子連れおでかけスポットを地図で検索できます。無料・登録不要。",
+ "description": "質問に答えるだけで、今日のおでかけプランを30秒で自動作成。全国47都道府県の子連れおでかけスポットを地図で検索できます。無料・登録不要。",
  "inLanguage": "ja"
 }
 </script>
 <style>
 :root{--accent:#e8802a;--accent-d:#c96a1c;--card:#fff8f0;--line:#efe4d4;--sub:#8a8172;--bg:#fffdf9}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,'Hiragino Sans',sans-serif;background:var(--bg);color:#3a352d}
-header{padding:34px 18px 10px;text-align:center}h1{font-size:1.4rem;margin:0 0 6px}
-.sub{color:var(--sub);font-size:.9rem;margin:0}
+header{padding:14px 18px 0;text-align:center}h1{font-size:1.02rem;margin:0;font-weight:700;color:var(--sub)}
 .wrap{max-width:760px;margin:0 auto;padding:18px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
 .pref-card{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:inherit;
@@ -50,29 +49,29 @@ font-size:.68rem;font-weight:700;line-height:1.3;border:1px solid var(--line);ba
 .pref-badge.b-chain{background:#eef4fa;border-color:#cfe0ef;color:#3f6486}
 .grid-note{grid-column:1/-1;margin:10px 2px 0;color:var(--sub);font-size:.8rem;line-height:1.6}
 footer{text-align:center;color:var(--sub);font-size:.78rem;padding:24px 18px;line-height:1.8}
-.odemaru-mark{width:28px;height:28px;vertical-align:-6px;margin-right:6px;display:inline-block}
-.odemaru-hero-link{display:block}
-.odemaru-hero{width:112px;height:auto;margin:8px auto 0;display:block;
-filter:drop-shadow(0 3px 6px rgba(0,0,0,.08))}
+.odemaru-mark{width:22px;height:22px;vertical-align:-5px;margin-right:5px;display:inline-block}
 
-.hero{padding:18px 18px 6px;text-align:center;max-width:760px;margin:0 auto}
-.hero h2{font-size:1.32rem;line-height:1.45;margin:0 0 8px;font-weight:800;letter-spacing:.01em}
-.hero .lead{margin:0 0 14px;font-size:.92rem;line-height:1.6;color:#5c554a}
-.cta-main{display:block;max-width:420px;margin:0 auto 6px;padding:16px 18px;border-radius:14px;
-background:var(--accent);color:#fff;text-decoration:none;font-weight:800;font-size:1.06rem;
-box-shadow:0 4px 12px rgba(232,128,42,.28)}
+.hero{padding:10px 18px 4px;max-width:760px;margin:0 auto;text-align:center}
+.hero-top{display:flex;align-items:center;justify-content:center;gap:14px;margin:0 0 12px}
+.hero-copy{text-align:left;max-width:420px}
+.hero h2{font-size:1.42rem;line-height:1.4;margin:0 0 6px;font-weight:800;letter-spacing:.01em}
+.hero h2 .hl{color:var(--accent-d)}
+.hero .lead{margin:0;font-size:.9rem;line-height:1.6;color:#5c554a}
+.odemaru-hero-link{display:block;flex:0 0 auto;line-height:0}
+.odemaru-hero{width:104px;height:132px;display:block;
+filter:drop-shadow(0 3px 6px rgba(0,0,0,.08))}
+.cta-main{display:block;max-width:420px;margin:0 auto 8px;padding:17px 18px;border-radius:14px;
+background:var(--accent);color:#fff;text-decoration:none;font-weight:800;font-size:1.1rem;
+box-shadow:0 4px 14px rgba(232,128,42,.30)}
 .cta-main:hover{background:var(--accent-d)}
-.cta-note{margin:0 auto 12px;max-width:420px;font-size:.72rem;line-height:1.6;color:var(--sub)}
-.cta-sub{display:block;max-width:420px;margin:0 auto 12px;padding:12px 16px;border-radius:14px;
-background:#fff;color:var(--accent-d);text-decoration:none;font-weight:700;font-size:.94rem;
-border:1.5px solid var(--line)}
-.cta-sub:hover{border-color:var(--accent)}
 .facts{margin:0 auto;max-width:520px;font-size:.78rem;color:var(--sub);line-height:1.7}
+.cta-sub{display:block;max-width:420px;margin:16px auto 0;padding:11px 16px;border-radius:14px;
+background:#fff;color:var(--accent-d);text-decoration:none;font-weight:700;font-size:.9rem;
+border:1.5px solid var(--line);text-align:center}
+.cta-sub:hover{border-color:var(--accent)}
 .sec{max-width:760px;margin:0 auto;padding:26px 18px 0}
 .sec h2{font-size:1.12rem;margin:0 0 4px}
 .sec .sec-lead{margin:0 0 14px;font-size:.84rem;color:var(--sub);line-height:1.6}
-.grp-title{font-size:.9rem;font-weight:700;margin:18px 0 8px;color:var(--accent-d)}
-.grp-note{font-size:.76rem;color:var(--sub);margin:0 0 8px;line-height:1.6}
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 4px}
 .chip{display:inline-block;padding:7px 12px;border-radius:999px;background:var(--card);
 border:1px solid var(--line);color:#3a352d;text-decoration:none;font-size:.86rem;line-height:1.2}
@@ -82,36 +81,36 @@ border:1px solid var(--line);color:#3a352d;text-decoration:none;font-size:.86rem
 color:var(--sub);font-size:.82rem;line-height:1.8}
 .owner a{color:var(--accent-d)}
 @media(max-width:420px){
- header{padding:14px 14px 4px}
- h1{font-size:1.06rem}
- .odemaru-mark{width:24px;height:24px;vertical-align:-5px}
- .odemaru-hero{width:96px;margin:0}
- header{display:flex;align-items:center;justify-content:center;gap:10px;text-align:left}
- header h1{margin:0}
- header .sub{display:none}
+ header{padding:10px 14px 0}
+ h1{font-size:.92rem}
+ .odemaru-mark{width:20px;height:20px;vertical-align:-4px}
  .hero{padding:8px 14px 4px}
- .hero h2{font-size:1.18rem;margin-bottom:6px}
- .hero .lead{font-size:.84rem;margin-bottom:11px}
- .cta-main{padding:14px 14px;font-size:1rem}
- .cta-sub{padding:11px 14px;font-size:.88rem;margin-bottom:10px}
+ .hero-top{gap:10px;margin-bottom:10px}
+ .hero h2{font-size:1.24rem}
+ .hero .lead{font-size:.82rem}
+ .odemaru-hero{width:84px;height:107px}
+ .cta-main{padding:15px 14px;font-size:1.04rem}
+ .cta-sub{padding:11px 14px;font-size:.86rem}
  .facts{font-size:.74rem}
+ .sec{padding:20px 14px 0}
 }
 </style></head>
 <body>
-<header><h1><img class="odemaru-mark" src="/odemaru-mark.png" alt="おでまる" width="96" height="96" decoding="async">子育ておでかけマップ</h1><p class="sub">お住まいの都道府県を選んでください</p><a class="odemaru-hero-link" href="./odemaru/" title="おでまるについて"><img class="odemaru-hero" src="/odemaru-wave.png" alt="おでまる" width="420" height="447" decoding="async"></a></header>
+<header><h1><img class="odemaru-mark" src="/odemaru-mark.png" alt="" width="96" height="96" decoding="async">おでまる｜子育ておでかけマップ（全国版）</h1></header>
 <section class="hero">
-<h2>子どもとの「今日どこ行く？」を、もっとラクに。</h2>
-<p class="lead">質問に答えるだけで、今日のおでかけプランを自動作成。無料・登録不要。</p>
+<div class="hero-top">
+<a class="odemaru-hero-link" href="./odemaru/" title="おでまるについて"><picture><source srcset="./odemaru/img/odemaru-point@400.webp" type="image/webp"><img class="odemaru-hero" src="./odemaru/img/odemaru-point@400.png" alt="おでまる" width="315" height="400" fetchpriority="high" decoding="async"></picture></a>
+<div class="hero-copy">
+<h2>子どもとの「今日どこ行く？」が、<span class="hl">30秒</span>で決まる。</h2>
+<p class="lead">いくつかの質問に答えるだけ。無料・登録不要。</p>
+</div>
+</div>
 <a class="cta-main" href="#plan-select">🎯 30秒でおでかけを決める</a>
-<p class="cta-note">30秒プランナーは全47都道府県で利用できます</p>
-<a class="cta-sub" href="#pref-list">🗺 マップ・スポット検索（全国47都道府県）</a>
-<p class="facts">47都道府県｜<span data-stat="total">13,859</span>スポット｜無料・登録不要</p>
+<p class="facts">全<span data-stat="prefs">47</span>都道府県対応｜<span data-stat="total">14,898</span>スポット｜無料・登録不要</p>
 </section>
 <section class="sec" id="plan-select">
 <h2>どこから出発しますか？</h2>
 <p class="sec-lead">都道府県を選ぶと、その地域のおでかけプランナーが開きます。</p>
-<p class="grp-title">🎯 30秒プラン対応</p>
-<p class="grp-note">質問に答えるだけで、今日のおでかけプランを自動作成します。</p>
 <p class="reg">北海道・東北</p>
 <div class="chips">
 <a class="chip" href="./hokkaido/plan.html">北海道</a>
@@ -181,6 +180,7 @@ color:var(--sub);font-size:.82rem;line-height:1.8}
 <a class="chip" href="./okinawa/plan.html">沖縄県</a>
 </div>
 </section>
+<a class="cta-sub" href="#pref-list">🗺 マップ・スポット検索から探す（全47都道府県）</a>
 <section class="sec" id="pref-list">
 <h2>都道府県から探す</h2>
 <p class="sec-lead">地図・スポット検索は全国47都道府県で使えます。</p>
@@ -241,7 +241,7 @@ color:var(--sub);font-size:.82rem;line-height:1.8}
 <p><a href="./about.html">運営者について</a></p>
 </div>
 <footer>
-<p>全国46都道府県＋愛知版で総掲載 <span data-stat="total">13,859</span>スポット</p>
+<p>全<span data-stat="prefs">47</span>都道府県・総掲載 <span data-stat="total">14,898</span>スポット</p>
 <p>掲載情報は作成時点のものです。最新情報は公式サイトをご確認ください。</p>
 <p>お問い合わせ: <a href="mailto:info@kosodate-odekake.jp">info@kosodate-odekake.jp</a></p>
 <p><a href="./odemaru/">おでまるについて</a> | <a href="./about.html">運営者情報</a> | <a href="./disclaimer.html">免責事項</a> | <a href="./privacy.html">プライバシーポリシー</a> | <a href="./request.html">掲載情報の修正・削除依頼</a></p>
