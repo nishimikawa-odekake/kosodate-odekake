@@ -69,6 +69,12 @@ box-shadow:0 4px 14px rgba(232,128,42,.30)}
 background:#fff;color:var(--accent-d);text-decoration:none;font-weight:700;font-size:.9rem;
 border:1.5px solid var(--line);text-align:center}
 .cta-sub:hover{border-color:var(--accent)}
+.geo-btn{display:inline-flex;align-items:center;gap:6px;margin:0 0 4px;padding:9px 14px;
+border-radius:999px;background:#fff;color:var(--accent-d);border:1.5px solid var(--line);
+font-weight:700;font-size:.86rem;line-height:1.2;cursor:pointer;font-family:inherit}
+.geo-btn:hover{border-color:var(--accent)}
+.geo-btn[disabled]{opacity:.6;cursor:default}
+.geo-note{margin:0 0 10px;min-height:1.25em;font-size:.74rem;color:var(--sub);line-height:1.25}
 .sec{max-width:760px;margin:0 auto;padding:26px 18px 0}
 .sec h2{font-size:1.12rem;margin:0 0 4px}
 .sec .sec-lead{margin:0 0 14px;font-size:.84rem;color:var(--sub);line-height:1.6}
@@ -111,6 +117,8 @@ color:var(--sub);font-size:.82rem;line-height:1.8}
 <section class="sec" id="plan-select">
 <h2>どこから出発しますか？</h2>
 <p class="sec-lead">都道府県を選ぶと、その地域のおでかけプランナーが開きます。</p>
+<button type="button" class="geo-btn" id="geoBtn">📍 現在地から探す</button>
+<p class="geo-note" id="geoNote" aria-live="polite"></p>
 <p class="reg">北海道・東北</p>
 <div class="chips">
 <a class="chip" href="./hokkaido/plan.html">北海道</a>
@@ -247,4 +255,81 @@ color:var(--sub);font-size:.82rem;line-height:1.8}
 <p><a href="./odemaru/">おでまるについて</a> | <a href="./about.html">運営者情報</a> | <a href="./disclaimer.html">免責事項</a> | <a href="./privacy.html">プライバシーポリシー</a> | <a href="./request.html">掲載情報の修正・削除依頼</a></p>
 </footer>
 <script>(function(){try{fetch('https://kosodate-odekake.jp/stats.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(s){if(!s)return;document.querySelectorAll('[data-stat]').forEach(function(el){var k=el.getAttribute('data-stat');var v=s;var parts=k.split(':');for(var i=0;i<parts.length;i++){if(v==null)return;v=v[parts[i]];}if(v==null||isNaN(Number(v)))return;el.textContent=Number(v).toLocaleString('ja-JP');});}).catch(function(){});}catch(e){}})();</script>
+<script>
+(function(){
+  var btn=document.getElementById('geoBtn'), note=document.getElementById('geoNote');
+  if(!btn||!note) return;
+  // 都道府県庁所在地の代表座標（緯度, 経度, プランナーURL）
+  var PREF_GEO=[
+[43.06417,141.34694,"./hokkaido/plan.html"],
+[40.82444,140.74,"./aomori/plan.html"],
+[39.70361,141.1525,"./iwate/plan.html"],
+[38.26889,140.87194,"./miyagi/plan.html"],
+[39.71861,140.1025,"./akita/plan.html"],
+[38.24056,140.36333,"./yamagata/plan.html"],
+[37.75,140.46778,"./fukushima/plan.html"],
+[36.34139,140.44667,"./ibaraki/plan.html"],
+[36.56583,139.88361,"./tochigi/plan.html"],
+[36.39111,139.06083,"./gunma/plan.html"],
+[35.85694,139.64889,"./saitama/plan.html"],
+[35.60472,140.12333,"./chiba/plan.html"],
+[35.68944,139.69167,"./tokyo/plan.html"],
+[35.44778,139.6425,"./kanagawa/plan.html"],
+[37.90222,139.02361,"./niigata/plan.html"],
+[36.69528,137.21139,"./toyama/plan.html"],
+[36.59444,136.62556,"./ishikawa/plan.html"],
+[36.06528,136.22194,"./fukui/plan.html"],
+[35.66389,138.56833,"./yamanashi/plan.html"],
+[36.65139,138.18111,"./nagano/plan.html"],
+[35.39111,136.72222,"./gifu/plan.html"],
+[34.97694,138.38306,"./shizuoka/plan.html"],
+[35.18028,136.90667,"https://nishimikawa-odekake.com/plan.html"],
+[34.73028,136.50861,"./mie/plan.html"],
+[35.00444,135.86833,"./shiga/plan.html"],
+[35.02139,135.75556,"./kyoto/plan.html"],
+[34.68639,135.52,"./osaka/plan.html"],
+[34.69139,135.18306,"./hyogo/plan.html"],
+[34.68528,135.83278,"./nara/plan.html"],
+[34.22611,135.1675,"./wakayama/plan.html"],
+[35.50361,134.23833,"./tottori/plan.html"],
+[35.47222,133.05056,"./shimane/plan.html"],
+[34.66167,133.935,"./okayama/plan.html"],
+[34.39639,132.45944,"./hiroshima/plan.html"],
+[34.18583,131.47139,"./yamaguchi/plan.html"],
+[34.06583,134.55944,"./tokushima/plan.html"],
+[34.34028,134.04333,"./kagawa/plan.html"],
+[33.84167,132.76611,"./ehime/plan.html"],
+[33.55972,133.53111,"./kochi/plan.html"],
+[33.60639,130.41806,"./fukuoka/plan.html"],
+[33.24944,130.29889,"./saga/plan.html"],
+[32.74472,129.87361,"./nagasaki/plan.html"],
+[32.78972,130.74167,"./kumamoto/plan.html"],
+[33.23806,131.6125,"./oita/plan.html"],
+[31.91111,131.42389,"./miyazaki/plan.html"],
+[31.56028,130.55806,"./kagoshima/plan.html"],
+[26.2125,127.68111,"./okinawa/plan.html"]];
+  var FAIL='位置情報が取得できませんでした。下から都道府県を選んでね';
+  function fail(){ btn.disabled=false; btn.textContent='📍 現在地から探す'; note.textContent=FAIL; }
+  function go(lat,lng){
+    var best=null,bd=Infinity,R=6371,p=Math.PI/180;
+    for(var i=0;i<PREF_GEO.length;i++){
+      var a=PREF_GEO[i][0],b=PREF_GEO[i][1];
+      var x=0.5-Math.cos((a-lat)*p)/2+Math.cos(lat*p)*Math.cos(a*p)*(1-Math.cos((b-lng)*p))/2;
+      var d=2*R*Math.asin(Math.sqrt(x));
+      if(d<bd){bd=d;best=PREF_GEO[i][2];}
+    }
+    if(best){ location.href=best; } else { fail(); }
+  }
+  btn.addEventListener('click',function(){
+    if(!navigator.geolocation){ fail(); return; }
+    btn.disabled=true; btn.textContent='📍 現在地を取得中…'; note.textContent='';
+    var done=false;
+    navigator.geolocation.getCurrentPosition(function(pos){
+      if(done) return; done=true;
+      try{ go(pos.coords.latitude,pos.coords.longitude); }catch(e){ fail(); }
+    },function(){ if(done) return; done=true; fail(); },
+    {enableHighAccuracy:false,timeout:8000,maximumAge:600000});
+  });
+})();
+</script>
 </body></html>
