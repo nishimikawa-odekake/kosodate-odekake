@@ -124,7 +124,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;font-family:-apple-syst
   <select id="originSel" aria-label="出発地の街"></select>
   <button id="originGeo" type="button">📍現在地</button>
 </div>
-<div class="countbadge" id="countBadge">該当253件</div>
+<div class="countbadge" id="countBadge">該当<span data-stat="by_pref:miyagi:local">184</span>件</div>
 
 <div id="map" role="application" aria-label="スポットの地図"></div>
 <button id="recenterBtn" type="button" aria-label="現在地へ戻る" title="現在地へ戻る">⌖</button>
@@ -492,5 +492,6 @@ if(recenterBtn){
   apply();
 })();
 </script>
+<script>(function(){try{fetch('https://kosodate-odekake.jp/stats.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(s){if(!s)return;document.querySelectorAll('[data-stat]').forEach(function(el){var k=el.getAttribute('data-stat');var v=s;var parts=k.split(':');for(var i=0;i<parts.length;i++){if(v==null)return;v=v[parts[i]];}if(v==null||isNaN(Number(v)))return;el.textContent=Number(v).toLocaleString('ja-JP');});}).catch(function(){});}catch(e){}})();</script>
 </body>
 </html>
