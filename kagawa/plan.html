@@ -545,13 +545,30 @@ function alwaysOpenPark(s){
 }
 // ユーザーが明示的に選ぶ画面(1か所変更)では未確認スポットも提示してよい
 let ALLOW_UNKNOWN_HOURS=false;
+/* [開放フラグ] 営業時間が未確認(business_hours=null)のスポットを、通常候補として全開放するか。
+   true  = 全開放。自動生成/別プラン/1か所変更/候補一覧/カスタムプランのすべてで通常候補扱い。
+           確定枠に入った場合はカードに「🕐 営業時間は要確認」+公式サイト導線を出す。
+   false = 従来のP0挙動(未確認は確定枠に入れず、予備候補 RESERVE_SPOTS に回す)。
+   ※これは「未確認」だけの話。営業時間が判明していて営業時間外/定休日のスポットは
+     closingInfo() / isClosedOn() が従来どおり完全除外する(この開放では一切緩めない)。 */
+var ALLOW_UNVERIFIED_HOURS = true;
+/* [恒久除外] 公式サイトに閉店・休業・改装等の告知があり、営業時間を意図的に付けなかった店。
+   「単なる情報未取得」ではなく「閉まっていると分かっている/疑わしい」ため、
+   ALLOW_UNVERIFIED_HOURS の値に関わらず、すべての候補プールから除外する。 */
+function isClosedNotice(s){ return !!(s&&s.hours_status==='closed_notice'); }
+// 営業時間が未確認(未登録)のスポットか。開放フラグの影響を受けない純粋な判定(表示用)。
+function isUnverifiedHours(s){
+  if(!s) return false;
+  if(s.business_hours) return false;      // 登録あり -> closingInfo 判定の世界
+  if(alwaysOpenPark(s)) return false;     // 常時開園の公園は「未確認」扱いしない
+  return true;
+}
 // true = 営業時間が未登録で、自動で確定枠に入れてはいけないスポット
 function hoursUnknown(s){
   if(!s) return false;
+  if(ALLOW_UNVERIFIED_HOURS) return false; // 全開放中: 未確認を理由に除外しない
   if(ALLOW_UNKNOWN_HOURS) return false;
-  if(s.business_hours) return false;      // 登録あり -> 通常の closingInfo 判定へ
-  if(alwaysOpenPark(s)) return false;     // 常時開園の公園
-  return true;
+  return isUnverifiedHours(s);
 }
 // 除外された候補は「営業状況未確認の予備候補」として結果画面下部に別表示する
 let RESERVE_SPOTS=[];
@@ -946,6 +963,7 @@ function buildPool(date,w){
   const start=startMinutes();
   let cand=SPOTS.filter(s=>{
     if(s.latitude==null) return false;
+    if(isClosedNotice(s)) return false; // 閉店・休業告知のある店は全開放でも候補にしない
     if(isJidokan(s)) return false; // 児童館・子育て支援センター系はプランナー対象外（🏠チップ専用）
     const pt=s.play_types||[];
     if(pt.length===1&&pt[0]==='food') return false; // pure food -> lunch only
@@ -1067,6 +1085,7 @@ function lunchCandidates(main,date){
   const lunchBase=startMinutes()+(dmMain==null?30:dmMain)+stayMinutes(main);
   const c=SPOTS.filter(s=>{
     if(s===main||s.latitude==null) return false;
+    if(isClosedNotice(s)) return false; // 閉店・休業告知のある店は全開放でも候補にしない
     if(isJidokan(s)) return false; // 児童館・子育て支援センター系はプランナー対象外（🏠チップ専用）
     if(isSameComplex(s,main)) return false; // 同一敷地はメイン↔ランチでも除外（距離は例外だが施設名一致は除外）
     if(!isLunchable(s)) return false; // food主体の店のみ(公園×foodタグは対象外)
@@ -1138,6 +1157,7 @@ function subCandidates(main,lunch,mainDriveMin,date,w){
   }
   const c=SPOTS.filter(s=>{
     if(s===main||s.latitude==null) return false;
+    if(isClosedNotice(s)) return false; // 閉店・休業告知のある店は全開放でも候補にしない
     if(isJidokan(s)) return false; // 児童館・子育て支援センター系は余力枠からも除外（帰り道に寄らない）
     if((s.play_types||[]).includes('food')) return false; // 午後スポット・余力枠は遊び場のみ(ランチ枠の直後に飲食店を続けない)
     if(toddlerOnlyNow()&&isActiveSportSpot(s)) return false; // 0-2歳のみ: 午後・余力枠からも除外
@@ -1696,8 +1716,11 @@ function rowHtml(r){
   if(/要予約|予約制|完全予約|事前予約/.test(infoTxt)){
     body+='<div class="meta" style="color:#b45309;font-weight:700">📞 予約が必要な場合があります。事前に公式サイトでご確認ください</div>';
   }
-  if(!s.business_hours&&!s.closed_days&&!isFood){
-    body+='<div class="meta" style="color:#8a7a5a">🕒 営業時間が未確認のスポットです。'+HOURS_UNVERIFIED_LINE+'</div>';
+  // 未確認スポットが確定枠に入ったら必ず明示する(飲食/定休日ありも含む。文言は1回だけ)
+  if(isUnverifiedHours(s)){
+    body+='<div class="meta" style="color:#8a7a5a">🕐 営業時間は要確認。'+HOURS_UNVERIFIED_LINE
+      +(s.official_url?' <a href="'+esc(s.official_url)+'" target="_blank" rel="noopener" onclick="track(\'hours_unverified_official\')" style="color:#1a73e8;font-weight:700">公式サイトで確認↗</a>':'')
+      +'</div>';
   }
   if(typeof isActiveSportSpot==='function'&&isActiveSportSpot(s)){
     body+='<div class="meta" style="color:#b45309;font-weight:700">⚠️ 年齢・身長制限がある場合があります。対象年齢を公式サイトでご確認ください</div>';
@@ -1856,7 +1879,7 @@ function swapCardHtml(slot,s,i){
   else if(s.has_kids_chair===true||/キッズチェア|子供椅子/.test(feats)) tags.push('🪑 子ども椅子');
   else if(s.rain_friendly===true||s.indoor_or_outdoor==='indoor') tags.push('☔ 屋内');
   const farNote=(s.__swapFar?'<span class="sc-far">📍 ご指定の移動圏より少し遠めです</span>':'')
-    +((!s.business_hours&&!alwaysOpenPark(s)&&s.is_chain!==true)?'<span class="sc-far" style="color:#8a7a5a">🕒 営業時間が未確認です。'+HOURS_UNVERIFIED_LINE+'</span>':'');
+    +((isUnverifiedHours(s)&&s.is_chain!==true)?'<span class="sc-far" style="color:#8a7a5a">🕒 営業時間が未確認です。'+HOURS_UNVERIFIED_LINE+'</span>':'');
   return '<button type="button" class="swapcard" onclick="applySwap(\''+slot+'\','+i+')">'+
     '<span class="sc-name">'+esc(s.name)+'<span class="sc-choose">これに変更 →</span></span>'+
     '<span class="sc-meta">'+esc(s.city||'')+(tags.length?'・'+tags.join('・'):'')+'</span>'+farNote+'</button>';
@@ -2406,6 +2429,7 @@ function cpSuggest(slot){
   const capMin=capFor(state.driveTime||'any');
   let pool=SPOTS.filter(s=>{
     if(s.latitude==null) return false;
+    if(isClosedNotice(s)) return false; // 閉店・休業告知のある店は全開放でも候補にしない
     if(typeof isJidokan==='function'&&isJidokan(s)) return false;
     if(__role==='lunch'){ if(!isLunchable(s)) return false; } else { if((s.play_types||[]).includes('food')&&isLunchable(s)) return false; }
     if(filled.some(x=>x===s||x.name===s.name)) return false;
