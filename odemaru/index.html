@@ -127,8 +127,20 @@ background:var(--accent);color:#fff;text-decoration:none;font-weight:800;
 box-shadow:0 4px 12px rgba(232,128,42,.28)}
 .backtop a:hover{background:var(--accent-d)}
 footer{text-align:center;color:var(--sub);font-size:.78rem;padding:26px 18px 30px;line-height:1.8;margin-top:8px}
+
+/* サイトバー(トップへ戻る導線) */
+.odm-sitebar{background:#fffdf9;border-bottom:1px solid #efe4d4}
+.odm-sitebar-in{max-width:760px;margin:0 auto;padding:7px 18px;display:flex;align-items:center;gap:10px;justify-content:space-between}
+.odm-brand{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:.92rem;color:#4a4238;text-decoration:none;line-height:1.2}
+.odm-brand img{display:block;width:24px;height:24px}
+.odm-nat{font-size:.72rem;color:#8a8172;text-decoration:none;white-space:nowrap;border:1px solid #efe4d4;border-radius:999px;padding:3px 10px}
+.odm-nat:hover{color:#e8802a}
+@media(max-width:420px){.odm-brand{font-size:.8rem}.odm-sitebar-in{padding:6px 12px;gap:6px}.odm-nat{font-size:.68rem;padding:3px 8px}}
 </style></head>
 <body>
+<!-- odm-sitebar:start -->
+<div class="odm-sitebar"><div class="odm-sitebar-in"><a class="odm-brand" href="/"><img src="/odemaru-mark.png" alt="おでまる" width="24" height="24" decoding="async">子育ておでかけマップ</a><a class="odm-nat" href="/">全国版トップ &rsaquo;</a></div></div>
+<!-- odm-sitebar:end -->
 
 <div class="hero">
  <div class="hero-in">
