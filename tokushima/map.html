@@ -111,6 +111,14 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;font-family:-apple-syst
 .sheet .btn.primary{background:var(--accent-d);color:#fff;border-color:var(--accent-d)}
 .sheet .btn.map{background:#fff;color:var(--accent-d)}
 
+#skipPlanBtn{position:absolute;right:10px;top:calc(80px + env(safe-area-inset-top));z-index:485;display:none;font-size:.74rem;font-weight:700;padding:7px 11px;border-radius:999px;border:1.5px solid var(--accent);background:#fff;color:var(--accent-d);white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.12);cursor:pointer}
+#skipPlanBtn:active{transform:scale(.95)}
+.addplan{display:block;width:100%;margin:12px 0 4px;padding:13px;border-radius:12px;border:1.5px solid #e8853d;background:#fff8f0;color:#b45f1d;font-weight:800;font-size:.95rem;cursor:pointer}
+.addplan.on{background:#e8853d;color:#fff}
+#selBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom));z-index:1150;display:none;align-items:center;gap:8px;background:#fff;border:1.5px solid #e8853d;border-radius:999px;padding:8px 8px 8px 14px;box-shadow:0 4px 14px rgba(0,0,0,.18);font-size:.85rem;white-space:nowrap;max-width:94vw}
+#selBar.show{display:flex}
+#selBar .mk{background:#e8853d;color:#fff;border:none;border-radius:999px;padding:9px 14px;font-weight:800;font-size:.85rem;cursor:pointer}
+#selBar .clr{background:none;border:none;color:#999;font-size:1rem;padding:4px;cursor:pointer}
 .leaflet-popup{display:none!important}
 </style>
 </head>
@@ -118,13 +126,15 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;font-family:-apple-syst
 
 <div class="topbar">
   <a class="back" href="./index.html">← トップへ</a>
-  <span class="logo">とくしま子育ておでかけマップ</span>
+  <span class="logo"><img src="/odemaru-mark.png" alt="おでまる" width="20" height="20" style="vertical-align:-4px;margin-right:4px">とくしま子育ておでかけマップ</span>
 </div>
 <div class="originbar">
   <select id="originSel" aria-label="出発地の街"></select>
   <button id="originGeo" type="button">📍現在地</button>
 </div>
-<div class="countbadge" id="countBadge">該当<span data-stat="by_pref:tokushima:local">208</span>件</div>
+<div class="countbadge" id="countBadge">該当…件</div>
+
+<button id="skipPlanBtn" type="button" onclick="skipToPlan()">選ばずプランへ →</button>
 
 <div id="map" role="application" aria-label="スポットの地図"></div>
 <button id="recenterBtn" type="button" aria-label="現在地へ戻る" title="現在地へ戻る">⌖</button>
@@ -135,7 +145,6 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;font-family:-apple-syst
   <button class="chip play" data-t="water">💦 水</button>
   <button class="chip play" data-t="create">🔬 つくる</button>
   <button class="chip play" data-t="vehicle">🚃 のりもの</button>
-  <button class="chip play" data-t="indoor">☔ 室内</button>
   <button class="chip play" data-t="food">🍽 ごはん</button>
   <button class="chip" data-f="rain">☔ 雨でもOK</button>
   <button class="chip" data-f="free">🆓 無料</button>
@@ -148,6 +157,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;font-family:-apple-syst
   </span>
 </div>
 
+<div id="selBar"><span id="selBarTxt"></span><button class="mk" onclick="makeCustomPlanFromSel()">プランを作る →</button><button class="clr" onclick="clearSel()" aria-label="選択をすべてやめる">✕</button></div>
 <div class="sheet-backdrop" id="sheetBackdrop"></div>
 <div class="sheet" id="sheet" aria-hidden="true">
   <button class="sheet-close" id="sheetClose" aria-label="閉じる">×</button>
@@ -206,6 +216,7 @@ const PLAY={
 };
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const primary=s=>(s.play_types&&s.play_types[0])||'indoor';
+const PLAYF=s=>PLAY[primary(s)]||{c:'#8a8a8a',e:'📍',label:'スポット'};
 
 const state={play:new Set(),rain:false,free:false,kids:false,jidokan:false,zashiki:false,kids_chair:false,chain:false};
 
@@ -221,7 +232,7 @@ try{
 
   SPOTS.forEach((s,i)=>{
     if(s.latitude==null||s.longitude==null) return;
-    const p=primary(s), col=(s.is_chain===true?'#e8853d':PLAY[p].c), emo=(s.is_chain===true?'🍴':PLAY[p].e);
+    const pf=PLAYF(s), col=(s.is_chain===true?'#e8853d':pf.c), emo=(s.is_chain===true?'🍴':pf.e);
     const icon=L.divIcon({className:'',html:'<div class="pin" style="background:'+col+'"><span>'+emo+'</span></div>',iconSize:[34,34],iconAnchor:[17,34],popupAnchor:[0,-30]});
     const m=L.marker([s.latitude,s.longitude],{icon,title:s.name});
     m._spotIndex=i;
@@ -344,10 +355,127 @@ function sheetHTML(s){
     '<div class="badges">'+badges+'</div>'+
     '<div class="actions">'+actions+'</div>';
 }
+/* ===== 自分で選ぶプラン: スポット選択 (map v2 / 愛知版移植) ===== */
+const PREF_SCOPE='tokushima';
+function pkey(k){ return k+'_'+PREF_SCOPE; }
+const CUSTOM_KEY=pkey('odemaru_custom_sel_v1');
+const ORIGIN_KEY=pkey('odemaru_custom_origin_v1');
+let planSel=[];
+// 枠指定モード: plan.htmlの空き枠[＋追加]→「マップで探す」から来た場合。1件選んだら即プランナーへ戻る
+const SLOTPICK=(function(){ try{ const v=new URLSearchParams(location.search).get('slotpick'); return v==null?null:Math.max(0,Math.min(4,parseInt(v,10)||0)); }catch(e){ return null; } })();
+const SLOTLEN=(function(){ try{ const v=new URLSearchParams(location.search).get('sl'); return v==null?3:Math.max(3,Math.min(5,parseInt(v,10)||3)); }catch(e){ return 3; } })();
+const SLOTLI=(function(){ try{ const v=new URLSearchParams(location.search).get('li'); const d=SLOTLEN===5?2:1; const li=v==null?d:parseInt(v,10); return Math.max(Math.max(1,SLOTLEN-3),Math.min(Math.min(2,SLOTLEN-2),isNaN(li)?d:li)); }catch(e){ return SLOTLEN===5?2:1; } })();
+function slotpickAdd(i){
+  try{
+    let d=null; try{ d=JSON.parse(localStorage.getItem(CUSTOM_KEY)||'null'); }catch(e){}
+    let slots=(d&&d.v===2&&Array.isArray(d.slots))?d.slots:new Array(SLOTLEN).fill(null);
+    while(slots.length<SLOTLEN) slots.push(null);
+    slots[SLOTPICK]={n:SPOTS[i].name};
+    localStorage.setItem(CUSTOM_KEY,JSON.stringify({v:2,ts:Date.now(),li:SLOTLI,slots:slots.slice(0,Math.max(SLOTLEN,slots.length))}));
+  }catch(e){}
+  (typeof gtag==='function'&&gtag('event','map_planner_start',{n:(window.planSel||[]).length||1})),location.href='./plan.html?custom=1'+(function(){try{var v=new URLSearchParams(location.search).get('src');return v?'&src='+encodeURIComponent(v):'';}catch(e){return '';}})();
+}
+function isLunchableSpot(s){ return !!s && (s.is_chain===true||((s.play_types||[]).includes('food')&&!(s.play_types||[]).some(function(t){return t==='active'||t==='nature'||t==='water';}))); }
+function selWouldHaveFood(i){ return planSel.concat([i]).some(function(x){ return isLunchableSpot(SPOTS[x]); }); }
+function selHas(i){ return planSel.indexOf(i)>=0; }
+function toggleSel(i){
+  if(SLOTPICK!=null){
+    const s=SPOTS[i];
+    const li=SLOTLI;
+    const isFood=s.is_chain===true||((s.play_types||[]).includes('food')&&!(s.play_types||[]).some(t=>t==='active'||t==='nature'||t==='water'));
+    if(SLOTPICK===li&&!isFood){
+      const b=document.getElementById('addPlanBtn');
+      if(b) b.textContent='お昼の枠にはごはん店だけ入れられます🍽';
+      return;
+    }
+    if(SLOTPICK!==li&&isFood){
+      const b=document.getElementById('addPlanBtn');
+      if(b) b.textContent='ごはん店はお昼の枠にえらんでください🍽';
+      return;
+    }
+    slotpickAdd(i); return;
+  }
+  const btn=document.getElementById('addPlanBtn');
+  if(selHas(i)){
+    planSel=planSel.filter(x=>x!==i);
+  } else {
+    if(planSel.length>=5){
+      if(btn) btn.textContent='えらべるのは5件までです（どれかを外してください）';
+      updateSelBar(); return;
+    }
+    // 昼食枠を空けるぶん、ごはん店なしで5件目は入らない(黙って消さず警告する)
+    if(planSel.length>=4 && !selWouldHaveFood(i)){
+      if(btn) btn.textContent='5件選ぶ場合は、ごはん店を1件含めてください🍽';
+      updateSelBar(); return;
+    }
+    planSel.push(i);
+  }
+  if(btn){
+    const on=selHas(i);
+    btn.classList.toggle('on',on);
+    btn.textContent=on?'✓ プラン候補に追加ずみ（タップで外す）':'＋プランに追加';
+  }
+  updateSelBar();
+}
+function updateSelBar(){
+  const bar=document.getElementById('selBar'); if(!bar) return;
+  const t=document.getElementById('selBarTxt'); if(t) t.textContent='🗓 えらんだ場所 '+planSel.length+'件';
+  bar.classList.toggle('show',planSel.length>0);
+  updateSkipBtn();
+}
+// 選択0件のときだけ出す「選ばずプランへ」(枠指定モード中は常に非表示)
+function updateSkipBtn(){
+  const b=document.getElementById('skipPlanBtn'); if(!b) return;
+  b.style.display=(SLOTPICK==null&&(window.planSel||planSel||[]).length===0)?'block':'none';
+}
+function skipToPlan(){
+  try{ localStorage.removeItem(CUSTOM_KEY); }catch(e){}
+  if(typeof gtag==='function') gtag('event','map_planner_start',{n:0,src:'map_skip'});
+  location.href='./plan.html?custom=1&src=map_skip';
+}
+updateSkipBtn();
+function clearSel(){ planSel=[]; updateSelBar(); }
+function makeCustomPlanFromSel(){
+  if(!planSel.length) return;
+  try{
+    const items=planSel.map(i=>SPOTS[i]);
+    // ランチ適格=food主体のみ(公園にfoodタグが付くケースはお昼枠に入れない)
+    const isLunchable=s=>s.is_chain===true||((s.play_types||[]).includes('food')&&!(s.play_types||[]).some(t=>t==='active'||t==='nature'||t==='water'));
+    const foods=items.filter(isLunchable);
+    const plays=items.filter(s=>!foods.includes(s));
+    // 件数に応じた枠形状: ≤3=[午前,昼,午後] / 4=[午前,昼,午後1,午後2] / 5=[午前1,午前2,昼,午後1,午後2]
+    // ごはん店を選んでいない場合は昼枠が空くぶん1枠多く確保する(選んだ場所を落とさない)
+    const total=items.length;
+    let shape,li;
+    if(foods.length>0){
+      if(total<=3){ shape=3; } else if(total===4){ shape=4; } else { shape=5; }
+    } else {
+      shape=Math.min(5,Math.max(3,total+1));
+    }
+    li=(shape===5)?2:1;
+    const slots=new Array(shape).fill(null);
+    if(foods[0]) slots[li]=foods[0];
+    // 残り(2件目以降のfood含む)を選んだ順に空き枠へ(昼枠以外)
+    const rest=plays.concat(foods.slice(1));
+    let ptr=0;
+    for(let k=0;k<shape&&ptr<rest.length;k++){
+      if(k===li||slots[k]) continue;
+      slots[k]=rest[ptr++];
+    }
+    // 念のための安全網: 溢れた場合は昼枠(空のとき)→末尾の順で必ず収容し、選んだ場所を捨てない
+    if(ptr<rest.length&&!slots[li]) slots[li]=rest[ptr++];
+    while(ptr<rest.length&&slots.length<5) slots.push(rest[ptr++]);
+    localStorage.setItem(CUSTOM_KEY, JSON.stringify({v:2,ts:Date.now(),li:li,slots:slots.map(s=>s?{n:s.name}:null)}));
+  }catch(e){}
+  (typeof gtag==='function'&&gtag('event','map_planner_start',{n:(window.planSel||[]).length||1})),location.href='./plan.html?custom=1'+(function(){try{var v=new URLSearchParams(location.search).get('src');return v?'&src='+encodeURIComponent(v):'';}catch(e){return '';}})();
+}
 function openSheet(i){
   const s=SPOTS[i];
   if(!s) return;
-  sheetBody.innerHTML=sheetHTML(s);
+  const __m=SLOTLI,__p=SLOTLEN-1-SLOTLI;
+  const __labs=(__m===1?['午前']:['午前①','午前②']).slice(0,__m).concat(['お昼']).concat((__p===1?['午後']:['午後①','午後②']).slice(0,__p));
+  const addLabel=(SLOTPICK!=null)?('＋ この場所を「'+(__labs[SLOTPICK]||'')+'」の枠に入れる'):(selHas(i)?'✓ プラン候補に追加ずみ（タップで外す）':'＋プランに追加');
+  sheetBody.innerHTML=sheetHTML(s)+'<button type="button" class="addplan'+(selHas(i)?' on':'')+'" id="addPlanBtn" onclick="toggleSel('+i+')">'+addLabel+'</button>';
   sheet.classList.add('show');
   sheet.setAttribute('aria-hidden','false');
   sheetBackdrop.classList.add('show');
@@ -391,6 +519,8 @@ originSel.value=CITIES[0][1]+','+CITIES[0][2];
 
 function setOrigin(name,lat,lng){
   origin.name=name; origin.lat=lat; origin.lng=lng; origin.isAnjo=(name==='徳島市');
+  // プランナー(自分で選ぶプラン)と出発地を共有する
+  try{ localStorage.setItem(ORIGIN_KEY,JSON.stringify({name:name,lat:lat,lng:lng,isAnjo:origin.isAnjo})); }catch(e){}
   apply();
   updateOriginMarker();
 }
@@ -487,6 +617,16 @@ if(recenterBtn){
       originSel.value=match[1]+','+match[2];
       setOrigin(match[0],match[1],match[2]);
     }
+  }else{
+    // fromパラメータが無い場合: プランナーで選んだ出発地を引き継ぐ(不正値は無視)
+    try{
+      const d=JSON.parse(localStorage.getItem(ORIGIN_KEY)||'null');
+      if(d&&typeof d.name==='string'&&isFinite(d.lat)&&isFinite(d.lng)){
+        const mc=CITIES.find(c=>c[0]===d.name);
+        if(mc){ originSel.value=mc[1]+','+mc[2]; setOrigin(mc[0],mc[1],mc[2]); }
+        else if(d.name==='現在地'){ setOrigin('現在地',d.lat,d.lng); }
+      }
+    }catch(e){}
   }
   updateOriginMarker();
   apply();
