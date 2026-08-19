@@ -164,6 +164,7 @@ footer p{margin:0 0 6px}
 .leaflet-popup.minipop .leaflet-popup-tip{background:var(--card)}
 .leaflet-popup.minipop a.leaflet-popup-close-button{color:var(--sub);text-shadow:none;font-size:20px;padding:5px 8px 0 0;z-index:3}
 #backToMap{position:fixed;right:16px;bottom:22px;z-index:1200;background:#E8823C;color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:700;box-shadow:0 4px 14px rgba(120,70,20,.35);display:none;align-items:center;gap:6px;cursor:pointer}
+#moreBtn{display:block;width:100%;margin:14px 0 4px;padding:14px;border:1.5px dashed #d8c9b0;background:#fff;border-radius:14px;color:#b45f1d;font-weight:800;font-size:.95rem;cursor:pointer}
 #backToMap.show{display:inline-flex}
 #backToMap:active{transform:scale(.97)}
 .minicard.no-photo .mc-body{padding:26px 11px 4px}
@@ -263,16 +264,55 @@ footer p{margin:0 0 6px}
 .topbanner:hover{background:var(--accent);color:#fff}
 .topbanner.planbanner{margin-top:8px;background:var(--accent);color:#fff;border-color:var(--accent)}
 .topbanner.planbanner:hover{background:var(--accent-d);border-color:var(--accent-d)}
+.planhero{max-width:700px;margin:12px auto 0;background:linear-gradient(135deg,var(--accent),var(--accent-d));border-radius:18px;padding:18px 16px 16px;text-align:center;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.planhero .ph-q{margin:0;font-size:1.3rem;font-weight:900;letter-spacing:.02em}
+.planhero .ph-t{margin:4px 0 10px;font-size:.95rem;font-weight:700;opacity:.95}
+.planhero .ph-btn{display:inline-block;background:#fff;color:var(--accent-d);font-weight:900;font-size:1.05rem;padding:12px 26px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.planhero .ph-btn:active{transform:scale(.98)}
+.planhero .ph-s{margin:8px 0 0;font-size:.72rem;opacity:.85}
+.ph-grid{display:grid;gap:11px;margin:12px 0 0}
+.ph-opt{display:block;text-decoration:none;color:inherit}
+.ph-opt .ph-btn{display:block;width:100%;box-sizing:border-box;padding:13px 14px;font-size:1.05rem}
+.ph-opt.is-sub .ph-btn{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.92);box-shadow:none}
+.ph-cap{margin:5px 0 0;font-size:.73rem;opacity:.9;line-height:1.45}
+@media(max-width:389px){.ph-opt .ph-btn{font-size:1rem;padding:12px 10px}}
 /* AFF_HIDE_20260816: アフィリエイト表示の一時停止。復帰時はこのブロックを削除するだけでよい */
 .card .aff{display:none!important}
 </style>
+<style id="odm-chrome">
+.odm-sitebar{background:#fffdf9;border-bottom:1px solid #e8e0d4}
+.odm-sitebar-in{max-width:980px;margin:0 auto;padding:7px 14px;display:flex;align-items:center;gap:10px;justify-content:space-between}
+.odm-brand{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:.92rem;color:#4a4238;text-decoration:none;line-height:1.2}
+.odm-brand img{display:block;width:24px;height:24px}
+.odm-nat{font-size:.72rem;color:#7a746a;text-decoration:none;white-space:nowrap;border:1px solid #e0d6c6;border-radius:999px;padding:3px 10px}
+.odm-nat:hover{color:#e8853d}
+.odm-fbrand{font-weight:700;margin:0 0 4px}
+.odm-fbrand img{width:22px;height:22px;vertical-align:-5px;margin-right:5px;display:inline-block}
+.odm-fnat{margin:10px 0 2px}
+.odm-fnat a{color:inherit;font-weight:700}
+.odm-flinks{margin-top:8px;font-size:.72rem;line-height:2}
+@media(max-width:420px){.odm-brand{font-size:.8rem}.odm-sitebar-in{padding:6px 10px;gap:6px}.odm-nat{font-size:.68rem;padding:3px 8px}}
+</style>
 </head>
 <body>
+<!-- odm-sitebar:start -->
+<div class="odm-sitebar"><div class="odm-sitebar-in"><a class="odm-brand" href="/gunma/"><img src="/odemaru-mark.png" alt="おでまる" width="24" height="24" decoding="async">ぐんま子育ておでかけマップ</a><a class="odm-nat" href="/">全国版 &rsaquo;</a></div></div>
+<!-- odm-sitebar:end -->
+
 <header class="hero">
   <div class="wrap">
     <h1><img class="odemaru-mark" src="/odemaru-mark.png" alt="おでまる" width="96" height="96" decoding="async">ぐんま子育ておでかけマップ</h1>
     <p class="catch">群馬の"子どもが喜ぶ場所"だけを集めたおでかけマップ</p>
     <p class="creator">群馬県内約<span data-stat="by_pref:gunma:total">144</span>カ所を掲載（おでかけスポット68＋児童館0館＋子連れチェーン店<span data-stat="by_pref:gunma:chain">76</span>店）。二児のパパが個人で運営しています。</p>
+    <div class="planhero">
+      <p class="ph-q">今日どこ行く？</p>
+      <p class="ph-t">30秒で今日のおでかけが決まる</p>
+      <div class="ph-grid">
+        <a class="ph-opt" onclick="if(typeof gtag==='function')gtag('event','seo_cta_click',{src:'top',position:'hero-plan'})" href="./plan.html?src=top_hero_planner"><span class="ph-btn">🎯 おでかけプランを作る</span><span class="ph-cap" style="display:block">おでまるが条件から自動で組み立て・質問に答えるだけ30秒</span></a>
+        <a class="ph-opt is-sub" onclick="if(typeof gtag==='function')gtag('event','seo_cta_click',{src:'top',position:'hero-map'})" href="./map.html?src=top_hero_mapselect"><span class="ph-btn">🗺️ マップから自分で選ぶ</span><span class="ph-cap" style="display:block">行きたい場所を選んでプランに・祖父母の家や予約したお店も入れられる</span></a>
+      </div>
+      <p class="ph-s">無料・登録不要</p>
+    </div>
     <p class="note">公園・水遊び・室内遊び場から子連れランチまで、今日の気分と出発地で選べます。</p>
     <div class="wxbar" id="wxbar" aria-live="polite">
       <div class="wxbar-top">
@@ -282,7 +322,6 @@ footer p{margin:0 0 6px}
       </div>
       <p class="wxbar-src">天気: Open-Meteo</p>
     </div>
-    <a class="topbanner planbanner" href="./plan.html">🎯 質問に答えるだけ、きょうのプランを自動作成 →</a>
   </div>
 </header>
 
@@ -318,7 +357,6 @@ footer p{margin:0 0 6px}
       <button class="chip play" data-t="water"   aria-pressed="false">💦 水</button>
       <button class="chip play" data-t="create"  aria-pressed="false">🔬 つくる</button>
       <button class="chip play" data-t="vehicle" aria-pressed="false">🚃 のりもの</button>
-      <button class="chip play" data-t="indoor"  aria-pressed="false">☔ 室内</button>
       <button class="chip play" data-t="food"    aria-pressed="false">🍽 ごはん</button>
     </div>
     <div class="frow" role="group" aria-label="出発地からの所要時間で絞り込み">
@@ -395,19 +433,20 @@ footer p{margin:0 0 6px}
     <p>子育て世帯向けの施設・イベント情報を随時掲載しています。掲載のご相談や掲載内容の修正はお気軽にご連絡ください。</p>
     <a class="btn contact" id="contactBtn" href="/request.html">掲載についてのご相談はこちら →</a>
   </section>
-  <p style="text-align:center;margin:18px auto 6px;font-size:.86rem;color:var(--sub)">📅 週末イベントは毎週木曜にInstagramで配信中 → <a href="#" target="_blank" rel="noopener" style="font-weight:700"></a></p>
 </div>
 
 
 <footer>
   <div class="wrap">
     <p class="odemaru-note"><a href="/odemaru/" title="おでまるについて"><img src="/odemaru-guide.png" alt="おでまる" width="160" height="186" loading="lazy" decoding="async"></a><span>案内役の「<a href="/odemaru/">おでまる</a>」がおでかけをお手伝いします。</span></p>
-    <p>掲載情報は変わることがあります。おでかけ前に各公式サイトで最終確認をお願いします。</p>
     <p>写真: Wikimedia Commons（各写真にクレジットを表示しています）</p>
     <p>当サイトはアフィリエイトプログラムに参加しており、リンクを経由した予約・購入により収入を得ることがあります（PR）。</p>
     <p>Amazonのアソシエイトとして、ぐんま子育ておでかけマップは適格販売により収入を得ています。</p>
-    <p style="color:#bcb3a3">ぐんま子育ておでかけマップ</p>
-    <p class="site-footer-links"><a href="/about.html">運営者情報</a> | <a href="/disclaimer.html">免責事項</a> | <a href="/privacy.html">プライバシーポリシー</a> | <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcSuUG_4MbFgNq-Ejn_cfDvXKhQdQZh4DxITrDiKlo4ocFfw/viewform" target="_blank" rel="noopener">お問い合わせ</a> | <a href="/request.html">掲載情報の修正・削除依頼</a></p>
+    <p class="odm-fbrand"><img src="/odemaru-mark.png" alt="" width="22" height="22" loading="lazy" decoding="async">ぐんま子育ておでかけマップ</p>
+    <p class="odm-fdesc">群馬県内<span data-stat="by_pref:gunma:total">144</span>カ所を掲載。二児のパパが個人で運営しています。</p>
+    <p class="odm-fnote">掲載情報は作成時点のものです。おでかけ前に各公式サイトで最終確認をお願いします。</p>
+    <p class="odm-fnat">🌏 <a href="/">全国版「おでまる｜子育ておでかけマップ」</a> — 全<span data-stat="prefs">47</span>都道府県・総掲載<span data-stat="total">15,494</span>スポット</p>
+    <p class="odm-flinks"><a href="/about.html">運営者情報</a> | <a href="/disclaimer.html">免責事項</a> | <a href="/privacy.html">プライバシーポリシー</a> | <a href="/odemaru/">おでまるって？</a> | <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcSuUG_4MbFgNq-Ejn_cfDvXKhQdQZh4DxITrDiKlo4ocFfw/viewform" target="_blank" rel="noopener">お問い合わせ</a> | <a href="/request.html">掲載情報の修正・削除依頼</a></p>
   </div>
 </footer>
 
@@ -535,16 +574,65 @@ try{
 })();
 
 function focusCard(i){
-  const el=document.getElementById('card-'+i);
-  if(!el) return;
+  let el=document.getElementById('card-'+i);
+  if(!el){
+    // 段階表示(listLimit)で未生成の場合は、対象が入る位置まで伸ばして再描画してから移動する
+    let rank=0, pos=-1;
+    for(let j=0;j<SPOTS.length;j++){ if(matches(SPOTS[j])){ if(j===i){pos=rank;} rank++; } }
+    if(pos<0) return;                    // 現在の絞り込み条件に合致しない＝リストに存在しない
+    if(pos>=listLimit){ listLimit=pos+1; applyRender(true); }
+    el=document.getElementById('card-'+i);
+    if(!el) return;
+  }
   document.querySelectorAll('.card.hl').forEach(c=>c.classList.remove('hl'));
   el.classList.add('hl');
-  // offset the smooth scroll by the sticky filter bar so the card lands fully visible
-  const bar=document.getElementById('filterbar');
-  const off=(bar?bar.offsetHeight:0)+14;
-  const y=el.getBoundingClientRect().top+window.pageYOffset-off;
-  window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+  scrollToCardStable(el);
   setTimeout(()=>el.classList.remove('hl'),2600);
+}
+
+// 一括描画直後は遅延画像の読込・失敗(.photoのremove)で一覧の高さが変わり、
+// scrollTo の目標値が古くなってカードを通り過ぎる。描画確定を待って移動し、
+// その後も数回だけ現在位置を再計測して補正する。
+let _cardScrollJob=null;
+function scrollToCardStable(el){
+  if(_cardScrollJob) _cardScrollJob.cancel();
+  const bar=document.getElementById('filterbar');
+  const targetY=()=>{
+    const off=(bar?bar.offsetHeight:0)+14;
+    return Math.max(0,el.getBoundingClientRect().top+window.pageYOffset-off);
+  };
+  const EVS=['wheel','touchstart','keydown'];
+  const timers=[];
+  const job={
+    done:false,
+    cancel:function(){
+      if(job.done) return;
+      job.done=true;
+      timers.forEach(clearTimeout); timers.length=0;
+      EVS.forEach(t=>window.removeEventListener(t,job.cancel));
+      if(_cardScrollJob===job) _cardScrollJob=null;
+    }
+  };
+  _cardScrollJob=job;
+  EVS.forEach(t=>window.addEventListener(t,job.cancel,{passive:true}));
+  let started=false;
+  const start=function(){
+    if(started||job.done) return;
+    started=true;
+    window.scrollTo({top:targetY(),behavior:'smooth'});
+    const steps=[250,550,900,1400];
+    steps.forEach(function(ms,idx){
+      timers.push(setTimeout(function(){
+        if(!job.done){
+          const y=targetY();
+          if(Math.abs(window.pageYOffset-y)>4) window.scrollTo({top:y,behavior:idx<2?'smooth':'auto'});
+        }
+        if(idx===steps.length-1) job.cancel();
+      },ms));
+    });
+  };
+  requestAnimationFrame(function(){requestAnimationFrame(start);});
+  timers.push(setTimeout(start,120));   // rAFが来ない環境のフォールバック
 }
 
 // rich mini-card popup (rendered on demand → always current origin/minutes)
@@ -672,13 +760,21 @@ function matches(s){
   return true;
 }
 
-function apply(){
+// 段階表示: 最初は30件、[もっと見る]で+60件ずつ(絞り込み変更でリセット)
+const LIST_STEP_INIT=30, LIST_STEP_MORE=60;
+let listLimit=LIST_STEP_INIT;
+function showMoreCards(){ listLimit+=LIST_STEP_MORE; applyRender(true); }
+function apply(){ listLimit=LIST_STEP_INIT; applyRender(false); }
+function applyRender(keep){
   let n=0;
   const frag=[];
   SPOTS.forEach((s,i)=>{
     const ok=matches(s);
-    if(ok){n++;frag.push(cardHTML(s,i));}
+    if(ok){n++;if(frag.length<listLimit)frag.push(cardHTML(s,i));}
   });
+  if(n>frag.length){
+    frag.push('<button id="moreBtn" type="button" onclick="showMoreCards()">▼ もっと見る（あと'+(n-frag.length)+'件）</button>');
+  }
   // card list rendering must always happen, regardless of map state
   cardsEl.innerHTML=frag.join('');
   document.getElementById('count').textContent='該当'+n+'件';
