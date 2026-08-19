@@ -1202,6 +1202,8 @@ function startMinutes(){
 }
 function buildPlan(main,date,w,shareOverride){
   const o=state.origin;
+  // カスタム表示: ユーザーが明示的にえらんだ午後スポットは、営業時間・滞在時間の都合でも黙って捨てず注意書き付きで残す
+  const __forceSub=!!(shareOverride&&shareOverride.forceSub);
   const lunch=shareOverride?(shareOverride.lunch||null):pickLunch(main,date);
   const dm=driveMinutesFrom(o,main)||30;
   let sub=shareOverride?(shareOverride.sub||null):pickSub(main,lunch,dm,date,w);
@@ -1333,12 +1335,13 @@ function buildPlan(main,date,w,shareOverride){
       const sdm=legMinutes(lastLat,lastLng,sub.latitude,sub.longitude);
       const arrival=t+sdm;
       const ci=closingInfo(sub,arrival);
-      if(ci.exclude){ sub=null; return; }
+      if(ci.exclude&&!__forceSub){ sub=null; return; }
       const bdm=driveMinutesFrom(o,sub)||legMinutes(sub.latitude,sub.longitude,o.lat,o.lng);
       const bh=parseBusinessHours(sub);
       const limit=Math.min(bh?(bh.closeMin-15):Infinity, 18*60-bdm);  // 閉館15分前までに退場
       let stayB=Math.floor(Math.min(60, limit-arrival)/15)*15;
-      if(stayB<30){ sub=null; return; }   // 30分遊べないなら余力枠ごと出さない
+      const __subTight=ci.exclude||stayB<30;
+      if(stayB<30){ if(!__forceSub){ sub=null; return; } stayB=30; }   // 30分遊べないなら余力枠ごと出さない(えらんだ場所は注意書き付きで残す)
       const departB=arrival+stayB, retB=departB+bdm;
       const tt=((arrival%1440)+1440)%1440;
       const pt=sub.play_types||[];
@@ -1351,7 +1354,7 @@ function buildPlan(main,date,w,shareOverride){
         waterNote='※水遊びする場合は着替え・タオル持参がおすすめです／※夕方のため、水遊びは短時間利用がおすすめです';
       }
       rows.push({type:'move',time:t,label:'🚗 移動（約'+sdm+'分）',sub:transitLabel(lastName,sub.name,sdm),opt:true});
-      rows.push({type:'spot',time:arrival,spot:sub,tag:'余力があれば',opt:true,closeNote:ci.note,bonusNote,waterNote,returnNote:'滞在めやす 〜'+stayB+'分'});
+      rows.push({type:'spot',time:arrival,spot:sub,tag:'余力があれば',opt:true,closeNote:((__forceSub&&__subTight)?'⚠️ 到着時刻には閉店している可能性があります。営業時間をご確認ください':ci.note),bonusNote,waterNote,returnNote:'滞在めやす 〜'+stayB+'分'});
       rows.push({type:'move',time:departB,label:'🚗 寄った場合の帰路（約'+bdm+'分）',sub:transitLabel(sub.name,'ご自宅',bdm)+'／帰着めやす '+fmtTime(retB)+'ごろ',opt:true});
       // 採用した場合の追加運転時間(本編の直帰帰路との差分)と追加入場料
       rows.__bonusExtra=Math.max(0,sdm+bdm-homeDm);
@@ -2888,7 +2891,7 @@ async function customGenerate(){
   state.swapFixed={}; state.swapSeen={}; state.cycledNote=false;
   state.isSharedView=false; state.isCustomView=true;
   state.excludedSpots=[]; state.lastPlanSpots=[];
-  state.plans=[buildPlan(main,date,state.weather,{lunch:lunch||null,sub:sub||null})];
+  state.plans=[buildPlan(main,date,state.weather,{lunch:lunch||null,sub:sub||null,forceSub:!!state.customSlots[2]})];
   state.plans[0].__missing=cpMissingSelected(state.plans[0]);
   state.variant=0; state.planNo=1;
   if(!genOk(__gid)) return;
