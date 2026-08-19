@@ -168,16 +168,34 @@ footer a{color:var(--sub)}
 .swapcard .sc-choose-cur{background:var(--accent);color:#fff}
 .swapcard .sc-backnote{font-size:.66rem;color:var(--sub);font-weight:600}
 </style>
+<style id="odm-chrome">
+.odm-sitebar{background:#fffdf9;border-bottom:1px solid #e8e0d4}
+.odm-sitebar-in{max-width:980px;margin:0 auto;padding:7px 14px;display:flex;align-items:center;gap:10px;justify-content:space-between}
+.odm-brand{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:.92rem;color:#4a4238;text-decoration:none;line-height:1.2}
+.odm-brand img{display:block;width:24px;height:24px}
+.odm-nat{font-size:.72rem;color:#7a746a;text-decoration:none;white-space:nowrap;border:1px solid #e0d6c6;border-radius:999px;padding:3px 10px}
+.odm-nat:hover{color:#e8853d}
+.odm-fbrand{font-weight:700;margin:0 0 4px}
+.odm-fbrand img{width:22px;height:22px;vertical-align:-5px;margin-right:5px;display:inline-block}
+.odm-fnat{margin:10px 0 2px}
+.odm-fnat a{color:inherit;font-weight:700}
+.odm-flinks{margin-top:8px;font-size:.72rem;line-height:2}
+@media(max-width:420px){.odm-brand{font-size:.8rem}.odm-sitebar-in{padding:6px 10px;gap:6px}.odm-nat{font-size:.68rem;padding:3px 8px}}
+</style>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 </head>
 <body>
+<!-- odm-sitebar:start -->
+<div class="odm-sitebar"><div class="odm-sitebar-in"><a class="odm-brand" href="/aomori/"><img src="/odemaru-mark.png" alt="おでまる" width="24" height="24" decoding="async">あおもり子育ておでかけマップ</a><a class="odm-nat" href="/">全国版 &rsaquo;</a></div></div>
+<!-- odm-sitebar:end -->
+
 <header class="top">
   <h1>🎯 きょうのプラン</h1>
   <p>質問に答えるだけ、家族のおでかけを自動作成</p>
-  <a class="home" href="./index.html">← マップにもどる</a>
+  <a class="home" href="./index.html">← トップにもどる</a>
 </header>
 
 <div class="wrap">
@@ -289,9 +307,13 @@ footer a{color:var(--sub)}
 </div>
 
 <footer>
-  <a href="./index.html">あおもり子育ておでかけマップ</a><br>
-  データ・掲載情報は各公式サイトでご確認ください<br>
-  <p class="site-footer-links" style="margin-top:10px"><a href="/about.html">運営者情報</a> | <a href="/disclaimer.html">免責事項</a> | <a href="/privacy.html">プライバシーポリシー</a> | <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcSuUG_4MbFgNq-Ejn_cfDvXKhQdQZh4DxITrDiKlo4ocFfw/viewform" target="_blank" rel="noopener">お問い合わせ</a> | <a href="/request.html">掲載情報の修正・削除依頼</a></p>
+  <div class="wrap">
+    <p class="odm-fbrand"><img src="/odemaru-mark.png" alt="" width="22" height="22" loading="lazy" decoding="async">あおもり子育ておでかけマップ</p>
+    <p class="odm-fdesc">青森県内<span data-stat="by_pref:aomori:total">101</span>カ所を掲載。二児のパパが個人で運営しています。</p>
+    <p class="odm-fnote">掲載情報は作成時点のものです。おでかけ前に各公式サイトで最終確認をお願いします。</p>
+    <p class="odm-fnat">🌏 <a href="/">全国版「おでまる｜子育ておでかけマップ」</a> — 全<span data-stat="prefs">47</span>都道府県・総掲載<span data-stat="total">15,494</span>スポット</p>
+    <p class="odm-flinks"><a href="./index.html">あおもり子育ておでかけマップ</a> | <a href="/about.html">運営者情報</a> | <a href="/disclaimer.html">免責事項</a> | <a href="/privacy.html">プライバシーポリシー</a> | <a href="/odemaru/">おでまるって？</a> | <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcSuUG_4MbFgNq-Ejn_cfDvXKhQdQZh4DxITrDiKlo4ocFfw/viewform" target="_blank" rel="noopener">お問い合わせ</a> | <a href="/request.html">掲載情報の修正・削除依頼</a></p>
+  </div>
 </footer>
 
 <script>
@@ -1202,6 +1224,8 @@ function startMinutes(){
 }
 function buildPlan(main,date,w,shareOverride){
   const o=state.origin;
+  // カスタム表示: ユーザーが明示的にえらんだ午後スポットは、営業時間・滞在時間の都合でも黙って捨てず注意書き付きで残す
+  const __forceSub=!!(shareOverride&&shareOverride.forceSub);
   const lunch=shareOverride?(shareOverride.lunch||null):pickLunch(main,date);
   const dm=driveMinutesFrom(o,main)||30;
   let sub=shareOverride?(shareOverride.sub||null):pickSub(main,lunch,dm,date,w);
@@ -1333,12 +1357,13 @@ function buildPlan(main,date,w,shareOverride){
       const sdm=legMinutes(lastLat,lastLng,sub.latitude,sub.longitude);
       const arrival=t+sdm;
       const ci=closingInfo(sub,arrival);
-      if(ci.exclude){ sub=null; return; }
+      if(ci.exclude&&!__forceSub){ sub=null; return; }
       const bdm=driveMinutesFrom(o,sub)||legMinutes(sub.latitude,sub.longitude,o.lat,o.lng);
       const bh=parseBusinessHours(sub);
       const limit=Math.min(bh?(bh.closeMin-15):Infinity, 18*60-bdm);  // 閉館15分前までに退場
       let stayB=Math.floor(Math.min(60, limit-arrival)/15)*15;
-      if(stayB<30){ sub=null; return; }   // 30分遊べないなら余力枠ごと出さない
+      const __subTight=ci.exclude||stayB<30;
+      if(stayB<30){ if(!__forceSub){ sub=null; return; } stayB=30; }   // 30分遊べないなら余力枠ごと出さない(えらんだ場所は注意書き付きで残す)
       const departB=arrival+stayB, retB=departB+bdm;
       const tt=((arrival%1440)+1440)%1440;
       const pt=sub.play_types||[];
@@ -1351,7 +1376,7 @@ function buildPlan(main,date,w,shareOverride){
         waterNote='※水遊びする場合は着替え・タオル持参がおすすめです／※夕方のため、水遊びは短時間利用がおすすめです';
       }
       rows.push({type:'move',time:t,label:'🚗 移動（約'+sdm+'分）',sub:transitLabel(lastName,sub.name,sdm),opt:true});
-      rows.push({type:'spot',time:arrival,spot:sub,tag:'余力があれば',opt:true,closeNote:ci.note,bonusNote,waterNote,returnNote:'滞在めやす 〜'+stayB+'分'});
+      rows.push({type:'spot',time:arrival,spot:sub,tag:'余力があれば',opt:true,closeNote:((__forceSub&&__subTight)?'⚠️ 到着時刻には閉店している可能性があります。営業時間をご確認ください':ci.note),bonusNote,waterNote,returnNote:'滞在めやす 〜'+stayB+'分'});
       rows.push({type:'move',time:departB,label:'🚗 寄った場合の帰路（約'+bdm+'分）',sub:transitLabel(sub.name,'ご自宅',bdm)+'／帰着めやす '+fmtTime(retB)+'ごろ',opt:true});
       // 採用した場合の追加運転時間(本編の直帰帰路との差分)と追加入場料
       rows.__bonusExtra=Math.max(0,sdm+bdm-homeDm);
@@ -2888,7 +2913,7 @@ async function customGenerate(){
   state.swapFixed={}; state.swapSeen={}; state.cycledNote=false;
   state.isSharedView=false; state.isCustomView=true;
   state.excludedSpots=[]; state.lastPlanSpots=[];
-  state.plans=[buildPlan(main,date,state.weather,{lunch:lunch||null,sub:sub||null})];
+  state.plans=[buildPlan(main,date,state.weather,{lunch:lunch||null,sub:sub||null,forceSub:!!state.customSlots[2]})];
   state.plans[0].__missing=cpMissingSelected(state.plans[0]);
   state.variant=0; state.planNo=1;
   if(!genOk(__gid)) return;
