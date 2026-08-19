@@ -126,13 +126,13 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;font-family:-apple-syst
 
 <div class="topbar">
   <a class="back" href="./index.html">← トップへ</a>
-  <span class="logo">みえ子育ておでかけマップ</span>
+  <span class="logo"><img src="/odemaru-mark.png" alt="おでまる" width="20" height="20" style="vertical-align:-4px;margin-right:4px">みえ子育ておでかけマップ</span>
 </div>
 <div class="originbar">
   <select id="originSel" aria-label="出発地の街"></select>
   <button id="originGeo" type="button">📍現在地</button>
 </div>
-<div class="countbadge" id="countBadge">該当<span data-stat="by_pref:mie:local">237</span>件</div>
+<div class="countbadge" id="countBadge">該当…件</div>
 
 <button id="skipPlanBtn" type="button" onclick="skipToPlan()">選ばずプランへ →</button>
 
@@ -145,7 +145,6 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;font-family:-apple-syst
   <button class="chip play" data-t="water">💦 水</button>
   <button class="chip play" data-t="create">🔬 つくる</button>
   <button class="chip play" data-t="vehicle">🚃 のりもの</button>
-  <button class="chip play" data-t="indoor">☔ 室内</button>
   <button class="chip play" data-t="food">🍽 ごはん</button>
   <button class="chip" data-f="rain">☔ 雨でもOK</button>
   <button class="chip" data-f="free">🆓 無料</button>
