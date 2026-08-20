@@ -1018,6 +1018,9 @@ document.getElementById('originGeo').addEventListener('click',()=>{
 
 // --- 週末天気ウィジェット (Open-Meteo, キー不要 / 失敗時は完全非表示) ---
 const wxCache=Object.create(null); // メモリのみ: "lat,lng" -> {sat,sun} （localStorage不使用）
+// 雨CTAの判定も weather code を主基準にする(降水確率が高いだけでは出さない)。
+// 区分は wxEmoji() と同一: 51以上=🌧/❄️/⛈ → 雨扱い、48以下=☀️/🌤/☁️/🌫 → 通常
+function isRainCode(c){ return c!=null && c>=51; }
 function wxEmoji(c){
   if(c==null) return '☁️';
   if(c===0) return '☀️';
@@ -1087,7 +1090,7 @@ async function updateWeather(){
     };
     daysEl.innerHTML=mk('土',data.sat)+mk('日',data.sun);
     document.getElementById('wxbarTitle').textContent=`📅 今週末の天気（${origin.name}）`;
-    const rainy=[data.sat,data.sun].some(d=>d&&d.pop!=null&&d.pop>=50);
+    const rainy=[data.sat,data.sun].some(d=>d&&isRainCode(d.code));
     document.getElementById('wxbarRain').style.display=rainy?'':'none';
     bar.classList.add('show');
   }catch(e){

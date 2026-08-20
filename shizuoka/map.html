@@ -402,6 +402,11 @@ function toggleSel(i){
       if(btn) btn.textContent='えらべるのは5件までです（どれかを外してください）';
       updateSelBar(); return;
     }
+    // ごはん店は1件まで(お昼の枠は1つしかないため)。2件目は追加せず案内する。
+    if(isLunchableSpot(SPOTS[i]) && planSel.some(function(x){ return isLunchableSpot(SPOTS[x]); })){
+      if(btn) btn.textContent='ごはん店は1件までえらべます🍽';
+      updateSelBar(); return;
+    }
     // 昼食枠を空けるぶん、ごはん店なしで5件目は入らない(黙って消さず警告する)
     if(planSel.length>=4 && !selWouldHaveFood(i)){
       if(btn) btn.textContent='5件選ぶ場合は、ごはん店を1件含めてください🍽';
