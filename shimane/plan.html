@@ -239,6 +239,7 @@ footer a{color:var(--sub)}
     <p class="qsub">お天気を自動でチェックします</p>
     <div class="bigbtns" id="whenBtns">
       <button class="bigbtn" data-when="today">今日これから<small>いまから準備してGO</small></button>
+      <p id="todayLateNote" class="hint" style="display:none">🌙 今日はもう遅い時間のため、「明日」以降のおでかけからお選びください。</p>
       <button class="bigbtn" data-when="tomorrow">明日<small>あしたのおでかけ</small></button>
       <button class="bigbtn" data-when="sat">今週末（土）</button>
       <button class="bigbtn" data-when="sun">今週末（日）</button>
@@ -391,6 +392,61 @@ function legMinutes(aLat,aLng,bLat,bLng){
   if(aLat==null||aLng==null||bLat==null||bLng==null) return 5;
   const km=haversineKm(aLat,aLng,bLat,bLng);
   return Math.max(5,Math.round(km*2.2/5)*5);
+}
+// ===== 「直前地点から近い順」共通ヘルパー =====
+// 枠の基準点(アンカー): main=出発地 / lunch=メイン / sub=ランチ||メイン。
+// swapPrevSpot() と同じ考え方だが、main枠では出発地を {latitude,longitude} 形に正規化して返す。
+function slotAnchor(slot){
+  let prev=null;
+  try{ prev=(typeof swapPrevSpot==='function')?swapPrevSpot(slot):null; }catch(e){ prev=null; }
+  if(prev&&prev.latitude!=null&&prev.longitude!=null){
+    return {latitude:prev.latitude,longitude:prev.longitude,name:prev.name,spot:prev,isOrigin:false};
+  }
+  const o=(typeof state!=='undefined')?state.origin:null;
+  if(o&&o.lat!=null&&o.lng!=null){
+    return {latitude:o.lat,longitude:o.lng,name:o.name,spot:null,isOrigin:true};
+  }
+  return null;
+}
+// 変更候補カードに表示される所要分。swapCardHtml() と完全に同じ式にすること(並び=表示の担保)。
+function anchorDisplayMin(anchor,s){
+  if(!anchor||!s||s.latitude==null||s.longitude==null) return null;
+  if(!anchor.isOrigin&&anchor.latitude!=null&&anchor.longitude!=null){
+    return legMinutes(anchor.latitude,anchor.longitude,s.latitude,s.longitude);
+  }
+  return state.origin?driveMinutesFrom(state.origin,s):null;
+}
+// 距離昇順ソート。第1キー legMinutes(5分丸めのため同値多発)、第2キー haversineKm(同値の安定化)。
+function sortByNearest(list,aLat,aLng){
+  if(!list||aLat==null||aLng==null) return list;
+  list.forEach(function(s){
+    if(s&&s.latitude!=null&&s.longitude!=null){
+      s.__anchorKm=haversineKm(aLat,aLng,s.latitude,s.longitude);
+      s.__anchorMin=legMinutes(aLat,aLng,s.latitude,s.longitude);
+    }else if(s){ s.__anchorKm=Infinity; s.__anchorMin=Infinity; }
+  });
+  list.sort(function(a,b){ return (a.__anchorMin-b.__anchorMin)||(a.__anchorKm-b.__anchorKm); });
+  return list;
+}
+// 距離昇順を保ったまま「±bandKm の帯の中だけ」でタイブレークキーを効かせる。
+// 比較関数に帯判定を直接書くと推移律が壊れるため、距離順に粗くグルーピングしてから帯内でソートする。
+// 帯内の入れ替えしか起きないので、結果の距離列は「bandKm を超えて崩れない」ことが保証される。
+function bandedTiebreak(list,keyOf,tieOf,bandKm){
+  if(!list||list.length<2) return list;
+  const band=(bandKm==null?2:bandKm);
+  list.sort(function(a,b){ return keyOf(a)-keyOf(b); });
+  const out=[];
+  let i=0;
+  while(i<list.length){
+    const base=keyOf(list[i]);
+    let j=i;
+    while(j<list.length&&(keyOf(list[j])-base)<=band) j++;
+    const grp=list.slice(i,j);
+    grp.sort(function(a,b){ return (tieOf(b)-tieOf(a))||(keyOf(a)-keyOf(b)); });
+    for(let k=0;k<grp.length;k++) out.push(grp[k]);
+    i=j;
+  }
+  return out;
 }
 const PLAY={
   animal:{e:'🦁'},active:{e:'🛝'},water:{e:'💦'},create:{e:'🔬'},
@@ -660,7 +716,7 @@ function transitLabel(fromName,toName,minutes){
 }
 
 /* ===== state ===== */
-const state={origin:null,driveTime:null,when:null,depart:null,ages:new Set(),budget:null,weather:null,variant:0,planNo:1,plans:[],expandedDrive:false,shownMains:[],shownLunches:[],shownSubs:[],excludedSpots:[],lastPlanSpots:[],cycledNote:false,isCustomView:false,customSlots:[null,null,null]};
+const state={origin:null,driveTime:null,when:null,depart:null,ages:new Set(),budget:null,weather:null,variant:0,planNo:1,plans:[],expandedDrive:false,shownMains:[],shownLunches:[],shownSubs:[],excludedSpots:[],lastPlanSpots:[],cycledNote:false,isCustomView:false,customSlots:[null,null,null],cpPlanSlots:null};
 let step=0;
 let CURRENT_CAP=Infinity;
 function capFor(dt){
@@ -768,6 +824,7 @@ document.querySelectorAll('#whenBtns .bigbtn').forEach(b=>b.addEventListener('cl
   state.depart=null;
   document.querySelectorAll('#departTodayBtns .bigbtn,#departDayBtns .bigbtn').forEach(x=>x.classList.remove('on'));
   const isToday=state.when==='today';
+  if(isToday) refreshTodayAvailability();
   document.getElementById('departWrap').style.display='block';
   document.getElementById('departQ').textContent=isToday?'何時に出発？':'出発は？';
   document.getElementById('departTodayBtns').style.display=isToday?'':'none';
@@ -798,11 +855,16 @@ document.querySelectorAll('#budgetBtns .bigbtn').forEach(b=>b.addEventListener('
 }));
 
 /* ===== weather ===== */
+// 雨モードの主判定は weather code。降水確率が高いだけでは雨モードにしない。
+// 区分は index.html の wxEmoji() と同一基準:
+//   0=☀️ / 1-2=🌤 / 3=☁️ / 45-48=🌫 … 通常モード
+//   51-67,80-82=🌧 / 71-77,85-86=❄️ / 95以上=⛈ … 雨モード(雪は雨天相当で屋内優先)
+function isRainCode(c){ return c!=null && c>=51; }
 async function fetchWeather(){
   try{
     const o=state.origin;
     const url='https://api.open-meteo.com/v1/forecast?latitude='+o.lat+'&longitude='+o.lng+
-      '&daily=weather_code,temperature_2m_max,precipitation_probability_max&hourly=precipitation_probability&timezone=Asia%2FTokyo&forecast_days=7';
+      '&daily=weather_code,temperature_2m_max,precipitation_probability_max&hourly=precipitation_probability,weather_code&timezone=Asia%2FTokyo&forecast_days=7';
     const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),6000);
     const r=await fetch(url,{signal:ctrl.signal}); clearTimeout(t);
     if(!r.ok) return null;
@@ -821,25 +883,35 @@ async function fetchWeather(){
     // 40%以上が1時間だけ等のごく一時的な場合は雨モードにせず「にわか雨注意」フラグのみ。
     try{
       const hp=(j.hourly&&j.hourly.precipitation_probability)||[];
+      const hc=(j.hourly&&j.hourly.weather_code)||[];
       const ht=(j.hourly&&j.hourly.time)||[];
-      if(hp.length&&ht.length){
+      if((hp.length||hc.length)&&ht.length){
         let sMin; try{sMin=startMinutes();}catch(e){sMin=9*60+30;}
         const sH=Math.max(7,Math.min(16,Math.floor(sMin/60)));
         const eH=Math.min(18,sH+7);
         const y=td.getFullYear(),mo=('0'+(td.getMonth()+1)).slice(-2),da=('0'+td.getDate()).slice(-2);
         const dstr=y+'-'+mo+'-'+da;
-        let rainH=0,maxP=null,cnt=0;
+        let rainH=0,maxP=null,cnt=0,codeSeen=0,rainCodeH=0;
         for(let k=0;k<ht.length;k++){
           if(ht[k].slice(0,10)!==dstr) continue;
           const hh=parseInt(ht[k].slice(11,13),10);
           if(hh<sH||hh>=eH) continue;
+          const c=hc[k];
+          if(c!=null){ codeSeen++; if(isRainCode(c)) rainCodeH++; }
           const v=hp[k];
           if(v==null) continue;
           cnt++;
           if(maxP==null||v>maxP) maxP=v;
           if(v>=40) rainH++;
         }
-        if(cnt>=3){
+        if(codeSeen>=3){
+          // 主判定: おでかけ時間帯に雨・雷雨・雪の weather code が含まれるか
+          w.rainMode=(rainCodeH>=1);
+          // 通常モードでも降水確率が高い時間があれば「にわか雨注意」だけ出す(表示用)
+          if(!w.rainMode&&rainH>=1) w.transient=true;
+          if(maxP!=null) w.windowMax=maxP;
+        } else if(cnt>=3){
+          // フォールバック: hourly の weather code が取れなかった場合のみ従来の降水確率判定
           if(rainH>=2){ w.rainMode=true; }
           else { w.rainMode=false; if(rainH===1) w.transient=true; }
           if(maxP!=null) w.windowMax=maxP;
@@ -856,7 +928,8 @@ function isRainMode(w){
   if(!w) return false;
   if(w.rainMode===true) return true;
   if(w.rainMode===false) return false;
-  return w.precip!=null&&w.precip>=50;
+  // hourly が取れなかった場合は日別の weather code で判定する(旧: 降水確率>=50)
+  return isRainCode(w.code);
 }
 // SEOページ由来の「室内優先」希望。実際の天気予報(rainMode)とは分離して管理する
 function isIndoorMode(w){ return isRainMode(w)||state.indoorPref===true; }
@@ -1081,7 +1154,7 @@ function pickVariety(sorted,historyKey,topCount){
   state[historyKey].push(picked);
   return picked;
 }
-function pickLunch(main,date){ return pickVariety(lunchChainCap(lunchCandidates(main,date),25),'shownLunches',25); }
+function pickLunch(main,date){ return pickVariety(lunchChainCap(lunchCandidates(main,date),25),'shownLunches',5); } // ③ 近距離上位5件を母集団に
 // ランチ枠のシャッフル母集団に入れるチェーンの上限。
 // 母集団に残った地元店の数に対する比率で決めるので、地元店が多いエリアでは地元店が主役になり、
 // 地元候補が乏しいエリア（周辺に地元の子連れ向け飲食店が無い）でだけチェーンが主役になる。
@@ -1150,21 +1223,24 @@ function lunchCandidates(main,date){
   }
   cc.forEach(s=>{
     const feats=(s.kid_features||[]).join(' ');
-    let sc=-s.__km*0.5;
-    if(/座敷|お座敷/.test(feats)) sc+=2;
-    if(/キッズチェア|キッズメニュー|子供椅子|お子様/.test(feats)) sc+=1;
+    let tie=0;
+    if(/座敷|お座敷/.test(feats)) tie+=2;
+    if(/キッズチェア|キッズメニュー|子供椅子|お子様/.test(feats)) tie+=1;
     if(s.is_chain===true){
-      if(!scarce) sc-=0.5;                       // 周辺候補が5件未満なら減点を打ち消す
-      if(onlyToddler&&feats) sc+=1;              // 0-2歳のみ: 設備のあるチェーンを後押し
-      if(cheapBudget) sc+=0.5;                   // 予算free/1000: 安定した低価格帯
-      if(s.__km>10) sc-=2;                       // 距離重視: 遠いチェーンは基本的に上位にしない
+      if(!scarce) tie-=0.5;                      // 周辺候補が5件未満なら減点を打ち消す
+      if(onlyToddler&&feats) tie+=1;             // 0-2歳のみ: 設備のあるチェーンを後押し
+      if(cheapBudget) tie+=0.5;                  // 予算free/1000: 安定した低価格帯
+      if(s.__km>10) tie-=2;                      // 距離重視: 遠いチェーンは基本的に上位にしない
     }
-    s.__lsc=sc;
+    s.__tie=tie;                                 // ⑥ 設備加点-チェーン減点(距離成分は含めない)
+    s.__lsc=-s.__km*0.5+tie;                     // 旧スコア(参照用に残す。並べ替えには使わない)
   });
-  cc.sort((a,b)=> b.__lsc-a.__lsc || a.__km-b.__km);
+  // ①⑥ 並べ替えは「メイン(=直前地点)からの距離 __km 昇順」。
+  // 設備(座敷/キッズ)・チェーン補正は ±2km の距離帯の中だけで効くタイブレークに降格する。
+  cc=bandedTiebreak(cc,function(s){return s.__km;},function(s){return s.__tie;},2);
   return cc;
 }
-function pickSub(main,lunch,mainDriveMin,date,w){ return pickVariety(subCandidates(main,lunch,mainDriveMin,date,w),'shownSubs',20); }
+function pickSub(main,lunch,mainDriveMin,date,w){ return pickVariety(subCandidates(main,lunch,mainDriveMin,date,w),'shownSubs',8); } // ④ 近距離上位8件を母集団に
 function subCandidates(main,lunch,mainDriveMin,date,w){
   const o=state.origin;
   const rain=isIndoorMode(w);
@@ -1202,25 +1278,66 @@ function subCandidates(main,lunch,mainDriveMin,date,w){
     if(hoursUnknown(s)){ noteReserve(s); return false; } // P0: 営業時間未登録は確定枠に入れない
     const dmO=driveMinutesFrom(o,s);
     if(dmO==null||dmO>CURRENT_CAP) return false;
-    s.__subkm=km; s.__dmO=dmO;
+    // ② 並べ替えの基準点を「直前地点 prev(=ランチ||メイン)」に修正する(旧: メインからの距離 km)。
+    // km(メインからの距離)は上の15km判定で使うだけ。__mainkm として保持しておく。
+    s.__mainkm=km;
+    s.__subkm=(prev&&prev.latitude!=null&&prev.longitude!=null)
+      ? haversineKm(prev.latitude,prev.longitude,s.latitude,s.longitude) : km;
+    s.__dmO=dmO;
     // 帰り道方向(出発地からの所要がメインより小さい)は加点扱いにする(以前はハード条件で候補ゼロの主因だった)
     s.__homeward=(mainDriveMin!=null&&dmO<mainDriveMin);
     return true;
   });
-  c.sort((a,b)=>{
-    const sa=-a.__subkm+(a.__homeward?4:0), sb=-b.__subkm+(b.__homeward?4:0);
-    return sb-sa;
+  // ①⑥ 並べ替えは prev からの距離 __subkm 昇順。__homeward(帰り道方向)は ±2km 帯内のタイブレークに降格。
+  return bandedTiebreak(c,function(s){return s.__subkm;},function(s){return s.__homeward?1:0;},2);
+}
+// 当日プラン(「今日これから」)として現実的な出発時刻の上限。
+// 既存ロジックの境界に合わせている: 0-2歳のみは到着17:30以降を除外、帰宅上限は18:00(乳児)/18:30(未就学)、
+// 屋外系は到着19:00以降を除外。出発18:00を超えると、ほぼ全ての枠が成立しない。
+const TODAY_LAST_START=18*60;
+function nowMinutes(){ const n=new Date(); return n.getHours()*60+n.getMinutes(); }
+// 「今日これから」の各出発オフセットが成立するか(出発時刻が上限内か)
+function todayOffsetOk(min){ return Math.round((nowMinutes()+min)/30)*30 <= TODAY_LAST_START; }
+// 「今日これから」自体が選べるか(最短の30分後でも上限を超えるなら不可)
+function todayPlanAvailable(){ return todayOffsetOk(30); }
+// 「今日これから」ボタンと出発オフセットボタンの活性/非活性を現在時刻から更新する
+function refreshTodayAvailability(){
+  const todayBtn=document.querySelector('#whenBtns .bigbtn[data-when="today"]');
+  const avail=todayPlanAvailable();
+  if(todayBtn){
+    todayBtn.disabled=!avail;
+    todayBtn.classList.toggle('disabled',!avail);
+    const sm=todayBtn.querySelector('small');
+    if(sm){
+      if(!avail){ if(!sm.dataset.orig) sm.dataset.orig=sm.textContent; sm.textContent='今日はもう遅い時間です'; }
+      else if(sm.dataset.orig){ sm.textContent=sm.dataset.orig; }
+    }
+  }
+  const note=document.getElementById('todayLateNote');
+  if(note) note.style.display=avail?'none':'';
+  document.querySelectorAll('#departTodayBtns .bigbtn').forEach(function(b){
+    const ok=todayOffsetOk(parseInt(b.dataset.depart,10)||0);
+    b.disabled=!ok; b.classList.toggle('disabled',!ok);
+    if(!ok) b.classList.remove('on');
   });
-  return c;
 }
 function startMinutes(){
   const d=state.depart;
-  if(state.when==='today'&&d&&d.mode==='offset'){
-    const now=new Date(); let m=now.getHours()*60+now.getMinutes()+d.min;
-    m=Math.round(m/30)*30; if(m>19*60)m=13*60; return m;
+  if(state.when==='today'){
+    // 当日は必ず「今から」を基準にする。過去時刻の出発でプランを組まない。
+    // 旧実装は m>19:00 のとき 13:00 へ巻き戻し、depart未設定(カスタムプランの「きょう」)では
+    // 9:30 にフォールバックしていたため、午後・夕方でも過去時刻のプランが生成されていた。
+    const now=nowMinutes();
+    const base=Math.round((now+((d&&d.mode==='offset')?d.min:30))/30)*30;
+    if(d&&d.mode==='slot'){
+      // 当日にスロット指定が来た場合も過去にはしない
+      const slotM=d.slot==='noon'?13*60:9*60+30;
+      return Math.max(base,slotM);
+    }
+    return base;
   }
   if(d&&d.mode==='slot') return d.slot==='noon'?13*60:9*60+30;
-  return 9*60+30; // 9:30 fallback
+  return 9*60+30; // 9:30 fallback（あす・週末）
 }
 function buildPlan(main,date,w,shareOverride){
   const o=state.origin;
@@ -1406,8 +1523,18 @@ function buildPlan(main,date,w,shareOverride){
   const homePriority = onlyToddler && !sub;
   return {rows,main,lunch,sub,totalDrive,cost,hasUnknown,homePriority,bonusExtra:rows.__bonusExtra||0,bonusReturn:rows.__bonusReturn||null,retHome:rows.__retHome||null,costKnown:known,bonusPrice:(rows.__bonusIsBonus?rows.__bonusPrice:null)};
 }
+// 当日プランとして出発時刻が現実的か。UI(refreshTodayAvailability)を迂回した経路
+// (共有URLの復元など)でも過去時刻・深夜のプランを生成しないための保険。
+function todayStartFeasible(){
+  // 当日プランは depart の指定有無にかかわらず判定する。
+  // (カスタムプランの「きょう」は depart 未設定のまま来るため、旧実装は素通りしていた)
+  if(state.when!=='today') return true;
+  return startMinutes()<=TODAY_LAST_START;
+}
 function generatePlans(date,w){
   resetReserve();
+  state.tooLateToday=false;
+  if(!todayStartFeasible()){ state.tooLateToday=true; return []; }
   let cap=capFor(state.driveTime);
   CURRENT_CAP=cap;
   let pool=buildPool(date,w);
@@ -1456,18 +1583,21 @@ function generatePlans(date,w){
 // session. When every reasonable candidate has already been shown, reset the history (but avoid
 // immediately repeating the very last one) and note that we've gone through a full cycle.
 function nextVarietyPlan(date,w){
-  let cap=capFor(state.driveTime);
+  if(!todayStartFeasible()){ state.tooLateToday=true; return null; }
+  const cap=capFor(state.driveTime);
   CURRENT_CAP=cap;
   let pool=buildPool(date,w);
-  state.expandedDrive=false; // 前回の結果を引きずらない（拡張したときだけ注記を出す）
-  while(pool.length<3 && cap!==Infinity){
-    const widerCap=nextCap(cap);
-    CURRENT_CAP=widerCap;
-    const pool2=buildPool(date,w);
-    if(pool2.length>pool.length){ pool=pool2; state.expandedDrive=true; }
-    cap=widerCap;
+  // C) 移動時間は「上限」。候補が少なくても勝手に範囲を広げない(初回生成 generatePlans と同じ方針)。
+  //    旧実装は pool<3 のとき 20→40→60→無制限 と自動拡張していた。
+  state.expandedDrive=false;
+  state.ringRelaxed=false;
+  // 距離帯(41〜60分等)に候補が無い場合のみ、初回と同じく近場も含めて再収集(上限は超えない)
+  if(!pool.length&&(state.driveTime==='40'||state.driveTime==='60')){
+    window.RING_RELAX=true;
+    pool=buildPool(date,w);
+    window.RING_RELAX=false;
+    if(pool.length) state.ringRelaxed=true;
   }
-  CURRENT_CAP=cap;
   if(!pool.length) return null;
   const tiered=applyDriveMoodTier(pool);
   const uniq=[];
@@ -1492,7 +1622,20 @@ function nextVarietyPlan(date,w){
   state.shownMains.push(picked);
   state.cycledNote=cycled;
   let plv=buildPlan(picked,date,w);
-  if(plv.totalDrive>190&&plv.sub){ const plv2=buildPlan(picked,date,w,{lunch:plv.lunch||null,sub:null}); if(plv2.totalDrive<plv.totalDrive) plv=plv2; }
+  // B) 初回生成(generatePlans)と同じ年齢・負担軽減ガードを適用する。
+  //    旧実装は総運転190分の一律判定のみで、0-2歳のみの130分上限と帰宅時刻上限が抜けていた。
+  const onlyT=state.ages.has('0-2')&&state.ages.size===1;
+  const kidCap=state.ages.has('elem')?null:(onlyT?18*60:(18*60+30));
+  const driveLimit=onlyT?130:190;
+  if(plv.totalDrive>driveLimit&&plv.sub){
+    const plv2=buildPlan(picked,date,w,{lunch:plv.lunch||null,sub:null});
+    if(plv2.totalDrive<plv.totalDrive) plv=plv2;
+  }
+  if(kidCap&&plv.retHome&&plv.retHome>kidCap&&plv.sub){
+    const plv3=buildPlan(picked,date,w,{lunch:plv.lunch||null,sub:null});
+    if(plv3.retHome&&plv3.retHome<=kidCap) plv=plv3;
+  }
+  if(kidCap&&plv.retHome&&plv.retHome>kidCap) plv.__late=true;
   return plv;
 }
 
@@ -1617,8 +1760,10 @@ function weatherBadge(){
     }
     return '<div class="wxbadge">☔ おでかけ時間帯に雨予報なので室内プランにしました</div>';
   }
-  if(w.transient) return '<div class="wxbadge">🌦 一時的ににわか雨の可能性あり（折りたたみ傘があると安心）</div>';
+  // 表示優先順位: 雨モード → 猛暑 → にわか雨注意 → 通常天気。
+  // (旧実装は にわか雨 が猛暑より先で、🌤+36℃+降水確率高め のときに猛暑注意が隠れていた)
   if(w.tmax!=null&&w.tmax>=34) return '<div class="wxbadge">🥵 猛暑予報（最高'+Math.round(w.tmax)+'℃）水遊び・室内を優先しました</div>';
+  if(w.transient) return '<div class="wxbadge">🌦 一時的ににわか雨の可能性あり（折りたたみ傘があると安心）</div>';
   if(w.tmax!=null) return '<div class="wxbadge">☀ お天気よさそう（最高'+Math.round(w.tmax)+'℃）</div>';
   return '';
 }
@@ -1775,9 +1920,63 @@ function rowHtml(r){
     '<span class="icon">'+spotEmoji(s)+'</span><span class="line"></span></div>'+
     '<div class="body">'+body+'</div></div>';
 }
+// ===== カスタムプランの枠キー(cs<k>) 共通ヘルパー =====
+// 結果画面の「変更する」をカスタム3〜5枠でも使えるようにするための共通部品。
+// slot文字列 'cs0'..'cs4' が枠インデックスを表す(通常プランは従来どおり 'main'/'lunch'/'sub')。
+function csIndex(slot){ const m=/^cs(\d+)$/.exec(String(slot==null?'':slot)); return m?parseInt(m[1],10):null; }
+// プラン生成に実際に使った枠の中身(自動補完ぶんを含む)。未設定なら選択中の customSlots。
+function csSlotsEff(){
+  const a=state.cpPlanSlots;
+  if(Array.isArray(a)&&a.length) return a;
+  return state.customSlots||[];
+}
+// cs枠の直前地点(cpPrevSpot と同じ考え方。自動補完ぶんを含む実効配列で見る)
+function csPrevSpot(k){
+  const cs=csSlotsEff();
+  for(let i=Number(k)-1;i>=0;i--){
+    const s=cs[i];
+    if(s&&!s.__bento&&s.latitude!=null&&s.longitude!=null) return s;
+  }
+  return null;
+}
+// その cs枠がお昼枠かどうか
+function csIsLunchSlot(slot){ const k=csIndex(slot); if(k==null) return false; try{ return k===cpLI(); }catch(e){ return false; } }
+// 近接フィルタの距離(ランチ枠10km / それ以外15km)
+function swapNearKm(slot){ return (slot==='lunch'||csIsLunchSlot(slot))?10:15; }
+// その枠にいま入っているスポット
+function swapCurSpot(slot){
+  const k=csIndex(slot);
+  if(k!=null){ const a=csSlotsEff(); return a[k]||null; }
+  const p=currentPlanObj(); if(!p) return null;
+  return slot==='main'?p.main:(slot==='lunch'?p.lunch:p.sub);
+}
+// 表示中のスポットがカスタムの何番目の枠か(同一オブジェクト比較→名前一致の順で探す)
+function cpSlotIndexOf(sp){
+  if(!sp) return null;
+  const arrs=[state.customSlots||[],state.cpPlanSlots||[]];
+  for(let ai=0;ai<arrs.length;ai++){ const a=arrs[ai]; for(let k=0;k<a.length;k++){ if(a[k]&&a[k]===sp) return k; } }
+  for(let ai=0;ai<arrs.length;ai++){ const a=arrs[ai]; for(let k=0;k<a.length;k++){ if(a[k]&&a[k].name===sp.name) return k; } }
+  return null;
+}
+// 候補から除外すべき「いまプランに入っている場所」。カスタム時は枠の中身を使う。
+function swapInPlanList(p){
+  if(state.isCustomView){
+    const out=csSlotsEff().filter(Boolean).slice();
+    (state.customSlots||[]).filter(Boolean).forEach(function(x){ if(out.indexOf(x)<0) out.push(x); });
+    return out;
+  }
+  return [p.main,p.lunch,p.sub].filter(Boolean);
+}
 function swapSlotFor(r){
   if(!r||r.type!=='spot'||!r.spot) return null;
-  if(state.plans.length&&state.plans[state.variant%state.plans.length]&&state.plans[state.variant%state.plans.length].custom5) return null;
+  // 【実装3-1】カスタムプラン(3〜5枠)は枠インデックス cs<k> で変更する。
+  // 自由追加(__temp)・お弁当(__bento)の枠は変更不可のまま(null)。
+  if(state.isCustomView){
+    const __sp=r.spot;
+    if(__sp.__temp===true||__sp.__bento===true) return null;
+    const __k=cpSlotIndexOf(__sp);
+    return (__k==null)?null:('cs'+__k);
+  }
   if(r.tag==='メイン') return 'main';
   if(r.food) return 'lunch';
   if(r.tag==='午後スポット'||r.tag==='余力があれば') return 'sub';
@@ -1802,6 +2001,24 @@ function swapListFor(slot,cap){
       list=applyDriveMoodTier(buildPool(date,w));
     } else if(slot==='lunch'){
       list=lunchCandidates(p.main,date);
+    } else if(csIndex(slot)!=null){
+      // 【実装3-2】カスタム枠: 役割で母集団を切り替える(お昼枠=food / それ以外=非food)。
+      // 基準点(anchor)は「その枠の直前地点」。無ければメイン、さらに無ければ出発地。
+      // 出発地アンカーは name を空にして isSameComplex(名称包含)の誤爆を避ける。
+      const __k=csIndex(slot);
+      const __o=state.origin;
+      const __anchor=csPrevSpot(__k)||p.main||((__o&&__o.lat!=null)?{name:'',city:'',latitude:__o.lat,longitude:__o.lng,play_types:[]}:null);
+      if(!__anchor||__anchor.latitude==null){
+        list=[];
+      } else if(csIsLunchSlot(slot)){
+        list=lunchCandidates(__anchor,date);
+      } else {
+        const __dm=driveMinutesFrom(state.origin,__anchor)||30;
+        list=subCandidates(__anchor,null,__dm,date,w).filter(s=>!((s.play_types||[]).includes('food')));
+      }
+      // すでにプランに入っている場所は候補にしない
+      const __used=csSlotsEff().filter(Boolean).concat((state.customSlots||[]).filter(Boolean));
+      list=list.filter(s=>!__used.some(x=>x===s||(x&&x.name===s.name)));
     } else {
       const dm=driveMinutesFrom(state.origin,p.main)||30;
       list=subCandidates(p.main,p.lunch,dm,date,w);
@@ -1818,7 +2035,7 @@ function swapListFor(slot,cap){
 function swapFilter(list,extra){
   const p=currentPlanObj(); if(!p) return [];
   if(!state.excludedSpots) state.excludedSpots=[];
-  const inPlan=[p.main,p.lunch,p.sub].filter(Boolean);
+  const inPlan=swapInPlanList(p);   // 【実装3-2】カスタム時は枠の中身を見る
   const out=[];
   // 同一チェーンは候補3件のなかで1店まで（プラン内で使用中のチェーンも除外）
   const usedChains=new Set(inPlan.filter(x=>x&&x.is_chain===true&&x.chain_name).map(x=>x.chain_name));
@@ -1848,16 +2065,23 @@ function swapCandidates(slot,widenSteps){
   // 近接条件: いま選択中のスポットの付近を優先し、全然違う方向の候補を出さない。
   // 基本は現スポットから15km(ランチは10km)以内。「広げる」1段ごとに+10km。
   // 付近で3件に満たないときだけ距離順で遠い候補も後ろに足す(遠い分は「遠め」を明示)。
-  const refSpot=(state.swapFixed&&state.swapFixed[slot]&&state.swapFixed[slot].original)||(currentPlanObj()?currentPlanObj()[slot]:null);
+  // ① 基準点は「その枠に現在入っているスポット」ではなく「その枠の直前地点」(main=出発地/lunch=メイン/sub=ランチ||メイン)。
+  // swapCardHtml() の表示基準と一致するので、カードに出る「◯◯から約N分」が必ず昇順になる。
+  const refSpot=slotAnchor(slot);
   let nearAllowKm=null;
   if(refSpot&&refSpot.latitude!=null&&refSpot.longitude!=null){
-    nearAllowKm=(slot==='lunch'?10:15)+10*(widenSteps||0);
-    const withD=list.filter(s=>s&&s.latitude!=null&&s.longitude!=null)
-      .map(s=>({s,d:haversineKm(refSpot.latitude,refSpot.longitude,s.latitude,s.longitude)}));
-    withD.sort((a,b)=>a.d-b.d);
-    withD.forEach(x=>{ x.s.__swapDistKm=x.d; });
-    const near=withD.filter(x=>x.d<=nearAllowKm).map(x=>x.s);
-    list=near.length>=3?near:withD.map(x=>x.s);
+    nearAllowKm=swapNearKm(slot)+10*(widenSteps||0);
+    const cands=list.filter(s=>s&&s.latitude!=null&&s.longitude!=null);
+    // 第1キー legMinutes(5分丸め) / 第2キー haversineKm。__anchorMin/__anchorKm が付く。
+    sortByNearest(cands,refSpot.latitude,refSpot.longitude);
+    if(refSpot.isOrigin){
+      // main枠のカードは driveMinutesFrom(出発地,s) を表示するので、その式で並べ直す(表示=並び順の担保)。
+      cands.forEach(s=>{ const m=anchorDisplayMin(refSpot,s); s.__anchorMin=(m==null?1e9:m); });
+      cands.sort((a,b)=>(a.__anchorMin-b.__anchorMin)||(a.__anchorKm-b.__anchorKm));
+    }
+    cands.forEach(s=>{ s.__swapDistKm=s.__anchorKm; });
+    const near=cands.filter(s=>s.__anchorKm<=nearAllowKm);
+    list=near.length>=3?near:cands;
   }
   const out=swapFilter(list);
   // 指定圏を超える候補に「遠め」フラグ（黙って条件を破らないための明示）
@@ -1877,6 +2101,10 @@ function swapCandidates(slot,widenSteps){
 }
 // 変更候補カードの所要時間の基準点。main枠は出発地、それ以外は直前の地点。
 function swapPrevSpot(slot){
+  // 【実装3-2】カスタム枠は cpPrevSpot と同じ考え方で「直前の枠」を基準点にする。
+  // slotAnchor()/swapCardHtml() がこれを使うので、候補の並び順とカードの「◯◯から約N分」が一致する。
+  const __k=csIndex(slot);
+  if(__k!=null) return csPrevSpot(__k);
   const p=currentPlanObj(); if(!p) return null;
   if(slot==='lunch') return p.main||null;
   if(slot==='sub') return p.lunch||p.main||null;
@@ -1912,7 +2140,7 @@ function swapCardHtml(slot,s,i){
 // パネル共通部品: 現在選択中の表示 と 閉じるボタン
 function swapCurrentHtml(slot){
   const p=currentPlanObj(); if(!p) return '';
-  const cur=slot==='main'?p.main:(slot==='lunch'?p.lunch:p.sub);
+  const cur=swapCurSpot(slot); // 【実装1】cs<k>(カスタム枠)でもその枠の中身を表示する
   if(!cur) return '';
   return '<div class="sc-current"><span class="sc-cur-label">現在選択中</span><span class="sc-cur-name">'+esc(cur.name)+'</span><span class="sc-cur-note">※候補を選ぶまでプランは変わりません</span></div>';
 }
@@ -1935,7 +2163,7 @@ function swapGroupFor(slot){
 function setSwapGroup(slot,cands,widened){
   state.swapFixed=state.swapFixed||{};
   const p=currentPlanObj();
-  const cur=p?(slot==='main'?p.main:(slot==='lunch'?p.lunch:p.sub)):null;
+  const cur=swapCurSpot(slot);
   const g=swapGroupFor(slot);
   state.swapFixed[slot]={cands:cands.slice(),original:(g&&g.original)||cur,widened:!!widened};
   state.swapSeen=state.swapSeen||{};
@@ -1945,7 +2173,7 @@ function setSwapGroup(slot,cands,widened){
 function renderSwapPanel(slot,wrap){
   const g=swapGroupFor(slot);
   const p=currentPlanObj();
-  const cur=p?(slot==='main'?p.main:(slot==='lunch'?p.lunch:p.sub)):null;
+  const cur=swapCurSpot(slot);
   // 表示リスト: 固定候補 + (現在が入れ替わった後なら)元の施設を「元に戻す」候補として追加
   let list=g?g.cands.slice():[];
   if(g&&g.original&&g.original!==cur&&!list.includes(g.original)) list.push(g.original);
@@ -2010,8 +2238,15 @@ function refreshSwap(slot,btn){
       fresh=fresh.concat(reuse);
     }
   }
-  const nearKm0=(slot==='lunch'?10:15);
+  const nearKm0=swapNearKm(slot);
   fresh.forEach(s=>{ s.__swapFar=(s.__swapDistKm!=null&&s.__swapDistKm>nearKm0); });
+  // 【実装1】未表示が3件未満のとき reuse を後ろに連結するため昇順が崩れる。
+  // 表示直前に swapFilterAll()/sortByNearest() が付けた __anchorMin(第1キー)・__anchorKm(第2キー)で
+  // 距離昇順へ戻す。値が無いスポットは末尾(==null は Infinity 扱い)。
+  const __k1=x=>((x&&x.__anchorMin!=null)?x.__anchorMin:Infinity);
+  const __k2=x=>((x&&x.__anchorKm!=null)?x.__anchorKm:Infinity);
+  const __cmp=(a,b)=>(a===b?0:(a<b?-1:1));
+  fresh.sort((a,b)=>__cmp(__k1(a),__k1(b))||__cmp(__k2(a),__k2(b)));
   setSwapGroup(slot,fresh,false);
   const wrap=btn.closest('.swapwrap');
   if(wrap) renderSwapPanel(slot,wrap);
@@ -2023,18 +2258,22 @@ function swapFilterAll(slot){
   const baseCap=capFor(state.driveTime);
   const cap=(state.expandedDrive&&CURRENT_CAP&&CURRENT_CAP>baseCap)?CURRENT_CAP:baseCap;
   let list=swapListFor(slot,cap);
-  // 「ほかの候補を見る」でも近接条件を適用(現スポット付近を優先・距離順)
-  const refSpot=(state.swapFixed&&state.swapFixed[slot]&&state.swapFixed[slot].original)||p[slot]||null;
+  // ①「ほかの候補を見る」も直前地点(main=出発地/lunch=メイン/sub=ランチ)基準の距離昇順にする。
+  // swapCandidates() と同じアンカーを使うので、カードに出る「◯◯から約N分」が昇順になる。
+  const refSpot=slotAnchor(slot);
   if(refSpot&&refSpot.latitude!=null&&refSpot.longitude!=null){
-    const nearKm=(slot==='lunch'?10:15);
-    const withD=list.filter(s=>s&&s.latitude!=null&&s.longitude!=null)
-      .map(s=>({s,d:haversineKm(refSpot.latitude,refSpot.longitude,s.latitude,s.longitude)}));
-    withD.sort((a,b)=>a.d-b.d);
-    withD.forEach(x=>{ x.s.__swapDistKm=x.d; });
-    const near=withD.filter(x=>x.d<=nearKm).map(x=>x.s);
-    list=near.length>=3?near:withD.map(x=>x.s);
+    const nearKm=swapNearKm(slot);
+    const cands=list.filter(s=>s&&s.latitude!=null&&s.longitude!=null);
+    sortByNearest(cands,refSpot.latitude,refSpot.longitude);
+    if(refSpot.isOrigin){
+      cands.forEach(s=>{ const m=anchorDisplayMin(refSpot,s); s.__anchorMin=(m==null?1e9:m); });
+      cands.sort((a,b)=>(a.__anchorMin-b.__anchorMin)||(a.__anchorKm-b.__anchorKm));
+    }
+    cands.forEach(s=>{ s.__swapDistKm=s.__anchorKm; });
+    const near=cands.filter(s=>s.__anchorKm<=nearKm);
+    list=near.length>=3?near:cands;
   }
-  const inPlan=[p.main,p.lunch,p.sub].filter(Boolean);
+  const inPlan=swapInPlanList(p);   // 【実装3-2】カスタム時は枠の中身を見る
   const out=[];
   for(const s of list){
     if(inPlan.includes(s)) continue;
@@ -2052,12 +2291,44 @@ function widenSwap(slot,btn){
   const wrap=btn.closest('.swapwrap');
   if(wrap) renderSwapPanel(slot,wrap);
 }
+// 【実装3-3】カスタム枠の変更適用: customSlots を差し替え→cpSaveSlots()→同じ内容でプランを組み直す。
+function applySwapCustom(k,ns){
+  const p=currentPlanObj(); if(!p||!ns) return;
+  const old=swapCurSpot('cs'+k);
+  if(old&&!state.excludedSpots.includes(old)) state.excludedSpots.push(old);
+  const exIdx=state.excludedSpots.indexOf(ns);
+  if(exIdx>=0) state.excludedSpots.splice(exIdx,1);   // 元に戻す操作を妨げない
+  if(!Array.isArray(state.cpPlanSlots)||!state.cpPlanSlots.length) state.cpPlanSlots=(state.customSlots||[]).slice();
+  state.cpPlanSlots[k]=ns;
+  if(Array.isArray(state.customSlots)&&k<state.customSlots.length) state.customSlots[k]=ns;
+  cpSaveSlots();   // 保存は既存方式(CUSTOM_KEY)のまま。新しい保存方式は増やさない
+  const date=targetDate(state.when||'today'), w=state.weather;
+  let np=null;
+  try{
+    if(p.custom5){
+      np=buildCustomPlanFromSlots(state.cpPlanSlots.slice(),date,w);
+    } else {
+      const s3=state.cpPlanSlots;
+      if(s3[0]) np=buildPlan(s3[0],date,w,{lunch:s3[1]||null,sub:s3[2]||null});
+    }
+  }catch(e){ np=null; }
+  if(!np) return;
+  try{ np.__missing=cpMissingSelected(np); }catch(e){}
+  if(p.custom5) state.custom5Warn=!!np.__warn;
+  state.plans[state.variant%state.plans.length]=np;
+  const sy=window.scrollY||window.pageYOffset||0;
+  state.keepScroll=true;
+  showResult();
+  try{ window.scrollTo({top:sy}); }catch(e){}
+}
 function applySwap(slot,i){
   const p=currentPlanObj(); if(!p) return;
   const cands=(state.swapCands&&state.swapCands[slot])||[];
   const ns=cands[i]; if(!ns) return;
   if(typeof gtag==='function') gtag('event','plan_swap_apply',{slot:slot});
   if(!state.excludedSpots) state.excludedSpots=[];
+  const __csk=csIndex(slot);
+  if(__csk!=null){ applySwapCustom(__csk,ns); return; }   // 【実装3-3】カスタム枠
   const g=swapGroupFor(slot);
   const old=slot==='main'?p.main:(slot==='lunch'?p.lunch:p.sub);
   if(old&&!state.excludedSpots.includes(old)) state.excludedSpots.push(old);
@@ -2101,6 +2372,24 @@ function buildRouteUrl(p){
   return url;
 }
 /* ===== share ===== */
+// 【実装2】カスタムプラン(3〜5枠)の共有URL用ヘルパー。
+// 保存形式は cpSaveSlots() と同じアイテム形状({n} / {n,bento} / {n,lat,lng,addr,temp})を流用する。
+function shareIsCustomPlan(p){
+  try{
+    if(state.isCustomView) return true;
+    if(p&&p.custom5) return true;
+    // 保険: 実効枠配列がこのプランの中身と一致するとき(共有ビューからの再共有など)
+    const a=csSlotsEff();
+    if(!Array.isArray(a)||!a.length||!a.some(Boolean)) return false;
+    const sp=((p&&p.rows)?p.rows:[]).filter(r=>r.type==='spot').map(r=>r.spot).filter(Boolean);
+    return sp.length>0&&sp.every(s=>a.some(x=>x&&(x===s||x.name===s.name)));
+  }catch(e){ return false; }
+}
+function shareSlotItems(){
+  const e=csSlotsEff();
+  const a=(Array.isArray(e)&&e.length)?e:(state.cpPlanSlots||state.customSlots||[]);
+  return a.map(s=>!s?null:(s.__bento?{n:s.name,bento:1}:(s.__temp?{n:s.name,lat:s.latitude,lng:s.longitude,addr:s.city,temp:1}:{n:s.name})));
+}
 function buildShareUrl(p){
   const parts=['share=1'];
   const originName=state.origin?state.origin.name:'松江市';
@@ -2125,6 +2414,18 @@ function buildShareUrl(p){
   const subRow=spots.find(r=>r!==mainRow&&r!==lunchRow&&(r.tag==='午後スポット'||r.tag==='余力があれば'));
   if(lunchRow) parts.push('lunch='+encodeURIComponent(lunchRow.spot.name));
   if(subRow) parts.push('sub='+encodeURIComponent(subRow.spot.name));
+  // 【実装2】カスタムのときだけ枠順(cs)とお昼枠位置(csli)を追加する。
+  // 通常プランではこのブロックを通らないのでURLは従来と完全に同一。失敗時は従来URLにフォールバック。
+  try{
+    if(shareIsCustomPlan(p)){
+      const items=shareSlotItems();
+      if(items.length){
+        const li=(state.customSlots&&state.customSlots.length===items.length)?cpLI():cpLIFor(items.length);
+        parts.push('cs='+encodeURIComponent(JSON.stringify(items)));
+        parts.push('csli='+li);
+      }
+    }
+  }catch(e){ /* cs付与に失敗しても従来の main/lunch/sub だけで共有できる */ }
   return location.origin+location.pathname+'?'+parts.join('&');
 }
 function showToast(msg){
@@ -2173,7 +2474,27 @@ async function sharePlan(){
 // rebuild wizard state + a concrete plan from share URL params; returns the plan object or null
 function restoreFromShare(qs){
   const mainName=qs.get('main');
-  const mainSpot=mainName?SPOTS.find(s=>s.name===mainName):null;
+  let mainSpot=mainName?SPOTS.find(s=>s.name===mainName):null;
+  // 【実装2】cs= があれば枠順を復元する(cs が無いときの挙動は従来どおり)
+  let csSlots=null, csLi=null;
+  const __csRaw=qs.get('cs');
+  if(__csRaw){
+    try{
+      let arr=null;
+      try{ arr=JSON.parse(__csRaw); }catch(e){ arr=JSON.parse(decodeURIComponent(__csRaw)); }
+      if(Array.isArray(arr)&&arr.length){
+        // 解決できない要素は null にして順番は保持する
+        csSlots=arr.map(it=>{ try{ return cpResolveItem(it)||null; }catch(e){ return null; } });
+        while(csSlots.length<3) csSlots.push(null);
+        csSlots=csSlots.slice(0,5);
+        if(!csSlots.some(Boolean)) csSlots=null;
+        const __li=parseInt(qs.get('csli'),10);
+        if(!isNaN(__li)) csLi=__li;
+      }
+    }catch(e){ csSlots=null; csLi=null; }
+  }
+  // main が解決できなくても cs があれば最初の枠で代替する(cs が無いときの既存挙動は変えない)
+  if(!mainSpot&&csSlots) mainSpot=csSlots.find(Boolean)||null;
   if(!mainSpot) return null;
   const from=qs.get('from')||'松江市';
   let lat=qs.has('lat')?parseFloat(qs.get('lat')):NaN;
@@ -2207,6 +2528,12 @@ function restoreFromShare(qs){
   const subName=qs.get('sub');
   const lunchSpot=lunchName?(SPOTS.find(s=>s.name===lunchName)||null):null;
   const subSpot=subName?(SPOTS.find(s=>s.name===subName)||null):null;
+  if(csSlots){
+    state.customSlots=csSlots;                       // 長さは3〜5にクランプ済み
+    if(csLi!=null) state.cpLunchPos=csLi;
+    try{ if(typeof cpNormalizeLunch==='function') cpNormalizeLunch(); }catch(e){}
+    return {mainSpot,lunchSpot,subSpot,customSlots:state.customSlots.slice()};
+  }
   return {mainSpot,lunchSpot,subSpot};
 }
 
@@ -2223,11 +2550,11 @@ function cpLabels(len){
 }
 function cpLunchIdx(len){ return len===5?2:1; }
 // お昼枠の位置は可変(state.cpLunchPos)。午前1〜2枠・午後1〜2枠の範囲に収める
-function cpLI(){
-  const len=state.customSlots.length;
+function cpLIFor(len){
   const li=(state.cpLunchPos!=null)?state.cpLunchPos:cpLunchIdx(len);
   return Math.max(Math.max(1,len-3),Math.min(Math.min(2,len-2),li));
 }
+function cpLI(){ return cpLIFor(state.customSlots.length); }
 function cpNormalizeLunch(){
   const len=state.customSlots.length;
   let li=(state.cpLunchPos!=null)?state.cpLunchPos:cpLunchIdx(len);
@@ -2358,7 +2685,11 @@ function initCustom(){
   cpSaveSlots();
   renderCustomPanel();
 }
-function cpWhen(w){ state.when=w; renderCustomPanel(); }
+function cpWhen(w){
+  // 「きょう」が成立しない時間帯では切り替えず、「あす」を案内する
+  if(w==='today'&&!todayPlanAvailable()){ state.when='tomorrow'; state.cpTodayBlocked=true; renderCustomPanel(); return; }
+  state.cpTodayBlocked=false; state.when=w; renderCustomPanel();
+}
 function cpToggleAge(a){
   if(!state.ages) state.ages=new Set();
   if(state.ages.has(a)){ if(state.ages.size>1) state.ages.delete(a); }
@@ -2449,8 +2780,11 @@ function cpSuggest(slot){
   const arrGuess=__role==='am'?start+30:(__role==='lunch'?start+150:start+270);
   const o=state.origin;
   const filled=state.customSlots.filter(Boolean);
-  const ref=state.customSlots[0]||filled[0]||null;
-  const refLat=ref?ref.latitude:o.lat, refLng=ref?ref.longitude:o.lng;
+  // 基準点は「直前に選択済みのスポット」。1枠目(直前が無い場合)は出発地。
+  // cpSugTimeLabel() の表示基準(cpPrevSpot)と一致させることで、カードの「◯◯から約N分」が昇順になる。
+  const ref=(typeof cpPrevSpot==='function'?cpPrevSpot(slot):null)||null;
+  const refLat=(ref&&ref.latitude!=null)?ref.latitude:o.lat;
+  const refLng=(ref&&ref.longitude!=null)?ref.longitude:o.lng;
   const capMin=capFor(state.driveTime||'any');
   let pool=SPOTS.filter(s=>{
     if(s.latitude==null) return false;
@@ -2480,13 +2814,16 @@ function cpSuggest(slot){
   } else {
     state.cpSugCycled[slot]=false;
   }
-  // 上位10件からシャッフルで3件(押すたびに入れ替え)
-  for(let x=base.length-1;x>0;x--){ const y=Math.floor(Math.random()*(x+1)); const t2=base[x]; base[x]=base[y]; base[y]=t2; }
+  // 距離昇順のまま「まだ出していない近い順の3件」を出す。
+  // (旧: 上位10件をシャッフルして3件。並び順が崩れる原因だったので廃止。
+  //  「もっと見る」の入れ替えは cpSugSeen による繰り上げで従来どおり機能する)
   let out2=base.slice(0,3);
   if(out2.length<3){
     // 足りなければ既出の再利用を許可(見た目上いつも3件そろえる)
     top.forEach(s=>{ if(out2.length<3&&!out2.includes(s)) out2.push(s); });
   }
+  // 補充で順序が乱れる可能性があるため最後に距離昇順で確定させる
+  out2.sort((a,b)=>(a.__cpD-b.__cpD));
   state.cpSugSeen[slot]=(state.cpSugSeen[slot]||[]).concat(out2.map(s=>s.name).filter(n=>!(state.cpSugSeen[slot]||[]).includes(n)));
   return out2;
 }
@@ -2546,9 +2883,15 @@ function renderCustomPanel(){
     +'<div id="cpGeoNote" style="font-size:.72rem;color:#8a7a5a;margin-top:3px">'+(state.origin&&state.origin.name==='現在地'?'📍 現在地から出発します':'')+'</div></div>';
   const wOn='background:#e8853d;color:#fff;border:1px solid #e8853d;border-radius:999px;padding:8px 18px;font-weight:800;font-size:.9rem';
   const wOff='background:#fff;color:#6b5c40;border:1px solid #d8c9b0;border-radius:999px;padding:8px 18px;font-weight:700;font-size:.9rem';
+  // 「きょう」が成立しない時間帯(出発がTODAY_LAST_STARTを超える)は選べないようにし、「あす」へ寄せる
+  const __todayOk=todayPlanAvailable();
+  if(!__todayOk&&state.when!=='tomorrow'){ state.when='tomorrow'; state.cpTodayBlocked=true; }
+  const wDis='background:#f3ece2;color:#b3a794;border:1px solid #e2d7c5;border-radius:999px;padding:8px 18px;font-weight:700;font-size:.9rem;cursor:not-allowed';
   html+='<div style="margin:10px 0"><b style="font-size:.85rem">📅 いつ行く？</b><br>'
-    +'<button type="button" style="'+(state.when!=='tomorrow'?wOn:wOff)+';margin:4px 6px 0 0" onclick="cpWhen(\'today\')">きょう</button>'
-    +'<button type="button" style="'+(state.when==='tomorrow'?wOn:wOff)+';margin:4px 0 0 0" onclick="cpWhen(\'tomorrow\')">あす</button></div>';
+    +'<button type="button"'+(__todayOk?'':' disabled')+' style="'+(!__todayOk?wDis:(state.when!=='tomorrow'?wOn:wOff))+';margin:4px 6px 0 0" onclick="cpWhen(\'today\')">きょう</button>'
+    +'<button type="button" style="'+(state.when==='tomorrow'?wOn:wOff)+';margin:4px 0 0 0" onclick="cpWhen(\'tomorrow\')">あす</button>'
+    +(__todayOk?'':'<p style="font-size:.78rem;color:#8a7a5a;margin:6px 0 0">🌙 今日はもう遅い時間のため、「あす」のプランをご提案します。</p>')
+    +'</div>';
   // プランの条件を明示(以前の入力を引き継ぐため、見えないまま使わない)
   if(!state.ages||!state.ages.size) state.ages=new Set(['3-5']);
   if(!state.driveTime) state.driveTime='any';
@@ -2762,37 +3105,16 @@ function editCustom(){
   renderCustomPanel();
 }
 // 4〜5枠のカスタムプラン: 選んだ順に「午前→お昼→午後」で時間割を自動配分する専用エンジン
-async function customGenerate5(){
-  const msg=document.getElementById('cpAddMsg');
-  // 「おでまるが提案します」の空きスポット枠を実際に埋める(選択内容の保存は変えない)
-  const slots=state.customSlots.slice();
-  const li=cpLI();
-  try{
-    slots.forEach(function(_,k){
-      if(k===li||slots[k]) return;
-      const sug=cpSuggest(k)||[];
-      const pick=sug.find(function(sp){ return !slots.some(function(x){ return x&&x.name===sp.name; }); });
-      if(pick) slots[k]=pick;
-    });
-  }catch(e){}
+// カスタムプラン(4〜5枠エンジン)の時間割・行データ構築。
+// customGenerate5() から切り出した関数(DOM操作・loading表示・msg・genStart 等の副作用は呼び出し側に残す)。
+// slots は「実際にプランへ入れる枠の中身」(自動補完ぶんを含む)。applySwap の組み直しからも同じ関数を使う。
+function buildCustomPlanFromSlots(slots,date,w){
+  slots=(slots||[]).slice();
+  const li=cpLIFor(slots.length);
   const morning=slots.slice(0,li).filter(Boolean);
-  let lunch=slots[li]||null;
+  const lunch=slots[li]||null;
   const afternoon=slots.slice(li+1).filter(Boolean);
-  if(!(morning.length+afternoon.length)){ if(msg) msg.textContent='遊び場所を1つ以上えらんでください'; return; }
-  const __gid=genStart('custom');
-  try{
-  if(typeof gtag==='function') gtag('event','plan_custom_generate5',{n:morning.length+afternoon.length+(lunch?1:0)});
-  document.getElementById('customPanel').style.display='none';
-  document.getElementById('loading').style.display='block';
-  document.getElementById('result').style.display='none';
-  if(!state.depart) state.depart={mode:'slot',slot:'am'};
-  if(!state.budget) state.budget='any';
-  try{ state.weather=await fetchWeather(); }catch(e){ state.weather=null; }
-  const date=targetDate(state.when||'today');
-  CURRENT_CAP=capFor(state.driveTime);
   const o=state.origin;
-  const anchorSpot=morning[0]||afternoon[0];
-  if(!lunch){ try{ lunch=pickLunch(anchorSpot,date); }catch(e){ lunch=null; } }
   const onlyToddler=state.ages.has('0-2')&&state.ages.size===1;
   const capHome=18*60;
   // 滞在時間の配分: 午前枠は合計で〜12:00めど、午後枠は帰宅上限から逆算
@@ -2861,6 +3183,54 @@ async function customGenerate5(){
   else cost='入場料など 大人1人あたり 目安'+known.toLocaleString()+'円'+(hasUnknown?'（一部要確認）':'')+'・ランチ代は別';
   const __lunchOut=(lunch&&!lunch.__bento)?lunch:null;
   const plan={rows,main:morning[0]||afternoon[0],lunch:__lunchOut,sub:afternoon[0]||null,totalDrive:legSum,cost,hasUnknown,homePriority:false,custom5:true,retHome:__retHome};
+  plan.__warn=warn;
+  return plan;
+}
+async function customGenerate5(){
+  const msg=document.getElementById('cpAddMsg');
+  // 当日が成立しない時間帯ではカスタムプランも当日生成しない(UI迂回・復元経路の保険)
+  if(!todayStartFeasible()){
+    state.when='tomorrow'; state.cpTodayBlocked=true;
+    if(msg) msg.textContent='🌙 今日はもう遅い時間のため、「あす」に切り替えました。もう一度「プランを作る」を押してください。';
+    renderCustomPanel(); return;
+  }
+  // 「おでまるが提案します」の空きスポット枠を実際に埋める(選択内容の保存は変えない)
+  const slots=state.customSlots.slice();
+  const li=cpLI();
+  try{
+    slots.forEach(function(_,k){
+      if(k===li||slots[k]) return;
+      const sug=cpSuggest(k)||[];
+      const pick=sug.find(function(sp){ return !slots.some(function(x){ return x&&x.name===sp.name; }); });
+      if(pick) slots[k]=pick;
+    });
+  }catch(e){}
+  const morning=slots.slice(0,li).filter(Boolean);
+  let lunch=slots[li]||null;
+  const afternoon=slots.slice(li+1).filter(Boolean);
+  if(!(morning.length+afternoon.length)){ if(msg) msg.textContent='遊び場所を1つ以上えらんでください'; return; }
+  const __gid=genStart('custom');
+  try{
+  if(typeof gtag==='function') gtag('event','plan_custom_generate5',{n:morning.length+afternoon.length+(lunch?1:0)});
+  document.getElementById('customPanel').style.display='none';
+  document.getElementById('loading').style.display='block';
+  document.getElementById('result').style.display='none';
+  if(!state.depart) state.depart={mode:'slot',slot:'am'};
+  if(!state.budget) state.budget='any';
+  try{ state.weather=await fetchWeather(); }catch(e){ state.weather=null; }
+  const date=targetDate(state.when||'today');
+  CURRENT_CAP=capFor(state.driveTime);
+  // 【実装2】ランチ自動補完の基準は「ランチ直前の最後の午前スポット」。
+  // (旧: morning[0]。午前が2枠のとき1枠目基準になり、実際の直前地点から遠い店が選ばれていた)
+  const anchorSpot=morning.length?morning[morning.length-1]:(afternoon[0]||null);
+  if(!lunch&&anchorSpot){ try{ lunch=pickLunch(anchorSpot,date); }catch(e){ lunch=null; } }
+  // 実際にプランへ入れる枠の中身(自動補完ぶんを含む)を保持する。
+  // 結果画面の「変更する」(cs<k>)と、変更後の組み直しで同じ内容を再現するために使う。
+  slots[li]=lunch||null;
+  state.cpPlanSlots=slots.slice();
+  const plan=buildCustomPlanFromSlots(slots,date,state.weather);
+  const warn=!!plan.__warn;
+  const __lunchOut=plan.lunch||null;
   plan.__missing=cpMissingSelected(plan);
   state.shownMains=[plan.main]; state.shownLunches=__lunchOut?[__lunchOut]:[]; state.shownSubs=[];
   state.swapFixed={}; state.swapSeen={}; state.cycledNote=false;
@@ -2877,6 +3247,13 @@ async function customGenerate(){
   const msg=document.getElementById('cpAddMsg');
   if(!sel.length){ if(msg) msg.textContent='場所を1つ以上えらんでください（マップからえらぶ、または上の入力から追加）'; return; }
   if(state.customSlots.length>3||(state.customSlots[cpLI()]&&state.customSlots[cpLI()].__bento)){ return customGenerate5(); }
+  // 当日が成立しない時間帯では3枠版でも当日生成しない(customGenerate5 と同じガード)。
+  // パネルを開いたまま18:00をまたいだ場合もここで止まる。
+  if(!todayStartFeasible()){
+    state.when='tomorrow'; state.cpTodayBlocked=true;
+    if(msg) msg.textContent='🌙 今日はもう遅い時間のため、「あす」に切り替えました。もう一度「プランを作る」を押してください。';
+    renderCustomPanel(); return;
+  }
   const __gid=genStart('custom');
   try{
   if(typeof gtag==='function') gtag('event','plan_custom_generate',{n:sel.length});
@@ -2909,6 +3286,8 @@ async function customGenerate(){
   }
   if(!lunch){ try{ lunch=pickLunch(main,date); }catch(e){ lunch=null; } }
   if(!sub){ try{ const dm=driveMinutesFrom(state.origin,main)||30; sub=pickSub(main,lunch,dm,date,state.weather); }catch(e){ sub=null; } }
+  // 実際にプランへ入れる枠の中身(自動補完ぶんを含む)。結果画面の「変更する」(cs<k>)で使う
+  state.cpPlanSlots=[main||null,lunch||null,sub||null];
   state.shownMains=[main]; state.shownLunches=lunch?[lunch]:[]; state.shownSubs=sub?[sub]:[];
   state.swapFixed={}; state.swapSeen={}; state.cycledNote=false;
   state.isSharedView=false; state.isCustomView=true;
@@ -2956,9 +3335,31 @@ async function initFromShareOrWizard(){
       document.getElementById('loading').style.display='block';
       document.getElementById('result').style.display='none';
       try{
+        // 共有プランが「今日」で、当日が成立しない時間帯なら復元しない(過去/深夜の行程を表示しない)。
+        if(state.when==='today'&&!todayStartFeasible()){
+          state.tooLateToday=true;
+          document.getElementById('loading').style.display='none';
+          const __res=document.getElementById('result');
+          __res.style.display='block';
+          __res.innerHTML='<div class="empty"><p>🌙 共有されたプランは「今日」のものですが、今日はもう遅い時間のため表示できません。</p>'
+            +'<p style="font-size:.86rem;color:#8a7a5a">「明日」や「今週末」なら、朝からのプランをご提案できます。</p>'
+            +'<button onclick="location.href=\'./plan.html\'">自分のプランを作る</button></div>';
+          window.scrollTo({top:0,behavior:'smooth'});
+          return;
+        }
         state.weather=await fetchWeather();
         const date=targetDate(state.when);
-        const plan=buildPlan(r.mainSpot,date,state.weather,{lunch:r.lunchSpot,sub:r.subSpot});
+        // 【実装2】cs で枠順が来ていれば、その順番・件数のままカスタムとして組み直す。
+        // 夜間ガード(上のブロック)より後なので、抑止の挙動は従来どおり。
+        let plan;
+        if(r.customSlots&&r.customSlots.length){
+          CURRENT_CAP=capFor(state.driveTime);
+          state.cpPlanSlots=r.customSlots.slice();
+          plan=buildCustomPlanFromSlots(r.customSlots.slice(),date,state.weather);
+          state.custom5Warn=!!plan.__warn;
+        } else {
+          plan=buildPlan(r.mainSpot,date,state.weather,{lunch:r.lunchSpot,sub:r.subSpot});
+        }
         state.plans=[plan];
         state.variant=0;
         state.planNo=1;
@@ -2996,6 +3397,14 @@ function showResult(){
   const res=document.getElementById('result');
   res.style.display='block';
   if(!state.plans.length){
+    if(state.tooLateToday){
+      if(typeof gtag==='function') gtag('event','planner_no_result',seoP({reason:'too_late_today'}));
+      res.innerHTML='<div class="empty"><p>🌙 今日はもう遅い時間のため、当日のおでかけプランはご用意できません。</p>'
+        +'<p style="font-size:.86rem;color:#8a7a5a">「明日」や「今週末」を選ぶと、朝からのプランをご提案できます。</p>'
+        +'<button onclick="restart()">日付を選び直す</button></div>';
+      window.scrollTo({top:0,behavior:'smooth'});
+      return;
+    }
     if(typeof gtag==='function') gtag('event','planner_no_result',seoP({reason:'empty'}));
     const nxtDrive={'20':'40','40':'60','60':'any'}[state.driveTime]||null;
     const widenBtn=nxtDrive?('<button onclick="approveWiden(\''+nxtDrive+'\')" style="margin:6px 0;background:#e8853d;color:#fff;border:none;border-radius:12px;padding:13px 18px;font-weight:800">🚗 移動時間を'+(nxtDrive==='any'?'「遠くても大丈夫」':'〜'+nxtDrive+'分')+'まで広げて探す</button><br>'):'';
@@ -3231,7 +3640,7 @@ function reroll(){
   showResult();
 }
 function restart(){
-  state.isCustomView=false; state.customSlots=[null,null,null];
+  state.isCustomView=false; state.customSlots=[null,null,null]; state.cpPlanSlots=null;
   try{ localStorage.removeItem(CUSTOM_KEY); }catch(e){}
   const cpEl=document.getElementById('customPanel'); if(cpEl) cpEl.style.display='none';
   state.driveTime=null; state.when=null; state.depart=null; state.ages.clear(); state.budget=null; state.weather=null; state.variant=0; state.planNo=1; state.plans=[]; state.expandedDrive=false; state.isSharedView=false; state.shownMains=[]; state.shownLunches=[]; state.shownSubs=[]; state.excludedSpots=[]; state.lastPlanSpots=[]; state.swapFixed={}; state.swapSeen={};
@@ -3253,6 +3662,10 @@ document.addEventListener('click',function(e){
 },true);
 try{ if(!/[?&]share=1/.test(location.search)) loadPrefs(); }catch(e){}
 initFromShareOrWizard();
+// 「いつ行く？」を表示した時点で「今日これから」が適切に非活性になるよう、起動時にも反映する。
+// (旧実装は日付ボタンを押したときにしか呼ばれず、初回表示では有効なままだった)
+try{ refreshTodayAvailability(); }catch(e){}
+try{ setInterval(function(){ try{ refreshTodayAvailability(); }catch(e){} }, 60000); }catch(e){}
 </script>
 </body>
 </html>
