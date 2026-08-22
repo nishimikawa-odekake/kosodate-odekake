@@ -17,6 +17,7 @@
   <url><loc>https://kosodate-odekake.jp/nagano/</loc></url>
   <url><loc>https://kosodate-odekake.jp/nagano/map.html</loc></url>
   <url><loc>https://kosodate-odekake.jp/nagano/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/nagano/ame.html</loc><lastmod>2026-08-22</lastmod></url>
   <url><loc>https://kosodate-odekake.jp/ishikawa/</loc></url>
   <url><loc>https://kosodate-odekake.jp/ishikawa/map.html</loc></url>
   <url><loc>https://kosodate-odekake.jp/ishikawa/plan.html</loc></url>
@@ -32,6 +33,7 @@
   <url><loc>https://kosodate-odekake.jp/shiga/</loc></url>
   <url><loc>https://kosodate-odekake.jp/shiga/map.html</loc></url>
   <url><loc>https://kosodate-odekake.jp/shiga/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/shiga/ame.html</loc><lastmod>2026-08-22</lastmod></url>
   <url><loc>https://kosodate-odekake.jp/kyoto/</loc></url>
   <url><loc>https://kosodate-odekake.jp/kyoto/map.html</loc></url>
   <url><loc>https://kosodate-odekake.jp/kyoto/plan.html</loc></url>
@@ -39,6 +41,7 @@
   <url><loc>https://kosodate-odekake.jp/yamanashi/</loc></url>
   <url><loc>https://kosodate-odekake.jp/yamanashi/map.html</loc></url>
   <url><loc>https://kosodate-odekake.jp/yamanashi/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/yamanashi/ame.html</loc><lastmod>2026-08-22</lastmod></url>
   <url><loc>https://kosodate-odekake.jp/niigata/</loc></url>
   <url><loc>https://kosodate-odekake.jp/niigata/map.html</loc></url>
   <url><loc>https://kosodate-odekake.jp/niigata/plan.html</loc></url>
@@ -58,9 +61,11 @@
   <url><loc>https://kosodate-odekake.jp/hyogo/</loc></url>
   <url><loc>https://kosodate-odekake.jp/hyogo/map.html</loc></url>
   <url><loc>https://kosodate-odekake.jp/hyogo/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/hyogo/ame.html</loc><lastmod>2026-08-22</lastmod></url>
   <url><loc>https://kosodate-odekake.jp/wakayama/</loc></url>
   <url><loc>https://kosodate-odekake.jp/wakayama/map.html</loc></url>
   <url><loc>https://kosodate-odekake.jp/wakayama/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/wakayama/ame.html</loc><lastmod>2026-08-22</lastmod></url>
   <url><loc>https://kosodate-odekake.jp/okayama/</loc></url>
   <url><loc>https://kosodate-odekake.jp/okayama/map.html</loc></url>
   <url><loc>https://kosodate-odekake.jp/okayama/plan.html</loc></url>
@@ -72,15 +77,19 @@
   <url><loc>https://kosodate-odekake.jp/yamaguchi/</loc></url>
   <url><loc>https://kosodate-odekake.jp/yamaguchi/map.html</loc></url>
   <url><loc>https://kosodate-odekake.jp/yamaguchi/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/yamaguchi/ame.html</loc><lastmod>2026-08-22</lastmod></url>
   <url><loc>https://kosodate-odekake.jp/kagawa/</loc></url>
   <url><loc>https://kosodate-odekake.jp/kagawa/map.html</loc></url>
   <url><loc>https://kosodate-odekake.jp/kagawa/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/kagawa/ame.html</loc><lastmod>2026-08-22</lastmod></url>
   <url><loc>https://kosodate-odekake.jp/ehime/</loc></url>
   <url><loc>https://kosodate-odekake.jp/ehime/map.html</loc></url>
   <url><loc>https://kosodate-odekake.jp/ehime/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/ehime/ame.html</loc><lastmod>2026-08-22</lastmod></url>
   <url><loc>https://kosodate-odekake.jp/tokushima/</loc></url>
   <url><loc>https://kosodate-odekake.jp/tokushima/map.html</loc></url>
   <url><loc>https://kosodate-odekake.jp/tokushima/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/tokushima/ame.html</loc><lastmod>2026-08-22</lastmod></url>
   <url><loc>https://kosodate-odekake.jp/kochi/</loc></url>
   <url><loc>https://kosodate-odekake.jp/kochi/map.html</loc></url>
   <url><loc>https://kosodate-odekake.jp/kochi/plan.html</loc></url>
@@ -108,33 +117,43 @@
 <url><loc>https://kosodate-odekake.jp/hokkaido/</loc></url>
 <url><loc>https://kosodate-odekake.jp/hokkaido/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/hokkaido/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/hokkaido/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/aomori/</loc></url>
 <url><loc>https://kosodate-odekake.jp/aomori/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/aomori/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/aomori/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/iwate/</loc></url>
 <url><loc>https://kosodate-odekake.jp/iwate/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/iwate/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/iwate/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/akita/</loc></url>
 <url><loc>https://kosodate-odekake.jp/akita/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/akita/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/akita/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/yamagata/</loc></url>
 <url><loc>https://kosodate-odekake.jp/yamagata/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/yamagata/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/yamagata/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/ibaraki/</loc></url>
 <url><loc>https://kosodate-odekake.jp/ibaraki/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/ibaraki/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/ibaraki/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/tochigi/</loc></url>
 <url><loc>https://kosodate-odekake.jp/tochigi/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/tochigi/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/tochigi/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/gunma/</loc></url>
 <url><loc>https://kosodate-odekake.jp/gunma/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/gunma/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/gunma/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/saitama/</loc></url>
 <url><loc>https://kosodate-odekake.jp/saitama/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/saitama/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/saitama/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/chiba/</loc></url>
 <url><loc>https://kosodate-odekake.jp/chiba/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/chiba/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/chiba/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/tokyo/</loc></url>
 <url><loc>https://kosodate-odekake.jp/tokyo/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/tokyo/plan.html</loc></url>
@@ -142,22 +161,29 @@
 <url><loc>https://kosodate-odekake.jp/saga/</loc></url>
 <url><loc>https://kosodate-odekake.jp/saga/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/saga/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/saga/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/nagasaki/</loc></url>
 <url><loc>https://kosodate-odekake.jp/nagasaki/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/nagasaki/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/nagasaki/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/kumamoto/</loc></url>
 <url><loc>https://kosodate-odekake.jp/kumamoto/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/kumamoto/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/kumamoto/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/oita/</loc></url>
 <url><loc>https://kosodate-odekake.jp/oita/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/oita/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/oita/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/miyazaki/</loc></url>
 <url><loc>https://kosodate-odekake.jp/miyazaki/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/miyazaki/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/miyazaki/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/kagoshima/</loc></url>
 <url><loc>https://kosodate-odekake.jp/kagoshima/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/kagoshima/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/kagoshima/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 <url><loc>https://kosodate-odekake.jp/okinawa/</loc></url>
 <url><loc>https://kosodate-odekake.jp/okinawa/map.html</loc></url>
 <url><loc>https://kosodate-odekake.jp/okinawa/plan.html</loc></url>
+  <url><loc>https://kosodate-odekake.jp/okinawa/ame.html</loc><lastmod>2026-08-22</lastmod></url>
 </urlset>
