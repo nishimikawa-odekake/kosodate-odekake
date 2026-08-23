@@ -1,8 +1,8 @@
 {
   "aichi": 1126,
-  "national": 14830,
+  "national": 14862,
   "prefs": 47,
-  "total": 15956,
+  "total": 15988,
   "updated": "2026-08-23",
   "by_pref": {
     "akita": {
@@ -156,9 +156,9 @@
       "status": "mature"
     },
     "nagasaki": {
-      "local": 61,
+      "local": 71,
       "chain": 36,
-      "total": 97,
+      "total": 107,
       "status": "growing"
     },
     "nara": {
@@ -186,9 +186,9 @@
       "status": "mature"
     },
     "okinawa": {
-      "local": 56,
+      "local": 69,
       "chain": 51,
-      "total": 107,
+      "total": 120,
       "status": "growing"
     },
     "osaka": {
@@ -228,9 +228,9 @@
       "status": "mature"
     },
     "tochigi": {
-      "local": 86,
+      "local": 95,
       "chain": 99,
-      "total": 185,
+      "total": 194,
       "status": "growing"
     },
     "tokushima": {
