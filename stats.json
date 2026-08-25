@@ -1,9 +1,9 @@
 {
   "aichi": 1126,
-  "national": 14861,
+  "national": 15153,
   "prefs": 47,
-  "total": 15987,
-  "updated": "2026-08-24",
+  "total": 16279,
+  "updated": "2026-08-25",
   "by_pref": {
     "akita": {
       "local": 47,
@@ -204,10 +204,10 @@
       "status": "growing"
     },
     "saitama": {
-      "local": 50,
+      "local": 342,
       "chain": 383,
-      "total": 433,
-      "status": "growing"
+      "total": 725,
+      "status": "mature"
     },
     "shiga": {
       "local": 205,
