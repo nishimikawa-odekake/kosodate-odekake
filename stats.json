@@ -1,14 +1,14 @@
 {
   "aichi": 1150,
-  "national": 15335,
+  "national": 15401,
   "prefs": 47,
-  "total": 16523,
+  "total": 16589,
   "updated": "2026-08-28",
   "by_pref": {
     "akita": {
-      "local": 47,
+      "local": 113,
       "chain": 39,
-      "total": 86,
+      "total": 152,
       "status": "growing"
     },
     "aomori": {
