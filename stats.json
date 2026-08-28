@@ -1,8 +1,8 @@
 {
   "aichi": 1150,
-  "national": 15201,
+  "national": 15335,
   "prefs": 47,
-  "total": 16389,
+  "total": 16523,
   "updated": "2026-08-28",
   "by_pref": {
     "akita": {
@@ -102,9 +102,9 @@
       "status": "growing"
     },
     "kagoshima": {
-      "local": 87,
+      "local": 102,
       "chain": 45,
-      "total": 132,
+      "total": 147,
       "status": "growing"
     },
     "kanagawa": {
@@ -120,9 +120,9 @@
       "status": "growing"
     },
     "kumamoto": {
-      "local": 87,
+      "local": 104,
       "chain": 53,
-      "total": 140,
+      "total": 157,
       "status": "growing"
     },
     "kyoto": {
@@ -144,9 +144,9 @@
       "status": "mature"
     },
     "miyazaki": {
-      "local": 51,
+      "local": 61,
       "chain": 31,
-      "total": 82,
+      "total": 92,
       "status": "growing"
     },
     "nagano": {
@@ -156,9 +156,9 @@
       "status": "mature"
     },
     "nagasaki": {
-      "local": 71,
+      "local": 105,
       "chain": 36,
-      "total": 107,
+      "total": 141,
       "status": "growing"
     },
     "nara": {
@@ -174,9 +174,9 @@
       "status": "mature"
     },
     "oita": {
-      "local": 61,
+      "local": 81,
       "chain": 39,
-      "total": 100,
+      "total": 120,
       "status": "growing"
     },
     "okayama": {
@@ -186,9 +186,9 @@
       "status": "mature"
     },
     "okinawa": {
-      "local": 69,
+      "local": 89,
       "chain": 51,
-      "total": 120,
+      "total": 140,
       "status": "growing"
     },
     "osaka": {
@@ -198,9 +198,9 @@
       "status": "mature"
     },
     "saga": {
-      "local": 60,
+      "local": 67,
       "chain": 27,
-      "total": 87,
+      "total": 94,
       "status": "growing"
     },
     "saitama": {
@@ -264,9 +264,9 @@
       "status": "mature"
     },
     "yamagata": {
-      "local": 52,
+      "local": 63,
       "chain": 51,
-      "total": 103,
+      "total": 114,
       "status": "growing"
     },
     "yamaguchi": {
