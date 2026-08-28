@@ -2,7 +2,7 @@
   "aichi": 1126,
   "national": 15185,
   "prefs": 47,
-  "total": 16321,
+  "total": 16329,
   "updated": "2026-08-28",
   "by_pref": {
     "akita": {
@@ -54,9 +54,9 @@
       "status": "mature"
     },
     "gunma": {
-      "local": 104,
+      "local": 112,
       "chain": 76,
-      "total": 180,
+      "total": 188,
       "status": "growing"
     },
     "hiroshima": {
