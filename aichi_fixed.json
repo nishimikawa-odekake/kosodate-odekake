@@ -1,0 +1,10 @@
+{
+  "slug": "aichi",
+  "name": "愛知県",
+  "site": "あいち子育ておでかけマップ",
+  "url": "https://nishimikawa-odekake.com/",
+  "total": 1150,
+  "status": "mature",
+  "note": "愛知版は別リポジトリ(nishimikawa-odekake.com)のため実データ集計の対象外。更新時はこのファイルのtotalを手で合わせる。",
+  "updated": "2026-08-28"
+}

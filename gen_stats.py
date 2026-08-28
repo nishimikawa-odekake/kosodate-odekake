@@ -108,16 +108,136 @@ def load_html(pages_dir, slug, source):
         return f.read()
 
 
+# ---------------------------------------------------------------- HTML 同期
+JIDOKAN_PAT = re.compile(
+    r"(子連れおでかけスポット)([\d,]+)(件と児童館)([\d,]+)(館、子連れチェーン店)([\d,]+)(店)")
+CREATOR_PAT = re.compile(
+    r"(（おでかけスポット)([\d,]+)(＋児童館)([\d,]+)(館＋子連れチェーン店<span data-stat=\"by_pref:)"
+    r"([a-z]+)(:chain\">)([\d,]+)(</span>店）)")
+
+
+def _fmt(n):
+    return "{:,}".format(int(n))
+
+
+def _ds_sub(html, stats, counted):
+    """data-stat のフォールバック値を stats の実値へ書き戻す。"""
+    def rep(m):
+        key, cur = m.group(2), m.group(3)
+        v = stats
+        for part in key.split(":"):
+            if not isinstance(v, dict) or part not in v:
+                return m.group(0)
+            v = v[part]
+        if not isinstance(v, (int, float)):
+            return m.group(0)
+        new = _fmt(v)
+        if new != cur:
+            counted.append((key, cur, new))
+        return m.group(1) + new + m.group(4)
+    return re.sub(r'(data-stat="([^"]+)"[^>]*>)([\d,]+)(<)', rep, html)
+
+
+def sync_html(pages_dir, stats, jidokan_map, prefs, dry_run=False):
+    """トップページ群の件数ハードコードを stats の実値へ同期する。
+
+    SPOTS 配列は一切触らない（照合パターンが HTML/日本語文言に限定されているため
+    JSON 配列内には一致しない）。呼び出し側で SPOTS のバイト同一性を検証すること。
+    """
+    changes = {}
+
+    def write(path, before, after):
+        if before == after:
+            return 0
+        if not dry_run:
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(after)
+        return 1
+
+    def jidokan_counts(slug):
+        b = stats["by_pref"][slug]
+        jid = jidokan_map[slug]
+        return b["local"] - jid, jid, b["chain"]
+
+    # --- 各県 index / plan / map
+    for p in prefs:
+        for fn in ("index.html", "plan.html", "map.html"):
+            path = os.path.join(pages_dir, p, fn)
+            if not os.path.exists(path):
+                continue
+            html = open(path, encoding="utf-8").read()
+            orig = html
+            log = []
+            spot, jid, chain = jidokan_counts(p)
+
+            def jrep(m, _v=(spot, jid, chain)):
+                new = (m.group(1) + str(_v[0]) + m.group(3) + str(_v[1])
+                       + m.group(5) + str(_v[2]) + m.group(7))
+                if new != m.group(0):
+                    log.append(("meta文", m.group(2) + "/" + m.group(4) + "/" + m.group(6),
+                                "%d/%d/%d" % _v))
+                return new
+            html = JIDOKAN_PAT.sub(jrep, html)
+
+            def crep(m, _v=(spot, jid)):
+                new = (m.group(1) + str(_v[0]) + m.group(3) + str(_v[1])
+                       + "".join(m.group(i) for i in range(5, 10)))
+                if new != m.group(0):
+                    log.append(("creator行", m.group(2) + "/" + m.group(4), "%d/%d" % _v))
+                return new
+            html = CREATOR_PAT.sub(crep, html)
+
+            html = _ds_sub(html, stats, log)
+            if write(path, orig, html):
+                changes["%s/%s" % (p, fn)] = log
+
+    # --- 全国トップ / about / press
+    for fn in ("index.html", "about.html", os.path.join("press", "index.html")):
+        path = os.path.join(pages_dir, fn)
+        if not os.path.exists(path):
+            continue
+        html = open(path, encoding="utf-8").read()
+        orig = html
+        log = []
+        html = _ds_sub(html, stats, log)
+        if fn == "index.html":
+            # meta description の「47都道府県N件」
+            def mrep(m):
+                new = m.group(1) + _fmt(stats["total"]) + m.group(3)
+                if new != m.group(0):
+                    log.append(("meta総数", m.group(2), _fmt(stats["total"])))
+                return new
+            html = re.sub(r"(全国47都道府県)([\d,]+)(件を掲載)", mrep, html)
+
+            # og:description の「全国約N.N万件」
+            man = "%.1f" % (stats["total"] / 10000.0)
+
+            def orep(m):
+                new = m.group(1) + man + m.group(3)
+                if new != m.group(0):
+                    log.append(("og万件", m.group(2), man))
+                return new
+            html = re.sub(r"(全国約)([\d.]+)(万件を掲載)", orep, html)
+        if write(path, orig, html):
+            changes[fn] = log
+    return changes
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("-o", "--out", default="stats.json")
-    ap.add_argument("--pages", default=os.path.join(HERE, "pages"))
+    ap.add_argument("--pages", default=HERE)
     ap.add_argument("--rules", default=os.path.join(HERE, "maturity_rules.json"))
     ap.add_argument("--aichi", default=os.path.join(HERE, "aichi_fixed.json"))
     ap.add_argument("--source", choices=["local", "remote"], default="local")
     ap.add_argument("--verify", action="store_true",
                     help="本番raw と件数を突合して差分を報告（生成はローカル正）")
     ap.add_argument("--detail-out", default=None, help="スコア内訳のJSON出力先")
+    ap.add_argument("--keep-status", action="store_true",
+                    help="statusを既存stats.jsonから引き継ぐ（件数だけ更新したいとき）")
+    ap.add_argument("--sync-html", action="store_true",
+                    help="トップページ群の件数ハードコードもstatsの実値へ書き戻す")
+    ap.add_argument("--dry-run", action="store_true", help="書き込まず差分だけ表示")
     args = ap.parse_args()
 
     rules = json.load(open(args.rules, encoding="utf-8"))
@@ -125,6 +245,7 @@ def main():
 
     by_pref = {}
     details = {}
+    jidokan_map = {}
     national = 0
     for p in PREFS:
         spots = parse_spots(load_html(args.pages, p, args.source), p)
@@ -137,9 +258,26 @@ def main():
             "status": status,
         }
         details[p] = {"score": sc, "score_detail": sd, **raw}
+        jidokan_map[p] = raw["jidokan"]
         national += len(spots)
         print("%-10s local=%4d chain=%4d total=%5d  %s" % (
             p, by_pref[p]["local"], chain, len(spots), status))
+
+    status_changes = []
+    if args.keep_status:
+        try:
+            prev = json.load(open(args.out, encoding="utf-8"))["by_pref"]
+        except Exception:
+            prev = {}
+        for p in PREFS:
+            old = prev.get(p, {}).get("status")
+            if old and old != by_pref[p]["status"]:
+                status_changes.append((p, old, by_pref[p]["status"]))
+                by_pref[p]["status"] = old
+        if status_changes:
+            print("\n--keep-status: 実データ再判定では変わるが据え置いたstatus")
+            for p, o, n in status_changes:
+                print("  %-10s %s -> %s (据え置き)" % (p, o, n))
 
     diffs = []
     if args.verify:
@@ -163,9 +301,21 @@ def main():
         "by_pref": by_pref,
         "status_rule": {"version": rules["status_rule"]["version"]},
     }
-    with open(args.out, "w", encoding="utf-8") as f:
-        json.dump(stats, f, ensure_ascii=False, separators=(",", ":"))
-        f.write("\n")
+    if not args.dry_run:
+        with open(args.out, "w", encoding="utf-8") as f:
+            json.dump(stats, f, ensure_ascii=False, indent=2)
+            f.write("\n")
+
+    if args.sync_html:
+        ch = sync_html(args.pages, stats, jidokan_map, PREFS, dry_run=args.dry_run)
+        n = sum(len(v) for v in ch.values())
+        print("\n--sync-html: %d ファイル / %d 箇所を更新%s"
+              % (len(ch), n, "（dry-run）" if args.dry_run else ""))
+        for k in sorted(ch):
+            if ch[k]:
+                head = "; ".join("%s %s->%s" % t for t in ch[k][:3])
+                more = "" if len(ch[k]) <= 3 else " ...他%d" % (len(ch[k]) - 3)
+                print("  %-22s %s%s" % (k, head, more))
     if args.detail_out:
         json.dump({"details": details, "verify_diffs": diffs},
                   open(args.detail_out, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
