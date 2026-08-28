@@ -2,8 +2,8 @@
   "aichi": 1126,
   "national": 15185,
   "prefs": 47,
-  "total": 16311,
-  "updated": "2026-08-27",
+  "total": 16321,
+  "updated": "2026-08-28",
   "by_pref": {
     "akita": {
       "local": 47,
@@ -228,9 +228,9 @@
       "status": "mature"
     },
     "tochigi": {
-      "local": 95,
+      "local": 105,
       "chain": 99,
-      "total": 194,
+      "total": 204,
       "status": "growing"
     },
     "tokushima": {
