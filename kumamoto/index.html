@@ -439,7 +439,7 @@ footer p{margin:0 0 6px}
     <p class="odm-fbrand"><img src="/odemaru-mark.png" alt="" width="22" height="22" loading="lazy" decoding="async">くまもと子育ておでかけマップ</p>
     <p class="odm-fdesc">熊本県内<span data-stat="by_pref:kumamoto:total">157</span>カ所を掲載。二児のパパが個人で運営しています。</p>
     <p class="odm-fnote">掲載情報は作成時点のものです。おでかけ前に各公式サイトで最終確認をお願いします。</p>
-    <p class="odm-fnat">🌏 <a href="/">全国版「おでまる｜子育ておでかけマップ」</a> — 全<span data-stat="prefs">47</span>都道府県・総掲載<span data-stat="total">17,194</span>スポット</p>
+    <p class="odm-fnat">🌏 <a href="/">全国版「おでまる｜子育ておでかけマップ」</a> — 全<span data-stat="prefs">47</span>都道府県・総掲載<span data-stat="total">17,213</span>スポット</p>
     <p class="odm-flinks"><a href="/about.html">運営者情報</a> | <a href="/disclaimer.html">免責事項</a> | <a href="/privacy.html">プライバシーポリシー</a> | <a href="/odemaru/">おでまるって？</a> | <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcSuUG_4MbFgNq-Ejn_cfDvXKhQdQZh4DxITrDiKlo4ocFfw/viewform" target="_blank" rel="noopener">お問い合わせ</a> | <a href="/request.html">掲載情報の修正・削除依頼</a></p>
   </div>
 </footer>
@@ -5235,9 +5235,11 @@ function matches(s){
   else { if(s.is_jidokan===true) return false; }
   if(state.zashiki){ if(s.has_zashiki!==true) return false; }
   if(state.kids_chair){ if(s.has_kids_chair!==true) return false; }
-  // 条件チップ単独時（ごはんチップ未選択）は、foodのみのスポット（飲食店）を除外
+  // 条件チップ単独時（ごはんチップ未選択）は、foodのみのスポット（飲食店）を除外。
+  // ただし🧸キッズスペースは飲食店と児童館にしか付かない条件なので、ONのときはこのガードを外す
+  // （外さないと「キッズスペース」単独指定が常に0件になる）
   const pts0=s.play_types||[];
-  if(pts0.length&&pts0.every(t=>t==='food')&&!state.play.has('food')&&(state.rain||state.free||state.kids||state.drive!=null)) return false;
+  if(pts0.length&&pts0.every(t=>t==='food')&&!state.play.has('food')&&!state.kids&&(state.rain||state.free||state.drive!=null)) return false;
   return true;
 }
 
