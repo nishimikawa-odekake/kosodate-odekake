@@ -3602,9 +3602,11 @@ function matches(s){
   else { if(s.is_jidokan===true) return false; }
   if(state.zashiki){ if(s.has_zashiki!==true) return false; }
   if(state.kids_chair){ if(s.has_kids_chair!==true) return false; }
-  // 条件チップ単独時（ごはんチップ未選択）は、foodのみのスポット（飲食店）を除外
+  // 条件チップ単独時（ごはんチップ未選択）は、foodのみのスポット（飲食店）を除外。
+  // ただし🧸キッズスペースは飲食店と児童館にしか付かない条件なので、ONのときはこのガードを外す
+  // （外さないと「キッズスペース」単独指定が常に0件になる）
   const pts0=s.play_types||[];
-  if(pts0.length&&pts0.every(t=>t==='food')&&!state.play.has('food')&&(state.rain||state.free||state.kids)) return false;
+  if(pts0.length&&pts0.every(t=>t==='food')&&!state.play.has('food')&&!state.kids&&(state.rain||state.free)) return false;
   return true;
 }
 
