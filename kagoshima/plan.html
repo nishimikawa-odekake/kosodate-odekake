@@ -5333,19 +5333,21 @@ function pickVariety(sorted,historyKey,topCount){
 }
 function pickLunch(main,date){ return pickVariety(lunchChainCap(lunchCandidates(main,date),25),'shownLunches',5); } // ③ 近距離上位5件を母集団に
 // ランチ枠のシャッフル母集団に入れるチェーンの上限。
-// 母集団に残った地元店の数に対する比率で決めるので、地元店が多いエリアでは地元店が主役になり、
-// 地元候補が乏しいエリア（周辺に地元の子連れ向け飲食店が無い）でだけチェーンが主役になる。
+// 距離順に見ながら「それまでに通した地元店の数」に対する比率で都度判定するので、
+// リストのどの位置（＝シャッフル母集団の上位5件）でも地元:チェーン比が保たれる。
+// 旧実装は15km圏全体の地元店数から上限を決めて近いチェーンから消費していたため、
+// 地元店を追加するほど上位のチェーン枠が広がり地元店が押し出される逆転が起きていた（2026-08-30修正）。
 const LUNCH_CHAIN_PER_LOCAL=0.5; // 地元店2件につきチェーン1件まで
 function lunchChainCap(sorted,topCount){
   if(!sorted.length) return sorted;
-  const top=topCount||25;
-  const locals=sorted.filter(s=>s.is_chain!==true).slice(0,top);
   // 地元候補が皆無ならチェーンのみで構成する（候補0件にしない）
-  if(!locals.length) return sorted;
-  const cap=Math.max(1,Math.ceil(locals.length*LUNCH_CHAIN_PER_LOCAL));
-  const out=[]; let chains=0;
+  if(!sorted.some(s=>s.is_chain!==true)) return sorted;
+  const out=[]; let locals=0,chains=0;
   for(const s of sorted){
-    if(s.is_chain===true){ if(chains>=cap) continue; chains++; }
+    if(s.is_chain===true){
+      if(chains>=Math.max(1,Math.ceil(locals*LUNCH_CHAIN_PER_LOCAL))) continue;
+      chains++;
+    } else locals++;
     out.push(s);
   }
   return out;
