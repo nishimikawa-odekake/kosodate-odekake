@@ -34,6 +34,13 @@ a{color:var(--main-dd)}
 .skip:focus{left:8px;top:8px}
 
 /* ---------- header ---------- */
+/* サイト共通ヘッダー: 愛知版内のページであることを示す細いバー */
+.brandbar{display:flex;align-items:center;gap:8px;background:#075c68;color:#dff3f5;
+  text-decoration:none;padding:7px 16px;font-size:.8rem;line-height:1.3;white-space:nowrap;overflow:hidden}
+.brandbar b{font-size:.92rem;font-weight:800;color:#fff;letter-spacing:.02em;flex:0 0 auto}
+.brandbar span{overflow:hidden;text-overflow:ellipsis}
+.brandbar .bb-home{margin-left:auto;flex:0 0 auto;font-size:.74rem;color:#bfe6ea}
+.brandbar:hover b{text-decoration:underline}
 header.site{background:linear-gradient(165deg,#0e93a3,#0a7684);color:#fff;padding:18px 0 20px}
 .brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .brand .logo{font-size:1.15rem;font-weight:800;letter-spacing:.06em}
@@ -88,6 +95,11 @@ section{padding:26px 0}
   background:var(--accent-l);border:1.5px solid #f0c48d;border-left:5px solid var(--accent);
   border-radius:12px;font-size:.92rem;font-weight:700;color:#7a4a05;line-height:1.75}
 .official-note svg{width:20px;height:20px;flex:0 0 20px;margin-top:2px;color:var(--accent-d)}
+/* イベント詳細: 公式PDF 1ページ目プレビュー */
+.pdf-thumb{display:block;margin:14px 0 4px;border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  background:#fff;text-decoration:none}
+.pdf-thumb img{display:block;width:100%;height:auto;max-height:230px;object-fit:contain;background:#fff}
+.pdf-thumb-cap{margin:6px 0 0;font-size:.76rem;color:var(--sub);text-align:center}
 
 /* ---------- card ---------- */
 .cards{display:grid;gap:12px;grid-template-columns:1fr}
@@ -299,6 +311,10 @@ dialog#planDlg::backdrop{background:rgba(15,45,50,.45)}
 </head>
 <body>
 <a class="skip" href="#main">本文へスキップ</a>
+
+<a class="brandbar" href="https://nishimikawa-odekake.com/">
+  <b>おでまる</b><span>｜あいち子育ておでかけマップ</span><span class="bb-home">ホームへ ›</span>
+</a>
 
 <header class="site">
   <div class="wrap hdr-inner">
@@ -1058,6 +1074,11 @@ function row(dt, dd, warn){
   return '<div class="drow"><dt>'+esc(dt)+'</dt><dd'+(warn?' class="warn"':'')+'>'
     + (warn ? '<span class="warnv">'+esc(dd)+'</span>' : esc(dd)) + '</dd></div>';
 }
+/* 公式PDFの1ページ目プレビュー。画像は該当PDFのレンダリングそのもの（別画像の代用はしない）。 */
+var PDF_THUMBS = {
+  'https://www.city.anjo.aichi.jp/kurasu/kosodate/kosodateshisetsu/jido-center/documents/karenda9.pdf':
+    'pdf-thumb-karenda9.jpg'
+};
 function openDetail(id){
   var ev = EVENTS.filter(function(e){ return e.id === id; })[0];
   if (!ev) return;
@@ -1069,9 +1090,16 @@ function openDetail(id){
     : ev.place === 'both' ? '屋内・屋外' : '要確認';
   var notes = ev.notes.slice();
   if (ev.place === 'unconfirmed' && ev.placeNote) notes.push(ev.placeNote + '。');
+  var pdfThumb = PDF_THUMBS[ev.url]
+    ? '<a class="pdf-thumb" href="'+esc(ev.url)+'" target="_blank" rel="noopener noreferrer" aria-label="公式PDFを開く">'
+      + '<img src="'+esc(PDF_THUMBS[ev.url])+'" alt="'+esc(ev.urlLabel||'公式資料PDF')+' 1ページ目" loading="lazy">'
+      + '</a>'
+      + '<p class="pdf-thumb-cap">公式資料（PDF）1ページ目のプレビュー。タップで原本を開きます。</p>'
+    : '';
   var html = ''
     + '<div class="facts">'+feeFact(ev)+resvFact(ev)+placeFact(ev)+'</div>'
     + '<div class="tags">'+tags+'</div>'
+    + pdfThumb
     + '<dl class="dl">'
       + row('日付', dates)
       + row('時間', ev.startMin == null ? '要確認' : ev.timeText, ev.startMin == null)
