@@ -1092,7 +1092,7 @@ function openDetail(id){
   if (ev.place === 'unconfirmed' && ev.placeNote) notes.push(ev.placeNote + '。');
   var pdfThumb = PDF_THUMBS[ev.url]
     ? '<a class="pdf-thumb" href="'+esc(ev.url)+'" target="_blank" rel="noopener noreferrer" aria-label="公式PDFを開く">'
-      + '<img src="'+esc(PDF_THUMBS[ev.url])+'" alt="'+esc(ev.urlLabel||'公式資料PDF')+' 1ページ目" loading="lazy">'
+      + '<img src="'+esc(PDF_THUMBS[ev.url])+'" alt="'+esc(ev.urlLabel||'公式資料PDF')+' 1ページ目">'
       + '</a>'
       + '<p class="pdf-thumb-cap">公式資料（PDF）1ページ目のプレビュー。タップで原本を開きます。</p>'
     : '';
