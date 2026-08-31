@@ -1074,11 +1074,23 @@ function row(dt, dd, warn){
   return '<div class="drow"><dt>'+esc(dt)+'</dt><dd'+(warn?' class="warn"':'')+'>'
     + (warn ? '<span class="warnv">'+esc(dd)+'</span>' : esc(dd)) + '</dd></div>';
 }
-/* 公式PDFの1ページ目プレビュー。画像は該当PDFのレンダリングそのもの（別画像の代用はしない）。 */
-var PDF_THUMBS = {
-  'https://www.city.anjo.aichi.jp/kurasu/kosodate/kosodateshisetsu/jido-center/documents/karenda9.pdf':
-    'pdf-thumb-karenda9.jpg'
-};
+/* 公式資料（PDF/チラシ画像）の1ページ目プレビュー。
+   画像は各公式資料のレンダリングそのもの（別画像の代用はしない）。イベントID→資料。 */
+var CITY='https://www.city.anjo.aichi.jp';
+var PDF_DOCS = {};
+(function(){
+  function reg(ids,doc,img,kind){ ids.forEach(function(i){ PDF_DOCS[i]={doc:doc,img:img,kind:kind||'pdf'}; }); }
+  reg([2], CITY+'/event/documents/fes2026.pdf','pdf-thumb-fes2026.jpg');
+  reg([5], CITY+'/shisei/kokusai/documents/nihongo.pdf','pdf-thumb-tabunka.jpg');
+  reg([7,8,9,10,11,12,13], CITY+'/kurasu/kosodate/kosodateshisetsu/jido-center/documents/karenda9.pdf','pdf-thumb-karenda9.jpg');
+  reg([15], CITY+'/tanoshimu/bunka/documents/pawpatrol.pdf','pdf-thumb-pawpatrol.jpg');
+  reg([16], CITY+'/tanoshimu/bunka/documents/conan-1.pdf','pdf-thumb-conan.jpg');
+  reg([17], CITY+'/tanoshimu/bunka/documents/sumikko.pdf','pdf-thumb-sumikko.jpg');
+  reg([18], CITY+'/tanoshimu/bunka/documents/cosmiccruise.pdf','pdf-thumb-cosmiccruise.jpg');
+  reg([19], CITY+'/tanoshimu/bunka/documents/healing.pdf','pdf-thumb-healing.jpg');
+  reg([22], CITY+'/event/images/kurokami-tirashi.jpg','pdf-thumb-kurokami.jpg','image');
+  reg([27], CITY+'/tanoshimu/bunka/geijyutsukanshoukaijigyou/documents/papaparesize.pdf','pdf-thumb-papapa.jpg');
+})();
 function openDetail(id){
   var ev = EVENTS.filter(function(e){ return e.id === id; })[0];
   if (!ev) return;
@@ -1090,11 +1102,15 @@ function openDetail(id){
     : ev.place === 'both' ? '屋内・屋外' : '要確認';
   var notes = ev.notes.slice();
   if (ev.place === 'unconfirmed' && ev.placeNote) notes.push(ev.placeNote + '。');
-  var pdfThumb = PDF_THUMBS[ev.url]
-    ? '<a class="pdf-thumb" href="'+esc(ev.url)+'" target="_blank" rel="noopener noreferrer" aria-label="公式PDFを開く">'
-      + '<img src="'+esc(PDF_THUMBS[ev.url])+'" alt="'+esc(ev.urlLabel||'公式資料PDF')+' 1ページ目">'
+  var doc = PDF_DOCS[ev.id];
+  var pdfThumb = doc
+    ? '<a class="pdf-thumb" href="'+esc(doc.doc)+'" target="_blank" rel="noopener noreferrer" aria-label="公式資料を開く">'
+      + '<img src="'+esc(doc.img)+'" alt="'+esc(ev.name)+' 公式資料">'
       + '</a>'
-      + '<p class="pdf-thumb-cap">公式資料（PDF）1ページ目のプレビュー。タップで原本を開きます。</p>'
+      + '<p class="pdf-thumb-cap">'
+      + (doc.kind==='image' ? '公式チラシのプレビュー。タップで原本（画像）を開きます。'
+                            : '公式資料（PDF）1ページ目のプレビュー。タップで原本を開きます。')
+      + '</p>'
     : '';
   var html = ''
     + '<div class="facts">'+feeFact(ev)+resvFact(ev)+placeFact(ev)+'</div>'
