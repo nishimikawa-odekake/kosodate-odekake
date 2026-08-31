@@ -264,7 +264,10 @@ dialog#planDlg::backdrop{background:rgba(15,45,50,.45)}
 .pl-body{flex:1;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
 .pl-row.ev .pl-body{background:var(--accent-l);border-color:#f5dcb9}
 .pl-leg{font-size:.78rem;color:var(--faint);margin-bottom:4px}
-.pl-head{font-size:.78rem;font-weight:800;color:var(--sub);margin-bottom:2px}
+.pl-head{font-size:.78rem;font-weight:800;color:var(--sub);margin-bottom:2px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pl-swap{border:1.5px solid var(--main-line);background:#fff;color:var(--main-d);border-radius:999px;
+  font:inherit;font-size:.72rem;font-weight:800;padding:3px 10px;cursor:pointer;flex:0 0 auto;line-height:1.2}
+.pl-swap:hover{background:var(--main-ll);border-color:var(--main)}
 .pl-body strong{font-size:1rem;line-height:1.45;display:inline}
 .pl-local,.pl-chain{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;
   font-size:.72rem;font-weight:800;vertical-align:2px}
@@ -1591,8 +1594,9 @@ function eventTimes(ev){
   return {start:start,end:end,dur:dur,allDay:allDay,unknown:unknown};
 }
 /* ---------- プラン生成 ---------- */
-var planState={evId:null,dateIdx:0,seq:0};
-function buildPlan(ev,dateStr,seq){
+var planState={evId:null,dateIdx:0,lunchN:0,spotN:0};
+function buildPlan(ev,dateStr,lunchN,spotN){
+  if(spotN==null) spotN=lunchN;
   var v=VENUES[ev.venue];
   if(!v) return null;
   var p=dateStr.split('-');
@@ -1615,18 +1619,18 @@ function buildPlan(ev,dateStr,seq){
     if(t.allDay && lunchDepart>720) lunchDepart=720;    // 終日開場型は12:00までに切り上げ
     if(t.allDay) notes.push('会場は'+esc(ev.timeText)+'の開場です。午前の見学を想定した時刻で組んでいます。');
     var lunches=pickLunch(v.lat,v.lng,ev.venue,date,lunchDepart,[]);
-    var L=pickNth(lunches,seq);
+    var L=pickNth(lunches,lunchN);
     if(!L) return {rows:null};
     var lunchEnd=L.arr+70;
     var spots=pickSpot(L.s.latitude,L.s.longitude,L.s.name,date,lunchEnd,[L.s],ev.venue);
-    var S=pickNth(spots,seq);
+    var S=pickNth(spots,spotN);
     rows.push({kind:'event',time:visitStart,ev:ev});
     rows.push({kind:'lunch',time:L.arr,item:L,from:'会場',km:L.km});
     if(S) rows.push({kind:'spot',time:S.arr,item:S,from:'ランチのお店',km:S.km});
   } else if(pattern==='B'){
     // 午前スポット → ランチ → イベント
     var lunches2=pickLunch(v.lat,v.lng,ev.venue,date,Math.min(t.start-105,720),[]);
-    var L2=pickNth(lunches2,seq);
+    var L2=pickNth(lunches2,lunchN);
     if(!L2) return {rows:null};
     // ランチは イベント開始-移動-75分 に終える
     var legLE=legMinutes(L2.s.latitude,L2.s.longitude,v.lat,v.lng);
@@ -1636,7 +1640,7 @@ function buildPlan(ev,dateStr,seq){
     // 午前スポット: ランチの店から近い順。到着=ランチ到着-移動-滞在90分
     var S2=null;
     for(var n2=0;n2<spots2.length;n2++){
-      var c=spots2[(n2+seq)%spots2.length];
+      var c=spots2[(n2+spotN)%spots2.length];
       var leg=legMinutes(c.s.latitude,c.s.longitude,L2.s.latitude,L2.s.longitude);
       var mStart=lunchArr-leg-90;
       if(mStart<555) mStart=555;                        // 9:15以降に開始
@@ -1653,13 +1657,13 @@ function buildPlan(ev,dateStr,seq){
   } else {
     // C: ランチ → 午後スポット → イベント
     var lunches3=pickLunch(v.lat,v.lng,ev.venue,date,700,[]);
-    var L3=pickNth(lunches3,seq);
+    var L3=pickNth(lunches3,lunchN);
     if(!L3) return {rows:null};
     var lunchEnd3=L3.arr+70;
     var spots3=pickSpot(L3.s.latitude,L3.s.longitude,L3.s.name,date,lunchEnd3,[L3.s],ev.venue);
     var S3=null;
     for(var n3=0;n3<spots3.length;n3++){
-      var c3=spots3[(n3+seq)%spots3.length];
+      var c3=spots3[(n3+spotN)%spots3.length];
       var legSE=legMinutes(c3.s.latitude,c3.s.longitude,v.lat,v.lng);
       if(c3.arr+75+legSE<=t.start){ S3=c3; break; }     // 75分遊んでイベントに間に合う所だけ
     }
@@ -1686,7 +1690,7 @@ function rowHTML(r,idx){
       +'<div class="pl-sub2">'+esc(r.ev.summary)+'</div>';
   } else if(r.kind==='lunch'){
     var s=r.item.s; icon='🍽'; cls='lu';
-    head='ランチ';
+    head='ランチ<button type="button" class="pl-swap" data-swap="lunch">この店を変更</button>';
     body='<strong>'+esc(s.name)+'</strong>'
       +(s.is_chain===true?'<span class="pl-chain">チェーン</span>':'<span class="pl-local">地元のお店</span>')
       +'<div class="pl-sub">'+esc(s.city)+(s.business_hours?'｜'+esc(s.business_hours):'')+'</div>'
@@ -1695,7 +1699,7 @@ function rowHTML(r,idx){
       +links(s);
   } else {
     var sp=r.item.s; icon='🛝'; cls='sp';
-    head=r.morning?'午前のおでかけ':'午後のおでかけ';
+    head=(r.morning?'午前のおでかけ':'午後のおでかけ')+'<button type="button" class="pl-swap" data-swap="spot">ここを変更</button>';
     body='<strong>'+esc(sp.name)+'</strong>'
       +'<div class="pl-sub">'+esc(sp.city)+(sp.business_hours?'｜'+esc(sp.business_hours):'')+'</div>'
       +(sp.kid_appeal?'<div class="pl-sub2">'+esc(sp.kid_appeal)+'</div>':'')
@@ -1717,7 +1721,7 @@ function links(s){
 }
 function render(ev){
   var dateStr=ev.dates[planState.dateIdx]||ev.dates[0];
-  var plan=buildPlan(ev,dateStr,planState.seq);
+  var plan=buildPlan(ev,dateStr,planState.lunchN,planState.spotN);
   var box=document.getElementById('planBody');
   var dtBtns = ev.dates.length>1
     ? '<div class="pl-days">'+ev.dates.map(function(d,i){
@@ -1746,7 +1750,8 @@ function openPlan(id){
   for(var i=0;i<EVENTS.length;i++){ if(EVENTS[i].id===id){ev=EVENTS[i];break;} }
   if(!ev) return;
   if(!VENUES[ev.venue]){ return; }
-  planState={evId:id,dateIdx:0,seq:Math.floor(Math.random()*5)};
+  var r0=Math.floor(Math.random()*5);
+  planState={evId:id,dateIdx:0,lunchN:r0,spotN:r0};
   document.getElementById('planTitle').textContent='「'+ev.name+'」から作る1日プラン';
   render(ev);
   if(typeof pdlg.showModal==='function') pdlg.showModal(); else pdlg.setAttribute('open','');
@@ -1754,15 +1759,23 @@ function openPlan(id){
 document.addEventListener('click',function(e){
   var t=e.target.closest?e.target.closest('[data-plan]'):null;
   if(t){ openPlan(+t.getAttribute('data-plan')); return; }
+  var sw=e.target.closest?e.target.closest('[data-swap]'):null;
+  if(sw&&pdlg.open){
+    if(sw.getAttribute('data-swap')==='lunch') planState.lunchN++;
+    else planState.spotN++;
+    var evs=null; for(var i0=0;i0<EVENTS.length;i0++){ if(EVENTS[i0].id===planState.evId){evs=EVENTS[i0];break;} }
+    if(evs) render(evs);
+    return;
+  }
   if(e.target&&e.target.id==='plAgain'){
-    planState.seq++;
+    planState.lunchN++; planState.spotN++;
     var ev=null; for(var i=0;i<EVENTS.length;i++){ if(EVENTS[i].id===planState.evId){ev=EVENTS[i];break;} }
     if(ev) render(ev);
     return;
   }
   var db=e.target.closest?e.target.closest('[data-didx]'):null;
   if(db&&pdlg.open){
-    planState.dateIdx=+db.getAttribute('data-didx'); planState.seq=0;
+    planState.dateIdx=+db.getAttribute('data-didx'); planState.lunchN=0; planState.spotN=0;
     var ev2=null; for(var j=0;j<EVENTS.length;j++){ if(EVENTS[j].id===planState.evId){ev2=EVENTS[j];break;} }
     if(ev2) render(ev2);
   }
