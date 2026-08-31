@@ -834,9 +834,9 @@ const EVENTS = [
     dates: ['2026-09-06'],
     venue: 'ららぽーと安城', timeText: '体験10:00～12:00／選手イベント13:00～16:00', startMin: 600,
     officialTarget: '子どもから大人まで',
-    recommendedAgeTags: ['elementary', 'juniorHigh'], allAges: true, recReason: '小学生・中学生がバレーを体験できます', extraTags: [],
+    recommendedAgeTags: ['elementary', 'juniorHigh'], allAges: true, recReason: '小学生・中学生がバレーを体験できます', extraTags: ['一部キッズクラブ会員向け'],
     fee: { status: '要確認', text: '観覧・体験中心。料金の記載なし' },
-    reserve: { status: '一部必要', text: '一部にキッズクラブ会員条件あり' },
+    reserve: { status: '要確認', text: '一部の企画にキッズクラブ会員の条件あり。申込方法は公式でご確認ください' },
     place: 'indoor',
     summary: 'Vリーグ「アリーザ愛知」の選手が来場する体験・交流イベント。',
     notes: ['一部の企画にキッズクラブ会員の条件があります。'],
@@ -1790,9 +1790,23 @@ function rowHTML(r,idx){
       +'<div class="pl-head">'+head+'</div>'+body+noteTxt
     +'</div></li>';
 }
+/* リンク先が公式サイトではない場合に表記を分ける（食べログ・アソビュー等の第三者掲載ページ／SNS） */
+var AGGREGATOR_HOSTS=['tabelog.com','hotpepper.jp','hitosara.com','asoview.com','chaoo.jp','nishimikawanavi.jp'];
+function linkLabel(s){
+  var u=String(s.official_url||''), host='';
+  var m=u.match(/^https?:\/\/([^\/]+)/); if(m) host=m[1].toLowerCase();
+  if(!host) return '公式サイト';
+  if(host.indexOf('instagram.com')>=0) return '公式Instagram';
+  for(var i=0;i<AGGREGATOR_HOSTS.length;i++){
+    if(host===AGGREGATOR_HOSTS[i]||host.slice(-(AGGREGATOR_HOSTS[i].length+1))==='.'+AGGREGATOR_HOSTS[i]){
+      return (s.play_types||[]).indexOf('food')>=0 ? '店舗情報' : '施設情報';
+    }
+  }
+  return '公式サイト';
+}
 function links(s){
   var out='<div class="pl-links">';
-  if(s.official_url) out+='<a href="'+esc(s.official_url)+'" target="_blank" rel="noopener noreferrer">公式サイト↗</a>';
+  if(s.official_url) out+='<a href="'+esc(s.official_url)+'" target="_blank" rel="noopener noreferrer">'+linkLabel(s)+'↗</a>';
   out+='<a href="'+esc(gmap(s))+'" target="_blank" rel="noopener noreferrer">地図↗</a></div>';
   return out;
 }
