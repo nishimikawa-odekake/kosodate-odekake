@@ -282,6 +282,10 @@ dialog#planDlg::backdrop{background:rgba(15,45,50,.45)}
 .pl-links{display:flex;gap:12px;margin-top:7px}
 .pl-links a{font-size:.82rem;font-weight:800;color:var(--main-d);text-decoration:none}
 .pl-links a:hover{text-decoration:underline}
+.pl-gmaps{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;margin-top:4px;
+  background:#1a73e8;color:#fff;border-radius:12px;font-weight:800;font-size:.95rem;text-decoration:none}
+.pl-gmaps:hover{background:#155bb5}
+.pl-gmapsnote{margin:5px 0 10px;font-size:.73rem;color:var(--sub);text-align:center}
 .pl-again{width:100%;min-height:48px;margin-top:4px;border:2px solid var(--main);background:#fff;
   color:var(--main-dd);border-radius:10px;font:inherit;font-weight:800;cursor:pointer}
 .pl-again:hover{background:var(--main-ll)}
@@ -1719,6 +1723,26 @@ function links(s){
   out+='<a href="'+esc(gmap(s))+'" target="_blank" rel="noopener noreferrer">地図↗</a></div>';
   return out;
 }
+/* 本体プランナー移植: プランのGoogleマップ経路URL（出発:先頭の行 → 経由 → 目的地:最後の行） */
+function routeQuery(r){
+  if(r.kind==='event'){
+    var v=VENUES[r.ev.venue];
+    if(r.ev.venue.indexOf('／')>=0) return v?(v.lat+','+v.lng):null;  // 複数会場表記はGoogleに無いので座標
+    return r.ev.venue+' 安城市';
+  }
+  var s=r.item.s;
+  return ((s.name||'')+' '+(s.city||'')).replace(/^\s+|\s+$/g,'');
+}
+function buildRouteUrl(rows){
+  if(!rows||rows.length<2) return null;
+  var qs=[]; for(var i=0;i<rows.length;i++){ var q=routeQuery(rows[i]); if(!q) return null; qs.push(q); }
+  var url='https://www.google.com/maps/dir/?api=1'
+    +'&origin='+encodeURIComponent(qs[0])
+    +'&destination='+encodeURIComponent(qs[qs.length-1])
+    +'&travelmode=driving';
+  if(qs.length>2) url+='&waypoints='+encodeURIComponent(qs.slice(1,-1).join('|'));
+  return url;
+}
 function render(ev){
   var dateStr=ev.dates[planState.dateIdx]||ev.dates[0];
   var plan=buildPlan(ev,dateStr,planState.lunchN,planState.spotN);
@@ -1739,6 +1763,9 @@ function render(ev){
     +'<p class="pl-flow">'+patLabel+'</p>'
     +(plan.notes.length?'<div class="pl-notes">'+plan.notes.map(function(n){return '<p>'+n+'</p>';}).join('')+'</div>':'')
     +'<ol class="pl-list">'+plan.rows.map(rowHTML).join('')+'</ol>'
+    +(function(){ var ru=buildRouteUrl(plan.rows);
+       return ru?'<a class="pl-gmaps" href="'+esc(ru)+'" target="_blank" rel="noopener noreferrer">🚗 このルートをGoogleマップで開く</a>'
+         +'<p class="pl-gmapsnote">※ルートはGoogleマップ上で編集できます</p>':''; })()
     +'<button type="button" class="pl-again" id="plAgain">別のプランにする</button>'
     +'<p class="pl-foot">スポット・ランチは、おでまる（あいち子育ておでかけマップ）の掲載情報から選んでいます。'
     +'営業時間・定休日は変わることがあります。おでかけ前に各公式サイトをご確認ください。</p>';
