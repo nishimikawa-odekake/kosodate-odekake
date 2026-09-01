@@ -1,8 +1,8 @@
 {
   "aichi": 1159,
-  "national": 16126,
+  "national": 16127,
   "prefs": 47,
-  "total": 17285,
+  "total": 17286,
   "updated": "2026-09-01",
   "by_pref": {
     "akita": {
@@ -264,9 +264,9 @@
       "status": "mature"
     },
     "yamagata": {
-      "local": 67,
+      "local": 68,
       "chain": 51,
-      "total": 118,
+      "total": 119,
       "status": "growing"
     },
     "yamaguchi": {
