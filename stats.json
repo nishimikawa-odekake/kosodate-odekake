@@ -1,8 +1,8 @@
 {
   "aichi": 1159,
-  "national": 16109,
+  "national": 16111,
   "prefs": 47,
-  "total": 17268,
+  "total": 17270,
   "updated": "2026-09-01",
   "by_pref": {
     "akita": {
@@ -90,9 +90,9 @@
       "status": "mature"
     },
     "iwate": {
-      "local": 139,
+      "local": 141,
       "chain": 38,
-      "total": 177,
+      "total": 179,
       "status": "growing"
     },
     "kagawa": {
