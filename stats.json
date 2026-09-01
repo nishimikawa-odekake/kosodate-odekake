@@ -1,8 +1,8 @@
 {
   "aichi": 1159,
-  "national": 16127,
+  "national": 16130,
   "prefs": 47,
-  "total": 17286,
+  "total": 17289,
   "updated": "2026-09-01",
   "by_pref": {
     "akita": {
@@ -90,9 +90,9 @@
       "status": "mature"
     },
     "iwate": {
-      "local": 141,
+      "local": 142,
       "chain": 38,
-      "total": 179,
+      "total": 180,
       "status": "growing"
     },
     "kagawa": {
@@ -120,9 +120,9 @@
       "status": "growing"
     },
     "kumamoto": {
-      "local": 110,
+      "local": 111,
       "chain": 53,
-      "total": 163,
+      "total": 164,
       "status": "growing"
     },
     "kyoto": {
@@ -264,9 +264,9 @@
       "status": "mature"
     },
     "yamagata": {
-      "local": 68,
+      "local": 69,
       "chain": 51,
-      "total": 119,
+      "total": 120,
       "status": "growing"
     },
     "yamaguchi": {
