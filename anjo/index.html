@@ -6,6 +6,16 @@
 <title>おでまる｜安城市 今週末のおでかけ（2026年9月5日・6日）</title>
 <meta name="description" content="安城市の2026年9月5日（土）・6日（日）の子育て世帯向けイベント32件を、年齢や条件から探せます。おでまるの実証デモです。">
 <meta name="robots" content="noindex,nofollow">
+<meta property="og:title" content="安城市 今週末のおでかけ（おでまる実証デモ）">
+<meta property="og:description" content="安城市の2026年9月5日（土）・6日（日）の子ども向けイベントを年齢や条件から探せる、おでまるの実証デモページです。安城市公式ページではありません。">
+<meta property="og:url" content="https://kosodate-odekake.jp/anjo/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="おでまる｜子育ておでかけマップ">
+<meta property="og:image" content="https://kosodate-odekake.jp/og-logo.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="安城市 今週末のおでかけ（おでまる実証デモ）">
+<meta name="twitter:description" content="安城市の9月5日・6日の子ども向けイベントを年齢や条件から探せる実証デモ。安城市公式ページではありません。">
+<meta name="twitter:image" content="https://kosodate-odekake.jp/og-logo.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e93a3'/%3E%3Cpath d='M16 7a7 7 0 00-7 7c0 5 7 11 7 11s7-6 7-11a7 7 0 00-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z' fill='%23fff'/%3E%3C/svg%3E">
 <style>
 :root{
@@ -127,6 +137,7 @@ section{padding:26px 0}
 .f-ok{background:var(--ok-l);color:var(--ok);border-color:#bfe3d0}
 .f-pay{background:#eef2f4;color:#40525a;border-color:#d7e0e4}
 .f-warn{background:var(--warn-l);color:var(--warn);border-color:#efd9ac}
+.f-closed{background:#f1f3f4;color:#5a6472;border-color:#d7dde0;text-decoration:none}
 .f-in{background:#eaf1fb;color:#1d5aa8;border-color:#c9dcf5}
 .f-out{background:#eaf6ec;color:#256b39;border-color:#c6e5cd}
 .reasons{padding:10px 14px 0}
@@ -242,6 +253,8 @@ footer.site .note p{position:relative;z-index:1;padding-right:72px}
   display:inline-flex;align-items:center;justify-content:center;gap:6px;
 }
 .btn-plan:hover{background:var(--accent-d)}
+.plan-off{margin:8px 0 0;padding:10px 12px;background:var(--panel);border:1px dashed var(--line);
+  border-radius:10px;font-size:.85rem;font-weight:700;color:var(--sub);text-align:center}
 dialog#planDlg{
   border:0;padding:0;border-radius:16px 16px 0 0;width:100%;max-width:640px;
   margin:auto auto 0;max-height:92vh;background:#fff;box-shadow:0 -8px 40px rgba(0,0,0,.24);
@@ -310,7 +323,7 @@ dialog#planDlg::backdrop{background:rgba(15,45,50,.45)}
       <div class="brand"><span class="logo">おでまる</span><span class="demo">実証デモ</span></div>
       <h1>安城市｜<wbr>今週末のおでかけ</h1>
       <p class="hdr-date">2026年9月5日（土）・6日（日）</p>
-      <p class="hdr-count"><b id="hdrCount">32</b>件見つかりました</p>
+      <p class="hdr-count" id="hdrCountLine"><b id="hdrCount">32</b>件見つかりました</p>
       <p class="hdr-checked">2026年8月29日時点の情報です</p>
       <p class="hdr-demonote">本ページは、おでまるが安城市との連携を想定して独自に作成した実証デモです。安城市公式ページではありません。</p>
     </div>
@@ -493,7 +506,15 @@ const EVENTS = [
     reserve: { status: '不要', text: '申込不要' },
     place: 'outdoor',
     summary: 'アンフォーレの願いごと広場で開かれる夕方からのマルシェ。ペット同伴可。',
-    notes: [], url: 'https://anforet.city.anjo.aichi.jp/event/20260905negaigoto.html'
+    notes: [
+      'わんこ同伴でアンフォーレ館内には入れません。',
+      'アンフォーレ駐車場は2時間無料ですが、駐車券を館内の総合案内にお持ちいただく必要があります（わんこ同伴では入れません）。',
+      '会場にはわんこのトイレがありますが、マナーベルト・マナーパンツの着用をお願いします。'
+    ],
+    /* ペット同伴可を公式確認できたスポット・飲食店だけでプランを構成できるようになったら、
+       この planDisabled を外すことでプラン作成を再開できる */
+    planDisabled: 'ペット同伴条件があるため、公式情報をご確認ください',
+    url: 'https://anforet.city.anjo.aichi.jp/event/20260905negaigoto.html'
   },
   {
     id: 5, category: '集まる・マルシェ', name: '多文化子育てサロン「つくって！うごいて！」',
@@ -503,6 +524,7 @@ const EVENTS = [
     recommendedAgeTags: ['preschool'], allAges: false, recReason: '外国にルーツを持つ親子の交流の場', extraTags: ['保護者向け'],
     fee: { status: '無料', text: '無料' },
     reserve: { status: '必要', text: '定員25～30人、8月31日申込締切' },
+    applyDeadline: '2026-08-31',
     place: 'indoor',
     summary: '外国にルーツを持つ親子と、交流したい人が集まる子育てサロン。',
     notes: ['申込締切は8月31日です。'],
@@ -566,6 +588,7 @@ const EVENTS = [
     id: 10, category: 'スポーツ・からだ', name: '卓球タイム',
     dates: ['2026-09-05', '2026-09-06'],
     venue: '中央児童センター', timeText: '9:00～16:50', startMin: 540,
+    planStay: '卓球15分＋児童センターで自由遊び',
     planNote: '卓球タイムは1組15分の入れ替え制です。児童センターは0〜18歳のこどもが自由に遊べる施設のため、前後は館内で過ごせます（乳幼児は大人の付き添いが必要）。',
     officialTarget: '18歳未満・同伴者',
     recommendedAgeTags: ['elementary', 'juniorHigh', 'youth'], allAges: false, recReason: '小学生〜高校生・1組15分の入れ替え制', extraTags: ['親子'],
@@ -734,14 +757,16 @@ const EVENTS = [
   {
     id: 23, category: '展示・アート', name: '「白鳥とコウモリ」安城特別展',
     dates: ['2026-09-05', '2026-09-06'],
-    venue: 'キーポート／三河安城駅／図書情報館', timeText: '会場により異なる', startMin: null,
+    venue: 'キーポート／三河安城駅／図書情報館', timeText: '10:00～20:00', startMin: 600,
     officialTarget: '年齢指定なし',
     recommendedAgeTags: ['juniorHigh', 'youth'], allAges: true, recReason: '中高生・若者向けの小説の特別展', extraTags: [],
     fee: { status: '無料', text: '無料' },
     reserve: { status: '要確認', text: '公式に申込の記載なし' },
     place: 'unconfirmed', placeNote: '複数会場のため屋内・屋外が一律に定まりません',
     summary: '市内3か所で開かれる小説「白鳥とコウモリ」の特別展。',
-    notes: ['会場により開場時間が異なります。'],
+    notes: ['会場は安城市観光案内所キーポート・三河安城駅東海道本線改札前・安城市図書情報館2階展示コーナーの3か所です。', '図書情報館2階展示コーナーは8月29日～10月22日の開催です。'],
+    /* 会場が3か所あり距離・ルートを誤って案内しないため、会場を選べるようになるまでプラン停止 */
+    planDisabled: '会場が市内3か所にあるため、1日プランは対象外です。会場は公式情報をご確認ください',
     url: 'https://www.city.anjo.aichi.jp/event/hakuchou.html'
   },
   {
@@ -997,7 +1022,26 @@ function feeFact(ev){
   if (s === '一部有料') return '<span class="fact f-pay">一部有料</span>';
   return '<span class="fact f-pay">有料</span>';
 }
+/* 申込締切を過ぎたイベントは自動的に「受付終了」になる（端末の当日日付で判定） */
+function isApplyClosed(ev){
+  if (!ev.applyDeadline) return false;
+  var q = ev.applyDeadline.split('-');
+  return new Date() > new Date(+q[0], +q[1]-1, +q[2], 23, 59, 59);
+}
+function deadlineLabel(ev){
+  var q = ev.applyDeadline.split('-');
+  return (+q[1]) + '月' + (+q[2]) + '日';
+}
+/* 1日プランを作れないイベントは理由を返す（nullなら作成可） */
+function planBlock(ev){
+  if (isApplyClosed(ev)) return '申込受付が終了しています';
+  if (ev.planDisabled) return ev.planDisabled;
+  if (ev.startMin == null) return '開催時間を公式情報で確認してからおでかけください';
+  return null;
+}
+window.ANJO_PLAN_BLOCK = planBlock;
 function resvFact(ev){
+  if (isApplyClosed(ev)) return '<span class="fact f-closed">受付終了</span>';
   var s = ev.reserve.status;
   if (s === '不要')   return '<span class="fact f-ok">予約不要</span>';
   if (s === '必要')   return '<span class="fact f-pay">要予約</span>';
@@ -1039,7 +1083,10 @@ function cardHTML(ev, withReasons){
     + '<div class="facts">'+feeFact(ev)+resvFact(ev)+placeFact(ev)+'</div>'
     + reasons
     + '<div class="card-foot"><button type="button" class="btn-detail" data-id="'+ev.id+'">詳細を見る</button>'
-      + '<button type="button" class="btn-plan" data-plan="'+ev.id+'">このイベントから1日プランを作る</button></div>'
+      + (planBlock(ev)
+          ? '<p class="plan-off">'+esc(planBlock(ev))+'</p>'
+          : '<button type="button" class="btn-plan" data-plan="'+ev.id+'">このイベントから1日プランを作る</button>')
+      + '</div>'
   + '</article>';
 }
 
@@ -1104,7 +1151,9 @@ function openDetail(id){
         + '<p class="agenote">この年齢の目安は、おでまるが検索のために付けたものです。参加できる年齢の制限ではありません。</p>'
       + '</dd></div>'
       + row('料金', ev.fee.text, ev.fee.status === '要確認')
-      + row('予約', ev.reserve.text, ev.reserve.status === '要確認')
+      + (isApplyClosed(ev)
+          ? row('予約', '受付終了（申込は'+deadlineLabel(ev)+'締切でした）', true)
+          : row('予約', ev.reserve.text, ev.reserve.status === '要確認'))
       + row('屋内・屋外', placeText, ev.place === 'unconfirmed')
       + row('内容', ev.summary)
     + '</dl>'
@@ -1194,9 +1243,19 @@ function suggestions(){
 function render(){
   var list = filtered();
   var total = list.length;
+  var openList = alsoOpenList();
 
   document.getElementById('liveCount').textContent = total;
-  document.getElementById('hdrCount').textContent = hasFilter() ? total : EVENTS.length;
+  // 年齢で絞ったときは「◯◯向けn件＋年齢指定なしm件」を最初から見せる
+  if (openList.length){
+    var ageLbls = [];
+    state.ages.forEach(function(k){ ageLbls.push(AGE_LABEL[k]); });
+    document.getElementById('hdrCountLine').innerHTML =
+      esc(ageLbls.join('・')) + '向け<b id="hdrCount">' + total + '</b>件＋年齢指定なし' + openList.length + '件';
+  } else {
+    document.getElementById('hdrCountLine').innerHTML =
+      '<b id="hdrCount">' + (hasFilter() ? total : EVENTS.length) + '</b>件見つかりました';
+  }
 
   // day buttons
   Array.prototype.forEach.call(document.querySelectorAll('.daybtn'), function(b){
@@ -1249,7 +1308,7 @@ function render(){
   } else { moreWrap.hidden = true; }
 
   // 年齢を選んでいるとき、公式に年齢制限がないイベントを別枠で案内する
-  var open = bySchedule(alsoOpenList());
+  var open = bySchedule(openList);
   var secOpen = document.getElementById('secOpen');
   if (open.length){
     secOpen.hidden = false;
@@ -1605,7 +1664,7 @@ function buildPlan(ev,dateStr,lunchN,spotN){
   var date=new Date(+p[0],+p[1]-1,+p[2]);
   var t=eventTimes(ev);
   var rows=[], notes=[];
-  if(t.unknown) notes.push('このイベントの時間は公式で「要確認」です。目安として10:00開始で組んでいます。');
+  if(t.unknown) return {rows:null};                     // 公式に開始時刻が確認できないイベントはプランを生成しない
   if(ev.planNote) notes.push(ev.planNote);
   if(!t.unknown&&t.endAssumed) notes.push('終了時刻が公式に記載されていないため、プラン上の滞在時間は目安です。');
   var pattern;
@@ -1634,7 +1693,7 @@ function buildPlan(ev,dateStr,lunchN,spotN){
     // イベント → ランチ → 午後スポット
     var visitStart=t.start;
     var visitEnd=t.allDay ? Math.min(t.end, Math.max(visitStart+90, 690)) : t.end;
-    var lunchDepart=Math.max(visitEnd, 675);            // 11:15より前にはランチへ出ない
+    var lunchDepart=Math.max(visitEnd+15, 675);         // 終了後に子どもの乗降・荷物整理など15分の準備バッファ。11:15より前にはランチへ出ない
     if(t.allDay && lunchDepart>720) lunchDepart=720;    // 終日開場型は12:00までに切り上げ
     if(t.allDay) notes.push('会場は'+esc(ev.timeText)+'の開場です。午前の見学を想定した時刻で組んでいます。');
     var lunches=pickLunch(v.lat,v.lng,ev.venue,date,lunchDepart,[]);
@@ -1643,7 +1702,7 @@ function buildPlan(ev,dateStr,lunchN,spotN){
     var lunchEnd=L.arr+70;
     var spots=pickSpot(L.s.latitude,L.s.longitude,L.s.name,date,lunchEnd,[L.s],ev.venue);
     var S=pickNth(spots,spotN);
-    rows.push({kind:'event',time:visitStart,ev:ev});
+    rows.push({kind:'event',time:visitStart,ev:ev,stayEnd:(ev.planStay?visitEnd:null)});
     rows.push({kind:'lunch',time:L.arr,item:L,from:'会場',km:L.km});
     if(S) rows.push({kind:'spot',time:S.arr,item:S,from:'ランチのお店',km:S.km});
   } else if(pattern==='B'){
@@ -1703,7 +1762,11 @@ function rowHTML(r,idx){
   var head, body, icon, cls='';
   if(r.kind==='event'){
     icon='🎪'; cls='ev';
-    head=(r.ev.timeText&&r.ev.startMin!=null?esc(r.ev.timeText):'時間 要確認');
+    if(r.ev.planStay&&r.stayEnd!=null){
+      head=esc(fmtTime(r.time)+'来館／'+r.ev.planStay+'（'+fmtTime(r.stayEnd)+'頃まで）');
+    } else {
+      head=(r.ev.timeText&&r.ev.startMin!=null?esc(r.ev.timeText):'時間 要確認');
+    }
     body='<strong>'+esc(r.ev.name)+'</strong>'
       +'<div class="pl-sub">'+esc(r.ev.venue)+'</div>'
       +'<div class="pl-sub2">'+esc(r.ev.summary)+'</div>';
@@ -1805,6 +1868,7 @@ function openPlan(id){
   var ev=null;
   for(var i=0;i<EVENTS.length;i++){ if(EVENTS[i].id===id){ev=EVENTS[i];break;} }
   if(!ev) return;
+  if(window.ANJO_PLAN_BLOCK&&window.ANJO_PLAN_BLOCK(ev)){ return; }   // 受付終了・ペット同伴条件・会場複数・時間未確認はプラン対象外
   if(!VENUES[ev.venue]){ return; }
   var r0=0; /* 市内優先を初期表示で保証するため、先頭(最寄りの市内候補)から開始 */
   var d0=0;
