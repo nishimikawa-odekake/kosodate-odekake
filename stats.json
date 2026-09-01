@@ -1,9 +1,9 @@
 {
-  "aichi": 1150,
-  "national": 16072,
+  "aichi": 1159,
+  "national": 16106,
   "prefs": 47,
-  "total": 17256,
-  "updated": "2026-08-30",
+  "total": 17265,
+  "updated": "2026-09-01",
   "by_pref": {
     "akita": {
       "local": 113,
@@ -15,7 +15,7 @@
       "local": 132,
       "chain": 44,
       "total": 176,
-      "status": "growing"
+      "status": "mature"
     },
     "chiba": {
       "local": 161,
@@ -69,7 +69,7 @@
       "local": 442,
       "chain": 138,
       "total": 580,
-      "status": "growing"
+      "status": "mature"
     },
     "hyogo": {
       "local": 380,
@@ -231,7 +231,7 @@
       "local": 141,
       "chain": 99,
       "total": 240,
-      "status": "growing"
+      "status": "mature"
     },
     "tokushima": {
       "local": 208,
