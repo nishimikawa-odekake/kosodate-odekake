@@ -1,8 +1,8 @@
 {
   "aichi": 1159,
-  "national": 16142,
+  "national": 16144,
   "prefs": 47,
-  "total": 17301,
+  "total": 17303,
   "updated": "2026-09-02",
   "by_pref": {
     "akita": {
@@ -156,10 +156,10 @@
       "status": "mature"
     },
     "nagasaki": {
-      "local": 113,
+      "local": 115,
       "chain": 36,
-      "total": 149,
-      "status": "growing"
+      "total": 151,
+      "status": "mature"
     },
     "nara": {
       "local": 220,
