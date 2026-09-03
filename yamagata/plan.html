@@ -6184,6 +6184,74 @@ function cpGotoMap(slot){
   cpSaveSlots();
   location.href='./map.html'+(slot!=null?('?slotpick='+slot+'&sl='+state.customSlots.length+'&li='+cpLI()):'');
 }
+/* ===== 行きたい場所: 施設名の予測候補(SPOTS部分一致) ===== */
+function cpSugNorm(s){
+  s=String(s||'').normalize('NFKC').toLowerCase().replace(/[\s\u3000・,、。\-ー―−]/g,'');
+  return s.replace(/[\u30a1-\u30f6]/g,function(c){ return String.fromCharCode(c.charCodeAt(0)-0x60); });
+}
+function cpNameMatches(q){
+  const n=cpSugNorm(q);
+  if(!n) return [];
+  const out=[];
+  for(let i=0;i<SPOTS.length&&out.length<5;i++){
+    const sp=SPOTS[i];
+    if(!sp||!sp.name) continue;
+    if(state.customSlots.some(x=>x&&x.name===sp.name)) continue;
+    if(cpSugNorm(sp.name).indexOf(n)>=0) out.push(sp);
+  }
+  return out;
+}
+function cpCloseNameSug(){
+  const b=document.getElementById('cpNameSug');
+  if(b){ b.style.display='none'; b.innerHTML=''; }
+  state.cpNameSug=null;
+}
+function cpRenderNameSug(){
+  const inp=document.getElementById('cpName'), box=document.getElementById('cpNameSug');
+  if(!inp||!box) return;
+  const q=(inp.value||'').trim();
+  if(!q){ cpCloseNameSug(); return; }
+  const list=cpNameMatches(q);
+  state.cpNameSug=list;
+  if(!list.length){ box.style.display='none'; box.innerHTML=''; return; }
+  box.innerHTML=list.map(function(sp,i){
+    return '<div class="cpsug" data-i="'+i+'" style="padding:9px 11px;border-bottom:1px solid #f0e6d6;font-size:.86rem;line-height:1.35;cursor:pointer">'
+      +'<span style="font-weight:700">'+esc(sp.name)+'</span>'
+      +'<span style="color:#8a7a5a;font-size:.74rem;margin-left:6px">'+esc(sp.city||'')+'</span></div>';
+  }).join('');
+  box.style.display='block';
+}
+// iOSのblur先行で候補が消える問題対策: pointerdownで確定する
+function cpPickNameSug(i){
+  const list=state.cpNameSug||[]; const sp=list[i];
+  if(!sp) return;
+  const li=cpLI();
+  let tgt=(state.cpTarget!=null&&!state.customSlots[state.cpTarget])?state.cpTarget:null;
+  if(tgt==null){
+    const order=state.customSlots.map((_,k)=>k).sort((a,b)=>(a===li)-(b===li));
+    tgt=order.find(k=>!state.customSlots[k]&&(k!==li||cpIsFoodSpot(sp)));
+  }
+  const m=document.getElementById('cpAddMsg');
+  if(tgt===undefined||tgt==null){ if(m) m.textContent='枠がいっぱいです。どれかの行を✕で外すか、枠を追加してください'; cpCloseNameSug(); return; }
+  if(tgt===li&&!cpIsFoodSpot(sp)){ if(m) m.textContent='お昼の枠にはごはん店だけ入れられます🍽'; cpCloseNameSug(); return; }
+  if(typeof gtag==='function') gtag('event','plan_custom_addsuggest');
+  state.customSlots[tgt]=sp; state.cpTarget=null; state.cpAddOpen=null;
+  cpCloseNameSug();
+  cpSaveSlots(); renderCustomPanel();
+}
+function cpBindNameSug(){
+  const inp=document.getElementById('cpName'), box=document.getElementById('cpNameSug');
+  if(!inp||!box) return;
+  inp.addEventListener('input',cpRenderNameSug);
+  inp.addEventListener('focus',cpRenderNameSug);
+  inp.addEventListener('blur',function(){ setTimeout(cpCloseNameSug,150); });
+  box.addEventListener('pointerdown',function(ev){
+    const t=ev.target&&ev.target.closest?ev.target.closest('.cpsug'):null;
+    if(!t) return;
+    ev.preventDefault();
+    cpPickNameSug(parseInt(t.getAttribute('data-i'),10));
+  });
+}
 function cpFocusInput(slot){
   state.cpTarget=slot; state.cpAddOpen=null;
   renderCustomPanel();
@@ -6340,9 +6408,10 @@ function renderCustomPanel(){
     html+='</div><div style="font-size:.68rem;color:#8a7a5a;margin:0 0 8px">※追加先で「お昼」を選んだときだけ、食事の予定として組み込まれます（それ以外は立ち寄り先として扱います）</div>';
   })();
   html+=''
-    +'<div style="font-size:.74rem;color:#8a7a5a;line-height:1.6;margin-bottom:8px">祖父母の家・予約したお店・ホテル・習いごと・お友だちの家など、マップにない場所もプランに入れられます。一度追加した場所は「マイプレイス」に保存され、次回から1タップで呼び出せます。（サイトには掲載されません）</div>'
-    +'<input id="cpName" placeholder="名前（例: 祖父母の家）" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d8c9b0;border-radius:9px;font-size:.9rem;margin-bottom:6px">'
-    +'<input id="cpAddr" placeholder="住所（例: 岡崎市康生通西2丁目）" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d8c9b0;border-radius:9px;font-size:.9rem;margin-bottom:6px">'
+    +'<div style="font-size:.74rem;color:#8a7a5a;line-height:1.6;margin-bottom:8px">施設名を入力すると候補が表示されます。マップにない場所も、名前と住所を入力して追加できます。入力した場所は「マイプレイス」に保存され、次回から1タップで呼び出せます。（サイトには掲載されません）</div>'
+    +'<div style="position:relative"><input id="cpName" placeholder="施設名・場所の名前" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d8c9b0;border-radius:9px;font-size:.9rem;margin-bottom:6px">'
+    +'<div id="cpNameSug" style="display:none;position:absolute;left:0;right:0;top:100%;margin-top:-4px;z-index:30;background:#fff;border:1px solid #d8c9b0;border-radius:9px;box-shadow:0 6px 18px rgba(0,0,0,.14);overflow:hidden;max-width:100%"></div></div>'
+    +'<input id="cpAddr" placeholder="住所（例: 山形市◯◯町1-2-3）" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #d8c9b0;border-radius:9px;font-size:.9rem;margin-bottom:6px">'
     +'<button type="button" onclick="cpAddPlace()" style="width:100%;padding:11px;border-radius:10px;border:1.5px solid #e8853d;background:#fff;color:#b45f1d;font-weight:800;font-size:.9rem">🔎 住所をさがして追加</button>'
     +'<div id="cpAddMsg" style="font-size:.76rem;color:#c0392b;margin-top:5px"></div>';
   if(mps.length){
@@ -6359,6 +6428,8 @@ function renderCustomPanel(){
   html+='<button type="button" onclick="cpGotoMap(null)" style="width:100%;padding:11px;border-radius:10px;border:1px solid #d8c9b0;background:#fff;font-size:.88rem;margin-bottom:6px">🗺 マップで場所をえらび直す</button>';
   html+='<button type="button" onclick="cpBackToWizard()" style="width:100%;padding:11px;border-radius:10px;border:none;background:none;color:#8a7a5a;font-size:.82rem;text-decoration:underline">やっぱり30秒おまかせで作る</button>';
   el.innerHTML=html;
+  state.cpNameSug=null;
+  cpBindNameSug();
   const sel=document.getElementById('cpOrigin');
   if(sel){
     if(state.origin&&state.origin.name==='現在地'){
