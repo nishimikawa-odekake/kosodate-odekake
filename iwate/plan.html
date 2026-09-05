@@ -8606,7 +8606,7 @@ function showResult(){
       const __cap=state.budget==='1000'?1000:(state.budget==='3000'?3000:(state.budget==='free'?0:null));
       if(__cap!=null&&__total>__cap) __bSub+='<span style="color:#c0392b;font-weight:800">　⚠️ ご指定の予算'+(__cap?__cap.toLocaleString()+'円':'(無料)')+'を超えます</span>';
     }
-    tlHtml+='</div><div class="bonus-wrap"><div class="bonus-head">⏱ 余力があればもう1カ所</div><div class="bonus-sub">'+__bSub+'</div><div class="timeline">'+bonusRows.map(rowHtml).join('')+'</div>';
+    tlHtml+='</div><div class="bonus-wrap"><div class="bonus-head">⏱ 余力があればもう1カ所</div><div class="bonus-sub">'+__bSub+'</div><div class="timeline">'+bonusRows.map(rowHtml).join('')+'</div></div>';
   } else {
     tlHtml+='</div>';
   }
