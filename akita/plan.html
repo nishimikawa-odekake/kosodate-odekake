@@ -217,6 +217,15 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
 #result .bonus-head{margin-top:4px}
 #result :is(button,a):focus-visible{outline:3px solid #72502e;outline-offset:3px}
 @media(max-width:350px){#result .result-use{grid-template-columns:1fr}}
+
+/* Family flow: custom slots keep long names clear of their controls. */
+#customPanel .cp-slot{flex-wrap:wrap}
+#customPanel .cp-slot>span:nth-child(2){flex:1 1 calc(100% - 4em)!important;overflow-wrap:anywhere}
+#customPanel .cp-slot.is-empty{border-style:dashed!important;background:#faf6ef!important}
+#customPanel .cp-slot button{min-width:44px;min-height:44px}
+#customPanel button{min-height:44px;line-height:1.5}
+#customPanel input,#customPanel select{font-size:1rem!important;min-height:44px}
+#customPanel :is(button,a,input,select):focus-visible{outline:3px solid #72502e;outline-offset:3px}
 </style>
 <style id="odm-chrome">
 .odm-sitebar{background:#fffdf9;border-bottom:1px solid #e8e0d4}
@@ -7298,7 +7307,7 @@ function renderCustomPanel(){
   let html='<div class="q">🗺 自分で選んだ場所でプランを作る</div>';
   html+='<p class="qsub">順番はあとから入れかえOK。空きの枠はおでまるが提案します。</p>';
   html+='<div style="margin:10px 0"><b style="font-size:.85rem">🚗 どこから出発？</b><br>'
-    +'<div style="display:flex;gap:6px;align-items:center;margin-top:4px"><select class="origin" id="cpOrigin" style="flex:1;min-width:0"></select>'
+    +'<div style="display:flex;gap:6px;align-items:center;margin-top:4px"><select class="origin" id="cpOrigin" aria-label="出発地の街" style="flex:1;min-width:0"></select>'
     +'<button type="button" onclick="cpGeo()" style="white-space:nowrap;border:1.5px solid #e8853d;background:'+(state.origin&&state.origin.name==='現在地'?'#e8853d':'#fff8f0')+';color:'+(state.origin&&state.origin.name==='現在地'?'#fff':'#b45f1d')+';border-radius:999px;padding:8px 12px;font-weight:800;font-size:.82rem">📍 現在地</button></div>'
     +'<div id="cpGeoNote" style="font-size:.72rem;color:#8a7a5a;margin-top:3px">'+(state.origin&&state.origin.name==='現在地'?'📍 現在地から出発します':'')+'</div></div>';
   const wOn='background:#e8853d;color:#fff;border:1px solid #e8853d;border-radius:999px;padding:8px 18px;font-weight:800;font-size:.9rem';
@@ -7339,7 +7348,7 @@ function renderCustomPanel(){
   const __spotIdx=state.customSlots.map((_,k)=>k).filter(k=>k!==__rli);
   cpLabels(state.customSlots.length).forEach((lab,i2)=>{
     const s=state.customSlots[i2];
-    html+='<div style="display:flex;align-items:center;gap:7px;padding:10px;border:1px solid #e8ddcc;border-radius:12px;margin:6px 0 0;background:#fff">'
+    html+='<div class="cp-slot '+(s?'is-filled':'is-empty')+'" style="display:flex;align-items:center;gap:7px;padding:10px;border:1px solid #e8ddcc;border-radius:12px;margin:6px 0 0;background:#fff">'
       +'<span style="font-size:.72rem;font-weight:800;color:#e8853d;min-width:2.6em">'+lab+'</span>';
     if(s){
       html+='<span style="flex:1;font-weight:700;font-size:.92rem;min-width:0;overflow-wrap:anywhere">'+esc(s.name)
