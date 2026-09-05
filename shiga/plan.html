@@ -11,6 +11,22 @@
   gtag('js', new Date());
   gtag('config', 'G-8HQQDPB5DN');
 </script>
+<!-- フィードバック設定（フォーム確定後はこのブロックだけ差し替える） -->
+<script>
+/* ===== プランの評価（フィードバック）の設定 =====
+   FB_FORM_URL / FB_ENTRY はGoogleフォーム確定後にここだけ書き換える（2つは必ず同時に）。
+   FB_FORM_URL が '' のあいだはフォームへの送信をスキップし、
+   GA4送信と画面表示（お礼メッセージ）は通常どおり動作する。 */
+const APP_VER = 'nat-plan-20260905';
+const FB_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdqIvejNK5f18meEH3gkFfC84HYINA8SEWLv0vCBApY4yhcKA/formResponse';
+const FB_ENTRY = {
+  rating:   'entry.446117682',
+  comment:  'entry.99706642',
+  context:  'entry.1087385985',
+  pref:     'entry.1776665082',
+  page_url: 'entry.149203684'
+};
+</script>
 <title>滋賀の子連れおでかけプランを自動作成｜しが子育ておでかけマップ</title>
 <meta name="description" content="出発地・日程・お子さんの年齢・予算を選ぶだけで、滋賀の子連れおでかけプランを自動作成。天気予報も自動反映して雨の日は室内プランに。移動時間・費用の目安つきタイムラインで、きょうのおでかけがすぐ決まります。">
 <link rel="canonical" href="https://kosodate-odekake.jp/shiga/plan.html">
@@ -167,6 +183,21 @@ footer a{color:var(--sub)}
 .swapcard.sc-cur-disabled{background:#f4ece1;border-style:dashed;cursor:default;opacity:.8}
 .swapcard .sc-choose-cur{background:var(--accent);color:#fff}
 .swapcard .sc-backnote{font-size:.66rem;color:var(--sub);font-weight:600}
+
+/* --- プランの評価（フィードバック） --- */
+.fbcard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 14px;box-shadow:0 3px 12px rgba(160,140,110,.14);margin-top:16px}
+.fbcard .fbq{font-size:.95rem;font-weight:800;color:var(--ink);margin:0 0 10px}
+.fbbtns{display:flex;gap:10px;flex-wrap:nowrap}
+.fbbtn{flex:1 1 0;min-width:0;min-height:44px;background:#fff;border:2px solid var(--accent);color:var(--accent-d);font-weight:800;font-size:.92rem;border-radius:14px;padding:10px 6px;cursor:pointer;white-space:nowrap}
+.fbbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.fbnote{font-size:.74rem;color:var(--sub);line-height:1.5;margin:8px 0 0}
+.fblead{font-size:.84rem;color:var(--ink);line-height:1.5;margin:12px 0 6px}
+textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inherit;font-size:16px;line-height:1.5;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px;resize:vertical}
+.fbsend{display:block;width:100%;box-sizing:border-box;min-height:44px;margin-top:12px;background:var(--accent);color:#fff;border:none;border-radius:14px;padding:12px;font-size:1rem;font-weight:800;cursor:pointer}
+.fbdone{font-size:.92rem;font-weight:700;color:var(--accent-d);text-align:center;margin:0;padding:6px 0}
+@media (max-width:420px){
+  .fbbtn{font-size:.88rem;padding:10px 4px}
+}
 </style>
 <style id="odm-chrome">
 .odm-sitebar{background:#fffdf9;border-bottom:1px solid #e8e0d4}
@@ -3466,9 +3497,110 @@ async function initFromShareOrWizard(){
     }
   }catch(e){}
 }
+/* ===== プランの評価（フィードバック） =====
+   👍👎 は GA4 のみ即時送信。「送信する」で Google フォームへ1回だけ POST する。
+   自由記述の本文は GA4 には送らない。 */
+function fbHtml(){
+  return '<section class="fbcard" id="fbcard" aria-label="プランの評価">'
+    +'<p class="fbq">このプラン、どうでしたか？</p>'
+    +'<div class="fbbtns">'
+      +'<button type="button" class="fbbtn" id="fbGood" aria-pressed="false" onclick="fbRate(\'good\')">👍 よかった</button>'
+      +'<button type="button" class="fbbtn" id="fbBad" aria-pressed="false" onclick="fbRate(\'bad\')">👎 いまいち</button>'
+    +'</div>'
+    +'<p class="fbnote" id="fbThanks" style="display:none">評価ありがとうございます。よければご意見も教えてください。</p>'
+    +'<p class="fblead">気になった点や「こうだったらもっと使いやすい！」などあれば、ぜひ教えてください。</p>'
+    +'<textarea class="fbtext" id="fbText" rows="2" maxlength="2000" aria-label="ご意見・ご要望（任意）"></textarea>'
+    +'<p class="fbnote">※個人情報（お名前・連絡先など）は書かないでください</p>'
+    +'<button type="button" class="fbsend" id="fbSend" onclick="fbSubmit()">送信する</button>'
+    +'</section>';
+}
+function fbRate(r){
+  if(!state.fb) state.fb={rated:false,rating:null,sent:false};
+  const first=!state.fb.rated;
+  state.fb.rating=r; state.fb.rated=true;
+  const g=document.getElementById('fbGood'), b=document.getElementById('fbBad');
+  if(g) g.setAttribute('aria-pressed', r==='good'?'true':'false');
+  if(b) b.setAttribute('aria-pressed', r==='bad'?'true':'false');
+  const t=document.getElementById('fbThanks'); if(t) t.style.display='';
+  // GA には初回のみ送る（押し直しても値は最後のものを保持する）
+  if(first&&typeof gtag==='function'){
+    gtag('event','plan_feedback_rate',seoP({rating:r,pref:PREF_SCOPE,plan_no:state.planNo,reroll_count:Math.max(0,(state.planNo||1)-1)}));
+  }
+}
+function fbPayload(){
+  const p=(state.plans&&state.plans.length)?state.plans[state.variant%state.plans.length]:null;
+  let shareUrl='';
+  try{
+    if(p){
+      // 現在地出発時の緯度経度は落とす（from='現在地' のまま）
+      shareUrl=buildShareUrl(p).replace(/&lat=[^&]*/g,'').replace(/&lng=[^&]*/g,'');
+    }
+  }catch(e){}
+  let mainN='',lunchN='',subN='';
+  try{
+    const rows=(p&&p.rows)?p.rows.filter(r=>r.type==='spot'):[];
+    const MEAL_TAGS=['ランチ','カフェ・休憩','夕食','食事'];
+    const mr=rows.find(r=>r.tag==='メイン');
+    const lr=rows.find(r=>r!==mr&&(r.food===true||MEAL_TAGS.includes(r.tag)));
+    const sr=rows.find(r=>r!==mr&&r!==lr&&(r.tag==='午後スポット'||r.tag==='余力があれば'));
+    if(mr) mainN=mr.spot.name;
+    if(lr) lunchN=lr.spot.name;
+    if(sr) subN=sr.spot.name;
+  }catch(e){}
+  const w=state.weather||{};
+  const ctx={
+    app_ver:APP_VER, pref:PREF_SCOPE,
+    mode:state.isCustomView?'custom':(state.isSharedView?'shared':'wizard'),
+    origin_city:(state.origin&&state.origin.name)||'',
+    when:state.when||'',
+    depart:state.depart?(state.depart.mode==='offset'?('offset:'+state.depart.min):('slot:'+state.depart.slot)):'',
+    ages:Array.from(state.ages||[]).join(','),
+    budget:state.budget||'',
+    drive:state.driveTime||'',
+    forecast_weather:isRainMode(w)?'rain':(w&&w.tmax!=null?'clear':'unknown'),
+    indoor_preference:state.indoorPref?1:0,
+    plan_no:state.planNo,
+    reroll_count:Math.max(0,(state.planNo||1)-1),
+    main:mainN, lunch:lunchN, sub:subN,
+    share_url:shareUrl,
+    ts:new Date().toISOString()
+  };
+  const ta=document.getElementById('fbText');
+  const comment=((ta&&ta.value)||'').trim().slice(0,2000);
+  return {
+    rating:(state.fb&&state.fb.rating)||'none',
+    comment:comment,
+    context:JSON.stringify(ctx),
+    pref:PREF_SCOPE,
+    page_url:location.origin+location.pathname
+  };
+}
+function fbSubmit(){
+  if(!state.fb) state.fb={rated:false,rating:null,sent:false};
+  if(state.fb.sent) return; // 二重送信の防止
+  state.fb.sent=true;
+  const d=fbPayload();
+  try{
+    if(FB_FORM_URL){ // 未確定('')のあいだは送信しない
+      const body=new URLSearchParams();
+      body.append(FB_ENTRY.rating,d.rating);
+      body.append(FB_ENTRY.comment,d.comment);
+      body.append(FB_ENTRY.context,d.context);
+      body.append(FB_ENTRY.pref,d.pref);
+      body.append(FB_ENTRY.page_url,d.page_url);
+      // await しない。失敗しても UI は完了表示にする
+      fetch(FB_FORM_URL,{method:'POST',mode:'no-cors',body:body}).catch(function(){});
+    }
+  }catch(e){}
+  // 自由記述の本文は GA4 には送らない
+  if(typeof gtag==='function') gtag('event','plan_feedback_submit',seoP({rating:d.rating,pref:PREF_SCOPE,has_comment:d.comment?1:0,comment_len:d.comment.length}));
+  const card=document.getElementById('fbcard');
+  if(card) card.innerHTML='<p class="fbdone">ありがとうございます。改善の参考にします。</p>';
+}
 function showResult(){
   const res=document.getElementById('result');
   res.style.display='block';
+  state.fb={rated:false,rating:null,sent:false}; // 新しいプランごとに再評価できるようにする
   if(!state.plans.length){
     if(state.tooLateToday){
       if(typeof gtag==='function') gtag('event','planner_no_result',seoP({reason:'too_late_today'}));
@@ -3617,6 +3749,7 @@ function showResult(){
   html+='<a class="act-map" href="./index.html" onclick="track(\'map\')">🗺 地図でこのへんを見る</a>';
   html+='<button class="act-restart" onclick="restart()">最初からやり直す</button>';
   html+='</div>';
+  html+=fbHtml(); // プランの評価（.actions の直後・各注記より上）
   if(!state.weather){
     html+='<div class="notice">※ 現在お天気情報を取得できなかったため、天気条件なしでプランを作成しています。</div>';
   }
