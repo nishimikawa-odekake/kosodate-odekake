@@ -198,6 +198,25 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
 @media (max-width:420px){
   .fbbtn{font-size:.88rem;padding:10px 4px}
 }
+
+/* Family flow: result actions; presentation only. */
+#result .result-actions{margin:20px 0 12px;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:16px}
+#result .result-actions h2{font-size:1rem;margin:0 0 12px;color:var(--ink)}
+#result .result-use{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#result .result-use a,#result .result-use button{display:flex;align-items:center;justify-content:center;min-height:52px;padding:12px 10px;border:1.5px solid #b46134;border-radius:12px;font:inherit;font-size:.92rem;font-weight:800;text-align:center;text-decoration:none;cursor:pointer;line-height:1.5}
+#result .result-use .act-gmaps{background:#b46134;color:#fff}
+#result .result-use .act-share{background:#fff;color:#98502c;width:100%}
+#result .result-actions .actions{margin:14px 0 0;padding-top:14px;border-top:1px solid var(--line);gap:8px}
+#result .result-actions .act-reroll,#result .result-actions .act-map{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none;font-size:.9rem;padding:10px;min-height:44px}
+#result .result-actions .act-restart{padding:10px;min-height:44px;font-size:.875rem}
+#result .route-note{font-size:.8rem;color:var(--sub);margin:8px 0 0}
+#result .tl .meta,#result .foodnote,#result .bonus-sub{font-size:.8125rem}
+#result .tl .links a,#result .swapbtn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;font-size:.8125rem}
+#result .bonus-wrap{padding:8px 10px;margin-top:14px;background:#f5f1e8;border-radius:12px;border:1px dashed #d8c9b0}
+#result .tl.bonus{opacity:1}
+#result .bonus-head{margin-top:4px}
+#result :is(button,a):focus-visible{outline:3px solid #72502e;outline-offset:3px}
+@media(max-width:350px){#result .result-use{grid-template-columns:1fr}}
 </style>
 <style id="odm-chrome">
 .odm-sitebar{background:#fffdf9;border-bottom:1px solid #e8e0d4}
@@ -20173,16 +20192,13 @@ function showResult(){
   html+='<div class="summary">🚗 移動の目安 <b>約'+driveStr+'</b>（往復）　／　💰 <b>'+esc(p.cost)+'</b></div>';
   html+='<div class="foodnote" style="margin:8px 2px 0">※営業時間・料金等は変更される場合があります。出発前に公式情報をご確認ください。</div>';
   html+='</div>';
+  html+='<section class="result-actions" aria-label="プランの共有・経路・変更"><h2>このプランでどうする？</h2><div class="result-use">';
   if(routeUrl){
-    html+='<div class="gmaps-route" style="text-align:center;margin:14px 0 18px">'+
-      '<a class="act-gmaps" href="'+esc(routeUrl)+'" target="_blank" rel="noopener" onclick="track(\'gmaps_route\')" '+
-      'style="display:inline-block;width:100%;box-sizing:border-box;padding:14px;border-radius:14px;background:#1a73e8;color:#fff;font-weight:800;font-size:.95rem;text-decoration:none">'+
-      '🚗 このルートをGoogleマップで開く</a>'+
-      '<div style="font-size:.72rem;color:var(--sub);margin-top:6px">※ルートはGoogleマップ上で編集できます</div>'+
-      '</div>';
+    html+='<a class="act-gmaps" href="'+esc(routeUrl)+'" target="_blank" rel="noopener" onclick="track(\'gmaps_route\')">🚗 経路を見る<br>（Googleマップ）</a>';
   }
+  html+='<button class="act-share" onclick="sharePlan()">📤 家族に送る<br>（共有）</button></div>';
+  if(routeUrl) html+='<p class="route-note">経路はGoogleマップで確認・編集できます。</p>';
   html+='<div class="actions">';
-  html+='<button class="act-share" onclick="sharePlan()">📤 家族に送る（共有）</button>';
   if(state.isCustomView){
     html+='<button class="act-reroll" onclick="editCustom()">✏️ えらんだ場所を編集する</button>';
   } else {
@@ -20191,6 +20207,7 @@ function showResult(){
   html+='<a class="act-map" href="./index.html" onclick="track(\'map\')">🗺 地図でこのへんを見る</a>';
   html+='<button class="act-restart" onclick="restart()">最初からやり直す</button>';
   html+='</div>';
+  html+='</section>';
   html+=fbHtml(); // プランの評価（.actions の直後・各注記より上）
   if(!state.weather){
     html+='<div class="notice">※ 現在お天気情報を取得できなかったため、天気条件なしでプランを作成しています。</div>';
