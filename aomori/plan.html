@@ -208,6 +208,20 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
 .empty .odm-guide{max-width:360px;margin:0 auto 14px;text-align:left}
 @media(max-width:350px){.odm-guide img{width:48px;flex-basis:48px}.odm-guide{gap:9px;padding:10px}}
 
+/* Family reuse: concise guidance and restored selections. */
+.parentline.odm-guide{border:1px solid var(--line);text-align:left}
+.parentline.odm-guide p{font-weight:600}
+.prefs-summary{margin:0 0 16px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fffaf3;text-align:left}
+.prefs-summary[hidden]{display:none}
+.prefs-summary strong{font-size:.86rem;color:var(--ink)}
+.prefs-summary ul{display:flex;flex-wrap:wrap;gap:6px 12px;list-style:none;margin:7px 0;padding:0;color:var(--ink);font-size:.82rem;line-height:1.6}
+.prefs-summary li{overflow-wrap:anywhere}
+.prefs-summary p{margin:0;color:var(--sub);font-size:.8rem;line-height:1.6}
+.empty-options{border-top:1px solid var(--line);padding-top:12px;margin:20px auto;max-width:400px}
+.empty-options p{font-size:.85rem;margin:0 0 6px}
+.empty button{min-height:44px;max-width:100%;white-space:normal}
+.empty button:focus-visible{outline:3px solid #72502e;outline-offset:3px}
+
 /* Family flow: result actions; presentation only. */
 #result .result-actions{margin:20px 0 12px;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:16px}
 #result .result-actions h2{font-size:1rem;margin:0 0 12px;color:var(--ink)}
@@ -276,7 +290,12 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
   <section class="step" data-step="0">
     <div class="q">どこから出発？</div>
     <p class="qsub">おでかけのスタート地点を選んでね</p>
-    <select class="origin" id="originSel"></select>
+    <aside class="prefs-summary" id="prefsSummary" aria-label="選択済みの条件" hidden>
+      <strong>選択済みの条件</strong>
+      <ul id="prefsSummaryList"></ul>
+      <p>前回の選択を引き継いでいます。各画面で変更できます。<br>日付と出発時間は、今回の予定を選んでください。</p>
+    </aside>
+    <select class="origin" id="originSel" aria-label="出発する市町村"></select>
     <button class="geo" id="geoBtn">📍 現在地から探す</button>
     <p class="geonote" id="geoNote"></p>
     <div class="navrow">
@@ -5907,6 +5926,7 @@ function canNext(){
 function refreshNext(){
   const btn=steps[step].querySelector('[data-next]');
   if(btn) btn.disabled=!canNext();
+  renderPrefsSummary();
 }
 document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>{
   if(!canNext()) return;
@@ -8738,14 +8758,15 @@ function showResult(){
     }
     if(typeof gtag==='function') gtag('event','planner_no_result',seoP({reason:'empty'}));
     const nxtDrive={'20':'40','40':'60','60':'any'}[state.driveTime]||null;
-    const widenBtn=nxtDrive?('<button onclick="approveWiden(\''+nxtDrive+'\')" style="margin:6px 0;background:#e8853d;color:#fff;border:none;border-radius:12px;padding:13px 18px;font-weight:800">🚗 移動時間を'+(nxtDrive==='any'?'「遠くても大丈夫」':'〜'+nxtDrive+'分')+'まで広げて探す</button><br>'):'';
+    const widenBtn=nxtDrive?('<button onclick="approveWiden(\''+nxtDrive+'\')" style="margin:6px 0;background:#fff;color:#b45f1d;border:1.5px solid #e8853d;border-radius:12px;padding:13px 18px;font-weight:800">🚗 移動時間を'+(nxtDrive==='any'?'「遠くても大丈夫」':'〜'+nxtDrive+'分')+'まで広げて探す</button><br>'):'';
     // 無料中心のときは「予算だけ緩めて近場を守る」選択肢も出す(どちらを守るかをユーザーが選ぶ)
     const freeBtn=(state.budget==='free')?('<button onclick="relaxBudgetRegen()" style="margin:6px 0;background:#fff;color:#b45f1d;border:1.5px solid #e8853d;border-radius:12px;padding:13px 18px;font-weight:800">💴 無料条件を外して'+(state.driveTime&&state.driveTime!=='any'?state.driveTime+'分圏内':'近場')+'で探す</button><br>'):'';
     // P0: 営業時間未登録で確定枠から外した候補は「予備候補」として提示する(自動採用はしない)
     const __rsv=reserveHtml('empty',null);
-    res.innerHTML='<div class="empty"><div class="odm-guide"><img src="/odemaru-guide.png" alt="" width="56" height="65"><p>条件を少し広げてみよう<small>選んだ条件はそのまま。下のボタンから調整できます</small></p></div><p>ご指定の移動時間の範囲では、<b>営業時間を確認できたスポット</b>のなかに条件に合うものが見つかりませんでした。<br>条件は勝手に変えないので、緩める場合は下のボタンからどうぞ。</p>'+
-      __rsv+widenBtn+freeBtn+
-      '<button onclick="restart()">条件を変えてやり直す</button></div>';
+    res.innerHTML='<div class="empty"><div class="odm-guide"><img src="/odemaru-guide.png" alt="" width="56" height="65"><p>条件に合うプランが見つかりませんでした</p></div><p>選んだ条件と、<b>営業時間を確認できたスポット</b>をもとに探しました。<br>日付や条件を選び直して、もう一度探せます。</p>'+
+      '<button onclick="restart()">日付・条件を選び直す</button>'+
+      ((widenBtn||freeBtn)?'<div class="empty-options"><p>移動時間や予算を変更して探す場合</p>'+widenBtn+freeBtn+'</div>':'')+
+      __rsv+'</div>';
     window.scrollTo({top:0,behavior:'smooth'});
     return;
   }
@@ -8762,7 +8783,7 @@ function showResult(){
   if(state.indoorPref&&!isRainMode(state.weather)){
     html+='<div class="wxbadge" style="background:#eef4fb;border:1px solid #b9d2ee;color:#2c5a8a">☔ 雨の日ページから、室内中心で組んでいます <button type="button" onclick="clearIndoorPref()" style="margin-left:8px;padding:4px 10px;border-radius:10px;border:1px solid #b9d2ee;background:#fff;color:#2c5a8a;font-size:.78rem;font-weight:700">天気に合わせた通常プランに戻す</button></div>';
   }
-  html+='<div class="parentline">🗣 '+esc(parentSummary())+'</div>';
+  html+='<div class="parentline odm-guide"><img src="/odemaru-guide.png" alt="" width="56" height="65"><p>'+esc(parentSummary())+'</p></div>';
   if(startMinutes()>=12*60+30){
     html+='<div class="notice" style="margin:8px 0;background:#fff4e5;border:1px solid #f0c48a;border-radius:10px;padding:10px 12px;font-size:.82rem">🍴 午後からの出発のため、お昼ごはんは済ませてからの出発を想定しています。プラン内の食事枠は「カフェ・おやつ休憩」や「早めの夕食」としてご利用ください。</div>';
   }
@@ -8830,7 +8851,6 @@ function showResult(){
       html+='<div class="notice" style="margin:8px 0;background:#fff3e6;border:1.5px solid #e0964a;border-radius:10px;padding:10px 12px;font-size:.82rem;font-weight:700">🥵 暑さ注意（最高'+Math.round(state.weather.tmax)+'℃予想）: 水分・帽子・日陰休憩を。屋外は短時間ずつがおすすめです</div>';
     }
   }
-  html+='<div class="odm-guide"><img src="/odemaru-guide.png" alt="" width="56" height="65"><p>こんな1日はどう？<small>無理のない範囲で、家族に合わせて変えてね</small></p></div>';
   html+='<div class="plancard">';
   html+='<div class="plantitle">🎯 '+esc(state.origin.name)+'発 きょうのプラン <small>'+esc(whenLabel())+' / 案'+(state.planNo||1)+'</small></div>';
   // split main-tier rows and bonus-tier rows, insert a heading before the bonus tier
@@ -8914,6 +8934,23 @@ function savePrefs(){
     }));
   }catch(e){}
 }
+// Presentation only: read the current selections; never write planner state or storage.
+function renderPrefsSummary(){
+  const panel=document.getElementById('prefsSummary');
+  if(!panel||panel.hidden) return;
+  const list=document.getElementById('prefsSummaryList');
+  const items=[];
+  if(state.origin&&state.origin.name) items.push(state.origin.name+'発');
+  const drive={'20':'車で〜20分','40':'車で〜40分','60':'車で〜60分','any':'遠くてもOK'};
+  if(drive[state.driveTime]) items.push(drive[state.driveTime]);
+  const ageLabels={'0-2':'0〜2歳','3-5':'3〜5歳','elem':'小学生'};
+  const ages=[...state.ages].map(a=>ageLabels[a]).filter(Boolean);
+  if(ages.length) items.push(ages.join('・'));
+  const budgets={'free':'無料メイン（食事代別）','1000':'入場料など1人〜1,000円（食事代別）','3000':'入場料など1人〜3,000円（食事代別）','any':'予算の上限なし'};
+  if(budgets[state.budget]) items.push(budgets[state.budget]);
+  list.replaceChildren();
+  items.forEach(text=>{ const item=document.createElement('li'); item.textContent=text; list.appendChild(item); });
+}
 function loadPrefs(){
   try{
     const raw=localStorage.getItem(PREF_KEY);
@@ -8949,6 +8986,12 @@ function loadPrefs(){
       const btn=document.querySelector('#budgetBtns .bigbtn[data-budget="'+p.budget+'"]');
       if(btn){ btn.classList.add('on'); state.budget=p.budget; }
     }
+    const summary=document.getElementById('prefsSummary');
+    if(summary&&(state.driveTime||state.ages.size||state.budget)){
+      summary.hidden=false;
+      const note=document.getElementById('geoNote');
+      if(note&&note.textContent==='前回の出発地を選択しています（変更もできます）') note.textContent='';
+    }
     refreshNext();
   }catch(e){}
 }
@@ -8971,6 +9014,7 @@ function reroll(){
   showResult();
 }
 function restart(){
+  const summary=document.getElementById('prefsSummary'); if(summary) summary.hidden=true;
   state.isCustomView=false; state.customSlots=[null,null,null]; state.cpPlanSlots=null;
   try{ localStorage.removeItem(CUSTOM_KEY); }catch(e){}
   const cpEl=document.getElementById('customPanel'); if(cpEl) cpEl.style.display='none';
