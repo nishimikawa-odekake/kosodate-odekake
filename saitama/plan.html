@@ -199,6 +199,15 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
   .fbbtn{font-size:.88rem;padding:10px 4px}
 }
 
+/* Odemaru guide: appears only at decision moments. */
+.odm-guide{display:flex;align-items:center;gap:12px;margin:10px 0 14px;padding:11px 13px;background:#fffaf3;border:1px solid var(--line);border-radius:16px}
+.odm-guide img{width:56px;height:auto;flex:0 0 56px;object-fit:contain}
+.odm-guide p{margin:0;color:var(--ink);font-size:.9rem;line-height:1.55;font-weight:700}
+.odm-guide p small{display:block;color:var(--sub);font-size:.75rem;font-weight:600;margin-top:2px}
+.loading .odm-guide{max-width:310px;margin:0 auto 16px;text-align:left}
+.empty .odm-guide{max-width:360px;margin:0 auto 14px;text-align:left}
+@media(max-width:350px){.odm-guide img{width:48px;flex-basis:48px}.odm-guide{gap:9px;padding:10px}}
+
 /* Family flow: result actions; presentation only. */
 #result .result-actions{margin:20px 0 12px;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:16px}
 #result .result-actions h2{font-size:1rem;margin:0 0 12px;color:var(--ink)}
@@ -356,8 +365,8 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
   <!-- LOADING -->
   <section id="customPanel" style="display:none;padding:4px 2px"></section>
   <div class="loading" id="loading" style="display:none">
+    <div class="odm-guide"><img src="/odemaru-guide.png" alt="" width="56" height="65"><p>家族に合うプランを考えています<small>お天気や移動時間も確認中です</small></p></div>
     <div class="spinner"></div>
-    <p style="color:var(--sub);font-size:.9rem">お天気とスポットを調べて<br>プランを組み立てています…</p>
   </div>
 
   <!-- RESULT -->
@@ -28741,7 +28750,7 @@ function showResult(){
     const freeBtn=(state.budget==='free')?('<button onclick="relaxBudgetRegen()" style="margin:6px 0;background:#fff;color:#b45f1d;border:1.5px solid #e8853d;border-radius:12px;padding:13px 18px;font-weight:800">💴 無料条件を外して'+(state.driveTime&&state.driveTime!=='any'?state.driveTime+'分圏内':'近場')+'で探す</button><br>'):'';
     // P0: 営業時間未登録で確定枠から外した候補は「予備候補」として提示する(自動採用はしない)
     const __rsv=reserveHtml('empty',null);
-    res.innerHTML='<div class="empty"><p>ご指定の移動時間の範囲では、<b>営業時間を確認できたスポット</b>のなかに条件に合うものが見つかりませんでした。<br>条件は勝手に変えないので、緩める場合は下のボタンからどうぞ。</p>'+
+    res.innerHTML='<div class="empty"><div class="odm-guide"><img src="/odemaru-guide.png" alt="" width="56" height="65"><p>条件を少し広げてみよう<small>選んだ条件はそのまま。下のボタンから調整できます</small></p></div><p>ご指定の移動時間の範囲では、<b>営業時間を確認できたスポット</b>のなかに条件に合うものが見つかりませんでした。<br>条件は勝手に変えないので、緩める場合は下のボタンからどうぞ。</p>'+
       __rsv+widenBtn+freeBtn+
       '<button onclick="restart()">条件を変えてやり直す</button></div>';
     window.scrollTo({top:0,behavior:'smooth'});
@@ -28828,6 +28837,7 @@ function showResult(){
       html+='<div class="notice" style="margin:8px 0;background:#fff3e6;border:1.5px solid #e0964a;border-radius:10px;padding:10px 12px;font-size:.82rem;font-weight:700">🥵 暑さ注意（最高'+Math.round(state.weather.tmax)+'℃予想）: 水分・帽子・日陰休憩を。屋外は短時間ずつがおすすめです</div>';
     }
   }
+  html+='<div class="odm-guide"><img src="/odemaru-guide.png" alt="" width="56" height="65"><p>こんな1日はどう？<small>無理のない範囲で、家族に合わせて変えてね</small></p></div>';
   html+='<div class="plancard">';
   html+='<div class="plantitle">🎯 '+esc(state.origin.name)+'発 きょうのプラン <small>'+esc(whenLabel())+' / 案'+(state.planNo||1)+'</small></div>';
   // split main-tier rows and bonus-tier rows, insert a heading before the bonus tier
