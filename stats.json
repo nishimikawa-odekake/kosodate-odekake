@@ -1,9 +1,9 @@
 {
   "aichi": 1159,
-  "national": 16315,
+  "national": 16351,
   "prefs": 47,
-  "total": 17474,
-  "updated": "2026-09-05",
+  "total": 17510,
+  "updated": "2026-09-06",
   "by_pref": {
     "akita": {
       "local": 118,
@@ -132,9 +132,9 @@
       "status": "mature"
     },
     "mie": {
-      "local": 301,
+      "local": 337,
       "chain": 112,
-      "total": 413,
+      "total": 449,
       "status": "mature"
     },
     "miyagi": {
