@@ -284,15 +284,11 @@ footer p{margin:0 0 6px}
 .planhero .ph-opt .ph-btn{min-height:48px;display:flex;align-items:center;justify-content:center;line-height:1.5}
 .planhero .ph-opt.is-sub .ph-btn{background:transparent;box-shadow:none;color:#fff;border:1px solid rgba(255,255,255,.8)}
 .planhero .ph-cap{font-size:.8125rem;line-height:1.6;margin-top:8px}
-.moods details{border-bottom:1px solid var(--line);padding:8px 0 12px}
-.moods summary{cursor:pointer;font-weight:700;font-size:.95rem;min-height:44px;display:list-item;padding:10px 0}
-.moods .mood-scroll{margin-top:8px}
 .filterbar .chip,.filterbar .reset,.filterbar .origin-btn,.filterbar select{min-height:44px;font-size:.875rem}
 .filterbar .frow{gap:8px}
 .filterbar .flabel{font-size:.8125rem}
 :is(.filterbar,.moods,.planhero) :is(button,a,summary,select):focus-visible{outline:3px solid #72502e;outline-offset:3px}
 @media(max-width:600px){
- .filterbar{position:relative;top:auto}
  .planhero{padding:16px 12px}
  .planhero .ph-grid{grid-template-columns:1fr}
  .mood-btn{box-shadow:none;border:1px solid var(--line)}
@@ -349,18 +345,17 @@ footer p{margin:0 0 6px}
 
 <section class="moods">
   <div class="wrap">
-    <details><summary>気分から探す（雨の日・無料・遊び方）</summary>
-    <div class="mood-scroll" id="moods">
-      <button class="mood-btn" data-mood="rain"   ><span class="emo">☔</span>雨でも室内</button>
-      <button class="mood-btn" data-mood="free"   ><span class="emo">🆓</span>無料</button>
-      <button class="mood-btn" data-mood="animal" ><span class="emo">🦁</span>動物とふれあう</button>
-      <button class="mood-btn" data-mood="active" ><span class="emo">🛝</span>からだを動かす</button>
-      <button class="mood-btn" data-mood="water"  ><span class="emo">💦</span>水であそぶ</button>
-      <button class="mood-btn" data-mood="create" ><span class="emo">🔬</span>つくる・体験</button>
-      <button class="mood-btn" data-mood="vehicle"><span class="emo">🚃</span>のりもの・電車</button>
-      <button class="mood-btn" data-mood="food"   ><span class="emo">🍽</span>子連れランチ</button>
+    <h2>気分で選ぶ</h2>
+    <div class="mood-scroll" id="moods" role="list">
+      <button class="mood-btn" data-mood="rain"    role="listitem"><span class="emo">☔</span>雨でも室内</button>
+      <button class="mood-btn" data-mood="free"    role="listitem"><span class="emo">🆓</span>無料</button>
+      <button class="mood-btn" data-mood="animal"  role="listitem"><span class="emo">🦁</span>動物とふれあう</button>
+      <button class="mood-btn" data-mood="active"  role="listitem"><span class="emo">🛝</span>からだを動かす</button>
+      <button class="mood-btn" data-mood="water"   role="listitem"><span class="emo">💦</span>水であそぶ</button>
+      <button class="mood-btn" data-mood="create"  role="listitem"><span class="emo">🔬</span>つくる・体験</button>
+      <button class="mood-btn" data-mood="vehicle" role="listitem"><span class="emo">🚃</span>のりもの・電車</button>
+      <button class="mood-btn" data-mood="food"    role="listitem"><span class="emo">🍽</span>子連れランチ</button>
     </div>
-  </details>
   </div>
 </section>
 

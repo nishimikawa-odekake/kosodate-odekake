@@ -203,7 +203,7 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
 .odm-guide{display:flex;align-items:center;gap:12px;margin:10px 0 14px;padding:11px 13px;background:#fffaf3;border:1px solid var(--line);border-radius:16px}
 .odm-guide img{width:56px;height:auto;flex:0 0 56px;object-fit:contain}
 .odm-guide p{margin:0;color:var(--ink);font-size:.9rem;line-height:1.55;font-weight:700}
-.odm-guide p small{display:block;color:var(--sub);font-size:.75rem;font-weight:600;margin-top:2px}
+.odm-guide p small{display:block;color:#6f6a60;font-size:.75rem;font-weight:600;margin-top:2px}
 .loading .odm-guide{max-width:310px;margin:0 auto 16px;text-align:left}
 .empty .odm-guide{max-width:360px;margin:0 auto 14px;text-align:left}
 @media(max-width:350px){.odm-guide img{width:48px;flex-basis:48px}.odm-guide{gap:9px;padding:10px}}
@@ -216,7 +216,7 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
 .prefs-summary strong{font-size:.86rem;color:var(--ink)}
 .prefs-summary ul{display:flex;flex-wrap:wrap;gap:6px 12px;list-style:none;margin:7px 0;padding:0;color:var(--ink);font-size:.82rem;line-height:1.6}
 .prefs-summary li{overflow-wrap:anywhere}
-.prefs-summary p{margin:0;color:var(--sub);font-size:.8rem;line-height:1.6}
+.prefs-summary p{margin:0;color:#6f6a60;font-size:.8rem;line-height:1.6}
 .empty-options{border-top:1px solid var(--line);padding-top:12px;margin:20px auto;max-width:400px}
 .empty-options p{font-size:.85rem;margin:0 0 6px}
 .empty button{min-height:44px;max-width:100%;white-space:normal}
@@ -227,7 +227,7 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
 #result .result-actions h2{font-size:1rem;margin:0 0 12px;color:var(--ink)}
 #result .result-use{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 #result .result-use a,#result .result-use button{display:flex;align-items:center;justify-content:center;min-height:52px;padding:12px 10px;border:1.5px solid #b46134;border-radius:12px;font:inherit;font-size:.92rem;font-weight:800;text-align:center;text-decoration:none;cursor:pointer;line-height:1.5}
-#result .result-use .act-gmaps{background:#b46134;color:#fff}
+#result .result-use .act-gmaps{background:#ad5a2e;color:#fff}
 #result .result-use .act-share{background:#fff;color:#98502c;width:100%}
 #result .result-actions .actions{margin:14px 0 0;padding-top:14px;border-top:1px solid var(--line);gap:8px}
 #result .result-actions .act-reroll,#result .result-actions .act-map{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none;font-size:.9rem;padding:10px;min-height:44px}
@@ -293,7 +293,7 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
     <aside class="prefs-summary" id="prefsSummary" aria-label="選択済みの条件" hidden>
       <strong>選択済みの条件</strong>
       <ul id="prefsSummaryList"></ul>
-      <p>前回の選択を引き継いでいます。各画面で変更できます。<br>日付と出発時間は、今回の予定を選んでください。</p>
+      <p>現在選択している条件です。各画面で変更できます。<br>日付と出発時間は、今回の予定を選んでください。<br>料金不明の施設を含むことがあります。料金は公式サイトで確認してください。</p>
     </aside>
     <select class="origin" id="originSel" aria-label="出発する市町村"></select>
     <button class="geo" id="geoBtn">📍 現在地から探す</button>
@@ -6849,14 +6849,14 @@ async function sharePlan(){
   if(navigator.share){
     try{
       await navigator.share({title:'きょうのおでかけプラン',text,url});
-      if(typeof gtag==='function') gtag('event','plan_share',{method:'webshare'}); gtag('event','planner_share',seoP({method:'webshare'}));
+      if(typeof gtag==='function'){ gtag('event','plan_share',{method:'webshare'}); gtag('event','planner_share',seoP({method:'webshare'})); }
     }catch(e){ /* user cancelled share sheet */ }
     return;
   }
   try{
     await copyToClipboard(url);
     showToast('リンクをコピーしました');
-    if(typeof gtag==='function') gtag('event','plan_share',{method:'copy'}); gtag('event','planner_share',seoP({method:'copy'}));
+    if(typeof gtag==='function'){ gtag('event','plan_share',{method:'copy'}); gtag('event','planner_share',seoP({method:'copy'})); }
   }catch(e){
     showToast('コピーに失敗しました');
   }
@@ -7963,7 +7963,7 @@ function showResult(){
       if(typeof gtag==='function') gtag('event','planner_no_result',seoP({reason:'too_late_today'}));
       res.innerHTML='<div class="empty"><p>🌙 今日はもう遅い時間のため、当日のおでかけプランはご用意できません。</p>'
         +'<p style="font-size:.86rem;color:#8a7a5a">「明日」や「今週末」を選ぶと、朝からのプランをご提案できます。</p>'
-        +'<button onclick="restart()">日付を選び直す</button></div>';
+        +'<button onclick="revisePlanDate()">日付を選び直す</button></div>';
       window.scrollTo({top:0,behavior:'smooth'});
       return;
     }
@@ -7975,7 +7975,7 @@ function showResult(){
     // P0: 営業時間未登録で確定枠から外した候補は「予備候補」として提示する(自動採用はしない)
     const __rsv=reserveHtml('empty',null);
     res.innerHTML='<div class="empty"><div class="odm-guide"><img src="/odemaru-guide.png" alt="" width="56" height="65"><p>条件に合うプランが見つかりませんでした</p></div><p>選んだ条件と、<b>営業時間を確認できたスポット</b>をもとに探しました。<br>日付や条件を選び直して、もう一度探せます。</p>'+
-      '<button onclick="restart()">日付・条件を選び直す</button>'+
+      '<button onclick="revisePlanDate()">日付・条件を選び直す</button>'+
       ((widenBtn||freeBtn)?'<div class="empty-options"><p>移動時間や予算を変更して探す場合</p>'+widenBtn+freeBtn+'</div>':'')+
       __rsv+'</div>';
     window.scrollTo({top:0,behavior:'smooth'});
@@ -8151,13 +8151,12 @@ function renderPrefsSummary(){
   if(!panel||panel.hidden) return;
   const list=document.getElementById('prefsSummaryList');
   const items=[];
-  if(state.origin&&state.origin.name) items.push(state.origin.name+'発');
   const drive={'20':'車で〜20分','40':'車で〜40分','60':'車で〜60分','any':'遠くてもOK'};
   if(drive[state.driveTime]) items.push(drive[state.driveTime]);
   const ageLabels={'0-2':'0〜2歳','3-5':'3〜5歳','elem':'小学生'};
   const ages=[...state.ages].map(a=>ageLabels[a]).filter(Boolean);
   if(ages.length) items.push(ages.join('・'));
-  const budgets={'free':'無料メイン（食事代別）','1000':'入場料など1人〜1,000円（食事代別）','3000':'入場料など1人〜3,000円（食事代別）','any':'予算の上限なし'};
+  const budgets={'free':'無料メイン（食事代別）','1000':'入場料など1人〜1,000円目安（食事代別）','3000':'入場料など1人〜3,000円目安（食事代別）','any':'予算の上限なし'};
   if(budgets[state.budget]) items.push(budgets[state.budget]);
   list.replaceChildren();
   items.forEach(text=>{ const item=document.createElement('li'); item.textContent=text; list.appendChild(item); });
@@ -8201,7 +8200,7 @@ function loadPrefs(){
     if(summary&&(state.driveTime||state.ages.size||state.budget)){
       summary.hidden=false;
       const note=document.getElementById('geoNote');
-      if(note&&note.textContent==='前回の出発地を選択しています（変更もできます）') note.textContent='';
+      if(note&&p.origin&&p.origin.name) note.textContent='';
     }
     refreshNext();
   }catch(e){}
@@ -8223,6 +8222,15 @@ function reroll(){
   }
   state.planNo=(state.planNo||1)+1;
   showResult();
+}
+// Keep this session's family choices when retrying an empty result.
+function revisePlanDate(){
+  state.when=null; state.depart=null; state.weather=null; state.tooLateToday=false;
+  document.querySelectorAll('#whenBtns .bigbtn,#departTodayBtns .bigbtn,#departDayBtns .bigbtn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('departWrap').style.display='none';
+  document.getElementById('result').style.display='none';
+  document.getElementById('dots').style.display='flex';
+  step=2; render(); refreshNext();
 }
 function restart(){
   const summary=document.getElementById('prefsSummary'); if(summary) summary.hidden=true;

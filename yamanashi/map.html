@@ -127,7 +127,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;font-family:-apple-syst
 .originbar{top:calc(56px + env(safe-area-inset-top))}
 .originbar :is(select,button){min-height:44px;font-size:.875rem}
 .countbadge{top:calc(114px + env(safe-area-inset-top));left:10px;transform:none;font-size:.8125rem}
-#skipPlanBtn{top:calc(110px + env(safe-area-inset-top));min-height:44px;font-size:.8125rem;max-width:58vw;white-space:normal}
+#skipPlanBtn{top:calc(110px + env(safe-area-inset-top));min-height:44px;font-size:.8125rem;max-width:58vw;white-space:nowrap}
 .chipbar .chip{min-height:44px;font-size:.875rem}
 .leaflet-control-zoom{position:fixed;right:10px;top:calc(166px + env(safe-area-inset-top));margin:0!important}
 .leaflet-control-attribution{margin-bottom:calc(70px + env(safe-area-inset-bottom))!important}
@@ -152,7 +152,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;font-family:-apple-syst
 </div>
 <div class="countbadge" id="countBadge">該当…件</div>
 
-<button id="skipPlanBtn" type="button" onclick="skipToPlan()">おまかせでプランを作る →</button>
+<button id="skipPlanBtn" type="button" onclick="skipToPlan()">おまかせプランへ →</button>
 
 <div id="map" role="application" aria-label="スポットの地図"></div>
 <button id="recenterBtn" type="button" aria-label="現在地へ戻る" title="現在地へ戻る">⌖</button>
