@@ -25850,12 +25850,18 @@ function capFor(dt){
   if(dt==='20') return 20;
   if(dt==='40') return 40;
   if(dt==='60') return 60;
-  return Infinity;
+  return 150;
 }
 function nextCap(cap){
   if(cap===20) return 40;
   if(cap===40) return 60;
-  return Infinity;
+  return 150;
+}
+function overBurden(p){
+  if(!p) return false;
+  if(p.totalDrive>300) return true;
+  if(p.retHome!=null&&p.retHome>=19*60) return true;
+  return false;
 }
 
 /* ===== wizard nav ===== */
@@ -26702,7 +26708,7 @@ function generatePlans(date,w){
     return pl;
   });
   // 上限内の案があればそれだけを出す。全案が超える場合のみ警告つきでそのまま出す
-  const within=built.filter(p=>!p.__late);
+  const within=built.filter(p=>!p.__late&&!overBurden(p));
   const out=within.length?within:built;
   state.shownMains=out.map(p=>p.main);
   return out;
@@ -26747,25 +26753,37 @@ function nextVarietyPlan(date,w){
     if(!fresh.length) fresh=candidates;
     cycled=true;
   }
-  const picked=shuffle(fresh)[0];
-  state.shownMains.push(picked);
   state.cycledNote=cycled;
-  let plv=buildPlan(picked,date,w);
   // B) 初回生成(generatePlans)と同じ年齢・負担軽減ガードを適用する。
   //    旧実装は総運転190分の一律判定のみで、0-2歳のみの130分上限と帰宅時刻上限が抜けていた。
+  // D) 負担超過(運転合計300分超 / 帰着19:00以降)の案は採らず、次の候補を試す。
+  //    どの候補も超える場合のみ、最初の案を警告つきで出す(generatePlans と同じ方針)。
   const onlyT=state.ages.has('0-2')&&state.ages.size===1;
   const kidCap=state.ages.has('elem')?null:(onlyT?18*60:(18*60+30));
   const driveLimit=onlyT?130:190;
-  if(plv.totalDrive>driveLimit&&plv.sub){
-    const plv2=buildPlan(picked,date,w,{lunch:plv.lunch||null,sub:null});
-    if(plv2.totalDrive<plv.totalDrive) plv=plv2;
+  const order=shuffle(fresh);
+  const tries=Math.min(order.length,12);
+  let firstPicked=null,firstPlan=null,okPicked=null,okPlan=null;
+  for(let ti=0;ti<tries;ti++){
+    const cand=order[ti];
+    let plv=buildPlan(cand,date,w);
+    if(plv.totalDrive>driveLimit&&plv.sub){
+      const plv2=buildPlan(cand,date,w,{lunch:plv.lunch||null,sub:null});
+      if(plv2.totalDrive<plv.totalDrive) plv=plv2;
+    }
+    if(kidCap&&plv.retHome&&plv.retHome>kidCap&&plv.sub){
+      const plv3=buildPlan(cand,date,w,{lunch:plv.lunch||null,sub:null});
+      if(plv3.retHome&&plv3.retHome<=kidCap) plv=plv3;
+    }
+    if(kidCap&&plv.retHome&&plv.retHome>kidCap) plv.__late=true;
+    if(firstPicked===null){ firstPicked=cand; firstPlan=plv; }
+    if(!plv.__late&&!overBurden(plv)){ okPicked=cand; okPlan=plv; break; }
   }
-  if(kidCap&&plv.retHome&&plv.retHome>kidCap&&plv.sub){
-    const plv3=buildPlan(picked,date,w,{lunch:plv.lunch||null,sub:null});
-    if(plv3.retHome&&plv3.retHome<=kidCap) plv=plv3;
-  }
-  if(kidCap&&plv.retHome&&plv.retHome>kidCap) plv.__late=true;
-  return plv;
+  const finalPicked=(okPicked!==null?okPicked:firstPicked);
+  const finalPlan=(okPlan!==null?okPlan:firstPlan);
+  if(!finalPlan) return null;
+  state.shownMains.push(finalPicked);
+  return finalPlan;
 }
 
 /* ===== 生成の安全網: 例外・タイムアウトでもloadingのまま固まらない ===== */
@@ -26919,6 +26937,8 @@ function parentSummary(){
     base=(state.origin&&state.origin.name?state.origin.name+'から':'')+'車40分圏内で無理なく楽しめるプランにしています。';
   } else if(state.driveTime==='60'){
     base=(state.origin&&state.origin.name?state.origin.name+'から':'')+'車60分圏内で少し足を延ばすプランにしています。';
+  } else if(state.driveTime==='any'){
+    base=(state.origin&&state.origin.name?state.origin.name+'から':'')+'片道2時間半以内で探しています。お子さんの年齢に合わせて、無理なく楽しめるプランにしています。';
   } else {
     base='お子さんの年齢に合わせて、無理なく楽しめるプランにしています。';
   }
@@ -28145,7 +28165,7 @@ function renderCustomPanel(){
     if(s&&!s.__temp&&!s.__bento){
       const __notes=[];
       const __cap3=capFor(state.driveTime);
-      if(isFinite(__cap3)&&s.latitude!=null){
+      if(isFinite(__cap3)&&state.driveTime!=='any'&&s.latitude!=null){
         const __dm3=driveMinutesFrom(state.origin,s);
         if(__dm3!=null&&__dm3>__cap3) __notes.push('⚠️ 設定範囲('+state.driveTime+'分)を超えています（約'+__dm3+'分）');
       }
