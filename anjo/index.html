@@ -434,14 +434,31 @@ dialog#planDlg::backdrop{background:rgba(15,45,50,.45)}
 <script>
 /* build.py が events.js を埋め込みました。編集は events.js 側で行ってください。 */
 /* おでまる｜安城市 今週末のおでかけ（試作デモ）
- * データ定義。画面ロジックは index.html 側。
+ * データ定義ファイル。画面(index.html)から分離して管理する。
  * 情報確認日: 2026-09-07
  * 対象週: 2026年9月12日（土）・13日（日）
- * 掲載は各主催者の公式ページの記載にもとづく。公式に記載のない項目は推測で補わず '要確認' とする。
- * recReason は順位・評価語を使わず、無料／予約不要／屋内のバッジと重複する文言も書かない。
- * notes は「です・ます」＋句点で、制約を1件1文で書く。
+ *
+ * 各項目は公式ページの記載をそのまま保持する。推測で補完しない。
+ * 公式に記載が無い項目は "要確認" とし、独自の制限や値を作らない。
+ *
+ * officialTarget : 主催者が明記した対象（原文）
+ * recommendedAgeTags : おでまるの年齢検索に使うタグ。baby(0〜2歳)/preschool(3〜6歳)/
+ *                  elementary(小学生)/juniorHigh(中学生)/youth(高校生・若者)。
+ *                  「全年齢だから参加できる」を理由に全タグを付けない。
+ *                  公式に対象年齢が明記されていればそれを優先し、
+ *                  内容から強くおすすめできる年齢だけを入れる。迷ったら増やさず allAges に残す。
+ * allAges        : 公式に年齢の制限・限定が書かれていないことを示すフラグ。
+ *                  展覧会・マルシェ・一般公演で年齢指定がないものは原則 true。
+ * recReason      : カードに1つだけ出す内容の要約（事実の記述）。
+ *                  順位・評価を連想させる語（おすすめ／人気／BEST／ランキング等）は使わない。
+ *                  「無料」「予約不要」「屋内」とバッジが重複する文言も入れない。
+ * extraTags      : 年齢以外の補助タグ（表示のみ・絞り込み対象外）
+ * fee.status     : 無料 / 有料 / 一部有料 / 要確認
+ * reserve.status : 不要 / 必要 / 一部必要 / 要確認
+ * place          : indoor / outdoor / both / unconfirmed
+ *                  会場名から明らかな場合のみ indoor/outdoor を入れる。
+ *                  複数会場・屋内外が公式に判別できないものは unconfirmed。
  */
-
 const CHECKED_AT = '2026年9月7日';
 
 const EVENTS = [
@@ -748,7 +765,7 @@ const EVENTS = [
     venue: "キーポート／三河安城駅／図書情報館", timeText: "10:00～20:00", startMin: 600,
     officialTarget: "年齢指定なし",
     recommendedAgeTags: ["juniorHigh", "youth"], allAges: true, recReason: "中高生・若者向けの小説の特別展", extraTags: [],
-    fee: { status: "無料", text: "無料" },
+    fee: { status: "要確認", text: "公式に料金の記載なし" },
     reserve: { status: "要確認", text: "公式に申込の記載なし" },
     place: "unconfirmed", placeNote: "複数会場のため屋内・屋外が一律に定まりません",
     summary: "市内3か所で開かれる小説「白鳥とコウモリ」の特別展。三河安城駅には映画台本、図書情報館には関連書籍を展示。",
@@ -1005,7 +1022,7 @@ const EVENTS = [
     venue: "安城市図書情報館2階", timeText: "開館時間中", startMin: null,
     officialTarget: "年齢指定なし",
     recommendedAgeTags: [], allAges: true, recReason: "宮沢賢治の生誕130年記念展示", extraTags: [],
-    fee: { status: "無料", text: "無料" },
+    fee: { status: "要確認", text: "公式に料金の記載なし" },
     reserve: { status: "要確認", text: "公式に申込の記載なし" },
     place: "indoor",
     summary: "宮沢賢治の生誕130年に合わせた図書情報館の展示。",
@@ -1167,7 +1184,12 @@ const SPECIALS = [
   }
 ];
 
-window.ANJO_DATA = { EVENTS, SPECIALS, CHECKED_AT };
+if (typeof window !== 'undefined') {
+  window.ANJO_DATA = { EVENTS, SPECIALS, CHECKED_AT };
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { EVENTS, SPECIALS, CHECKED_AT };
+}
 
 </script>
 <script>
