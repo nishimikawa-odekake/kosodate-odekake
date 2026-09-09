@@ -4093,6 +4093,7 @@ function isClosedNotice(s){ return !!(s&&s.hours_status==='closed_notice'); }
 // 営業時間が未確認(未登録)のスポットか。開放フラグの影響を受けない純粋な判定(表示用)。
 function isUnverifiedHours(s){
   if(!s) return false;
+  if(/要問合せ|要問い合わせ|要確認|電話/.test(String(s.business_hours||''))) return true; // 「要問合せ」等は登録済みでも未確認扱い
   if(s.business_hours) return false;      // 登録あり -> closingInfo 判定の世界
   if(alwaysOpenPark(s)) return false;     // 常時開園の公園は「未確認」扱いしない
   return true;
@@ -4462,6 +4463,17 @@ function scoreSpot(s,date,w,arrivalMin){
 // マップ上の🏠チップ専用スポットという設計であり、メイン/ランチ/余力のどの枠にも入れない。
 // 「遠出の帰り道に児童センター系には寄らない」というユーザー方針のガードをここに一本化する。
 function isJidokan(s){ return s&&s.is_jidokan===true; }
+// 児童館(is_jidokan)とそれ以外を読み込み時に1回だけ分ける(SPOTS の直後相当。SPOTS リテラルの終端は県ごとに書式が違うため、isJidokan 定義直後に置く)
+const SPOTS_NORMAL=SPOTS.filter(s=>!isJidokan(s)); const SPOTS_JIDOKAN=SPOTS.filter(s=>isJidokan(s));
+// 児童館フォールバック(段階①): 雨モード × 20/40分 × 0-2/3-5歳 × 通常候補<3 のときだけ児童館を候補に足す。予算条件は入れない。
+function allowJidokanNow(normalCount){
+  if(!isRainMode(state.weather)) return false;
+  if(!(state.driveTime==='20'||state.driveTime==='40')) return false;
+  if(!(state.ages&&(state.ages.has('0-2')||state.ages.has('3-5')))) return false;
+  return normalCount<3;
+}
+// 市町村名の正規化キー(同一市町村の児童館を優先するための比較用)
+function cityKey(c){ return String(c||'').normalize('NFKC').replace(/\s+/g,''); }
 function budgetPass(s){
   if(state.budget==='any') return true;
   if(state.budget==='free') return s.is_free===true;
@@ -4514,14 +4526,14 @@ function cpSelectedCost(){
   });
   return sum;
 }
-function buildPool(date,w){
+function poolFrom(list,date,w){
   const o=state.origin;
   const rain=isIndoorMode(w);
   const start=startMinutes();
-  let cand=SPOTS.filter(s=>{
+  let cand=list.filter(s=>{
     if(s.latitude==null) return false;
     if(isClosedNotice(s)) return false; // 閉店・休業告知のある店は全開放でも候補にしない
-    if(isJidokan(s)) return false; // 児童館・子育て支援センター系はプランナー対象外（🏠チップ専用）
+    if(isJidokan(s)&&list!==SPOTS_JIDOKAN) return false; // 児童館・子育て支援センター系はプランナー対象外（🏠チップ専用）。SPOTS_JIDOKAN を渡したときだけ通す
     const pt=s.play_types||[];
     if(pt.length===1&&pt[0]==='food') return false; // pure food -> lunch only
     if(toddlerOnlyNow()&&isActiveSportSpot(s)) return false; // 0-2歳のみ: 強い運動系はメイン候補から除外
@@ -4567,6 +4579,23 @@ function buildPool(date,w){
   }
   // full pool (candidate-count check for drive-time expansion needs the true count)
   return cand;
+}
+function buildPool(date,w){ return poolFrom(SPOTS_NORMAL,date,w); }
+// 児童館フォールバック(段階①): RING_RELAX 適用後の通常プールに対して、発動条件を満たすときだけ
+// 営業時間が登録済みの児童館を「通常候補の最低点より下」の点で末尾に足す(同一市町村→距離順)。
+function appendJidokan(pool,date,w){
+  state.jidokanActive=false;
+  if(!allowJidokanNow(pool.length)) return pool;
+  const o=state.origin; if(!o) return pool;
+  let jk=poolFrom(SPOTS_JIDOKAN,date,w).filter(s=>!isUnverifiedHours(s));
+  if(!jk.length) return pool;
+  const minScore=pool.length?Math.min.apply(null,pool.map(s=>s.__sc||0)):0;
+  const same=jk.filter(s=>cityKey(s.city)===cityKey(o.name)).sort((a,b)=>a.__dm-b.__dm);
+  const other=jk.filter(s=>cityKey(s.city)!==cityKey(o.name)).sort((a,b)=>a.__dm-b.__dm);
+  jk=same.concat(other);            // 同一市町村→距離順。移動上限外は poolFrom が既に除外
+  jk.forEach((s,i)=>{ s.__jidokan=true; s.__sc=minScore-1.01-i*0.01; }); // 監督A裁定: diversifyHead の境界(>= top-1.0)に乗らないよう 1.01
+  state.jidokanActive=true;
+  return pool.concat(jk);
 }
 // Reorder a scored pool so the drive-time "mood" is honored when picking mains:
 // - 60分 ("せっかくの遠出"): prefer A/S spots that are actually 30分+ away; only fall back to
@@ -4720,7 +4749,9 @@ function subCandidates(main,lunch,mainDriveMin,date,w){
   const c=SPOTS.filter(s=>{
     if(s===main||s.latitude==null) return false;
     if(isClosedNotice(s)) return false; // 閉店・休業告知のある店は全開放でも候補にしない
-    if(isJidokan(s)) return false; // 児童館・子育て支援センター系は余力枠からも除外（帰り道に寄らない）
+    if(isJidokan(s)&&!(state.jidokanActive&&!(main&&main.__jidokan))) return false; // 児童館は発動中かつメインが児童館でないときだけ許可（メインと午後が両方児童館にならない）
+    if(isJidokan(s)&&isUnverifiedHours(s)) return false; // 児童館は営業時間未確認なら弾く
+    if(isJidokan(s)) s.__jidokan=true;
     if((s.play_types||[]).includes('food')) return false; // 午後スポット・余力枠は遊び場のみ(ランチ枠の直後に飲食店を続けない)
     if(toddlerOnlyNow()&&isActiveSportSpot(s)) return false; // 0-2歳のみ: 午後・余力枠からも除外
     if(!budgetPass(s)) return false; // 午後枠も予算条件に連動(無料限定をやめ、1日プランの午後スポットとして選ぶ)
@@ -5012,6 +5043,7 @@ function generatePlans(date,w){
     if(pool.length) state.ringRelaxed=true;
   }
   // 移動時間は「上限」。候補が少なくても勝手に範囲を広げない(広げるのはユーザーが明示的に承認した場合のみ)。
+  pool=appendJidokan(pool,date,w);
   if(!pool.length) return [];
   const tiered=applyDriveMoodTier(pool);
   // variety: distinct mains for up to 3 variants
@@ -5062,6 +5094,7 @@ function nextVarietyPlan(date,w){
     window.RING_RELAX=false;
     if(pool.length) state.ringRelaxed=true;
   }
+  pool=appendJidokan(pool,date,w);
   if(!pool.length) return null;
   const tiered=applyDriveMoodTier(pool);
   const uniq=[];
@@ -5370,6 +5403,9 @@ function rowHtml(r){
       +(s.official_url?' <a href="'+esc(s.official_url)+'" target="_blank" rel="noopener" onclick="track(\'hours_unverified_official\')" style="color:#1a73e8;font-weight:700">公式サイトで確認↗</a>':'')
       +'</div>';
   }
+  if(s.__jidokan){
+    body+='<div class="notice">※市外の方は利用可否を公式サイトでご確認ください</div>';
+  }
   if(typeof isActiveSportSpot==='function'&&isActiveSportSpot(s)){
     body+='<div class="meta" style="color:#b45309;font-weight:700">⚠️ 年齢・身長制限がある場合があります。対象年齢を公式サイトでご確認ください</div>';
   }
@@ -5476,7 +5512,11 @@ function swapListFor(slot,cap){
   let list=[];
   try{
     if(slot==='main'){
-      list=applyDriveMoodTier(buildPool(date,w));
+      list=buildPool(date,w);
+      const __savedJk=state.jidokanActive; // 監督A裁定: プラン生成時の発動状態を swap が上書きしないよう保存・復元
+      list=appendJidokan(list,date,w);
+      state.jidokanActive=__savedJk;
+      list=applyDriveMoodTier(list);
     } else if(slot==='lunch'){
       list=lunchCandidates(p.main,date);
     } else if(csIndex(slot)!=null){
@@ -5517,6 +5557,7 @@ function swapFilter(list,extra){
   const out=[];
   // 同一チェーンは候補3件のなかで1店まで（プラン内で使用中のチェーンも除外）
   const usedChains=new Set(inPlan.filter(x=>x&&x.is_chain===true&&x.chain_name).map(x=>x.chain_name));
+  list=jidokanCap2(list); // 児童館は最大2件(同一市町村優先→近い順)。通常候補の3件打ち切りは変えない
   for(const s of list){
     if(inPlan.includes(s)) continue;
     if(state.excludedSpots.includes(s)) continue;
@@ -5752,6 +5793,7 @@ function swapFilterAll(slot){
     list=near.length>=3?near:cands;
   }
   const inPlan=swapInPlanList(p);   // 【実装3-2】カスタム時は枠の中身を見る
+  list=jidokanCap2(list); // 児童館は最大2件(同一市町村優先→近い順)
   const out=[];
   for(const s of list){
     if(inPlan.includes(s)) continue;
@@ -5760,6 +5802,18 @@ function swapFilterAll(slot){
     if(!out.includes(s)) out.push(s);
   }
   return out;
+}
+// 変更候補に含める児童館を最大2件に絞る(営業時間未確認は除外、同一市町村優先→出発地から近い順、通常候補の後ろに置く)
+function jidokanCap2(list){
+  const o=state.origin;
+  const jk=list.filter(s=>isJidokan(s)&&!isUnverifiedHours(s));
+  const normal=list.filter(s=>!isJidokan(s));
+  if(!jk.length) return normal;
+  const dm=s=>{ const m=o?driveMinutesFrom(o,s):null; return m==null?1e9:m; };
+  const sameCity=s=>!!o&&cityKey(s.city)===cityKey(o.name);
+  const same=jk.filter(s=>sameCity(s)).sort((a,b)=>dm(a)-dm(b));
+  const other=jk.filter(s=>!sameCity(s)).sort((a,b)=>dm(a)-dm(b));
+  return normal.concat(same.concat(other).slice(0,2));
 }
 function widenSwap(slot,btn){
   if(typeof gtag==='function') gtag('event','plan_swap_widen',{slot:slot});
