@@ -527,6 +527,9 @@ function targetDate(when){
  *               その期間内の曜日由来・振替由来の休を打ち消す。ただし
  *               GW・夏休み・冬休み・春休み・繁忙期など、文字列から期間が
  *               一意に決まらない主語は解決せず、打ち消しを一切行わない。
+ *   裁定⑥:     GW は「その年の 5 月の祝日のうち憲法記念日(5/3)を含む連続区間」と
+ *               して、既存の祝日テーブルの日付だけから機械的に導出する（新しい
+ *               日付は 1 つも作らない）。夏休み・冬休み・春休みは実装しない。
  * ===================================================================== */
 
 /* ---- 新実装（スコープを閉じるため IIFE に格納）------------------------- */
@@ -752,12 +755,36 @@ var RE_OPENDECL = new RegExp(
 /* 条件節・開始終了宣言は主語として採らない */
 var RE_NOT_PERIOD = /(場合|とき|時|にあたる|に当たる|と重なる|以降|以前|より|まで|終了|予定)/;
 /* 文字列から期間が一意に決まらない語。1つでも含む主語は解決しない */
-var RE_VAGUE = new RegExp(['GW','ＧＷ','ゴールデンウィーク','ゴールデンウイーク',
+var RE_VAGUE = new RegExp([
   '夏休み','冬休み','春休み','春夏冬','夏期','夏季','冬期','冬季','春期','春季',
   '繁忙期','紅葉期','期間中','開催時','営業中','開設期間','学校','長期休業','休業期間',
   '不定期','それ以外','以外','カレンダー','天候','予約','等','など'].join('|'));
 /* 「〜は営業の場合あり」「〜は開所の予定」等の留保付きは営業宣言として採らない */
 var RE_HEDGE = /^[^、。]{0,8}(場合|可能性|こともあ|ことがあ|予定|未定|あり)/;
+/* ---- 裁定⑥: GW（ゴールデンウィーク）--------------------------------------
+   期間を推測せず、**既存の祝日テーブル HOLN の日付だけ**から機械的に導出する。
+   定義: 「その年の 5 月の祝日のうち、憲法記念日(5/3) を含む連続した区間」。
+   2026 → 5/3・5/4・5/5・5/6   2027 → 5/3・5/4・5/5
+   新しい日付は 1 つも作っていない。祝日テーブルが無い年は空（＝何も打ち消さない）。
+   「夏休み・冬休み・春休み」は施設ごとに期間が違い、文字列からも既存テーブルからも
+   一意に決まらないため **実装しない**（監督A裁定⑥）。                        */
+var RE_GW = /(GW|ＧＷ|ゴールデンウィーク|ゴールデンウイーク|ゴールデン・?ウィーク)/;
+var GW_CACHE = {};
+function gwDaysOfYear(y){
+  var t=HOLN[y]; if(!t) return [];
+  var may=[], d, k;
+  for(d=1;d<=31;d++) if(t['5/'+d]) may.push(d);
+  if(may.indexOf(3)<0) return [];              // 憲法記念日が無ければ導出しない
+  var out=[3];
+  for(k=4;k<=31;k++){ if(may.indexOf(k)>=0 && out.indexOf(k-1)>=0) out.push(k); else break; }
+  for(k=2;k>=1;k--){  if(may.indexOf(k)>=0 && out.indexOf(k+1)>=0) out.unshift(k); else break; }
+  return out;
+}
+function isGWDate(date){
+  var y=date.getFullYear();
+  if(!GW_CACHE[y]) GW_CACHE[y]=gwDaysOfYear(y);
+  return date.getMonth()===4 && GW_CACHE[y].indexOf(date.getDate())>=0;
+}
 var RE_HOLNAME_G = /(元日|成人の日|建国記念の日|天皇誕生日|春分の日|昭和の日|憲法記念日|みどりの日|こどもの日|振替休日|国民の休日|海の日|山の日|敬老の日|秋分の日|スポーツの日|体育の日|文化の日|勤労感謝の日)/g;
 
 /* 「12月28日」のような日付の一部である「月」は月リストとして拾わない */
@@ -786,9 +813,10 @@ function obonWindowOf(spec){
 }
 /* 主語を解決する。解決できたものだけを返す。解決できなければ null。 */
 function resolveOpenSubject(sub, spec){
-  var r={ranges:[],months:[],md:[],names:[],wd:null,src:sub}, ok=false, m;
+  var r={ranges:[],months:[],md:[],names:[],gw:false,wd:null,src:sub}, ok=false, m;
   if(RE_NOT_PERIOD.test(sub)) return null;
   if(RE_VAGUE.test(sub))      return null;
+  if(RE_GW.test(sub)){ r.gw=true; ok=true; }
   /* 明示日付範囲（「日」または「/」を含むものだけを日付範囲として採る） */
   var rs=parseRanges(sub), i;
   for(i=0;i<rs.length;i++){
@@ -833,17 +861,18 @@ function collectOpenSpans(t, spec){
     RE_OPENDECL.lastIndex=0;
     while((m=RE_OPENDECL.exec(p))){
       if(RE_HEDGE.test(p.slice(m.index+m[0].length))) continue;
-      var parts=m[1].split(/[、・&＆]/), got=null;
+      var parts=m[1].split(/[、・&＆と]/), got=null;
       for(j=0;j<parts.length;j++){
         var q=parts[j].replace(/^[\s(]+|[\s)]+$/g,'');
         if(!q) continue;
         var rr=resolveOpenSubject(q, spec);
         if(!rr){ if(spec.openSpansUnresolved.indexOf(q)<0) spec.openSpansUnresolved.push(q); continue; }
-        if(!got) got={ranges:[],months:[],md:[],names:[],wd:null,src:m[0]};
+        if(!got) got={ranges:[],months:[],md:[],names:[],gw:false,wd:null,src:m[0]};
         got.ranges=got.ranges.concat(rr.ranges);
         for(var k=0;k<rr.months.length;k++) if(got.months.indexOf(rr.months[k])<0) got.months.push(rr.months[k]);
         for(k=0;k<rr.md.length;k++)    if(got.md.indexOf(rr.md[k])<0) got.md.push(rr.md[k]);
         for(k=0;k<rr.names.length;k++) if(got.names.indexOf(rr.names[k])<0) got.names.push(rr.names[k]);
+        if(rr.gw) got.gw=true;
         if(rr.wd) got.wd=rr.wd;
       }
       if(got) spec.openSpans.push(got);
@@ -860,6 +889,7 @@ function inOpenSpan(spec, date){
     if(!hit && o.months.indexOf(mo)>=0) hit=true;
     if(!hit && o.md.indexOf(md)>=0) hit=true;
     if(!hit && nm && o.names.indexOf(nm)>=0) hit=true;
+    if(!hit && o.gw && isGWDate(date)) hit=true;
     if(hit) return o;
   }
   return null;
