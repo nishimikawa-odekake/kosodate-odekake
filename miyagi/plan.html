@@ -520,6 +520,13 @@ function targetDate(when){
  * 旧実装は isClosedOnLegacy として逐語で残してある（改名以外の変更なし）。
  * 新実装は closed_days を「節 → トークン → 意味」で解釈する。県別分岐は無い。
  * 設計書: closedfix/DESIGN.md ／ 回帰: closedfix/REGRESSION_REPORT.md
+ *
+ * 監督A裁定（2026-09-10 追補）:
+ *   裁定②訂正: dateRange = true（closed_days に実日付で書かれた休業期間を読む）
+ *   裁定④:     「〈期間〉は営業／開館／開園／無休」型を営業日の明示として扱い、
+ *               その期間内の曜日由来・振替由来の休を打ち消す。ただし
+ *               GW・夏休み・冬休み・春休み・繁忙期など、文字列から期間が
+ *               一意に決まらない主語は解決せず、打ち消しを一切行わない。
  * ===================================================================== */
 
 /* ---- 新実装（スコープを閉じるため IIFE に格納）------------------------- */
@@ -547,7 +554,7 @@ function isHolDate(d){ return holName(d)!==null; }
 /* ---- 既定オプション（既定 ON = 今回のコア改修）---------------------------- */
 var DEFAULT_OPT = {
   afterHoliday   : false, // 単独節「祝日の翌日」を休として実装する（既定 OFF・要裁定）
-  dateRange      : false, // 「12月29日〜1月3日」等の明示日付範囲を休として実装（既定 OFF・要裁定）
+  dateRange      : true,  // 「12月29日〜1月3日」等の明示日付範囲を休として実装（監督A訂正で既定 ON）
   nenmatsuNarrow : false, // 年末年始の既定窓を 12/29〜1/3 にする（既定 OFF＝現行の 12/28〜1/4）
   nenmatsuFromData: true, // closed_days に書かれた実日付を年末年始・お盆の窓に使う（既定 ON）
   openOnly       : false, // 「土日のみ営業」型で営業曜日の補集合を休にする（既定 OFF・要裁定）
@@ -728,12 +735,143 @@ function inMDRange(date, r){
   return (a<=b) ? (md>=a&&md<=b) : (md>=a||md<=b);   // 年跨ぎ
 }
 
+/* ---- 裁定④: 「〈期間〉は営業／は開館／は開園／は無休」型 -------------------
+   期間を主語にした営業宣言を「営業日の明示」として扱い、その期間内の
+   曜日由来・振替由来の休を打ち消す。
+   **期間が文字列から一意に決まらない主語（GW・夏休み・冬休み・春休み・
+   夏期・繁忙期・紅葉期・営業期間中・学校長期休業中 など）は解決せず、
+   打ち消しを一切行わない。** 推測で日付範囲を作らない（裁定① 案A と同じ倒し方）。
+   「祝日は開館」型の一般祝日は openSpan に入れない。これは定休日が祝日に
+   当たったときの規定であって振替日そのものを開ける規定ではないため、
+   既存の holidayOpen / globalHolidayOpen（＝曜日規則にだけ効く）に任せる。 */
+var RE_OPENDECL = new RegExp(
+  '([^。\u203b()]{1,44}?)(?:\u306f|\u3082)\s*' +
+  '(?:\u4f11\u307e\u305a|\u4f11\u307f\u306a\u304f|\u6bce\u65e5|\u7d42\u65e5|\u901a\u5e38)?\s*' +
+  '(?:\u55b6\u696d|\u958b\u9928|\u958b\u5712|\u958b\u6240|\u958b\u5e97|\u30aa\u30fc\u30d7\u30f3|\u958b\u653e|\u7121\u4f11)' +
+  '(?!\u7d42\u4e86|\u505c\u6b62|\u4f11\u6b62|\u4e2d\u6b62|\u671f\u9593|\u6642\u9593|\u65e5\u6642)', 'g');
+/* 条件節・開始終了宣言は主語として採らない */
+var RE_NOT_PERIOD = /(場合|とき|時|にあたる|に当たる|と重なる|以降|以前|より|まで|終了|予定)/;
+/* 文字列から期間が一意に決まらない語。1つでも含む主語は解決しない */
+var RE_VAGUE = new RegExp(['GW','ＧＷ','ゴールデンウィーク','ゴールデンウイーク',
+  '夏休み','冬休み','春休み','春夏冬','夏期','夏季','冬期','冬季','春期','春季',
+  '繁忙期','紅葉期','期間中','開催時','営業中','開設期間','学校','長期休業','休業期間',
+  '不定期','それ以外','以外','カレンダー','天候','予約','等','など'].join('|'));
+/* 「〜は営業の場合あり」「〜は開所の予定」等の留保付きは営業宣言として採らない */
+var RE_HEDGE = /^[^、。]{0,8}(場合|可能性|こともあ|ことがあ|予定|未定|あり)/;
+var RE_HOLNAME_G = /(元日|成人の日|建国記念の日|天皇誕生日|春分の日|昭和の日|憲法記念日|みどりの日|こどもの日|振替休日|国民の休日|海の日|山の日|敬老の日|秋分の日|スポーツの日|体育の日|文化の日|勤労感謝の日)/g;
+
+/* 「12月28日」のような日付の一部である「月」は月リストとして拾わない */
+function monthsFromSubject(sub){
+  var out=[], m, i, k;
+  var reR=/([0-9]{1,2})\s*月?\s*〜\s*([0-9]{1,2})\s*月(?!\s*[0-9]{1,2}\s*日)/g;
+  while((m=reR.exec(sub))){
+    var a=+m[1], b=+m[2], n=0; i=a;
+    if(a<1||a>12||b<1||b>12) continue;
+    while(true){ if(out.indexOf(i)<0) out.push(i); if(i===b) break; i=i%12+1; if(++n>12) break; }
+  }
+  var reL=/((?:[0-9]{1,2}\s*[・、]\s*)*[0-9]{1,2})\s*月(?!\s*[0-9]{1,2}\s*日)/g;
+  while((m=reL.exec(sub))){
+    var nums=m[1].match(/[0-9]{1,2}/g)||[];
+    for(k=0;k<nums.length;k++){ var v=+nums[k]; if(v>=1&&v<=12&&out.indexOf(v)<0) out.push(v); }
+  }
+  return out;
+}
+function newyearWindowOf(spec){
+  if(spec.newyear && spec.newyear.ranges && spec.newyear.ranges.length) return spec.newyear.ranges.slice();
+  return [[12,28,1,4]];
+}
+function obonWindowOf(spec){
+  if(spec.obon && spec.obon.ranges && spec.obon.ranges.length) return spec.obon.ranges.slice();
+  return [[8,12,8,16]];
+}
+/* 主語を解決する。解決できたものだけを返す。解決できなければ null。 */
+function resolveOpenSubject(sub, spec){
+  var r={ranges:[],months:[],md:[],names:[],wd:null,src:sub}, ok=false, m;
+  if(RE_NOT_PERIOD.test(sub)) return null;
+  if(RE_VAGUE.test(sub))      return null;
+  /* 明示日付範囲（「日」または「/」を含むものだけを日付範囲として採る） */
+  var rs=parseRanges(sub), i;
+  for(i=0;i<rs.length;i++){
+    var seg=rs[i][0]+'月'+rs[i][1];
+    if(/[0-9]{1,2}\s*日|\//.test(sub)) { r.ranges.push(rs[i]); ok=true; }
+  }
+  if(!r.ranges.length){
+    var reMD=/([0-9]{1,2})\s*(?:\/|月)\s*([0-9]{1,2})\s*日?/g;
+    while((m=reMD.exec(sub))){
+      if(!/日|\//.test(m[0])) continue;          // 「7月8」（月リストの保護痕）は日付にしない
+      r.md.push((+m[1])+'/'+(+m[2])); ok=true;
+    }
+  }
+  var mo=monthsFromSubject(sub);
+  if(mo.length){ r.months=mo; ok=true; }
+  if(/年末年始|年始年末/.test(sub)){ r.ranges=r.ranges.concat(newyearWindowOf(spec)); ok=true; }
+  if(/お盆|盆休|盆時期|盆期間/.test(sub)){ r.ranges=r.ranges.concat(obonWindowOf(spec)); ok=true; }
+  RE_HOLNAME_G.lastIndex=0;
+  var nm=sub.match(RE_HOLNAME_G);
+  if(nm){ for(i=0;i<nm.length;i++) if(r.names.indexOf(nm[i])<0) r.names.push(nm[i]); ok=true; }
+  /* 「…は月曜も開館」のように曜日を名指ししていれば、その曜日にだけ効かせる */
+  var w=sub.match(new RegExp('(['+WDS+'])曜'));
+  if(w) r.wd=w[1];
+  return ok ? r : null;
+}
+function collectOpenSpans(t, spec){
+  var pieces=[], i, j;
+  var segs=splitTop(t,true);
+  for(i=0;i<segs.length;i++){
+    pieces.push(segs[i]);
+    var depth=0, buf='';
+    for(j=0;j<segs[i].length;j++){
+      var ch=segs[i].charAt(j);
+      if(ch==='('){ if(depth===0) buf=''; depth++; if(depth===1) continue; }
+      if(ch===')'){ depth--; if(depth===0){ pieces.push(buf); buf=''; continue; } }
+      if(depth>0) buf+=ch;
+    }
+    if(depth>0&&buf) pieces.push(buf);
+  }
+  for(i=0;i<pieces.length;i++){
+    var p=pieces[i], m;
+    RE_OPENDECL.lastIndex=0;
+    while((m=RE_OPENDECL.exec(p))){
+      if(RE_HEDGE.test(p.slice(m.index+m[0].length))) continue;
+      var parts=m[1].split(/[、・&＆]/), got=null;
+      for(j=0;j<parts.length;j++){
+        var q=parts[j].replace(/^[\s(]+|[\s)]+$/g,'');
+        if(!q) continue;
+        var rr=resolveOpenSubject(q, spec);
+        if(!rr){ if(spec.openSpansUnresolved.indexOf(q)<0) spec.openSpansUnresolved.push(q); continue; }
+        if(!got) got={ranges:[],months:[],md:[],names:[],wd:null,src:m[0]};
+        got.ranges=got.ranges.concat(rr.ranges);
+        for(var k=0;k<rr.months.length;k++) if(got.months.indexOf(rr.months[k])<0) got.months.push(rr.months[k]);
+        for(k=0;k<rr.md.length;k++)    if(got.md.indexOf(rr.md[k])<0) got.md.push(rr.md[k]);
+        for(k=0;k<rr.names.length;k++) if(got.names.indexOf(rr.names[k])<0) got.names.push(rr.names[k]);
+        if(rr.wd) got.wd=rr.wd;
+      }
+      if(got) spec.openSpans.push(got);
+    }
+  }
+}
+function inOpenSpan(spec, date){
+  if(!spec.openSpans||!spec.openSpans.length) return null;
+  var md=(date.getMonth()+1)+'/'+date.getDate(), mo=date.getMonth()+1, nm=holName(date), i, j;
+  for(i=0;i<spec.openSpans.length;i++){
+    var o=spec.openSpans[i], hit=false;
+    if(o.wd && o.wd!==WD[date.getDay()]) continue;
+    for(j=0;j<o.ranges.length;j++) if(inMDRange(date,o.ranges[j])) { hit=true; break; }
+    if(!hit && o.months.indexOf(mo)>=0) hit=true;
+    if(!hit && o.md.indexOf(md)>=0) hit=true;
+    if(!hit && nm && o.names.indexOf(nm)>=0) hit=true;
+    if(hit) return o;
+  }
+  return null;
+}
+
 /* ---- パース本体 ---------------------------------------------------------- */
 function parseClosedSpec(cdRaw){
   var raw = String(cdRaw==null?'':cdRaw);
   var spec = {raw:raw, weekly:[], nth:[], holiday:null, weekend:null, sunday:null,
               afterHoliday:null, newyear:null, obon:null, ranges:[], openDays:[],
-              weekdaysMonFri:null, noClosure:false, noClosureHint:false, clauses:[]};
+              weekdaysMonFri:null, noClosure:false, noClosureHint:false, clauses:[],
+              openSpans:[], openSpansUnresolved:[]};
   if(!raw.trim()) return spec;
   var t = protectNth(norm(raw)).replace(/(及び|および|並びに|ならびに|かつ)/g,'・');
 
@@ -797,6 +935,7 @@ function parseClosedSpec(cdRaw){
   for(j=0;j<spec.weekly.length;j++) if(spec.weekly[j].conds.holidayOpen) gho=true;
   for(j=0;j<spec.nth.length;j++)    if(spec.nth[j].conds.holidayOpen)    gho=true;
   spec.globalHolidayOpen = gho;
+  collectOpenSpans(t, spec);
   return spec;
 }
 function hasAnyToken(sp){
@@ -934,6 +1073,8 @@ function evalSpec(spec, s, date, OPT){
   var i,r;
 
   if(spec.noClosure) return {closed:false, reason:'無休の記載'};
+  /* 裁定④: 解決できた営業宣言の期間内では、曜日由来・振替由来の休を打ち消す */
+  var openSpan = inOpenSpan(spec, date);
 
   if(spec.obon){
     var orange = (OPT.nenmatsuFromData!==false && spec.obon.ranges) || [[8,12,8,16]];
@@ -959,6 +1100,7 @@ function evalSpec(spec, s, date, OPT){
     if(monthExcluded(r.conds,date)) continue;
     if(r.only && r.only.indexOf(date.getMonth()+1)<0) continue;
     if(isHol && (r.conds.holidayOpen||spec.globalHolidayOpen)) continue;
+    if(openSpan) continue;
     return {closed:true, reason:'毎週'+r.wd+'曜が定休（節「'+r.src+'」）'};
   }
   for(i=0;i<spec.nth.length;i++){
@@ -973,6 +1115,7 @@ function evalSpec(spec, s, date, OPT){
     }
     if(!hit) continue;
     if(isHol && (r.conds.holidayOpen||spec.globalHolidayOpen)) continue;
+    if(openSpan) continue;
     return {closed:true, reason:'第'+r.nth.join('・')+r.wd+'曜が定休（節「'+r.src+'」）'};
   }
   var y=new Date(date.getFullYear(),date.getMonth(),date.getDate()-1);
@@ -982,6 +1125,7 @@ function evalSpec(spec, s, date, OPT){
       if(!(r.conds.substitute || (spec.substituteAny &&
            (!spec.substituteWd || spec.substituteWd===r.wd)))) continue;
       if(r.wd!==WD[y.getDay()]) continue;
+      if(openSpan) continue;
       return {closed:true, reason:'祝日振替休（前日'+r.wd+'曜が祝日 / 節「'+r.src+'」）'};
     }
     if(OPT.afterHoliday && spec.afterHoliday){
