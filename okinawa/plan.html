@@ -5283,8 +5283,13 @@ function lunchCandidates(main,date){
     if(isClosedOn(s,date)) return false;
     const km=haversineKm(main.latitude,main.longitude,s.latitude,s.longitude);
     if(km>15) return false;
+    // メインまで cap を超える移動を許容して選んだ場合、その周辺のランチも同じ移動圏として扱う。
+    // (旧実装は「メインから15km圏」∩「出発地から CURRENT_CAP 分圏」の積集合になり、
+    //  圏外メインを選ぶとメインから最も遠い候補だけが残っていた)
+    // メインが圏内なら __capRef===CURRENT_CAP となり既存挙動と完全に一致する。
+    const __capRef=Math.max(CURRENT_CAP, driveMinutesFrom(o,main)||0);
     const dmO=driveMinutesFrom(o,s);
-    if(dmO==null||dmO>CURRENT_CAP) return false;
+    if(dmO==null||dmO>__capRef) return false;
     // 営業時間: ランチ到着時刻に閉店済み／開店前の店は除外（チェーン・地元店とも同じ扱い）
     const arr=lunchBase+legMinutes(main.latitude,main.longitude,s.latitude,s.longitude);
     if(closingInfo(s,arr).exclude) return false;
@@ -5366,8 +5371,10 @@ function subCandidates(main,lunch,mainDriveMin,date,w){
     const __subArr=__subBase+legMinutes(prev.latitude,prev.longitude,s.latitude,s.longitude);
     if(closingInfo(s,__subArr).exclude) return false;
     if(hoursUnknown(s)){ noteReserve(s); return false; } // P0: 営業時間未登録は確定枠に入れない
+    // lunchCandidates と同じ理由でメインまでの所要を下限に取る(圏内メインなら CURRENT_CAP と同値)。
+    const __capRef=Math.max(CURRENT_CAP, __dmMain||0);
     const dmO=driveMinutesFrom(o,s);
-    if(dmO==null||dmO>CURRENT_CAP) return false;
+    if(dmO==null||dmO>__capRef) return false;
     // ② 並べ替えの基準点を「直前地点 prev(=ランチ||メイン)」に修正する(旧: メインからの距離 km)。
     // km(メインからの距離)は上の15km判定で使うだけ。__mainkm として保持しておく。
     s.__mainkm=km;
