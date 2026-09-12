@@ -278,6 +278,21 @@ footer p{margin:0 0 6px}
 @media(max-width:389px){.ph-opt .ph-btn{font-size:1rem;padding:12px 10px}}
 /* AFF_HIDE_20260816: アフィリエイト表示の一時停止。復帰時はこのブロックを削除するだけでよい */
 .card .aff{display:none!important}
+
+/* Family flow: distinct entry points and compact search. */
+.planhero .ph-grid{gap:12px}
+.planhero .ph-opt .ph-btn{min-height:48px;display:flex;align-items:center;justify-content:center;line-height:1.5}
+.planhero .ph-opt.is-sub .ph-btn{background:transparent;box-shadow:none;color:#fff;border:1px solid rgba(255,255,255,.8)}
+.planhero .ph-cap{font-size:.8125rem;line-height:1.6;margin-top:8px}
+.filterbar .chip,.filterbar .reset,.filterbar .origin-btn,.filterbar select{min-height:44px;font-size:.875rem}
+.filterbar .frow{gap:8px}
+.filterbar .flabel{font-size:.8125rem}
+:is(.filterbar,.moods,.planhero) :is(button,a,summary,select):focus-visible{outline:3px solid #72502e;outline-offset:3px}
+@media(max-width:600px){
+ .planhero{padding:16px 12px}
+ .planhero .ph-grid{grid-template-columns:1fr}
+ .mood-btn{box-shadow:none;border:1px solid var(--line)}
+}
 </style>
 <style id="odm-chrome">
 .odm-sitebar{background:#fffdf9;border-bottom:1px solid #e8e0d4}
