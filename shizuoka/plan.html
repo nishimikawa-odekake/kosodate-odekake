@@ -198,6 +198,57 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
 @media (max-width:420px){
   .fbbtn{font-size:.88rem;padding:10px 4px}
 }
+
+/* Odemaru guide: appears only at decision moments. */
+.odm-guide{display:flex;align-items:center;gap:12px;margin:10px 0 14px;padding:11px 13px;background:#fffaf3;border:1px solid var(--line);border-radius:16px}
+.odm-guide img{width:56px;height:auto;flex:0 0 56px;object-fit:contain}
+.odm-guide p{margin:0;color:var(--ink);font-size:.9rem;line-height:1.55;font-weight:700}
+.odm-guide p small{display:block;color:#6f6a60;font-size:.75rem;font-weight:600;margin-top:2px}
+.loading .odm-guide{max-width:310px;margin:0 auto 16px;text-align:left}
+.empty .odm-guide{max-width:360px;margin:0 auto 14px;text-align:left}
+@media(max-width:350px){.odm-guide img{width:48px;flex-basis:48px}.odm-guide{gap:9px;padding:10px}}
+
+/* Family reuse: concise guidance and restored selections. */
+.parentline.odm-guide{border:1px solid var(--line);text-align:left}
+.parentline.odm-guide p{font-weight:600}
+.prefs-summary{margin:0 0 16px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fffaf3;text-align:left}
+.prefs-summary[hidden]{display:none}
+.prefs-summary strong{font-size:.86rem;color:var(--ink)}
+.prefs-summary ul{display:flex;flex-wrap:wrap;gap:6px 12px;list-style:none;margin:7px 0;padding:0;color:var(--ink);font-size:.82rem;line-height:1.6}
+.prefs-summary li{overflow-wrap:anywhere}
+.prefs-summary p{margin:0;color:#6f6a60;font-size:.8rem;line-height:1.6}
+.empty-options{border-top:1px solid var(--line);padding-top:12px;margin:20px auto;max-width:400px}
+.empty-options p{font-size:.85rem;margin:0 0 6px}
+.empty button{min-height:44px;max-width:100%;white-space:normal}
+.empty button:focus-visible{outline:3px solid #72502e;outline-offset:3px}
+
+/* Family flow: result actions; presentation only. */
+#result .result-actions{margin:20px 0 12px;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:16px}
+#result .result-actions h2{font-size:1rem;margin:0 0 12px;color:var(--ink)}
+#result .result-use{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#result .result-use a,#result .result-use button{display:flex;align-items:center;justify-content:center;min-height:52px;padding:12px 10px;border:1.5px solid #b46134;border-radius:12px;font:inherit;font-size:.92rem;font-weight:800;text-align:center;text-decoration:none;cursor:pointer;line-height:1.5}
+#result .result-use .act-gmaps{background:#ad5a2e;color:#fff}
+#result .result-use .act-share{background:#fff;color:#98502c;width:100%}
+#result .result-actions .actions{margin:14px 0 0;padding-top:14px;border-top:1px solid var(--line);gap:8px}
+#result .result-actions .act-reroll,#result .result-actions .act-map{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none;font-size:.9rem;padding:10px;min-height:44px}
+#result .result-actions .act-restart{padding:10px;min-height:44px;font-size:.875rem}
+#result .route-note{font-size:.8rem;color:var(--sub);margin:8px 0 0}
+#result .tl .meta,#result .foodnote,#result .bonus-sub{font-size:.8125rem}
+#result .tl .links a,#result .swapbtn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;font-size:.8125rem}
+#result .bonus-wrap{padding:8px 10px;margin-top:14px;background:#f5f1e8;border-radius:12px;border:1px dashed #d8c9b0}
+#result .tl.bonus{opacity:1}
+#result .bonus-head{margin-top:4px}
+#result :is(button,a):focus-visible{outline:3px solid #72502e;outline-offset:3px}
+@media(max-width:350px){#result .result-use{grid-template-columns:1fr}}
+
+/* Family flow: custom slots keep long names clear of their controls. */
+#customPanel .cp-slot{flex-wrap:wrap}
+#customPanel .cp-slot>span:nth-child(2){flex:1 1 calc(100% - 4em)!important;overflow-wrap:anywhere}
+#customPanel .cp-slot.is-empty{border-style:dashed!important;background:#faf6ef!important}
+#customPanel .cp-slot button{min-width:44px;min-height:44px}
+#customPanel button{min-height:44px;line-height:1.5}
+#customPanel input,#customPanel select{font-size:1rem!important;min-height:44px}
+#customPanel :is(button,a,input,select):focus-visible{outline:3px solid #72502e;outline-offset:3px}
 </style>
 <style id="odm-chrome">
 .odm-sitebar{background:#fffdf9;border-bottom:1px solid #e8e0d4}
@@ -239,7 +290,12 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
   <section class="step" data-step="0">
     <div class="q">どこから出発？</div>
     <p class="qsub">おでかけのスタート地点を選んでね</p>
-    <select class="origin" id="originSel"></select>
+    <aside class="prefs-summary" id="prefsSummary" aria-label="選択済みの条件" hidden>
+      <strong>選択済みの条件</strong>
+      <ul id="prefsSummaryList"></ul>
+      <p>現在選択している条件です。各画面で変更できます。<br>日付と出発時間は、今回の予定を選んでください。<br>料金不明の施設を含むことがあります。料金は公式サイトで確認してください。</p>
+    </aside>
+    <select class="origin" id="originSel" aria-label="出発する市町村"></select>
     <button class="geo" id="geoBtn">📍 現在地から探す</button>
     <p class="geonote" id="geoNote"></p>
     <div class="navrow">
@@ -328,8 +384,8 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
   <!-- LOADING -->
   <section id="customPanel" style="display:none;padding:4px 2px"></section>
   <div class="loading" id="loading" style="display:none">
+    <div class="odm-guide"><img src="/odemaru-guide.png" alt="" width="56" height="65"><p>家族に合うプランを考えています<small>お天気や移動時間も確認中です</small></p></div>
     <div class="spinner"></div>
-    <p style="color:var(--sub);font-size:.9rem">お天気とスポットを調べて<br>プランを組み立てています…</p>
   </div>
 
   <!-- RESULT -->
@@ -810,6 +866,7 @@ function canNext(){
 function refreshNext(){
   const btn=steps[step].querySelector('[data-next]');
   if(btn) btn.disabled=!canNext();
+  renderPrefsSummary();
 }
 document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>{
   if(!canNext()) return;
@@ -2598,14 +2655,14 @@ async function sharePlan(){
   if(navigator.share){
     try{
       await navigator.share({title:'きょうのおでかけプラン',text,url});
-      if(typeof gtag==='function') gtag('event','plan_share',{method:'webshare'}); gtag('event','planner_share',seoP({method:'webshare'}));
+      if(typeof gtag==='function'){ gtag('event','plan_share',{method:'webshare'}); gtag('event','planner_share',seoP({method:'webshare'})); }
     }catch(e){ /* user cancelled share sheet */ }
     return;
   }
   try{
     await copyToClipboard(url);
     showToast('リンクをコピーしました');
-    if(typeof gtag==='function') gtag('event','plan_share',{method:'copy'}); gtag('event','planner_share',seoP({method:'copy'}));
+    if(typeof gtag==='function'){ gtag('event','plan_share',{method:'copy'}); gtag('event','planner_share',seoP({method:'copy'})); }
   }catch(e){
     showToast('コピーに失敗しました');
   }
@@ -3085,7 +3142,7 @@ function renderCustomPanel(){
   let html='<div class="q">🗺 自分で選んだ場所でプランを作る</div>';
   html+='<p class="qsub">順番はあとから入れかえOK。空きの枠はおでまるが提案します。</p>';
   html+='<div style="margin:10px 0"><b style="font-size:.85rem">🚗 どこから出発？</b><br>'
-    +'<div style="display:flex;gap:6px;align-items:center;margin-top:4px"><select class="origin" id="cpOrigin" style="flex:1;min-width:0"></select>'
+    +'<div style="display:flex;gap:6px;align-items:center;margin-top:4px"><select class="origin" id="cpOrigin" aria-label="出発地の街" style="flex:1;min-width:0"></select>'
     +'<button type="button" onclick="cpGeo()" style="white-space:nowrap;border:1.5px solid #e8853d;background:'+(state.origin&&state.origin.name==='現在地'?'#e8853d':'#fff8f0')+';color:'+(state.origin&&state.origin.name==='現在地'?'#fff':'#b45f1d')+';border-radius:999px;padding:8px 12px;font-weight:800;font-size:.82rem">📍 現在地</button></div>'
     +'<div id="cpGeoNote" style="font-size:.72rem;color:#8a7a5a;margin-top:3px">'+(state.origin&&state.origin.name==='現在地'?'📍 現在地から出発します':'')+'</div></div>';
   const wOn='background:#e8853d;color:#fff;border:1px solid #e8853d;border-radius:999px;padding:8px 18px;font-weight:800;font-size:.9rem';
@@ -3126,7 +3183,7 @@ function renderCustomPanel(){
   const __spotIdx=state.customSlots.map((_,k)=>k).filter(k=>k!==__rli);
   cpLabels(state.customSlots.length).forEach((lab,i2)=>{
     const s=state.customSlots[i2];
-    html+='<div style="display:flex;align-items:center;gap:7px;padding:10px;border:1px solid #e8ddcc;border-radius:12px;margin:6px 0 0;background:#fff">'
+    html+='<div class="cp-slot '+(s?'is-filled':'is-empty')+'" style="display:flex;align-items:center;gap:7px;padding:10px;border:1px solid #e8ddcc;border-radius:12px;margin:6px 0 0;background:#fff">'
       +'<span style="font-size:.72rem;font-weight:800;color:#e8853d;min-width:2.6em">'+lab+'</span>';
     if(s){
       html+='<span style="flex:1;font-weight:700;font-size:.92rem;min-width:0;overflow-wrap:anywhere">'+esc(s.name)
@@ -3712,20 +3769,21 @@ function showResult(){
       if(typeof gtag==='function') gtag('event','planner_no_result',seoP({reason:'too_late_today'}));
       res.innerHTML='<div class="empty"><p>🌙 今日はもう遅い時間のため、当日のおでかけプランはご用意できません。</p>'
         +'<p style="font-size:.86rem;color:#8a7a5a">「明日」や「今週末」を選ぶと、朝からのプランをご提案できます。</p>'
-        +'<button onclick="restart()">日付を選び直す</button></div>';
+        +'<button onclick="revisePlanDate()">日付を選び直す</button></div>';
       window.scrollTo({top:0,behavior:'smooth'});
       return;
     }
     if(typeof gtag==='function') gtag('event','planner_no_result',seoP({reason:'empty'}));
     const nxtDrive={'20':'40','40':'60','60':'any'}[state.driveTime]||null;
-    const widenBtn=nxtDrive?('<button onclick="approveWiden(\''+nxtDrive+'\')" style="margin:6px 0;background:#e8853d;color:#fff;border:none;border-radius:12px;padding:13px 18px;font-weight:800">🚗 移動時間を'+(nxtDrive==='any'?'「遠くても大丈夫」':'〜'+nxtDrive+'分')+'まで広げて探す</button><br>'):'';
+    const widenBtn=nxtDrive?('<button onclick="approveWiden(\''+nxtDrive+'\')" style="margin:6px 0;background:#fff;color:#b45f1d;border:1.5px solid #e8853d;border-radius:12px;padding:13px 18px;font-weight:800">🚗 移動時間を'+(nxtDrive==='any'?'「遠くても大丈夫」':'〜'+nxtDrive+'分')+'まで広げて探す</button><br>'):'';
     // 無料中心のときは「予算だけ緩めて近場を守る」選択肢も出す(どちらを守るかをユーザーが選ぶ)
     const freeBtn=(state.budget==='free')?('<button onclick="relaxBudgetRegen()" style="margin:6px 0;background:#fff;color:#b45f1d;border:1.5px solid #e8853d;border-radius:12px;padding:13px 18px;font-weight:800">💴 無料条件を外して'+(state.driveTime&&state.driveTime!=='any'?state.driveTime+'分圏内':'近場')+'で探す</button><br>'):'';
     // P0: 営業時間未登録で確定枠から外した候補は「予備候補」として提示する(自動採用はしない)
     const __rsv=reserveHtml('empty',null);
-    res.innerHTML='<div class="empty"><p>ご指定の移動時間の範囲では、<b>営業時間を確認できたスポット</b>のなかに条件に合うものが見つかりませんでした。<br>条件は勝手に変えないので、緩める場合は下のボタンからどうぞ。</p>'+
-      __rsv+widenBtn+freeBtn+
-      '<button onclick="restart()">条件を変えてやり直す</button></div>';
+    res.innerHTML='<div class="empty"><div class="odm-guide"><img src="/odemaru-guide.png" alt="" width="56" height="65"><p>条件に合うプランが見つかりませんでした</p></div><p>選んだ条件と、<b>営業時間を確認できたスポット</b>をもとに探しました。<br>日付や条件を選び直して、もう一度探せます。</p>'+
+      '<button onclick="revisePlanDate()">日付・条件を選び直す</button>'+
+      ((widenBtn||freeBtn)?'<div class="empty-options"><p>移動時間や予算を変更して探す場合</p>'+widenBtn+freeBtn+'</div>':'')+
+      __rsv+'</div>';
     window.scrollTo({top:0,behavior:'smooth'});
     return;
   }
@@ -3742,7 +3800,7 @@ function showResult(){
   if(state.indoorPref&&!isRainMode(state.weather)){
     html+='<div class="wxbadge" style="background:#eef4fb;border:1px solid #b9d2ee;color:#2c5a8a">☔ 雨の日ページから、室内中心で組んでいます <button type="button" onclick="clearIndoorPref()" style="margin-left:8px;padding:4px 10px;border-radius:10px;border:1px solid #b9d2ee;background:#fff;color:#2c5a8a;font-size:.78rem;font-weight:700">天気に合わせた通常プランに戻す</button></div>';
   }
-  html+='<div class="parentline">🗣 '+esc(parentSummary())+'</div>';
+  html+='<div class="parentline odm-guide"><img src="/odemaru-guide.png" alt="" width="56" height="65"><p>'+esc(parentSummary())+'</p></div>';
   if(startMinutes()>=12*60+30){
     html+='<div class="notice" style="margin:8px 0;background:#fff4e5;border:1px solid #f0c48a;border-radius:10px;padding:10px 12px;font-size:.82rem">🍴 午後からの出発のため、お昼ごはんは済ませてからの出発を想定しています。プラン内の食事枠は「カフェ・おやつ休憩」や「早めの夕食」としてご利用ください。</div>';
   }
@@ -3837,24 +3895,22 @@ function showResult(){
   html+='<div class="summary">🚗 移動の目安 <b>約'+driveStr+'</b>（往復）　／　💰 <b>'+esc(p.cost)+'</b></div>';
   html+='<div class="foodnote" style="margin:8px 2px 0">※営業時間・料金等は変更される場合があります。出発前に公式情報をご確認ください。</div>';
   html+='</div>';
+  html+='<section class="result-actions" aria-label="プランの共有・経路・変更"><h2>このプランでどうする？</h2><div class="result-use">';
   if(routeUrl){
-    html+='<div class="gmaps-route" style="text-align:center;margin:14px 0 18px">'+
-      '<a class="act-gmaps" href="'+esc(routeUrl)+'" target="_blank" rel="noopener" onclick="track(\'gmaps_route\')" '+
-      'style="display:inline-block;width:100%;box-sizing:border-box;padding:14px;border-radius:14px;background:#1a73e8;color:#fff;font-weight:800;font-size:.95rem;text-decoration:none">'+
-      '🚗 このルートをGoogleマップで開く</a>'+
-      '<div style="font-size:.72rem;color:var(--sub);margin-top:6px">※ルートはGoogleマップ上で編集できます</div>'+
-      '</div>';
+    html+='<a class="act-gmaps" href="'+esc(routeUrl)+'" target="_blank" rel="noopener" onclick="track(\'gmaps_route\')">🚗 経路を見る<br>（Googleマップ）</a>';
   }
+  html+='<button class="act-share" onclick="sharePlan()">📤 家族に送る<br>（共有）</button></div>';
+  if(routeUrl) html+='<p class="route-note">経路はGoogleマップで確認・編集できます。</p>';
   html+='<div class="actions">';
-  html+='<button class="act-share" onclick="sharePlan()">📤 家族に送る（共有）</button>';
   if(state.isCustomView){
     html+='<button class="act-reroll" onclick="editCustom()">✏️ えらんだ場所を編集する</button>';
   } else {
     html+='<button class="act-reroll" onclick="reroll()">🔄 別のプランにする</button>';
   }
-  html+='<a class="act-map" href="./index.html" onclick="track(\'map\')">🗺 地図でこのへんを見る</a>';
+  html+='<a class="act-map" href="./index.html" onclick="track(\'map\')">🗺 地図・施設一覧から探す</a>';
   html+='<button class="act-restart" onclick="restart()">最初からやり直す</button>';
   html+='</div>';
+  html+='</section>';
   html+=fbHtml(); // プランの評価（.actions の直後・各注記より上）
   if(!state.weather){
     html+='<div class="notice">※ 現在お天気情報を取得できなかったため、天気条件なしでプランを作成しています。</div>';
@@ -3895,6 +3951,22 @@ function savePrefs(){
     }));
   }catch(e){}
 }
+// Presentation only: read the current selections; never write planner state or storage.
+function renderPrefsSummary(){
+  const panel=document.getElementById('prefsSummary');
+  if(!panel||panel.hidden) return;
+  const list=document.getElementById('prefsSummaryList');
+  const items=[];
+  const drive={'20':'車で〜20分','40':'車で〜40分','60':'車で〜60分','any':'遠くてもOK'};
+  if(drive[state.driveTime]) items.push(drive[state.driveTime]);
+  const ageLabels={'0-2':'0〜2歳','3-5':'3〜5歳','elem':'小学生'};
+  const ages=[...state.ages].map(a=>ageLabels[a]).filter(Boolean);
+  if(ages.length) items.push(ages.join('・'));
+  const budgets={'free':'無料メイン（食事代別）','1000':'入場料など1人〜1,000円目安（食事代別）','3000':'入場料など1人〜3,000円目安（食事代別）','any':'予算の上限なし'};
+  if(budgets[state.budget]) items.push(budgets[state.budget]);
+  list.replaceChildren();
+  items.forEach(text=>{ const item=document.createElement('li'); item.textContent=text; list.appendChild(item); });
+}
 function loadPrefs(){
   try{
     const raw=localStorage.getItem(PREF_KEY);
@@ -3930,6 +4002,12 @@ function loadPrefs(){
       const btn=document.querySelector('#budgetBtns .bigbtn[data-budget="'+p.budget+'"]');
       if(btn){ btn.classList.add('on'); state.budget=p.budget; }
     }
+    const summary=document.getElementById('prefsSummary');
+    if(summary&&(state.driveTime||state.ages.size||state.budget)){
+      summary.hidden=false;
+      const note=document.getElementById('geoNote');
+      if(note&&p.origin&&p.origin.name) note.textContent='';
+    }
     refreshNext();
   }catch(e){}
 }
@@ -3951,7 +4029,17 @@ function reroll(){
   state.planNo=(state.planNo||1)+1;
   showResult();
 }
+// Keep this session's family choices when retrying an empty result.
+function revisePlanDate(){
+  state.when=null; state.depart=null; state.weather=null; state.tooLateToday=false;
+  document.querySelectorAll('#whenBtns .bigbtn,#departTodayBtns .bigbtn,#departDayBtns .bigbtn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('departWrap').style.display='none';
+  document.getElementById('result').style.display='none';
+  document.getElementById('dots').style.display='flex';
+  step=2; render(); refreshNext();
+}
 function restart(){
+  const summary=document.getElementById('prefsSummary'); if(summary) summary.hidden=true;
   state.isCustomView=false; state.customSlots=[null,null,null]; state.cpPlanSlots=null;
   try{ localStorage.removeItem(CUSTOM_KEY); }catch(e){}
   const cpEl=document.getElementById('customPanel'); if(cpEl) cpEl.style.display='none';
