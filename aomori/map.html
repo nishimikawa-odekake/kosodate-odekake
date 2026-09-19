@@ -5325,13 +5325,62 @@ try{
     const icon=L.divIcon({className:'',html:'<div class="pin" style="background:'+col+'"><span>'+emo+'</span></div>',iconSize:[34,34],iconAnchor:[17,34],popupAnchor:[0,-30]});
     const m=L.marker([s.latitude,s.longitude],{icon,title:s.name});
     m._spotIndex=i;
-    m.on('click',()=>openSheet(i));
+    m.on('click',()=>onMarkerClick(i));
     markers[i]=m;
     m.addTo(map);
   });
 }catch(e){
   console.warn('map init failed',e);
   map=null;
+}
+
+function groupPinEmoji(s){
+  if(s.is_chain===true) return '🍴';
+  if(typeof PLAYF==='function') return PLAYF(s).e;              // ピンと同じ解決
+  const p=(s.play_types&&s.play_types[0])||'indoor';
+  return (PLAY[p]||PLAY.indoor).e;                              // ピンと同じ解決(岐阜方式)
+}
+
+/* ===== 重なりピンの選択: ピンは動かさず、シートに一覧を出して名前で選ぶ ===== */
+function overlapGroup(i){
+  // 「本当に同じ場所」のピンだけをグループ化: 画面上15px以内 かつ 実距離150m以内
+  const out=[];
+  try{
+    const baseSpot=SPOTS[i];
+    const base=map.latLngToContainerPoint(markers[i].getLatLng());
+    SPOTS.forEach(function(s,j){
+      const m=markers[j];
+      if(!m||!map.hasLayer(m)) return;
+      const p=map.latLngToContainerPoint(m.getLatLng());
+      const dx=p.x-base.x, dy=p.y-base.y;
+      if(dx*dx+dy*dy>15*15) return;
+      const dLat=(s.latitude-baseSpot.latitude)*111, dLng=(s.longitude-baseSpot.longitude)*91;
+      if(dLat*dLat+dLng*dLng>0.15*0.15) return;
+      out.push(j);
+    });
+  }catch(e){ return [i]; }
+  return out.length?out:[i];
+}
+function openGroupSheet(ids){
+  let html='<h3>📍 この場所のスポット（'+ids.length+'件）</h3>'
+    +'<p class="city" style="margin-top:2px">見たいスポットをえらんでください</p>';
+  ids.forEach(function(j){
+    const s=SPOTS[j];
+    const emo=groupPinEmoji(s);
+    html+='<button type="button" onclick="openSheet('+j+')" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;margin:8px 0 0;padding:12px;border:1px solid #e8ddcc;border-radius:12px;background:#fff;font-size:.95rem;font-weight:700">'
+      +'<span style="font-size:1.2rem">'+emo+'</span>'
+      +'<span style="flex:1;min-width:0">'+esc(s.name)+'<br><span style="font-size:.72rem;font-weight:600;color:#8a7a5a">'+esc(s.city||'')+(s.is_chain?'・チェーン店':'')+'</span></span>'
+      +'<span style="color:#b45f1d">›</span></button>';
+  });
+  sheetBody.innerHTML=html;
+  sheet.classList.add('show');
+  sheet.setAttribute('aria-hidden','false');
+  sheetBackdrop.classList.add('show');
+}
+function onMarkerClick(i){
+  const g=overlapGroup(i);
+  if(g.length>1){ openGroupSheet(g); return; }   // 重なりは一覧から名前で選ぶ(ピンは動かさない)
+  openSheet(i);
 }
 
 let originMarker=null;
