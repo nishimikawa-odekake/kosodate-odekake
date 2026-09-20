@@ -5508,6 +5508,16 @@ function norm(s){
     else if(ch==='･')  ch='・';
     out+=ch;
   }
+  /* 裁定160-1: 範囲記号 ~ (U+007E)。char ループで一律に '〜' へ寄せると
+     business_hours の「月~金曜日 9:00-12:00」まで曜日範囲として読めるようになり、
+     別規則（平日限定営業）が新たに発火して休が増える。今回の裁定は日付範囲の件なので、
+     **直前が数字始まりの日付トークン・直後が数字** の形に限って範囲記号に寄せる。 */
+  out = out.replace(/([0-9][0-9日月旬末年\/() \t]{0,8})~(?=[ \t]{0,3}[0-9])/g, '$1〜');
+  /* 裁定160-1: 「12月29日 – 1月3日」のように範囲記号の左右へ空白を入れた表記。
+     – (U+2013) / — (U+2014) は上のループで '〜' になるが、splitTop の弱区切り（空白）で
+     範囲が単発日付 2 つにちぎれていた。**数字…〜…数字 の形に限って** 空白を畳む。
+     曜日範囲「月 〜 金」や時刻「9時 〜 17時」は直前が数字でないので対象外（従来どおり）。 */
+  out = out.replace(/([0-9][ \t]*[日月]?)[ \t]*〜[ \t]*(?=[0-9])/g, '$1〜');
   return out;
 }
 
@@ -5791,6 +5801,28 @@ function parseSpanRanges(text){
   }
   return out;
 }
+/* 裁定166-2: 「11月〜4月」のように月だけで書かれた範囲を、月初(1日)・月末で補完する。
+   片側にでも「日」が書かれている形（「11月〜4月28日」）は parseRanges /
+   parseSingleDates の従来経路に任せるので採らない。旬・末を伴う形は parseSpanRanges が先。
+   新しい日付は作っていない（月初＝1日／月末＝その月の最大日数）。
+   near: 極性はこの範囲の **直前・直後 6 文字だけ** から読む。
+   「10月〜4月は水遊びエリア休止」のように *一部設備* を主語にした文で施設全体を
+   閉じてしまわないため（裁定157 の bracketSubjectOk と同じ考え方）。
+   節の区切り（、。※・/ 改行）と閉じ括弧は跨がない。 */
+var MDIM=[31,29,31,30,31,30,31,31,30,31,30,31];
+function nearBefore(t){ var k=t.length-1; while(k>=0 && '、。※・/)\n'.indexOf(t.charAt(k))<0) k--; return t.slice(k+1).slice(-6); }
+function nearAfter(t){ var k=0; while(k<t.length && '、。※・/\n'.indexOf(t.charAt(k))<0) k++; return t.slice(0,k).slice(0,6); }
+function parseMonthOnlyRanges(text){
+  var t=datePrep(text), out=[], m;
+  var re=/([0-9]{1,2})\s*月?\s*〜\s*([0-9]{1,2})\s*月(?!\s*[0-9]{1,2}\s*日)/g;
+  while((m=re.exec(t))){
+    var a=+m[1], b=+m[2];
+    if(a<1||a>12||b<1||b>12) continue;
+    out.push({r:[a,1,b,MDIM[b-1]],
+              near: nearBefore(t.slice(0,m.index)) + nearAfter(t.slice(m.index+m[0].length))});
+  }
+  return out;
+}
 function inMDRange(date, r){
   var md=(date.getMonth()+1)*100+date.getDate();
   var a=r[0]*100+r[1], b=r[2]*100+r[3];
@@ -5827,6 +5859,31 @@ function rangePolarity(seg){
     if(x) return 'closed';
   }
   return null;
+}
+/* 裁定166: 「休館日なし」「無休」型の打ち消し表現。極性語を含むが *休まない* 宣言なので、
+   範囲の極性を読む元としては採らない（「4月〜11月は休館日なし」を閉にしないため）。 */
+var RE_NOCLOSE2 = /(無休|(?:定?休(?:館|園|業|所|場)?日?|休み)\s*(?:は|が)?\s*(?:な[しシ]|無[しシ]|ありません))/;
+/* 裁定167: 「…あり」「…の場合あり」「…することがあります」「不定」は、
+   その期間ずっと休むことの断定ではない（例:「12月〜3月は冬季休園あり」）。
+   原則100（不確かなものは閉にしない）に従い、**極性ソースとして採らない**。
+   採らない＝未解析のまま＝unknown（カードは既存文言「🕐 営業時間は要確認」）。 */
+var RE_HEDGE2 = /(あり|ことがあ|こともあ|場合があ|不定)/;
+/* 裁定166-1: 極性を読む文脈。splitTop の弱区切りは空白でも切るため、
+   「休館期間 11月1日〜4月28日」「開設期間 4月29日〜10月31日」は極性語と範囲が
+   別断片に分かれて極性が落ちていた。head を **「・」「&」だけで** 割り直し、
+   断片 p を含むグループを極性の読み元にする（＝空白で切れた隣は拾う、
+   「・」で並んだ別の休業節は拾わない）。 */
+function polGroupOf(head, p){
+  if(head==null) return p;
+  var gs=String(head).split(/[・&＆]/);
+  for(var i=0;i<gs.length;i++) if(gs[i]!==p && gs[i].indexOf(p)>=0) return gs[i];
+  return p;
+}
+/* 断片自身から極性が読めればそれを優先し、読めないときだけグループへ広げる。 */
+function polSrcOf(p, ctx){
+  if(ctx==null || ctx===p) return p;
+  if(RE_NOCLOSE2.test(ctx) || RE_HEDGE2.test(ctx)) return p;   // 裁定167
+  return (rangePolarity(p)!=null) ? p : ctx;
 }
 function isRealMD(mo,d){
   if(!(mo>=1&&mo<=12)) return false;
@@ -6280,7 +6337,7 @@ function tokensOf(head, condsRaw, seg, spec){
     var p = parts[i];
     if(!p) continue;
     var before = spec.nth.length;
-    var k = classifyClause(p, condsRaw, seg, spec, segOnly);
+    var k = classifyClause(p, condsRaw, seg, spec, segOnly, polGroupOf(head, p));
     /* 「第一月曜日及び火曜日」＝「第1月曜と第1火曜」。同じ節の中で、直前が第N曜
        だったのに次の断片が素の曜日になったら、第N を引き継ぐ（毎週◯曜にしない）。 */
     if(k==='WEEKDAY' && lastNth && !/第|最終/.test(p) && spec.weekly.length){
@@ -6321,7 +6378,9 @@ function onlyMonthsOf(p){
   if(m) return [+m[1]];
   return null;
 }
-function classifyClause(p, condsRaw, seg, spec, segOnly){
+/* polCtx: 裁定166-1 で追加。省略時（既存の呼び出し 3 箇所）は p 自身＝従来動作。 */
+function classifyClause(p, condsRaw, seg, spec, segOnly, polCtx){
+  var POL = polSrcOf(p, polCtx);
   var m;
   /* この断片自体が営業側の記述（「繁忙期は開館」等）なら休業トークンにしない */
   if(RE_OPENWORD.test(p) && !RE_CLOSEWORD.test(p)) return null;
@@ -6402,23 +6461,44 @@ function classifyClause(p, condsRaw, seg, spec, segOnly){
      「2026年6月から2027年1月末(予定)まで休館」(id=129 あいち航空ミュージアム) */
   var ar=parseAbsRanges(p);
   if(ar.length){
-    for(var ai=0;ai<ar.length;ai++) pushRange(spec, ar[ai], p, 'abs');   // 裁定157
+    for(var ai=0;ai<ar.length;ai++) pushRange(spec, ar[ai], p, 'abs', POL);   // 裁定157/166
     return 'ABS_RANGE';
   }
   /* v3.1-⑤: 月中境界（上旬=1-10 / 中旬=11-20 / 下旬=21-末） */
   var sr=parseSpanRanges(p);
   if(sr.length){
-    for(var sj=0;sj<sr.length;sj++) pushRange(spec, sr[sj], p, 'span');  // 裁定157
+    for(var sj=0;sj<sr.length;sj++) pushRange(spec, sr[sj], p, 'span', POL);  // 裁定157/166
     return 'SPAN_RANGE';
   }
   /* 「11月24日以降平日」のように終端が書かれていない形は範囲が決まらない。
      単独日付として誤読せず、未解析に落として旧実装のフォールバックに委ねる（裁定⑱）。 */
   if(/以降|以後|前後|頃|ごろ|中旬|上旬|下旬/.test(p)) return null;
   var rr=parseRanges(p);
-  if(rr.length){ for(var i=0;i<rr.length;i++) pushRange(spec, rr[i], p, 'md'); return 'DATE_RANGE'; }   // 裁定157
+  if(rr.length){ for(var i=0;i<rr.length;i++) pushRange(spec, rr[i], p, 'md', POL); return 'DATE_RANGE'; }   // 裁定157/166
+  /* 裁定166-2: 「11月〜4月(冬期休館)」「12月〜3月は休館」「利用期間は4月から10月まで」
+     のように月だけで書かれた範囲。**範囲の直近に極性語（開設/開館/営業/開園/開場/利用/
+     開催 ＝期間内open ・ 休館/休園/閉鎖/閉館/休業/休止 ＝期間内closed）があるときに限り**
+     月初・月末で補完する。極性語の無い裸の月範囲（「12月〜3月」「11月〜4月」）は
+     従来どおり採らない＝未解析→unknown のまま（裁定158「裸の範囲の扱いを変えない」）。 */
+  var mrP=parseMonthOnlyRanges(p);
+  if(mrP.length && !RE_NOCLOSE2.test(p) && !RE_HEDGE2.test(p)){   // 裁定167
+    /* 括弧の中に極性語がある形（「11月〜4月(冬期休館)」）を読むため、
+       近傍文脈だけは括弧を残した節全体 seg から取り直す。範囲そのものは p 由来。 */
+    var mrS=parseMonthOnlyRanges(seg==null?p:seg), got=false, mi, mk;
+    for(mi=0;mi<mrP.length;mi++){
+      var nr=mrP[mi].near;
+      for(mk=0;mk<mrS.length;mk++)
+        if(mrS[mk].r[0]===mrP[mi].r[0] && mrS[mk].r[2]===mrP[mi].r[2]){ nr=mrS[mk].near; break; }
+      if(RE_NOCLOSE2.test(nr) || RE_HEDGE2.test(nr)) continue;   // 裁定167
+      if(rangePolarity(nr)==null) continue;
+      pushRange(spec, mrP[mi].r, p, 'md', nr);
+      got=true;
+    }
+    if(got) return 'MONTH_RANGE';
+  }
   /* 監督A MAJOR-1(A): 範囲でない単独の実日付（「12月31日」「1月1日のみ」「3/31」） */
   var sd=parseSingleDates(p);
-  if(sd.length){ for(var j=0;j<sd.length;j++) pushRange(spec, sd[j], p, 'md'); return 'DATE'; }   // 裁定157
+  if(sd.length){ for(var j=0;j<sd.length;j++) pushRange(spec, sd[j], p, 'md', POL); return 'DATE'; }   // 裁定157/166
   return null;
 }
 
