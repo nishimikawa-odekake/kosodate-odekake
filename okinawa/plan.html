@@ -6268,8 +6268,21 @@ function resolve(bhRaw, date){
   if(!vs.length) return null;
   var conds=[], plain=[], i;
   for(i=0;i<vs.length;i++){ if(vs[i].c.has||vs[i].c.vague) conds.push(vs[i]); else plain.push(vs[i]); }
-  /* 条件付き断片が無い＝従来どおり先頭のレンジ（既存挙動を維持） */
-  if(!conds.length) return plain[0].r;
+  /* [裁定174] 条件付き断片が無い場合。
+     旧実装は先頭のレンジ＝いちばん広いレンジを無条件採用していたため、
+     「施設全体は9:00〜21:00（区画により異なる）。プラネタリウムは9:00〜17:00」のような
+     複合施設で、子連れが実際に使う区画より 4 時間も長く開いていると判定していた。
+     無条件の断片が複数あってレンジが食い違うときは closeMin の最小＝狭いほう（保守側）を採る。
+     openMin は先頭のまま据え置く。最大側（遅いほう）に倒すと
+     「9:00〜12:00、13:00〜17:00」のような午前・午後の分割営業が
+     open13:00/close12:00 と反転するため（実測 254 件）。
+     反転・ゼロ幅になる組み合わせだけは従来どおり先頭のレンジに戻す。 */
+  if(!conds.length){
+    var r0=plain[0].r, cmin=r0.closeMin;
+    for(i=1;i<plain.length;i++) if(plain[i].r.closeMin<cmin) cmin=plain[i].r.closeMin;
+    if(cmin<=r0.openMin) return r0;
+    return {openMin:r0.openMin, closeMin:cmin};
+  }
   if(!date) return null;
   var isHol = (typeof CLOSED_V3!=='undefined' && CLOSED_V3.isHolDate) ? CLOSED_V3.isHolDate(date) : false;
   var hits=[];
@@ -6883,8 +6896,11 @@ function poolFrom(list,date,w){
     // outdoor park after 19:00 -> bonus tier only, excluded from main pool
     const outdoorPark=(s.indoor_or_outdoor==='outdoor')&&(pt.includes('active')||pt.includes('nature'));
     if(outdoorPark && ((arrival%1440+1440)%1440)>=19*60) return false;
-    // ages 0-2: no additional spots after dinner time -> exclude late main candidates for 0-2 only groups
-    if(state.ages.has('0-2')&&state.ages.size===1 && ((arrival%1440+1440)%1440)>=17*60+30) return false;
+    /* [裁定172/173-③] 帰宅上限に間に合わないメイン候補はプールから落とす。
+       旧実装は「0-2歳のみ」かつ到着17:30以降という条件で、3-5 を併記すると外れていた。
+       最短滞在45分＋帰路を積んで帰宅上限を超えるなら、そもそも候補にしない
+       （＝「より近いメインで作り直す」を選定の段階で済ませる）。 */
+    if(start+dm+45+dm > capHomeFor(state.ages)) return false;
     if(hoursUnknown(s)){ noteReserve(s); return false; } // P0: 営業時間未登録は確定枠に入れない
     if(eveningBhNullBlocked(s,arrival)){ noteReserve(s); return false; } // [A-8] 夕方到着は営業時間nullを確定枠に入れない
     s.__closeNote=ci.note;
@@ -7196,9 +7212,22 @@ function startMinutes(){
   if(d&&d.mode==='slot') return d.slot==='noon'?13*60:9*60+30;
   return 9*60+30; // 9:30 fallback（あす・週末）
 }
+/* [裁定172] 帰宅上限の単一の定義。
+   旧実装はこの値が 4 か所に散らばっており（メイン滞在短縮・generatePlans・
+   nextVarietyPlan・カスタムプラン）、しかも前2者は state.ages.size===1 を要求していたため
+   「0-2 と 3-5 を両方選ぶ」と乳児の保護が丸ごと外れていた。
+   さらに elem を含むと null（＝上限なし）になり、0-2＋elem では乳児連れなのに無制限だった。
+     0-2 を含む → 18:00 ／ elem を含む（0-2なし）→ 19:00 ／ それ以外（3-5のみ等）→ 18:30 */
+function capHomeFor(ages){
+  var a=ages||(typeof state!=='undefined'?state.ages:null);
+  if(!a||!a.has) return 18*60+30;
+  if(a.has('0-2')) return 18*60;
+  if(a.has('elem')) return 19*60;
+  return 18*60+30;
+}
 function buildPlan(main,date,w,shareOverride){
   const o=state.origin;
-  const lunch=shareOverride?(shareOverride.lunch||null):pickLunch(main,date);
+  let lunch=shareOverride?(shareOverride.lunch||null):pickLunch(main,date);   // [裁定173] 余地が無ければ枠ごと落とすので let
   const dm=driveMinutesFrom(o,main)||30;
   let sub=shareOverride?(shareOverride.sub||null):pickSub(main,lunch,dm,date,w);
   let t=startMinutes();
@@ -7212,15 +7241,17 @@ function buildPlan(main,date,w,shareOverride){
   legSum+=dm;
   t+=dm;
   let stay=stayMinutes(main);
-  const onlyToddler=state.ages.has('0-2')&&state.ages.size===1;
-  // 乳児(0-2歳のみ)連れは帰宅18:00を上限にする: 超えそうならメイン滞在を自動短縮(最短45分)
-  if(onlyToddler){
+  const onlyToddler=state.ages.has('0-2')&&state.ages.size===1;   // homePriority の判定にだけ使う
+  /* [裁定172] 帰宅上限を超えそうならメイン滞在を自動短縮する(最短45分)。
+     旧実装は onlyToddler(=0-2歳のみ)限定で、3-5 を併記した瞬間に外れていた。
+     projected の式は旧実装のまま。上限だけ capHomeFor に差し替える。 */
+  const capHome=capHomeFor(state.ages);
+  {
     const homeDmM=driveMinutesFrom(o,main)||30;
     const lunchExtra=lunch?(legMinutes(main.latitude,main.longitude,lunch.latitude,lunch.longitude)+60+(driveMinutesFrom(o,lunch)||homeDmM)):homeDmM;
     const projected=t+stay+lunchExtra;
-    const toddlerCap=18*60;
-    if(projected>toddlerCap){
-      stay=Math.max(45,Math.floor((stay-(projected-toddlerCap))/15)*15);
+    if(projected>capHome){
+      stay=Math.max(45,Math.floor((stay-(projected-capHome))/15)*15);
     }
   }
   // メイン滞在も閉館15分前まで(45分未満はclosingInfoで候補から除外済み)
@@ -7242,6 +7273,7 @@ function buildPlan(main,date,w,shareOverride){
     }
   })();
   rows.push({type:'spot',time:t,spot:main,tag:'メイン',closeNote:__mainClose});
+  let lastArrive=t;   // [裁定172] 最後に滞在を始めた時刻。帰路を丸めるときの下限に使う
   t+=stay;
   let lastName=main.name, lastLat=main.latitude, lastLng=main.longitude, lastSpot=main;
   if(lunch){
@@ -7266,9 +7298,27 @@ function buildPlan(main,date,w,shareOverride){
         mealNote='※閉店が近いため滞在めやす〜'+mealStay+'分（閉店15分前までの利用がおすすめです）';
       }
     }
-    rows.push({type:'spot',time:t,spot:lunch,tag:mealTag,food:true,paynote:state.budget==='free',closeNote:mealNote?((arrivalCi.note?arrivalCi.note+'／':'')+mealNote):arrivalCi.note,waterNote});
-    t+=mealStay;
-    lastName=lunch.name; lastLat=lunch.latitude; lastLng=lunch.longitude; lastSpot=lunch;
+    /* [裁定173] 食事枠にも帰宅上限を効かせる。滞在60分固定のままでは夕方は必ず上限を割る。
+       30分すら取れないなら「早めの夕食としてご利用ください」と言い訳せず、枠ごと出さない
+       （直前に積んだ移動も取り消して、メインから直帰にする）。 */
+    {
+      const __mHome=driveMinutesFrom(o,lunch)||legMinutes(lunch.latitude,lunch.longitude,o.lat,o.lng);
+      const __mCap=Math.floor((capHome-__mHome-t)/15)*15;
+      if(__mCap<mealStay){
+        mealStay=__mCap;
+        if(mealStay>=30) mealNote=(mealNote?mealNote+'／':'')+'※帰宅時刻に合わせて滞在めやす〜'+mealStay+'分';
+      }
+    }
+    if(mealStay<30){
+      rows.pop();            // 直前に積んだ「🚗 移動」を取り消す
+      legSum-=ldm; t-=ldm;
+      lunch=null;
+    }else{
+      rows.push({type:'spot',time:t,spot:lunch,tag:mealTag,food:true,paynote:state.budget==='free',closeNote:mealNote?((arrivalCi.note?arrivalCi.note+'／':'')+mealNote):arrivalCi.note,waterNote});
+      lastArrive=t;
+      t+=mealStay;
+      lastName=lunch.name; lastLat=lunch.latitude; lastLng=lunch.longitude; lastSpot=lunch;
+    }
   }
   // age-based fatigue: 0-2 -> no additional post-meal spot, go home; 3-5 -> max 1 extra spot (bonus tier);
   // 0-2歳のみでも「スポット→ランチ→スポット」の基本形は維持する(帰宅上限で滞在側を調整)
@@ -7297,7 +7347,7 @@ function buildPlan(main,date,w,shareOverride){
     const bdm0=driveMinutesFrom(o,__cand)||legMinutes(__cand.latitude,__cand.longitude,o.lat,o.lng);
     // 帰路開始時刻の設計: 目標は max(到着+90分, 16:30)。閉館時刻と帰宅上限(18:00)でキャップ。
     const bh0=parseBusinessHours(__cand);
-    const __capHome=18*60;
+    const __capHome=capHome;   // [裁定172] 年齢別の帰宅上限に統一（旧: 18:00 固定）
     const limit0=Math.min(bh0?(bh0.closeMin-15):Infinity, __capHome-bdm0);  // 閉館15分前までに退場
     let depart0=Math.min(Math.max(arr0+90, 16*60+30), limit0);
     depart0=Math.floor(depart0/15)*15;
@@ -7335,6 +7385,9 @@ function buildPlan(main,date,w,shareOverride){
     // 合計時間＝タイムライン上の区間合計にするため、直帰の帰路をここで1回出してから
     // 「🏠帰り道に寄るなら」の枝分かれ見出し＋余力枠を置く。
     const homeDm=driveMinutesFrom(o,lastSpot)||legMinutes(lastLat,lastLng,o.lat,o.lng);
+    /* [裁定172] 直帰の帰路にも帰宅上限を効かせる。旧実装はここで帰着時刻を
+       「計算して表示するだけ」で、制約として使っていなかった。 */
+    if(t+homeDm>capHome) t=Math.max(lastArrive+45, capHome-homeDm);
     rows.push({type:'move',time:t,label:'🚗 帰路（約'+homeDm+'分）',sub:transitLabel(lastName,'ご自宅',homeDm)+'／帰着めやす '+fmtTime(t+homeDm)+'ごろ'});
     legSum+=homeDm; rows.__retHome=t+homeDm;
     // 余力枠: 本編完結後の独立カード。営業時間・最終受付・帰宅上限(18:00)を満たす場合のみ、
@@ -7346,7 +7399,7 @@ function buildPlan(main,date,w,shareOverride){
       if(ci.exclude&&!isUserPick(sub)){ sub=null; return; }   // [裁定146] えらんだ場所は落とさない
       const bdm=driveMinutesFrom(o,sub)||legMinutes(sub.latitude,sub.longitude,o.lat,o.lng);
       const bh=parseBusinessHours(sub);
-      const limit=Math.min(bh?(bh.closeMin-15):Infinity, 18*60-bdm);  // 閉館15分前までに退場
+      const limit=Math.min(bh?(bh.closeMin-15):Infinity, capHome-bdm);  // 閉館15分前までに退場／[裁定172] 帰宅上限も年齢別に
       let stayB=Math.floor(Math.min(60, limit-arrival)/15)*15;
       if(stayB<30){ sub=null; return; }   // 30分遊べないなら余力枠ごと出さない
       const departB=arrival+stayB, retB=departB+bdm;
@@ -7372,6 +7425,9 @@ function buildPlan(main,date,w,shareOverride){
   } else {
     // 余力枠が無い通常ケース: 帰路はここで1回だけ表示（最後に居る場所からの帰路）
     const homeDm2=driveMinutesFrom(o,lastSpot)||legMinutes(lastLat,lastLng,o.lat,o.lng);
+    /* [裁定172] ここが今回の破綻の中心。旧実装は帰着時刻を計算して表示するだけで、
+       帰宅上限が一切かかっていなかった（夕方出発はすべてこの枝を通る）。 */
+    if(t+homeDm2>capHome) t=Math.max(lastArrive+45, capHome-homeDm2);
     rows.push({type:'move',time:t,label:'🚗 帰路（約'+homeDm2+'分）',sub:transitLabel(lastName,'ご自宅',homeDm2)+'／帰着めやす '+fmtTime(t+homeDm2)+'ごろ'});
     legSum+=homeDm2; rows.__retHome=t+homeDm2;
   }
@@ -7424,7 +7480,7 @@ function generatePlans(date,w){
   for(const s of tiered){ if(!mains.includes(s)) mains.push(s); if(mains.length>=3) break; }
   state.shownMains=mains.slice();
   const onlyT=state.ages.has('0-2')&&state.ages.size===1;
-  const kidCap=state.ages.has('elem')?null:(onlyT?18*60:(18*60+30));
+  const kidCap=capHomeFor(state.ages);   // [裁定172] 4か所の重複定義を1本に統一
   const built=mains.map(m=>{
     let pl=buildPlan(m,date,w);
     // 総移動時間の上限: 3時間超(乳児のみは130分超)のプランは午後スポットを外して移動負担を抑える
@@ -7433,17 +7489,32 @@ function generatePlans(date,w){
       const pl2=buildPlan(m,date,w,{lunch:pl.lunch||null,sub:null});
       if(pl2.totalDrive<pl.totalDrive) pl=pl2;
     }
-    // 幼児(小学生なし)は帰着18:30(乳児18:00)を上限に。超える案は午後スポットを外して再構成
-    if(kidCap&&pl.retHome&&pl.retHome>kidCap&&pl.sub){
-      const pl3=buildPlan(m,date,w,{lunch:pl.lunch||null,sub:null});
-      if(pl3.retHome&&pl3.retHome<=kidCap) pl=pl3;
+    /* [裁定173] 帰宅上限を超えた案の修復を段階化する。
+       旧実装は「午後スポットを外す」1段だけで、しかも条件に && pl.sub があったため
+       夕方（sub が最初から null）では 1 度も走らず、__late を立てるだけだった。
+         ① 午後スポットを外す → ② 食事枠を外す → ③ より近いメイン（buildPool 側で除外済み）
+         → ④ それでもダメなら __late（下の out で 0 件に落とす） */
+    if(kidCap&&pl.retHome&&pl.retHome>kidCap){
+      let fixed=null;
+      if(pl.sub){
+        const p1=buildPlan(m,date,w,{lunch:pl.lunch||null,sub:null});
+        if(p1.retHome&&p1.retHome<=kidCap) fixed=p1;
+      }
+      if(!fixed&&pl.lunch){
+        const p2=buildPlan(m,date,w,{lunch:null,sub:null});
+        if(p2.retHome&&p2.retHome<=kidCap) fixed=p2;
+      }
+      if(fixed) pl=fixed;
     }
     if(kidCap&&pl.retHome&&pl.retHome>kidCap) pl.__late=true;
     return pl;
   });
-  // 上限内の案があればそれだけを出す。全案が超える場合のみ警告つきでそのまま出す
+  /* [裁定173-④] 上限内の案があればそれだけを出す。
+     どの案も帰宅上限を超える場合は、遅い案を出さずに 0 件にして「あす」へ誘導する。
+     （overBurden だけの超過は従来どおり警告つきで出す。0 件にするのは帰宅上限違反のときだけ） */
   const within=built.filter(p=>!p.__late&&!overBurden(p));
-  const out=within.length?within:built;
+  const notLate=built.filter(p=>!p.__late);
+  const out=within.length?within:notLate;
   state.shownMains=out.map(p=>p.main);
   return out;
 }
@@ -7494,7 +7565,7 @@ function nextVarietyPlan(date,w){
   // D) 負担超過(運転合計300分超 / 帰着19:00以降)の案は採らず、次の候補を試す。
   //    どの候補も超える場合のみ、最初の案を警告つきで出す(generatePlans と同じ方針)。
   const onlyT=state.ages.has('0-2')&&state.ages.size===1;
-  const kidCap=state.ages.has('elem')?null:(onlyT?18*60:(18*60+30));
+  const kidCap=capHomeFor(state.ages);   // [裁定172] 重複定義を1本に統一
   const driveLimit=onlyT?130:190;
   const order=shuffle(fresh);
   const tries=Math.min(order.length,12);
@@ -7506,9 +7577,18 @@ function nextVarietyPlan(date,w){
       const plv2=buildPlan(cand,date,w,{lunch:plv.lunch||null,sub:null});
       if(plv2.totalDrive<plv.totalDrive) plv=plv2;
     }
-    if(kidCap&&plv.retHome&&plv.retHome>kidCap&&plv.sub){
-      const plv3=buildPlan(cand,date,w,{lunch:plv.lunch||null,sub:null});
-      if(plv3.retHome&&plv3.retHome<=kidCap) plv=plv3;
+    /* [裁定173] generatePlans と同じ段階フォールバックを「別のプランにする」にも適用する */
+    if(kidCap&&plv.retHome&&plv.retHome>kidCap){
+      let plvFix=null;
+      if(plv.sub){
+        const plv3=buildPlan(cand,date,w,{lunch:plv.lunch||null,sub:null});
+        if(plv3.retHome&&plv3.retHome<=kidCap) plvFix=plv3;
+      }
+      if(!plvFix&&plv.lunch){
+        const plv4=buildPlan(cand,date,w,{lunch:null,sub:null});
+        if(plv4.retHome&&plv4.retHome<=kidCap) plvFix=plv4;
+      }
+      if(plvFix) plv=plvFix;
     }
     if(kidCap&&plv.retHome&&plv.retHome>kidCap) plv.__late=true;
     if(firstPicked===null){ firstPicked=cand; firstPlan=plv; }
@@ -7597,6 +7677,14 @@ function approveWiden(next){
   state.driveTime=next;
   generate();
 }
+/* [裁定173-④] 0件画面から「あす」に寄せる。出発時刻は当日の「◯分後」を引きずらないよう
+   あすの既定スロット(午前)に戻す。移動時間・年齢・予算はそのまま。 */
+function searchTomorrow(){
+  if(typeof gtag==='function') gtag('event','plan_tomorrow_from_empty',{});
+  state.when='tomorrow';
+  state.depart={mode:'slot',slot:'am'};
+  generate();
+}
 async function generate(){
   CP_PICK_NAMES=null;   // [裁定146] 自動プランでは custom の例外を持ち込まない
   const __gid=genStart('wizard');
@@ -7660,7 +7748,10 @@ function parentSummary(){
   if(isRainMode(w)){
     base='';
   } else if(t>=16*60){
-    base='今日は夕方出発なので、短時間で遊んで夕食を済ませる軽めのプランです。';
+    /* [裁定173] 食事枠が入らなかったときに「夕食を済ませる」と言わない */
+    var __pl=(state.plans&&state.plans.length)?state.plans[(state.variant||0)%state.plans.length]:null;
+    base=(__pl&&__pl.lunch)?'今日は夕方出発なので、短時間で遊んで夕食を済ませる軽めのプランです。'
+                        :'今日は夕方出発なので、帰宅時刻に合わせた短時間の軽めのプランです。';
   } else if(w&&w.tmax!=null&&w.tmax>=34){
     base='暑い時間帯を避け、涼しく遊べるスポットを中心にしたプランにしています。';
   } else if(isToddlerOnly){
@@ -9158,7 +9249,7 @@ function buildCustomPlanFromSlots(slots,date,w){
   const afternoon=slots.slice(li+1).filter(Boolean);
   const o=state.origin;
   const onlyToddler=state.ages.has('0-2')&&state.ages.size===1;
-  const capHome=18*60;
+  const capHome=capHomeFor(state.ages);   // [裁定172] 重複定義を1本に統一（旧: 18:00 固定）
   // 滞在時間の配分: 午前枠は合計で〜12:00めど、午後枠は帰宅上限から逆算
   const rows=[]; let legSum=0; let t=startMinutes();
   let lastName=(o.name==='現在地'||o.isAnjo)?'出発地周辺':o.name+'周辺';
@@ -9565,8 +9656,12 @@ function showResult(){
     const freeBtn=(state.budget==='free')?('<button onclick="relaxBudgetRegen()" style="margin:6px 0;background:#fff;color:#b45f1d;border:1.5px solid #e8853d;border-radius:12px;padding:13px 18px;font-weight:800">💴 無料条件を外して'+(state.driveTime&&state.driveTime!=='any'?state.driveTime+'分圏内':'近場')+'で探す</button><br>'):'';
     // P0: 営業時間未登録で確定枠から外した候補は「予備候補」として提示する(自動採用はしない)
     const __rsv=reserveHtml('empty',null);
+    /* [裁定173-④] 当日に候補が無いとき、前進ボタンが「移動時間を広げる」＝帰宅をさらに
+       遅くする方向しか無かった。夕方はむしろ「あす」に寄せるのが正しい導線なので、
+       当日のときだけ先頭に「あすで探す」を置く。既存ボタンの順序・文言は変えない。 */
+    const tmrwBtn=(state.when==='today')?('<button onclick="searchTomorrow()" style="margin:6px 0;background:#4a7c59;color:#fff;border:none;border-radius:12px;padding:13px 18px;font-weight:800">🌅 あすで探す</button><br>'):'';
     res.innerHTML='<div class="empty"><p>ご指定の移動時間の範囲では、<b>営業時間を確認できたスポット</b>のなかに条件に合うものが見つかりませんでした。<br>条件は勝手に変えないので、緩める場合は下のボタンからどうぞ。</p>'+
-      __rsv+widenBtn+freeBtn+
+      __rsv+tmrwBtn+widenBtn+freeBtn+
       '<button onclick="restart()">条件を変えてやり直す</button></div>';
     window.scrollTo({top:0,behavior:'smooth'});
     return;
@@ -9597,7 +9692,9 @@ function showResult(){
   if(state.indoorPref&&!isRainMode(state.weather)){
     __note(95,'<div class="wxbadge" style="background:#eef4fb;border:1px solid #b9d2ee;color:#2c5a8a">☔ 雨の日ページから、室内中心で組んでいます <button type="button" onclick="clearIndoorPref()" style="margin-left:8px;padding:4px 10px;border-radius:10px;border:1px solid #b9d2ee;background:#fff;color:#2c5a8a;font-size:.78rem;font-weight:700">天気に合わせた通常プランに戻す</button></div>');
   }
-  if(startMinutes()>=12*60+30){
+  /* [裁定173] 食事枠を出さないときはこの文言も出さない。
+     旧実装は出発12:30以降なら無条件に出しており、時間割を直さずに文言でごまかしていた。 */
+  if(startMinutes()>=12*60+30 && p.lunch){
     __note(90,'<div class="notice" style="margin:8px 0;background:#fff4e5;border:1px solid #f0c48a;border-radius:10px;padding:10px 12px;font-size:.82rem">🍴 午後からの出発のため、お昼ごはんは済ませてからの出発を想定しています。プラン内の食事枠は「カフェ・おやつ休憩」や「早めの夕食」としてご利用ください。</div>');
   }
   const __dh=Math.floor(p.totalDrive/60), __dm=p.totalDrive%60, __dstr='約'+(__dh?__dh+'時間':'')+(__dm?__dm+'分':(__dh?'':'0分'));
