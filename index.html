@@ -96,6 +96,25 @@ border:1px solid var(--line);color:#3a352d;text-decoration:none;font-size:.86rem
 .owner{max-width:760px;margin:26px auto 0;padding:16px 18px;text-align:center;
 color:var(--sub);font-size:.82rem;line-height:1.8}
 .owner a{color:var(--accent-d)}
+.plan-sample{max-width:420px;margin:0 auto 12px;text-align:left;background:var(--card);
+border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.ps-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:7px;
+padding:9px 13px;border-bottom:1px solid var(--line)}
+.ps-title{font-size:.78rem;font-weight:800;color:var(--accent-d)}
+.ps-sub{font-size:.68rem;color:var(--sub)}
+.ps-body{padding:12px 13px 11px;background:#fff}
+.ps-row{display:flex;gap:10px}
+.ps-time{flex:0 0 auto;width:44px;padding-top:1px;font-size:.88rem;font-weight:800;color:var(--accent-d)}
+.ps-item{flex:1 1 auto;min-width:0}
+.ps-name{display:block;font-size:.92rem;font-weight:700;line-height:1.35}
+.ps-meta{display:block;margin-top:2px;font-size:.7rem;color:var(--sub);line-height:1.6}
+.ps-move{display:flex;align-items:center;gap:10px;margin:7px 0 7px 54px;font-size:.68rem;color:var(--sub)}
+.ps-bar{display:block;width:1px;height:16px;background:#e4d8c4}
+.ps-end .ps-time{color:var(--sub)}
+.ps-end .ps-name{font-size:.88rem;color:#5c554a}
+.ps-note{display:flex;align-items:flex-start;gap:6px;margin:0;
+padding:9px 11px;border-top:1px solid var(--line);font-size:.71rem;line-height:1.6;color:#4a443b}
+.ps-note svg{flex:0 0 auto;margin-top:2px}
 @media(max-width:420px){
  header{padding:10px 14px 0}
  h1{font-size:.92rem}
@@ -108,6 +127,7 @@ color:var(--sub);font-size:.82rem;line-height:1.8}
  .cta-main{padding:15px 14px;font-size:1.04rem}
  .cta-sub{padding:11px 14px;font-size:.86rem}
  .facts{font-size:.74rem}
+ .plan-sample{margin-bottom:10px}
  .sec{padding:20px 14px 0}
 }
 </style></head>
@@ -118,11 +138,23 @@ color:var(--sub);font-size:.82rem;line-height:1.8}
 <a class="odemaru-hero-link" href="./odemaru/" title="おでまるについて"><picture><source srcset="./odemaru/img/odemaru-point@400.webp" type="image/webp"><img class="odemaru-hero" src="./odemaru/img/odemaru-point@400.png" alt="おでまる" width="315" height="400" fetchpriority="high" decoding="async"></picture></a>
 <div class="hero-copy">
 <h2>子どもとの「今日どこ行く？」が、<span style="white-space:nowrap"><span class="hl">30秒</span>で決まる。</span></h2>
-<p class="lead">いくつかの質問に答えるだけ。無料・登録不要。</p>
 </div>
 </div>
-<a class="cta-main" href="#plan-select">🎯 30秒でおでかけを決める</a>
-<p class="facts">全<span data-stat="prefs">47</span>都道府県対応｜<span data-stat="total">17,754</span>スポット｜無料・登録不要</p>
+<div class="plan-sample">
+<div class="ps-head"><span class="ps-title">プラン例・愛知県</span><span class="ps-sub">安城市発・3〜5歳・車40分以内</span></div>
+<div class="ps-body">
+<div class="ps-row"><span class="ps-time">10:15</span><span class="ps-item"><span class="ps-name">安城デンパーク</span><span class="ps-meta">9:30〜17:00 ／ 入園料が必要<br>滞在のめやす 2時間</span></span></div>
+<div class="ps-move"><span class="ps-bar"></span>車で15分</div>
+<div class="ps-row"><span class="ps-time">12:30</span><span class="ps-item"><span class="ps-name">お昼ごはん</span><span class="ps-meta">子連れで入りやすいお店から1件</span></span></div>
+<div class="ps-move"><span class="ps-bar"></span>車で10分</div>
+<div class="ps-row"><span class="ps-time">14:00</span><span class="ps-item"><span class="ps-name">堀内公園</span><span class="ps-meta">入園無料（乗り物は1回100円程度〜）<br>滞在のめやす 1時間20分</span></span></div>
+<div class="ps-move"><span class="ps-bar"></span></div>
+<div class="ps-row ps-end"><span class="ps-time">16:30</span><span class="ps-item"><span class="ps-name">帰宅</span></span></div>
+</div>
+<p class="ps-note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c96a1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"></path><path d="M8 19v2"></path><path d="M12 17v4"></path><path d="M16 19v2"></path></svg><span>雨の予報なら、聞かなくても<strong>屋内のプラン</strong>に切り替わります</span></p>
+</div>
+<a class="cta-main" href="#plan-select">🎯 自分のプランをつくる</a>
+<p class="facts">質問は5つだけ ／ 無料・登録不要<br>全<span data-stat="prefs">47</span>都道府県・<span data-stat="total">17,754</span>スポット</p>
 <!-- radio-notice: CBCラジオ紹介のお知らせ 20260918 -->
 <p class="facts" style="max-width:700px;margin:10px auto 0;padding:9px 12px;background:var(--card);border:1px solid var(--line);border-radius:12px;font-size:.74rem;line-height:1.7;text-align:left">📻 CBCラジオ「つボイノリオの聞けば聞くほど」でご紹介いただきました（2026年9月18日）<br>ありがとうございました。<a href="https://www.instagram.com/odemaru_odekake/" target="_blank" rel="noopener">Instagram</a> では愛知県内の週末イベントや子連れのおでかけ情報を発信しています。</p>
 </section>
