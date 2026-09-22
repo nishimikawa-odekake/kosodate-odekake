@@ -5461,10 +5461,12 @@ CITIES.forEach(([nm,lat,lng,grp])=>{
 });
 originSel.value=CITIES[0][1]+','+CITIES[0][2];
 
-function setOrigin(name,lat,lng){
+// [geofix-A] 保存した「現在地」は取得時刻tsから30分以内のときだけ復元する(市の選択は従来どおり期限なし)
+const HERE_MAX_AGE_MS=30*60*1000;
+function setOrigin(name,lat,lng,ts){
   origin.name=name; origin.lat=lat; origin.lng=lng; origin.isAnjo=(name==='盛岡市');
   // プランナー(自分で選ぶプラン)と出発地を共有する
-  try{ localStorage.setItem(ORIGIN_KEY,JSON.stringify({name:name,lat:lat,lng:lng,isAnjo:origin.isAnjo})); }catch(e){}
+  try{ const rec={name:name,lat:lat,lng:lng,isAnjo:origin.isAnjo}; if(name==='現在地') rec.ts=(typeof ts==='number'&&isFinite(ts))?ts:Date.now(); localStorage.setItem(ORIGIN_KEY,JSON.stringify(rec)); }catch(e){}
   apply();
   updateOriginMarker();
 }
@@ -5489,14 +5491,14 @@ function placeUserDot(lat,lng){
     else{ userDotMarker=L.marker(userLatLng,{icon:blueDotIcon(),zIndexOffset:3000,interactive:false,keyboard:false}).addTo(map); }
   }catch(e){ console.warn('user dot update failed',e); }
 }
-function requestGeolocation(onOk,onFail){
-  if(!navigator.geolocation){ showToast('位置情報が許可されていません'); if(onFail)onFail(); return; }
+function requestGeolocation(onOk,onFail,opt){
+  if(!navigator.geolocation){ showToast('現在地を取得できませんでした'); if(onFail)onFail(); return; }
   let done=false;
-  const watchdog=setTimeout(()=>{ if(done)return; done=true; showToast('位置情報が許可されていません'); if(onFail)onFail(); },9000);
+  const watchdog=setTimeout(()=>{ if(done)return; done=true; showToast('現在地を取得できませんでした'); if(onFail)onFail(); },11000);
   navigator.geolocation.getCurrentPosition(
     pos=>{ if(done)return; done=true; clearTimeout(watchdog); onOk(pos.coords.latitude,pos.coords.longitude); },
-    ()=>{ if(done)return; done=true; clearTimeout(watchdog); showToast('位置情報が許可されていません'); if(onFail)onFail(); },
-    {timeout:8000,maximumAge:60000}
+    err=>{ if(done)return; done=true; clearTimeout(watchdog); showToast((err&&err.code===1)?'位置情報が許可されていません':'現在地を取得できませんでした'); if(onFail)onFail(); },
+    opt||{enableHighAccuracy:false,timeout:10000,maximumAge:60000}
   );
 }
 
@@ -5515,19 +5517,23 @@ document.getElementById('originGeo').addEventListener('click',()=>{
 });
 const recenterBtn=document.getElementById('recenterBtn');
 if(recenterBtn){
+  // [geofix-B] 押すたびに位置を取り直す(キャッシュ不使用)。取得中は押せない。失敗時は直前の位置があればそこへ
   recenterBtn.addEventListener('click',()=>{
-    if(userLatLng){
-      if(map) map.setView(userLatLng,13,{animate:true});
-      setOrigin('現在地',userLatLng[0],userLatLng[1]);
-      placeUserDot(userLatLng[0],userLatLng[1]);
-      return;
-    }
+    if(recenterBtn.disabled) return;
+    const prev=userLatLng;
+    recenterBtn.disabled=true; recenterBtn.style.opacity='.5';
+    showToast('現在地を取得中…');
+    const end=()=>{ recenterBtn.disabled=false; recenterBtn.style.opacity=''; };
     requestGeolocation((lat,lng)=>{
+      end();
       setOrigin('現在地',lat,lng);
       placeUserDot(lat,lng);
       if(map) map.setView([lat,lng],13,{animate:true});
       autoPannedOnce=true;
-    });
+    },()=>{
+      end();
+      if(prev&&map) map.setView(prev,13,{animate:true});
+    },{enableHighAccuracy:false,timeout:10000,maximumAge:0});   // ⌖ は「いまの位置」を見るボタンなので位置のキャッシュを使わない
   });
 }
 
@@ -5568,7 +5574,11 @@ if(recenterBtn){
       if(d&&typeof d.name==='string'&&isFinite(d.lat)&&isFinite(d.lng)){
         const mc=CITIES.find(c=>c[0]===d.name);
         if(mc){ originSel.value=mc[1]+','+mc[2]; setOrigin(mc[0],mc[1],mc[2]); }
-        else if(d.name==='現在地'){ setOrigin('現在地',d.lat,d.lng); }
+        else if(d.name==='現在地'){
+          const age=(typeof d.ts==='number'&&isFinite(d.ts))?Date.now()-d.ts:NaN;
+          if(age>=0&&age<=HERE_MAX_AGE_MS){ setOrigin('現在地',d.lat,d.lng,d.ts); }
+          else{ try{ localStorage.removeItem(ORIGIN_KEY); }catch(e2){} showToast('前回の現在地は時間がたったので使っていません。📍で取り直してください'); }   // [geofix-A]
+        }
       }
     }catch(e){}
   }

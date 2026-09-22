@@ -2567,9 +2567,19 @@ if(INIT_CITY){
 }else{
   state.origin={name:'金沢市',lat:ANJO[0],lng:ANJO[1],isAnjo:true};
 }
+// [geofix-E] 現在地で出発するときは選択欄にも「📍 現在地」を出して選択状態にする(市を選び直したら外す)
+function geoSelHere(on){
+  let h=originSel.querySelector('option[data-here]');
+  if(on){
+    if(!h){ h=document.createElement('option'); h.value=''; h.textContent='📍 現在地'; h.setAttribute('data-here','1'); originSel.insertBefore(h,originSel.firstChild); }
+    originSel.value='';
+  }else if(h){ h.remove(); }
+}
 originSel.addEventListener('change',()=>{
+  if(!originSel.value) return;   // [geofix-E] 「📍 現在地」のままなら何もしない
   const [lat,lng]=originSel.value.split(',').map(Number);
   const nm=originSel.options[originSel.selectedIndex].textContent;
+  geoSelHere(false);
   state.origin={name:nm,lat,lng,isAnjo:(nm==='金沢市')};
   document.getElementById('geoNote').textContent='';
   refreshNext();
@@ -2579,13 +2589,14 @@ document.getElementById('geoBtn').addEventListener('click',()=>{
   if(!navigator.geolocation){ note.textContent='この端末では現在地を取得できません'; return; }
   note.textContent='現在地を取得中…';
   navigator.geolocation.getCurrentPosition(pos=>{
-    state.origin={name:'現在地',lat:pos.coords.latitude,lng:pos.coords.longitude,isAnjo:false};
+    state.origin={name:'現在地',lat:pos.coords.latitude,lng:pos.coords.longitude,isAnjo:false,ts:Date.now()};
+    geoSelHere(true);   // [geofix-E]
     // nearest city label for friendliness
     let best=null,bd=1e9;
     CITIES.forEach(([nm,la,ln])=>{const d=haversineKm(pos.coords.latitude,pos.coords.longitude,la,ln); if(d<bd){bd=d;best=nm;}});
     note.textContent='📍 現在地を設定しました（最寄り: '+best+'付近）';
     refreshNext();
-  },()=>{ note.textContent='現在地を取得できませんでした。市町村を選んでください'; });
+  },()=>{ note.textContent='現在地を取得できませんでした。市町村を選んでください'; },{enableHighAccuracy:false,timeout:10000,maximumAge:60000});
 });
 
 /* drive time preference */
@@ -4442,14 +4453,14 @@ async function sharePlan(){
   if(navigator.share){
     try{
       await navigator.share({title:'きょうのおでかけプラン',text,url});
-      if(typeof gtag==='function') gtag('event','plan_share',{method:'webshare'}); gtag('event','planner_share',seoP({method:'webshare'}));
+      if(typeof gtag==='function'){ gtag('event','plan_share',{method:'webshare'}); gtag('event','planner_share',seoP({method:'webshare'})); }
     }catch(e){ /* user cancelled share sheet */ }
     return;
   }
   try{
     await copyToClipboard(url);
     showToast('リンクをコピーしました');
-    if(typeof gtag==='function') gtag('event','plan_share',{method:'copy'}); gtag('event','planner_share',seoP({method:'copy'}));
+    if(typeof gtag==='function'){ gtag('event','plan_share',{method:'copy'}); gtag('event','planner_share',seoP({method:'copy'})); }
   }catch(e){
     showToast('コピーに失敗しました');
   }
@@ -4586,11 +4597,16 @@ function customAutoAssign(items){
 const MYPLACE_KEY=pkey('odemaru_myplaces_v1');
 // 出発地の保持: 編集⇄マップ⇄結果で一貫させる。保存値が不正・旧形式のときだけ金沢市に戻す
 const ORIGIN_KEY=pkey('odemaru_custom_origin_v1');
+// [geofix-A] 保存した「現在地」は取得時刻tsから30分以内のときだけ使う(ts無し=旧形式も使わない)。市の選択は従来どおり期限なし
+const HERE_MAX_AGE_MS=30*60*1000;
+var __hereExpired=false;
 function cpSaveOrigin(){
   try{
     const o=state.origin;
     if(o&&typeof o.name==='string'&&o.name&&isFinite(o.lat)&&isFinite(o.lng)){
-      localStorage.setItem(ORIGIN_KEY,JSON.stringify({name:o.name,lat:o.lat,lng:o.lng,isAnjo:!!o.isAnjo}));
+      const rec={name:o.name,lat:o.lat,lng:o.lng,isAnjo:!!o.isAnjo};
+      if(o.name==='現在地'&&typeof o.ts==='number'&&isFinite(o.ts)) rec.ts=o.ts;
+      localStorage.setItem(ORIGIN_KEY,JSON.stringify(rec));
     }
   }catch(e){}
 }
@@ -4598,6 +4614,11 @@ function cpLoadOrigin(){
   try{
     const d=JSON.parse(localStorage.getItem(ORIGIN_KEY)||'null');
     const ok=sanitizeOrigin(d);
+    if(ok&&ok.name==='現在地'){
+      const age=(typeof d.ts==='number'&&isFinite(d.ts))?Date.now()-d.ts:NaN;
+      if(!(age>=0&&age<=HERE_MAX_AGE_MS)){ localStorage.removeItem(ORIGIN_KEY); __hereExpired=true; return null; }
+      ok.ts=d.ts;
+    }
     if(ok) return ok;
     if(d) localStorage.removeItem(ORIGIN_KEY);   // 県外の保存値は破棄
   }catch(e){}
@@ -4725,13 +4746,14 @@ function cpGeo(){
   if(!navigator.geolocation){ if(note) note.textContent='この端末では現在地を取得できませんでした'; return; }
   if(note) note.textContent='現在地を取得中…';
   navigator.geolocation.getCurrentPosition(function(pos){
-    state.origin={name:'現在地',lat:pos.coords.latitude,lng:pos.coords.longitude,isAnjo:false};
+    state.origin={name:'現在地',lat:pos.coords.latitude,lng:pos.coords.longitude,isAnjo:false,ts:Date.now()};
+    __hereExpired=false;
     cpSaveOrigin();
     if(typeof gtag==='function') gtag('event','plan_custom_geo');
     renderCustomPanel();
-  },function(){
-    if(note) note.textContent='現在地を取得できませんでした。位置情報の許可をご確認ください';
-  },{enableHighAccuracy:false,timeout:8000,maximumAge:120000});
+  },function(err){
+    if(note) note.textContent=(err&&err.code===1)?'現在地を取得できませんでした。位置情報の許可をご確認ください':'現在地を取得できませんでした';
+  },{enableHighAccuracy:false,timeout:10000,maximumAge:60000});
 }
 // カスタム枠の候補カードの所要時間の基準点。
 // タイムライン順で対象枠より前にある、座標を持つ直近のスポット(個人追加の__tempも可)。
@@ -4932,7 +4954,7 @@ function renderCustomPanel(){
   html+='<div style="margin:10px 0"><b style="font-size:.85rem">🚗 どこから出発？</b><br>'
     +'<div style="display:flex;gap:6px;align-items:center;margin-top:4px"><select class="origin" id="cpOrigin" style="flex:1;min-width:0"></select>'
     +'<button type="button" onclick="cpGeo()" style="white-space:nowrap;border:1.5px solid #e8853d;background:'+(state.origin&&state.origin.name==='現在地'?'#e8853d':'#fff8f0')+';color:'+(state.origin&&state.origin.name==='現在地'?'#fff':'#b45f1d')+';border-radius:999px;padding:8px 12px;font-weight:800;font-size:.82rem">📍 現在地</button></div>'
-    +'<div id="cpGeoNote" style="font-size:.72rem;color:#8a7a5a;margin-top:3px">'+(state.origin&&state.origin.name==='現在地'?'📍 現在地から出発します':'')+'</div></div>';
+    +'<div id="cpGeoNote" style="font-size:.72rem;color:#8a7a5a;margin-top:3px">'+(state.origin&&state.origin.name==='現在地'?'📍 現在地から出発します':(__hereExpired?'前回の現在地は時間がたったので使っていません。📍で取り直してください':''))+'</div></div>';
   const wOn='background:#e8853d;color:#fff;border:1px solid #e8853d;border-radius:999px;padding:8px 18px;font-weight:800;font-size:.9rem';
   const wOff='background:#fff;color:#6b5c40;border:1px solid #d8c9b0;border-radius:999px;padding:8px 18px;font-weight:700;font-size:.9rem';
   // 「きょう」が成立しない時間帯(出発がTODAY_LAST_STARTを超える)は選べないようにし、「あす」へ寄せる
@@ -5115,6 +5137,7 @@ function renderCustomPanel(){
       const nm=sel.options[sel.selectedIndex].textContent;
       state.origin={name:nm,lat:parts[0],lng:parts[1],isAnjo:(nm==='金沢市')};
       cpSaveOrigin();
+      __hereExpired=false; const gn=document.getElementById('cpGeoNote'); if(gn) gn.textContent='';   // [geofix-A/E]
     });
   }
   // スクロール: 初回表示のみトップ、以降は位置を保持
@@ -5212,6 +5235,7 @@ function cpMissingSelected(plan){
 function cpBackToWizard(){
   const el=document.getElementById('customPanel'); if(el) el.style.display='none';
   restart();
+  geoSelHere(!!(state.origin&&state.origin.name==='現在地'));   // [geofix-E]
 }
 function editCustom(){
   if(typeof gtag==='function') gtag('event','plan_custom_edit');

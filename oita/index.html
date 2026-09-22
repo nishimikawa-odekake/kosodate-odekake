@@ -4372,31 +4372,35 @@ function placeUserDot(lat,lng){
     else{ userDotMarker=L.marker(userLatLng,{icon:blueDotIcon(),zIndexOffset:3000,interactive:false,keyboard:false}).addTo(map); }
   }catch(e){ console.warn('user dot update failed',e); }
 }
-function requestGeolocation(onOk){
-  if(!navigator.geolocation){ showToast('位置情報が許可されていません'); return; }
+function requestGeolocation(onOk,onFail,opt){
+  if(!navigator.geolocation){ showToast('現在地を取得できませんでした'); if(onFail)onFail(); return; }
   let done=false;
-  const watchdog=setTimeout(()=>{ if(done)return; done=true; showToast('位置情報が許可されていません'); },9000);
+  const watchdog=setTimeout(()=>{ if(done)return; done=true; showToast('現在地を取得できませんでした'); if(onFail)onFail(); },11000);
   navigator.geolocation.getCurrentPosition(
     pos=>{ if(done)return; done=true; clearTimeout(watchdog); onOk(pos.coords.latitude,pos.coords.longitude); },
-    ()=>{ if(done)return; done=true; clearTimeout(watchdog); showToast('位置情報が許可されていません'); },
-    {timeout:8000,maximumAge:60000}
+    err=>{ if(done)return; done=true; clearTimeout(watchdog); showToast((err&&err.code===1)?'位置情報が許可されていません':'現在地を取得できませんでした'); if(onFail)onFail(); },
+    opt||{enableHighAccuracy:false,timeout:10000,maximumAge:60000}
   );
 }
 const recenterBtn=document.getElementById('recenterBtn');
 if(recenterBtn){
+  // [geofix-B] 押すたびに位置を取り直す(キャッシュ不使用)。取得中は押せない。失敗時は直前の位置があればそこへ
   recenterBtn.addEventListener('click',()=>{
-    if(userLatLng){
-      if(map) map.setView(userLatLng,13,{animate:true});
-      setOrigin('現在地',userLatLng[0],userLatLng[1]);
-      placeUserDot(userLatLng[0],userLatLng[1]);
-      return;
-    }
+    if(recenterBtn.disabled) return;
+    const prev=userLatLng;
+    recenterBtn.disabled=true; recenterBtn.style.opacity='.5';
+    showToast('現在地を取得中…');
+    const end=()=>{ recenterBtn.disabled=false; recenterBtn.style.opacity=''; };
     requestGeolocation((lat,lng)=>{
+      end();
       setOrigin('現在地',lat,lng);
       placeUserDot(lat,lng);
       if(map) map.setView([lat,lng],13,{animate:true});
       autoPannedOnce=true;
-    });
+    },()=>{
+      end();
+      if(prev&&map) map.setView(prev,13,{animate:true});
+    },{enableHighAccuracy:false,timeout:10000,maximumAge:0});   // ⌖ は「いまの位置」を見るボタンなので位置のキャッシュを使わない
   });
 }
 
@@ -4422,7 +4426,7 @@ document.getElementById('originGeo').addEventListener('click',()=>{
   let done=false;
   const fail=()=>{ if(done)return; done=true; backToAnjo(); showMsg('現在地を取得できませんでした'); };
   // watchdog: if neither callback fires (e.g. prompt dismissed / headless), fall back gracefully
-  const watchdog=setTimeout(fail,9000);
+  const watchdog=setTimeout(fail,11000);
   navigator.geolocation.getCurrentPosition(
     pos=>{
       if(done)return; done=true; clearTimeout(watchdog);
@@ -4432,7 +4436,7 @@ document.getElementById('originGeo').addEventListener('click',()=>{
       if(!autoPannedOnce && map){ map.setView([lat,lng],13,{animate:true}); autoPannedOnce=true; }
     },
     ()=>{ clearTimeout(watchdog); fail(); },
-    {timeout:8000,maximumAge:60000}
+    {enableHighAccuracy:false,timeout:10000,maximumAge:60000}
   );
 });
 
