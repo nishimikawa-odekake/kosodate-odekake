@@ -1,8 +1,8 @@
 {
   "aichi": 1243,
-  "national": 16657,
+  "national": 16648,
   "prefs": 47,
-  "total": 17900,
+  "total": 17891,
   "updated": "2026-09-23",
   "by_pref": {
     "akita": {
@@ -180,9 +180,9 @@
       "status": "growing"
     },
     "okayama": {
-      "local": 253,
+      "local": 244,
       "chain": 71,
-      "total": 324,
+      "total": 315,
       "status": "mature"
     },
     "okinawa": {
