@@ -3010,6 +3010,10 @@ function sanitizeOrigin(o){
   if(haversineKm(ANJO[0],ANJO[1],o.lat,o.lng)<=ORIGIN_MAX_KM) return {name:o.name,lat:o.lat,lng:o.lng,isAnjo:false};
   return null;
 }
+// [geofix2] 現在地が当県の範囲外(sanitizeOriginと同じ基準)のときの案内。トップの #here で都道府県を判定し直す
+function hereOutHtml(city){ return '現在地がこのページの地域から離れています。<a href="../index.html#here">現在地の都道府県版をひらく</a> / このまま'+esc(city)+'から探します'; }
+// [geofix2] 最寄りの市町村名は15km以内のときだけ出す(県境の外などで離れた市名を出さない)
+function hereNearLabel(lat,lng){ let best=null,bd=1e9; CITIES.forEach(c=>{ const d=haversineKm(lat,lng,c[1],c[2]); if(d<bd){ bd=d; best=c[0]; } }); return (best&&bd<=15)?'最寄り: '+best+'付近':'現在地付近'; }
 /* 公式リンクのラベル: 県データ側に officialLinkLabel がある県は実装が
    URL を受ける方式(岐阜)と spot を受ける方式(三重)で異なるため、両対応のアダプタ経由で呼ぶ。
    データ側に実装が無い県は、従来どおりの既定ラベルを返す。 */
@@ -5209,19 +5213,37 @@ originSel.addEventListener('change',()=>{
   document.getElementById('geoNote').textContent='';
   refreshNext();
 });
+// [geofix2] 現在地で出発する設定をやめて既定の市に戻す(市を選んでいるときはそのまま)
+function geoResetHere(){
+  if(!(state.origin&&state.origin.name==='現在地')||!INIT_CITY) return;
+  geoSelHere(false);
+  originSel.value=INIT_CITY[3][1]+','+INIT_CITY[3][2];
+  state.origin={name:INIT_CITY[0],lat:INIT_CITY[1],lng:INIT_CITY[2],isAnjo:(INIT_CITY[1]===ANJO[0]&&INIT_CITY[2]===ANJO[1])};
+}
+// [geofix2] 取得した現在地の反映(📍ボタンとトップからの引継ぎで共通)。範囲外なら使わず案内を出す
+function geoUseHere(lat,lng,ts){
+  const note=document.getElementById('geoNote');
+  if(!sanitizeOrigin({name:'現在地',lat:lat,lng:lng})){
+    geoResetHere();
+    note.innerHTML=hereOutHtml(state.origin.name);
+    refreshNext(); return false;
+  }
+  state.origin={name:'現在地',lat:lat,lng:lng,isAnjo:false,ts:(typeof ts==='number'&&isFinite(ts))?ts:Date.now()};
+  geoSelHere(true);   // [geofix-E]
+  note.textContent='📍 現在地を設定しました（'+hereNearLabel(lat,lng)+'）';
+  refreshNext(); return true;
+}
 document.getElementById('geoBtn').addEventListener('click',()=>{
   const note=document.getElementById('geoNote');
   if(!navigator.geolocation){ note.textContent='この端末では現在地を取得できません'; return; }
   note.textContent='現在地を取得中…';
+  let done=false;
+  const fail=()=>{ if(done) return; done=true; note.textContent='現在地を取得できませんでした。市町村を選んでください'; };
+  const wd=setTimeout(fail,11000);   // [geofix2] 応答が無いときも「取得中…」のままにしない
   navigator.geolocation.getCurrentPosition(pos=>{
-    state.origin={name:'現在地',lat:pos.coords.latitude,lng:pos.coords.longitude,isAnjo:false,ts:Date.now()};
-    geoSelHere(true);   // [geofix-E]
-    // nearest city label for friendliness
-    let best=null,bd=1e9;
-    CITIES.forEach(([nm,la,ln])=>{const d=haversineKm(pos.coords.latitude,pos.coords.longitude,la,ln); if(d<bd){bd=d;best=nm;}});
-    note.textContent='📍 現在地を設定しました（最寄り: '+best+'付近）';
-    refreshNext();
-  },()=>{ note.textContent='現在地を取得できませんでした。市町村を選んでください'; },{enableHighAccuracy:false,timeout:10000,maximumAge:60000});
+    if(done) return; done=true; clearTimeout(wd);
+    geoUseHere(pos.coords.latitude,pos.coords.longitude);
+  },()=>{ clearTimeout(wd); fail(); },{enableHighAccuracy:false,timeout:10000,maximumAge:0});   // [geofix2] 押したときは位置のキャッシュを使わない
 });
 
 /* drive time preference */
@@ -7225,6 +7247,7 @@ const ORIGIN_KEY=pkey('odemaru_custom_origin_v1');
 // [geofix-A] 保存した「現在地」は取得時刻tsから30分以内のときだけ使う(ts無し=旧形式も使わない)。市の選択は従来どおり期限なし
 const HERE_MAX_AGE_MS=30*60*1000;
 var __hereExpired=false;
+var __hereOut=false;   // [geofix2] 現在地が範囲外だったので使わなかった
 function cpSaveOrigin(){
   try{
     const o=state.origin;
@@ -7245,7 +7268,7 @@ function cpLoadOrigin(){
       ok.ts=d.ts;
     }
     if(ok) return ok;
-    if(d) localStorage.removeItem(ORIGIN_KEY);   // 県外の保存値は破棄
+    if(d){ localStorage.removeItem(ORIGIN_KEY); if(d.name==='現在地') __hereOut=true; }   // 県外の保存値は破棄([geofix2] 現在地なら案内を出す)
   }catch(e){}
   return null;
 }
@@ -7370,15 +7393,24 @@ function cpGeo(){
   const note=document.getElementById('cpGeoNote');
   if(!navigator.geolocation){ if(note) note.textContent='この端末では現在地を取得できませんでした'; return; }
   if(note) note.textContent='現在地を取得中…';
+  let done=false;
+  const wd=setTimeout(function(){ if(done) return; done=true; const n=document.getElementById('cpGeoNote'); if(n) n.textContent='現在地を取得できませんでした'; },11000);   // [geofix2]
   navigator.geolocation.getCurrentPosition(function(pos){
+    if(done) return; done=true; clearTimeout(wd);
+    if(!sanitizeOrigin({name:'現在地',lat:pos.coords.latitude,lng:pos.coords.longitude})){   // [geofix2] 範囲外の現在地は使わない
+      if(state.origin&&state.origin.name==='現在地'){ geoResetHere(); cpSaveOrigin(); }
+      __hereExpired=false; __hereOut=true;
+      renderCustomPanel(); return;
+    }
     state.origin={name:'現在地',lat:pos.coords.latitude,lng:pos.coords.longitude,isAnjo:false,ts:Date.now()};
-    __hereExpired=false;
+    __hereExpired=false; __hereOut=false;
     cpSaveOrigin();
     if(typeof gtag==='function') gtag('event','plan_custom_geo');
     renderCustomPanel();
   },function(err){
+    if(done) return; done=true; clearTimeout(wd);
     if(note) note.textContent=(err&&err.code===1)?'現在地を取得できませんでした。位置情報の許可をご確認ください':'現在地を取得できませんでした';
-  },{enableHighAccuracy:false,timeout:10000,maximumAge:60000});
+  },{enableHighAccuracy:false,timeout:10000,maximumAge:0});   // [geofix2] 押したときは位置のキャッシュを使わない
 }
 // カスタム枠の候補カードの所要時間の基準点。
 // タイムライン順で対象枠より前にある、座標を持つ直近のスポット(個人追加の__tempも可)。
@@ -7579,7 +7611,7 @@ function renderCustomPanel(){
   html+='<div style="margin:10px 0"><b style="font-size:.85rem">🚗 どこから出発？</b><br>'
     +'<div style="display:flex;gap:6px;align-items:center;margin-top:4px"><select class="origin" id="cpOrigin" style="flex:1;min-width:0"></select>'
     +'<button type="button" onclick="cpGeo()" style="white-space:nowrap;border:1.5px solid #e8853d;background:'+(state.origin&&state.origin.name==='現在地'?'#e8853d':'#fff8f0')+';color:'+(state.origin&&state.origin.name==='現在地'?'#fff':'#b45f1d')+';border-radius:999px;padding:8px 12px;font-weight:800;font-size:.82rem">📍 現在地</button></div>'
-    +'<div id="cpGeoNote" style="font-size:.72rem;color:#8a7a5a;margin-top:3px">'+(state.origin&&state.origin.name==='現在地'?'📍 現在地から出発します':(__hereExpired?'前回の現在地は時間がたったので使っていません。📍で取り直してください':''))+'</div></div>';
+    +'<div id="cpGeoNote" style="font-size:.72rem;color:#8a7a5a;margin-top:3px">'+(state.origin&&state.origin.name==='現在地'?'📍 現在地から出発します':__hereOut?hereOutHtml(state.origin.name):(__hereExpired?'前回の現在地は時間がたったので使っていません。📍で取り直してください':''))+'</div></div>';
   const wOn='background:#e8853d;color:#fff;border:1px solid #e8853d;border-radius:999px;padding:8px 18px;font-weight:800;font-size:.9rem';
   const wOff='background:#fff;color:#6b5c40;border:1px solid #d8c9b0;border-radius:999px;padding:8px 18px;font-weight:700;font-size:.9rem';
   // 「きょう」が成立しない時間帯(出発がTODAY_LAST_STARTを超える)は選べないようにし、「あす」へ寄せる
@@ -7762,7 +7794,7 @@ function renderCustomPanel(){
       const nm=sel.options[sel.selectedIndex].textContent;
       state.origin={name:nm,lat:parts[0],lng:parts[1],isAnjo:(nm==='宮崎市')};
       cpSaveOrigin();
-      __hereExpired=false; const gn=document.getElementById('cpGeoNote'); if(gn) gn.textContent='';   // [geofix-A/E]
+      __hereExpired=false; __hereOut=false; const gn=document.getElementById('cpGeoNote'); if(gn) gn.textContent='';   // [geofix-A/E][geofix2]
     });
   }
   // スクロール: 初回表示のみトップ、以降は位置を保持
@@ -8575,6 +8607,13 @@ document.addEventListener('click',function(e){
   if(st){ window.__plannerStarted=true; try{ if(typeof gtag==='function') gtag('event','planner_start',seoP()); }catch(err){} }
 },true);
 try{ if(!/[?&]share=1/.test(location.search)) loadPrefs(); }catch(e){}
+// [geofix2] トップの「📍 現在地から探す」から来たときは、その位置を出発地にする(取得から2分以内・範囲確認つき・1回だけ)
+try{
+  const __h=JSON.parse(sessionStorage.getItem('odemaru_here_handoff')||'null');
+  sessionStorage.removeItem('odemaru_here_handoff');
+  const __age=(__h&&typeof __h.ts==='number')?Date.now()-__h.ts:NaN;
+  if(__h&&isFinite(__h.lat)&&isFinite(__h.lng)&&__age>=0&&__age<=120000&&!/[?&](share|custom)=1/.test(location.search)) geoUseHere(+__h.lat,+__h.lng,__h.ts);
+}catch(e){}
 initFromShareOrWizard();
 // 「いつ行く？」を表示した時点で「今日これから」が適切に非活性になるよう、起動時にも反映する。
 // (旧実装は日付ボタンを押したときにしか呼ばれず、初回表示では有効なままだった)
