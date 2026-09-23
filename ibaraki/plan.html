@@ -5885,7 +5885,7 @@ function showResult(){
       '</div>';
   }
   html+='<div class="actions">';
-  html+='<button class="act-share" onclick="sharePlan()">📤 家族に送る（共有）</button>';
+  html+='<button class="act-share" onclick="sharePlanImage(this)">📤 家族に送る（共有）</button>';
   if(state.isCustomView){
     html+='<button class="act-reroll" onclick="editCustom()">✏️ えらんだ場所を編集する</button>';
   } else {
@@ -6040,5 +6040,242 @@ try{ setInterval(function(){ try{ refreshTodayAvailability(); }catch(e){} }, 600
 })();
 </script>
 <script>(function(){try{fetch('https://kosodate-odekake.jp/stats.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(s){if(!s)return;document.querySelectorAll('[data-stat]').forEach(function(el){var k=el.getAttribute('data-stat');var v=s;var parts=k.split(':');for(var i=0;i<parts.length;i++){if(v==null)return;v=v[parts[i]];}if(v==null||isNaN(Number(v)))return;el.textContent=Number(v).toLocaleString('ja-JP');});}).catch(function(){});}catch(e){}})();</script>
+<script>
+/* ===== [share-img] 「📤 家族に送る」を画像つき共有に =====================================
+ * 結果画面の「📤 家族に送る（共有）」から呼ばれる。既存の sharePlan() は変更せず、画像を共有できない端末ではそれを呼ぶ。
+ * 表示中のプラン(state.plans[state.variant])を 1080px 幅・縦長(最低1920px)の PNG に Canvas 2D で描く。
+ * - 写真は PHOTO_MAIN_ROW の写真だけ。読めない／canvas が汚染されたら写真とクレジットを両方外して描き直す
+ *   （写真だけ載ってクレジットが無い画像は作らない）
+ * - 共有テキストのURLは sharePlan() と同じ buildShareUrl(p)（画像には長いURLを載せない）
+ * - 送信: Web Share(ファイル) が使えれば画像＋リンクの共有シート。使えなければ従来の sharePlan()（リンク共有／コピー）
+ * - GA4: share_image {method:'image', result:'shared'|'downloaded'|'cancelled'}
+ * ================================================================================== */
+(function(){
+var W=1080, MIN_H=1920, PAD=64, busy=false;
+var SITE_DOMAIN='kosodate-odekake.jp';
+// サイト名とマークはページ上部のロゴ(.odm-brand)から読む（県ごとにコードを変えないため）
+function siteName(){ try{ var b=document.querySelector('.odm-brand'); var t=b?(b.textContent||'').trim():''; if(t) return t; var m=/｜([^｜]+)$/.exec(document.title||''); return m?m[1].trim():''; }catch(e){ return ''; } }
+function markSrc(){ try{ var i=document.querySelector('.odm-brand img'); return (i&&i.getAttribute('src'))||'/odemaru-mark.png'; }catch(e){ return '/odemaru-mark.png'; } }
+function css(n,d){ try{ var v=getComputedStyle(document.documentElement).getPropertyValue(n).trim(); return v||d; }catch(e){ return d; } }
+function ga(result){ try{ if(typeof gtag==='function'){ gtag('event','share_image',{method:'image',result:result}); } }catch(e){} }
+function txt(html){ var d=document.createElement('div'); d.innerHTML=String(html==null?'':html); return (d.textContent||'').replace(/\s+/g,' ').trim(); }
+function loadImg(src,ms,cors){
+  return new Promise(function(res){
+    var im=new Image(), done=false;
+    var fin=function(v){ if(!done){ done=true; clearTimeout(t); res(v); } };
+    var t=setTimeout(function(){ fin(null); },ms);
+    if(cors) im.crossOrigin='anonymous';
+    im.onload=function(){ fin(im.naturalWidth?im:null); };
+    im.onerror=function(){ fin(null); };
+    im.src=src;
+  });
+}
+// 1回目が失敗したら、CORSなしでキャッシュされた応答を避けるため問い合わせ文字列を付けて1回だけ再試行（合計およそ4秒まで）
+async function loadPhoto(src){
+  var t0=Date.now();
+  var im=await loadImg(src,4000,true);
+  var left=4000-(Date.now()-t0);
+  if(!im&&left>300) im=await loadImg(src+(src.indexOf('?')<0?'?':'&')+'odm_img=1',left,true);
+  return im;
+}
+// 日本語向けの1文字単位の折り返し（行頭に来ない約物は前の行に残す）
+function wrap(ctx,text,maxW,maxLines){
+  var chars=Array.from(String(text||'')), lines=[], cur='';
+  for(var i=0;i<chars.length;i++){
+    var c=chars[i];
+    if(cur&&ctx.measureText(cur+c).width>maxW&&!/^[、。，．）」』】〕！？ー…・:：\/)\]]$/.test(c)){ lines.push(cur); cur=c; }
+    else cur+=c;
+  }
+  if(cur) lines.push(cur);
+  if(maxLines&&lines.length>maxLines){
+    lines=lines.slice(0,maxLines);
+    var l=lines[maxLines-1];
+    while(l&&ctx.measureText(l+'…').width>maxW) l=l.slice(0,-1);
+    lines[maxLines-1]=l+'…';
+  }
+  return lines;
+}
+function rrect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+// 画面の表示と同じ材料だけで行データを作る（rowHtml と同じ文言）
+function planData(p){
+  var rows=p.rows||[], main=[], bonus=[];
+  rows.forEach(function(r){ (r.opt?bonus:main).push(r); });
+  var conv=function(r){
+    if(r.type==='move') return {k:'move',time:fmtTime(r.time),icon:'🚗',name:txt(r.label).replace(/^🚗\s*/,''),sub:txt(r.sub)};
+    if(r.type==='branch') return {k:'branch',time:fmtTime(r.time),icon:'🏠',name:txt(r.label),sub:''};
+    var s=r.spot||{};
+    return {k:'spot',time:fmtTime(r.time),icon:s.__temp?'📍':spotEmoji(s),name:String(s.name||''),sub:String(r.tag||'')+(s.city?'・'+s.city:'')};
+  };
+  var h=Math.floor(p.totalDrive/60), m=p.totalDrive%60;
+  return {main:main.map(conv),bonus:bonus.map(conv),
+    summary:'🚗 移動の目安 約'+((h?h+'時間':'')+(m?m+'分':'')||'0分')+'（往復）　／　💰 '+String(p.cost||'')};
+}
+// 画面のクレジット表記(photoCreditHTML)をそのまま文字にする
+function creditText(s){ try{ return txt(photoCreditHTML(s)); }catch(e){ return ''; } }
+
+function paint(ctx,H,d){
+  var C={bg:css('--bg','#faf6ef'),card:css('--card','#fffdf9'),ink:css('--ink','#3d3a34'),sub:css('--sub','#7a746a'),
+         line:css('--line','#e7ddcd'),acc:css('--accent','#e08a5b'),accd:css('--accent-d','#c9713f')};
+  var F=d.font, f=function(w,px){ ctx.font=w+' '+px+'px '+F; };
+  ctx.textBaseline='top';
+  ctx.fillStyle=C.bg; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=C.acc; ctx.fillRect(0,0,W,14);
+  var y=64;
+  // ヘッダー
+  if(d.mark){ try{ ctx.drawImage(d.mark,PAD,y,112,112); }catch(e){} }
+  var hx=d.mark?PAD+136:PAD;
+  f('800',64); ctx.fillStyle=C.accd; ctx.fillText('きょうのおでかけプラン',hx,y+2);
+  f('700',36); ctx.fillStyle=C.ink; ctx.fillText(d.when,hx,y+80);
+  y+=150;
+  f('700',38); ctx.fillStyle=C.ink;
+  wrap(ctx,'🏠 出発地：'+d.origin,W-PAD*2).forEach(function(l){ ctx.fillText(l,PAD,y); y+=52; });
+  y+=18;
+  // 写真（写真とクレジットは必ずセット）
+  if(d.photo&&d.credit){
+    var pw=W-PAD*2, ph=Math.round(pw/2.4), im=d.photo;
+    var sc=Math.max(pw/im.naturalWidth,ph/im.naturalHeight), sw=pw/sc, sh=ph/sc;
+    ctx.save(); rrect(ctx,PAD,y,pw,ph,28); ctx.clip();
+    ctx.drawImage(im,(im.naturalWidth-sw)/2,(im.naturalHeight-sh)/2,sw,sh,PAD,y,pw,ph);
+    ctx.restore();
+    y+=ph+10;
+    f('400',22); ctx.fillStyle=C.sub;
+    wrap(ctx,d.credit,pw,3).forEach(function(l){ ctx.fillText(l,PAD,y); y+=30; });
+    y+=18;
+  }
+  // タイムライン（カード）
+  var cardY=y, cx=PAD, cw=W-PAD*2, tX=cx+28, iX=cx+28+128+40, bX=iX+58, bW=cx+cw-28-bX;
+  if(d.cardH){ ctx.fillStyle=C.card; rrect(ctx,cx,cardY,cw,d.cardH,32); ctx.fill(); ctx.strokeStyle=C.line; ctx.lineWidth=3; ctx.stroke(); }
+  y+=32;
+  var drawRows=function(list){
+    list.forEach(function(r,i){
+      var isMove=r.k==='move', top=y;
+      f('800',isMove?30:38); ctx.fillStyle=isMove?C.sub:C.ink; ctx.fillText(r.time,tX,y+(isMove?6:4));
+      var nl, sl;
+      f('800',isMove?32:44); nl=wrap(ctx,r.name,bW,3);
+      f('600',isMove?26:28); sl=r.sub?wrap(ctx,r.sub,bW,2):[];
+      var nh=isMove?44:58, sh=isMove?34:38, bh=nl.length*nh+sl.length*sh, rowH=Math.max(isMove?60:84,bh)+(isMove?22:30);
+      if(i<list.length-1){ ctx.strokeStyle=C.line; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(iX,top+30); ctx.lineTo(iX,top+rowH+30); ctx.stroke(); }
+      var rr=isMove?26:36;
+      ctx.beginPath(); ctx.arc(iX,top+rr,rr,0,Math.PI*2); ctx.fillStyle='#fff6ee'; ctx.fill();
+      ctx.lineWidth=isMove?3:4; ctx.strokeStyle=isMove?C.line:C.acc; ctx.stroke();
+      f('400',isMove?26:36); ctx.textAlign='center'; ctx.fillStyle=C.ink; ctx.fillText(r.icon,iX,top+rr-(isMove?15:20)); ctx.textAlign='left';
+      var yy=top;
+      f('800',isMove?32:44); ctx.fillStyle=isMove?C.sub:C.ink; nl.forEach(function(l){ ctx.fillText(l,bX,yy); yy+=nh; });
+      f('600',isMove?26:28); ctx.fillStyle=C.sub; sl.forEach(function(l){ ctx.fillText(l,bX,yy); yy+=sh; });
+      y=top+rowH;
+    });
+  };
+  drawRows(d.rows.main);
+  if(d.rows.bonus.length){
+    y+=6; f('800',32); ctx.fillStyle='#8a7a4a'; ctx.fillText('⏱ 余力があればもう1カ所',tX,y); y+=58;
+    drawRows(d.rows.bonus);
+  }
+  f('700',30); var sm=wrap(ctx,d.rows.summary,cw-56-40,3);
+  ctx.fillStyle='#f6ede0'; rrect(ctx,tX,y,cw-56,sm.length*42+32,20); ctx.fill();
+  ctx.fillStyle='#5a4632'; var sy=y+16; sm.forEach(function(l){ ctx.fillText(l,tX+20,sy); sy+=42; });
+  y+=sm.length*42+32+28;
+  var cardH=y-cardY;
+  y+=26;
+  if(d.note){ f('600',28); ctx.fillStyle=C.sub; wrap(ctx,d.note,W-PAD*2).forEach(function(l){ ctx.fillText(l,PAD,y); y+=40; }); y+=10; }
+  // フッター（下端に固定）: サイト名とドメインだけ
+  var FH=150, fy=Math.max(y,H-FH);
+  ctx.fillStyle=C.card; ctx.fillRect(0,fy,W,H-fy);
+  ctx.fillStyle=C.acc; ctx.fillRect(0,fy,W,8);
+  f('800',34); ctx.fillStyle=C.accd; ctx.textAlign='center';
+  ctx.fillText('おでまる｜'+d.site,W/2,fy+34);
+  f('600',26); ctx.fillStyle=C.sub; ctx.fillText(SITE_DOMAIN,W/2,fy+88);
+  ctx.textAlign='left';
+  return {contentBottom:y, cardH:cardH, need:y+FH};
+}
+function toBlob(cv){
+  return new Promise(function(res,rej){
+    try{ cv.toBlob(function(b){ b?res(b):rej(new Error('toBlob null')); },'image/png'); }catch(e){ rej(e); }
+  });
+}
+async function render(d){
+  var m=document.createElement('canvas'); m.width=W; m.height=4000;
+  var r1=paint(m.getContext('2d'),4000,d);
+  d.cardH=r1.cardH;
+  var cv=document.createElement('canvas'); cv.width=W; cv.height=Math.max(MIN_H,Math.ceil(r1.need));
+  paint(cv.getContext('2d'),cv.height,d);
+  return toBlob(cv);   // 汚染されていれば SecurityError で reject
+}
+async function buildImage(p){
+  try{ if(document.fonts&&document.fonts.ready) await document.fonts.ready; }catch(e){}
+  var d={font:(getComputedStyle(document.body).fontFamily||'sans-serif'),
+    when:(function(){ try{ return whenLabel(); }catch(e){ return ''; } })(),
+    origin:(state.origin&&state.origin.name)||'', rows:planData(p), site:siteName(),
+    note:'※営業時間・休みは必ず公式サイトでご確認ください', mark:null, photo:null, credit:''};
+  var row=(typeof PHOTO_MAIN_ROW!=='undefined')?PHOTO_MAIN_ROW:null;
+  var s=(row&&(p.rows||[]).indexOf(row)>=0)?row.spot:null;
+  var jobs=[loadImg(markSrc(),3000,false)];
+  if(s&&photoAllowed(s)) jobs.push(loadPhoto(s.image_url));
+  var got=await Promise.all(jobs);
+  d.mark=got[0];
+  if(got[1]){ var c=creditText(s); if(c){ d.photo=got[1]; d.credit=c; } }
+  if(!d.photo) return render(d);
+  try{ return await render(d); }
+  catch(e){ d.photo=null; d.credit=''; return render(d); }   // 写真で失敗したら写真とクレジットを外して描き直す
+}
+function fileName(){
+  var t; try{ t=targetDate(state.when); }catch(e){ t=new Date(); }
+  return 'odemaru-plan-'+t.getFullYear()+('0'+(t.getMonth()+1)).slice(-2)+('0'+t.getDate()).slice(-2)+'.png';
+}
+function download(blob,name){
+  var u=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=u; a.download=name; a.style.display='none'; document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(u); a.remove(); },4000);
+  showToast('画像を保存しました。LINEで送れます');
+  ga('downloaded');
+}
+async function doShare(file,text){
+  try{ await navigator.share({files:[file],text:text}); ga('shared'); return 'ok'; }
+  catch(e){ if(e&&e.name==='AbortError'){ ga('cancelled'); return 'ok'; } return e&&e.name==='NotAllowedError'?'retry':'fail'; }
+}
+// 画像ファイルを共有できる端末か（できなければ従来のリンク共有 sharePlan() をそのまま使う）
+function canShareFiles(){
+  try{ return !!(navigator.share&&navigator.canShare&&typeof File==='function'&&navigator.canShare({files:[new File([''],'odemaru-plan.png',{type:'image/png'})]})); }catch(e){ return false; }
+}
+// 画像作成に時間がかかりタップ直後の扱いが切れた端末向け：プレビューとボタンを出してもう一度タップしてもらう
+function sheet(file,blob,text){
+  var u=URL.createObjectURL(blob), acted=false;
+  var o=document.createElement('div');
+  o.setAttribute('style','position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px');
+  o.innerHTML='<div style="background:#fffdf9;border-radius:16px;padding:14px;max-width:360px;width:100%;text-align:center">'
+    +'<img src="'+u+'" alt="プランの画像" style="max-width:100%;max-height:52vh;border-radius:8px;border:1px solid #e7ddcd">'
+    +'<button type="button" data-a="s" style="display:block;width:100%;margin:10px 0 0;padding:13px;border-radius:12px;border:none;background:#e08a5b;color:#fff;font-weight:800;font-size:1rem">📤 送る</button>'
+    +'<button type="button" data-a="d" style="display:block;width:100%;margin:8px 0 0;padding:11px;border-radius:12px;border:2px solid #e08a5b;background:#fff;color:#c9713f;font-weight:800">💾 画像を保存</button>'
+    +'<button type="button" data-a="c" style="margin:8px 0 0;padding:6px;border:none;background:none;color:#7a746a;text-decoration:underline">閉じる</button></div>';
+  var close=function(){ o.remove(); setTimeout(function(){ URL.revokeObjectURL(u); },1000); };
+  o.addEventListener('click',async function(ev){
+    var a=ev.target&&ev.target.getAttribute&&ev.target.getAttribute('data-a');
+    if(!a&&ev.target!==o) return;
+    if(a==='s'){ acted=true; var r=await doShare(file,text); if(r!=='ok') download(blob,file.name); close(); }
+    else if(a==='d'){ acted=true; download(blob,file.name); close(); }
+    else { if(!acted) ga('cancelled'); close(); }
+  });
+  document.body.appendChild(o);
+}
+// 「📤 家族に送る」: 画像を共有できる端末は画像＋リンク、できない端末（PC・古いスマホ）は従来の sharePlan() のまま
+window.sharePlanImage=async function(btn){
+  if(busy||!state.plans||!state.plans.length) return;
+  if(!canShareFiles()) return sharePlan();
+  busy=true;
+  var label=btn?btn.textContent:'', blob=null, file=null, text='';
+  if(btn){ btn.disabled=true; btn.textContent='⏳ 画像を作成中…'; }
+  try{
+    var p=state.plans[state.variant%state.plans.length];
+    text='きょうのおでかけプラン（おでまる）\n'+buildShareUrl(p);
+    blob=await buildImage(p);
+    file=new File([blob],fileName(),{type:'image/png'});
+  }catch(e){ blob=null; }
+  busy=false;
+  if(btn){ btn.disabled=false; btn.textContent=label; }
+  if(!blob||!file) return sharePlan();   // 画像が作れなかったときも従来のリンク共有へ
+  var r=await doShare(file,text);
+  if(r!=='ok') sheet(file,blob,text);
+};
+})();
+</script>
 </body>
 </html>
