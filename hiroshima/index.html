@@ -955,6 +955,9 @@ function requestGeolocation(onOk,onFail,opt){
     opt||{enableHighAccuracy:false,timeout:10000,maximumAge:60000}
   );
 }
+// [geofix2] 現在地の範囲確認: plan.html の sanitizeOrigin と同じ基準(既定の市から、最も遠い市町村+40km・最低60km)
+const ORIGIN_MAX_KM=(function(){ let m=0; try{ CITIES.forEach(c=>{ const d=haversineKm(ANJO[0],ANJO[1],c[1],c[2]); if(d>m) m=d; }); }catch(e){} return Math.max(60,m+40); })();
+function hereInPref(lat,lng){ return isFinite(lat)&&isFinite(lng)&&haversineKm(ANJO[0],ANJO[1],lat,lng)<=ORIGIN_MAX_KM; }
 const recenterBtn=document.getElementById('recenterBtn');
 if(recenterBtn){
   // [geofix-B] 押すたびに位置を取り直す(キャッシュ不使用)。取得中は押せない。失敗時は直前の位置があればそこへ
@@ -966,6 +969,7 @@ if(recenterBtn){
     const end=()=>{ recenterBtn.disabled=false; recenterBtn.style.opacity=''; };
     requestGeolocation((lat,lng)=>{
       end();
+      if(!hereInPref(lat,lng)){ showToast('現在地がこのページの地域から離れています'); if(prev&&map) map.setView(prev,13,{animate:true}); return; }   // [geofix2]
       setOrigin('現在地',lat,lng);
       placeUserDot(lat,lng);
       if(map) map.setView([lat,lng],13,{animate:true});
@@ -1004,12 +1008,13 @@ document.getElementById('originGeo').addEventListener('click',()=>{
     pos=>{
       if(done)return; done=true; clearTimeout(watchdog);
       const lat=pos.coords.latitude, lng=pos.coords.longitude;
+      if(!hereInPref(lat,lng)){ if(origin.name==='現在地') backToAnjo(); showMsg('現在地がこのページの地域から離れています。'+origin.name+'から表示します'); return; }   // [geofix2] 範囲外の現在地は使わない
       setOrigin('現在地',lat,lng);
       placeUserDot(lat,lng);
       if(!autoPannedOnce && map){ map.setView([lat,lng],13,{animate:true}); autoPannedOnce=true; }
     },
     ()=>{ clearTimeout(watchdog); fail(); },
-    {enableHighAccuracy:false,timeout:10000,maximumAge:60000}
+    {enableHighAccuracy:false,timeout:10000,maximumAge:0}   // [geofix2] 押したときは位置のキャッシュを使わない
   );
 });
 

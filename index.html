@@ -357,7 +357,15 @@ padding:9px 11px;border-top:1px solid var(--line);font-size:.71rem;line-height:1
   var FAIL='位置情報が取得できませんでした。下から都道府県を選んでね';
   function fail(){ btn.disabled=false; btn.textContent='📍 現在地から探す'; note.textContent=FAIL; }
   function label(i){ var g=PREF_GEO[i]; return g[2]?g[0]+'（'+g[2]+'）':g[0]; }
-  function jump(i){ location.href=PREF_GEO[i][1]; }
+  var here=null;   // [geofix2] 取得した現在地(遷移先のプランナーへ引き継ぐ)
+  function jump(i){
+    var u=PREF_GEO[i][1];
+    if(here){
+      if(PREF_GEO[i][2]){ u+='#here='+here[0].toFixed(3)+','+here[1].toFixed(3); }   // 別ドメイン(愛知版)は約100m単位に丸めて#で渡す(#はサーバーに送られない。受け側で即消す)
+      else{ try{ sessionStorage.setItem('odemaru_here_handoff',JSON.stringify({lat:here[0],lng:here[1],ts:here[2]})); }catch(e){} }
+    }
+    location.href=u;
+  }
   // 県境付近だけ、遷移せずにどちらの県で探すかを確認する
   function ask(a,b){
     btn.disabled=false; btn.textContent='📍 現在地から探す';
@@ -375,6 +383,7 @@ padding:9px 11px;border-top:1px solid var(--line);font-size:.71rem;line-height:1
   }
   // 代表点（実在する市区町村の座標）の D km 以内にいるときは、その県で確定して即遷移する
   function go(lat,lng){
+    here=[lat,lng,Date.now()];
     var R=6371,p=Math.PI/180,bi=-1,bd=Infinity,oi=-1,od=Infinity;
     for(var i=0;i<PREF_GEO.length;i++){
       var g=PREF_GEO[i],m=Infinity;
@@ -395,12 +404,15 @@ padding:9px 11px;border-top:1px solid var(--line);font-size:.71rem;line-height:1
     if(!navigator.geolocation){ fail(); return; }
     btn.disabled=true; btn.textContent='📍 現在地を取得中…'; note.textContent='';
     var done=false;
+    var wd=setTimeout(function(){ if(done) return; done=true; fail(); },11000);   // [geofix2] 応答が無いときも「取得中…」のままにしない
     navigator.geolocation.getCurrentPosition(function(pos){
-      if(done) return; done=true;
+      if(done) return; done=true; clearTimeout(wd);
       try{ go(pos.coords.latitude,pos.coords.longitude); }catch(e){ fail(); }
-    },function(){ if(done) return; done=true; fail(); },
-    {enableHighAccuracy:false,timeout:8000,maximumAge:60000});
+    },function(){ if(done) return; done=true; clearTimeout(wd); fail(); },
+    {enableHighAccuracy:false,timeout:8000,maximumAge:0});   // [geofix2] 押したときは位置のキャッシュを使わない
   });
+  // [geofix2] 各県ページの「現在地の都道府県版をひらく」(index.html#here)から来たときは、そのまま現在地で県を判定する
+  if(location.hash==='#here'){ try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} btn.click(); }
 })();
 </script>
 </body></html>

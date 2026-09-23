@@ -575,7 +575,20 @@ originSel.value=CITIES[0][1]+','+CITIES[0][2];
 
 // [geofix-A] 保存した「現在地」は取得時刻tsから30分以内のときだけ復元する(市の選択は従来どおり期限なし)
 const HERE_MAX_AGE_MS=30*60*1000;
+// [geofix2] 現在地の範囲確認: plan.html の sanitizeOrigin と同じ基準(既定の市から、最も遠い市町村+40km・最低60km)
+const ORIGIN_MAX_KM=(function(){ let m=0; try{ CITIES.forEach(c=>{ const d=haversineKm(ANJO[0],ANJO[1],c[1],c[2]); if(d>m) m=d; }); }catch(e){} return Math.max(60,m+40); })();
+function hereInPref(lat,lng){ return isFinite(lat)&&isFinite(lng)&&haversineKm(ANJO[0],ANJO[1],lat,lng)<=ORIGIN_MAX_KM; }
+function hereOutToast(){ showToast('現在地がこのページの地域から離れています。'+origin.name+'から表示します'); }
+// [geofix2] 現在地で出発するときは選択欄にも「📍 現在地」を出す(plan.html の geoSelHere と同じ)
+function mapSelHere(on){
+  let h=originSel.querySelector('option[data-here]');
+  if(on){
+    if(!h){ h=document.createElement('option'); h.value=''; h.textContent='📍 現在地'; h.setAttribute('data-here','1'); originSel.insertBefore(h,originSel.firstChild); }
+    originSel.value='';
+  }else if(h){ h.remove(); }
+}
 function setOrigin(name,lat,lng,ts){
+  mapSelHere(name==='現在地');   // [geofix2]
   origin.name=name; origin.lat=lat; origin.lng=lng; origin.isAnjo=(name==='福島市');
   // プランナー(自分で選ぶプラン)と出発地を共有する
   try{ const rec={name:name,lat:lat,lng:lng,isAnjo:origin.isAnjo}; if(name==='現在地') rec.ts=(typeof ts==='number'&&isFinite(ts))?ts:Date.now(); localStorage.setItem(ORIGIN_KEY,JSON.stringify(rec)); }catch(e){}
@@ -615,6 +628,7 @@ function requestGeolocation(onOk,onFail,opt){
 }
 
 originSel.addEventListener('change',()=>{
+  if(!originSel.value) return;   // [geofix2] 「📍 現在地」のままなら何もしない
   const opt=originSel.selectedOptions[0];
   const parts=originSel.value.split(',');
   setOrigin(opt.dataset.name, +parts[0], +parts[1]);
@@ -622,10 +636,11 @@ originSel.addEventListener('change',()=>{
 document.getElementById('originGeo').addEventListener('click',()=>{
   const backToAnjo=()=>{ originSel.value=CITIES[0][1]+','+CITIES[0][2]; setOrigin('福島市',ANJO[0],ANJO[1]); };
   requestGeolocation((lat,lng)=>{
+    if(!hereInPref(lat,lng)){ if(origin.name==='現在地') backToAnjo(); hereOutToast(); return; }   // [geofix2] 範囲外の現在地は使わない
     setOrigin('現在地',lat,lng);
     placeUserDot(lat,lng);
     if(!autoPannedOnce && map){ map.setView([lat,lng],13,{animate:true}); autoPannedOnce=true; }
-  }, backToAnjo);
+  }, backToAnjo, {enableHighAccuracy:false,timeout:10000,maximumAge:0});   // [geofix2] 押したときは位置のキャッシュを使わない
 });
 const recenterBtn=document.getElementById('recenterBtn');
 if(recenterBtn){
@@ -638,6 +653,7 @@ if(recenterBtn){
     const end=()=>{ recenterBtn.disabled=false; recenterBtn.style.opacity=''; };
     requestGeolocation((lat,lng)=>{
       end();
+      if(!hereInPref(lat,lng)){ hereOutToast(); if(prev&&map) map.setView(prev,13,{animate:true}); return; }   // [geofix2]
       setOrigin('現在地',lat,lng);
       placeUserDot(lat,lng);
       if(map) map.setView([lat,lng],13,{animate:true});
@@ -669,10 +685,10 @@ if(recenterBtn){
   if(from==='現在地'){
     // index.htmlで現在地を選んだまま全画面にした場合: 座標を引き継ぎ現在地設定を維持する
     const flat=parseFloat(qs.get('flat')), flng=parseFloat(qs.get('flng'));
-    if(isFinite(flat)&&isFinite(flng)){
+    if(isFinite(flat)&&isFinite(flng)&&hereInPref(flat,flng)){
       setOrigin('現在地',flat,flng);
       placeUserDot(flat,flng);
-    }
+    }else if(isFinite(flat)&&isFinite(flng)){ hereOutToast(); }   // [geofix2]
   }else if(from){
     const match=CITIES.find(c=>c[0]===from);
     if(match){
@@ -688,7 +704,8 @@ if(recenterBtn){
         if(mc){ originSel.value=mc[1]+','+mc[2]; setOrigin(mc[0],mc[1],mc[2]); }
         else if(d.name==='現在地'){
           const age=(typeof d.ts==='number'&&isFinite(d.ts))?Date.now()-d.ts:NaN;
-          if(age>=0&&age<=HERE_MAX_AGE_MS){ setOrigin('現在地',d.lat,d.lng,d.ts); }
+          if(!hereInPref(d.lat,d.lng)){ try{ localStorage.removeItem(ORIGIN_KEY); }catch(e2){} hereOutToast(); }   // [geofix2] 範囲外チェック → 期限チェックの順(plan.html と同じ)
+          else if(age>=0&&age<=HERE_MAX_AGE_MS){ setOrigin('現在地',d.lat,d.lng,d.ts); }
           else{ try{ localStorage.removeItem(ORIGIN_KEY); }catch(e2){} showToast('前回の現在地は時間がたったので使っていません。📍で取り直してください'); }   // [geofix-A]
         }
       }
