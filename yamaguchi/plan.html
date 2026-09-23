@@ -201,6 +201,18 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
 @media (max-width:420px){
   .fbbtn{font-size:.88rem;padding:10px 4px}
 }
+/* --- 写真（Wikimedia Commons）: メインは横長(2.4:1)の写真、午後/余力スポットは小さいサムネ --- */
+.tlphoto{position:relative;width:100%;aspect-ratio:2.4/1;overflow:hidden;background:#eee;border-radius:12px;margin:0 0 12px}
+.tlphoto img{display:block;width:100%;height:100%;object-fit:cover}
+.tlphoto .credit{position:absolute;left:0;bottom:0;right:0;font-size:.62rem;line-height:1.4;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.68) 45%);padding:14px 8px 4px;text-shadow:0 1px 2px rgba(0,0,0,.6);overflow-wrap:anywhere}
+.tlphoto .credit a{color:#fff;text-decoration:underline}
+.tl .thumb{float:right;width:96px;height:72px;margin:2px 0 6px 10px;border-radius:8px;overflow:hidden;background:#eee}
+.tl .thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.tl .credit-s{clear:both;font-size:.6rem;line-height:1.45;color:var(--sub);margin:6px 0 0;overflow-wrap:anywhere}
+.tl .credit-s a{color:var(--sub);text-decoration:underline}
+.tl .body .swapwrap{clear:both}
+.tl .body.hasthumb>div:not(.thumb):not(.whybadges):not(.links):not(.credit-s):not(.swapwrap){display:flow-root}
+@media (max-width:374px){.tl .thumb{width:80px;height:60px;margin-left:8px}}
 </style>
 <style id="odm-chrome">
 .odm-sitebar{background:#fffdf9;border-bottom:1px solid #e8e0d4}
@@ -359,6 +371,23 @@ const ANJO=[34.1785, 131.4737];
 
 /* ===== helpers ===== */
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+// --- 写真（Wikimedia Commons）: 許可ライセンスで作者・ライセンスがそろうものだけ表示（index.html と同じ判定・表記） ---
+const PHOTO_LICENSES=new Set(['CC0','Public domain','Copyrighted free use','CC BY 2.0','CC BY 2.1 jp','CC BY 2.5','CC BY 3.0','CC BY 4.0','CC BY-SA 2.0','CC BY-SA 2.5','CC BY-SA 3.0','CC BY-SA 4.0']);
+const httpUrl=u=>typeof u==='string'&&/^https?:\/\//.test(u);
+function photoAllowed(s){
+  return !!(s&&httpUrl(s.image_url)&&s.image_license&&PHOTO_LICENSES.has(s.image_license));
+}
+function photoCreditHTML(s,cls){
+  const lnk=(u,txt)=>httpUrl(u)?`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(txt)}</a>`:esc(txt);
+  const parts=[];
+  if(s.image_author) parts.push(esc(s.image_author));
+  parts.push(lnk(s.image_source_url,'Wikimedia Commons'));
+  parts.push(lnk(s.image_license_url,s.image_license));
+  const mod=s.image_modified?`（${esc(s.image_modified)}）`:'';
+  return `<div class="${cls||'credit'}">写真: ${parts.join(' / ')}${mod}</div>`;
+}
+// 写真の「メイン」行(showResult が描画前にセット)。それ以外の食事以外のスポット行は小さいサムネ
+let PHOTO_MAIN_ROW=null;
 function haversineKm(la1,lo1,la2,lo2){
   const R=6371,d2r=Math.PI/180;
   const dLa=(la2-la1)*d2r,dLo=(lo2-lo1)*d2r;
@@ -3864,11 +3893,13 @@ function rowHtml(r){
   const slot=swapSlotFor(r);
   const swapInline=(slot&&!state.isSharedView)?' <button type="button" class="swapbtn sb-inline" onclick="openSwap(\''+slot+'\',this)">🔁 変更する</button>':'';
   const isFood=(s.play_types||[]).includes('food');
+  const __ph=(!isFood&&photoAllowed(s))?(r===PHOTO_MAIN_ROW?'main':'sub'):null;
   const links='<div class="links">'+
     (s.official_url?'<a href="'+esc(s.official_url)+'" target="_blank" rel="noopener" onclick="track(\'official\')">'+esc(officialLabelFor(s))+'↗</a>':'')+
     '<a class="map" href="'+esc('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.name+' '+(s.city||'')))+'" target="_blank" rel="noopener" onclick="track(\'maps\')">地図で見る↗</a>'+
     '</div>';
   let body='';
+  if(__ph==='sub') body+='<div class="thumb subph"><img loading="lazy" decoding="async" width="96" height="72" src="'+esc(s.image_url)+'" alt="'+esc(s.name)+'" onerror="var t=this.closest(\'.tl\');if(t)t.querySelectorAll(\'.subph\').forEach(function(e){e.remove()})"></div>';
   body+=(r.opt?'<span class="opt">⏱ 余力があれば</span><br>':'');
   body+='<div class="sname">'+esc(s.name)+swapInline+'</div>';
   // 予約制・営業情報未確認の明示(親が出発前に確認すべきものを隠さない)
@@ -3912,9 +3943,11 @@ function rowHtml(r){
   if(r.bonusNote) body+='<div class="eveningwarn">'+esc(r.bonusNote)+'</div>';
   if(r.returnNote) body+='<div class="meta" style="font-size:.72rem;opacity:.75">🚗 '+esc(r.returnNote)+'</div>';
   body+=links;
-  return '<div class="tl'+(r.opt?' bonus':'')+'"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
+  if(__ph==='sub') body+=photoCreditHTML(s,'credit-s subph');
+  const __hero=(__ph==='main')?'<div class="photo tlphoto"><img loading="lazy" decoding="async" width="960" height="400" src="'+esc(s.image_url)+'" alt="'+esc(s.name)+'" onerror="this.closest(\'.photo\').remove()">'+photoCreditHTML(s)+'</div>':'';
+  return __hero+'<div class="tl'+(r.opt?' bonus':'')+'"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
     '<span class="icon">'+spotEmoji(s)+'</span><span class="line"></span></div>'+
-    '<div class="body">'+body+'</div></div>';
+    '<div class="body'+(__ph==='sub'?' hasthumb':'')+'">'+body+'</div></div>';
 }
 // ===== カスタムプランの枠キー(cs<k>) 共通ヘルパー =====
 // 結果画面の「変更する」をカスタム3〜5枠でも使えるようにするための共通部品。
@@ -5820,6 +5853,8 @@ function showResult(){
   // split main-tier rows and bonus-tier rows, insert a heading before the bonus tier
   const mainRows=[], bonusRows=[];
   p.rows.forEach(r=>{ (r.opt?bonusRows:mainRows).push(r); });
+  // 写真のメイン行: 本編で最初の「食事以外・掲載スポット」の行(自動プランでは tag==='メイン' の行)
+  PHOTO_MAIN_ROW=mainRows.find(r=>r.type==='spot'&&r.spot&&!r.spot.__temp&&!(r.spot.play_types||[]).includes('food'))||null;
   let tlHtml='<div class="timeline">'+mainRows.map(rowHtml).join('');
   if(bonusRows.length){
     let __bSub='上のプランは帰路で完結。寄る場合は'+(p.bonusReturn?('帰着が'+fmtTime(p.bonusReturn)+'ごろになります'):'下の工程になります')+(p.bonusExtra?('（運転+約'+p.bonusExtra+'分）'):'')+'。無理せず帰宅でもOKです';
