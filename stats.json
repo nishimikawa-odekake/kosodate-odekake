@@ -1,9 +1,9 @@
 {
   "aichi": 1243,
-  "national": 16558,
+  "national": 16399,
   "prefs": 47,
-  "total": 17801,
-  "updated": "2026-09-23",
+  "total": 17642,
+  "updated": "2026-09-24",
   "by_pref": {
     "akita": {
       "local": 118,
@@ -24,10 +24,10 @@
       "status": "growing"
     },
     "ehime": {
-      "local": 246,
-      "chain": 57,
-      "total": 303,
-      "status": "growing"
+      "local": 274,
+      "chain": 60,
+      "total": 334,
+      "status": "mature"
     },
     "fukui": {
       "local": 286,
@@ -36,9 +36,9 @@
       "status": "mature"
     },
     "fukuoka": {
-      "local": 341,
-      "chain": 167,
-      "total": 508,
+      "local": 326,
+      "chain": 168,
+      "total": 494,
       "status": "mature"
     },
     "fukushima": {
@@ -60,21 +60,21 @@
       "status": "growing"
     },
     "hiroshima": {
-      "local": 314,
-      "chain": 114,
-      "total": 428,
+      "local": 266,
+      "chain": 118,
+      "total": 384,
       "status": "mature"
     },
     "hokkaido": {
-      "local": 590,
-      "chain": 138,
-      "total": 728,
+      "local": 624,
+      "chain": 140,
+      "total": 764,
       "status": "mature"
     },
     "hyogo": {
-      "local": 380,
+      "local": 384,
       "chain": 259,
-      "total": 639,
+      "total": 643,
       "status": "mature"
     },
     "ibaraki": {
@@ -96,9 +96,9 @@
       "status": "growing"
     },
     "kagawa": {
-      "local": 167,
-      "chain": 44,
-      "total": 211,
+      "local": 183,
+      "chain": 45,
+      "total": 228,
       "status": "growing"
     },
     "kagoshima": {
@@ -108,16 +108,16 @@
       "status": "growing"
     },
     "kanagawa": {
-      "local": 566,
-      "chain": 477,
-      "total": 1043,
+      "local": 476,
+      "chain": 498,
+      "total": 974,
       "status": "mature"
     },
     "kochi": {
-      "local": 180,
-      "chain": 26,
-      "total": 206,
-      "status": "growing"
+      "local": 198,
+      "chain": 27,
+      "total": 225,
+      "status": "mature"
     },
     "kumamoto": {
       "local": 111,
@@ -126,15 +126,15 @@
       "status": "growing"
     },
     "kyoto": {
-      "local": 312,
+      "local": 313,
       "chain": 134,
-      "total": 446,
+      "total": 447,
       "status": "mature"
     },
     "mie": {
-      "local": 337,
+      "local": 339,
       "chain": 112,
-      "total": 449,
+      "total": 451,
       "status": "mature"
     },
     "miyagi": {
@@ -162,9 +162,9 @@
       "status": "mature"
     },
     "nara": {
-      "local": 220,
+      "local": 192,
       "chain": 76,
-      "total": 296,
+      "total": 268,
       "status": "growing"
     },
     "niigata": {
@@ -180,9 +180,9 @@
       "status": "growing"
     },
     "okayama": {
-      "local": 244,
+      "local": 252,
       "chain": 75,
-      "total": 319,
+      "total": 327,
       "status": "mature"
     },
     "okinawa": {
@@ -192,9 +192,9 @@
       "status": "growing"
     },
     "osaka": {
-      "local": 510,
+      "local": 447,
       "chain": 436,
-      "total": 946,
+      "total": 883,
       "status": "mature"
     },
     "saga": {
@@ -210,15 +210,15 @@
       "status": "mature"
     },
     "shiga": {
-      "local": 205,
+      "local": 212,
       "chain": 81,
-      "total": 286,
+      "total": 293,
       "status": "mature"
     },
     "shimane": {
-      "local": 186,
-      "chain": 24,
-      "total": 210,
+      "local": 151,
+      "chain": 28,
+      "total": 179,
       "status": "growing"
     },
     "shizuoka": {
@@ -234,21 +234,21 @@
       "status": "mature"
     },
     "tokushima": {
-      "local": 191,
-      "chain": 34,
-      "total": 225,
+      "local": 209,
+      "chain": 35,
+      "total": 244,
       "status": "growing"
     },
     "tokyo": {
-      "local": 628,
-      "chain": 700,
-      "total": 1328,
+      "local": 642,
+      "chain": 698,
+      "total": 1340,
       "status": "mature"
     },
     "tottori": {
-      "local": 183,
-      "chain": 19,
-      "total": 202,
+      "local": 152,
+      "chain": 20,
+      "total": 172,
       "status": "growing"
     },
     "toyama": {
@@ -258,9 +258,9 @@
       "status": "mature"
     },
     "wakayama": {
-      "local": 212,
+      "local": 208,
       "chain": 43,
-      "total": 255,
+      "total": 251,
       "status": "mature"
     },
     "yamagata": {
@@ -270,9 +270,9 @@
       "status": "growing"
     },
     "yamaguchi": {
-      "local": 257,
-      "chain": 54,
-      "total": 311,
+      "local": 219,
+      "chain": 60,
+      "total": 279,
       "status": "growing"
     },
     "yamanashi": {
