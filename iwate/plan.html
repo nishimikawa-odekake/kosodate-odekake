@@ -5381,6 +5381,8 @@ function isSamePlace(a,b,minKm){
 }
 // ランチ枠の1人あたり上限（予算条件とは独立の固定上限）
 const LUNCH_MAX_YEN=2000;
+// [plan-fix 2026-09-23] ランチ候補は「メインから この分数以内」を優先（無ければ 15km 圏まで）
+const LUNCH_NEAR_MIN=20;
 // 余力枠(=直前スポットからの寄り道)の移動上限（分）
 const SUB_MAX_DRIVE_MIN=25;
 // minutes ≈ 18.3 + 1.244*km (回帰式)
@@ -6932,9 +6934,258 @@ return {judge:judgeCached, judgeRaw:judge, specOf:specOf, rangePolarity:rangePol
    isClosedOn(s,date) は従来どおり真偽値を返す。**unknown は「閉」にしない**（裁定100-1）。
    unknown / 未解析を含む行は isUnverifiedHours() 経由で既存文言
    「🕐 営業時間は要確認」が出る。新しい文言は増やさない。 */
+/* ===== [plan-fix 2026-09-23] 営業期間・月つき曜日休・土日祝のみ の補助判定 =====
+   CLOSED_V3.judge（3値判定）の結果が open / unknown のときだけ、下の限定パターンを追加で読む。
+   ここで「閉」にできるのは、公式表記が次の形で明示されている場合だけ（原則1: 誤って閉にしない）:
+     R1 営業期間: 「7月20日〜8月31日のみ開設」「営業期間 4月1日〜11月末」「開設期間 6月25日から9月7日」
+     R2 月つき曜日休: 「10月〜3月 毎週 日・月・水・木・土曜日」「1月〜3月は毎週水曜日」「7月〜10月、12月〜2月」「12月〜3月は閉園」
+     R3 土日祝のみ: 「土曜日・日曜日のみ開館」「土日祝のみの営業」「土・日・祝日 10:00〜16:00」だけの表記、定休日「平日」
+     R4 「毎月第一月曜日は開館、翌火曜日が休館」
+     R5 3値判定が「期間が特定できない季節例外（春休み・夏休み・GW 等）が休を打ち消しうる」で unknown にした行のうち、
+        当日がその季節語のどの期間からも十分離れている日（例: 10月の「夏休みは開館」）は、元の曜日休を採る
+   主語つきの節（「ランチは」「屋外プールは」「9月は」等）・「不定休」・祝日の例外は閉にしない。 */
+var XR_CACHE={};
+function xrNorm(t){
+  t=String(t==null?'':t);
+  var o='';
+  for(var i=0;i<t.length;i++){
+    var ch=t.charAt(i), c=t.charCodeAt(i);
+    if(c>=0xFF10&&c<=0xFF19) ch=String.fromCharCode(c-0xFEE0);
+    else if('（【［〔'.indexOf(ch)>=0) ch='(';
+    else if('）】］〕'.indexOf(ch)>=0) ch=')';
+    else if('～〜－–—~'.indexOf(ch)>=0) ch='〜';
+    else if(ch==='：') ch=':';
+    else if(ch==='　') ch=' ';
+    else if(ch==='，'||ch===',') ch='、';
+    else if(ch==='／') ch='/';
+    else if(ch==='･') ch='・';
+    o+=ch;
+  }
+  return o.replace(/(\d{1,2}月(?:\d{1,2}日)?)\s*から\s*(?=\d{1,2}月)/g,'$1〜');
+}
+var XR_RNG='(\\d{1,2})月?(?:(\\d{1,2})日|(上旬|初旬|中旬|下旬))?\\s*〜\\s*(\\d{1,2})月(?:(\\d{1,2})日|(上旬|初旬|中旬|下旬|末日?))?';
+function xrRange(m,k){ // m: match, k: index of first group
+  var a=+m[k], d1=m[k+1]?+m[k+1]:(m[k+2]==='中旬'?11:(m[k+2]==='下旬'?21:1));
+  var b=+m[k+3], d2=m[k+4]?+m[k+4]:(m[k+5]==='上旬'||m[k+5]==='初旬'?10:(m[k+5]==='中旬'?20:31));
+  if(a<1||a>12||b<1||b>12) return null;
+  return [a,d1,b,d2];
+}
+function xrIn(date,r){
+  var md=(date.getMonth()+1)*100+date.getDate(), ra=r[0]*100+r[1], rb=r[2]*100+r[3];
+  return ra<=rb ? (md>=ra&&md<=rb) : (md>=ra||md<=rb);
+}
+/* 直前の区切りから範囲の手前までに主語（「〜は」）があるか。年だけの主語（2026年は）は許す */
+function xrHasSubject(pre,wide){
+  var k=wide?Math.max(pre.lastIndexOf('。'),pre.lastIndexOf('/'),pre.lastIndexOf('※'),pre.lastIndexOf(')'))
+            :Math.max(pre.lastIndexOf('、'),pre.lastIndexOf('。'),pre.lastIndexOf('/'),pre.lastIndexOf('('),pre.lastIndexOf('※'),pre.lastIndexOf(')'));
+  var cl=pre.slice(k+1).replace(/\d{4}年は?/g,'');
+  return /は|夕食|夜|ディナー|朝食|モーニング|ランチ|昼食|駐車|貸室|売店|レストラン/.test(cl);
+}
+var XR_WDS='日月火水木金土';
+function xrParse(s){
+  var bh=xrNorm(s.business_hours), cd=xrNorm(s.closed_days), key=bh+'\u0001'+cd+'\u0001'+String(s.name||'');   // [deploy 2026-09-23] R6 の見出し判定が施設名を見るので名前もキーに
+  if(XR_CACHE[key]) return XR_CACHE[key];
+  var R={periods:[], mwk:[], mclosed:[], wkOnly:null, nthOpen:null, lunchWkOnly:false, openRanges:[], seasonOnly:[], mIrregular:[], designated:false};
+  /* 「7〜8月は無休」「(3月20日〜5月31日、7月20日〜8月31日は無休)」: この期間は R2/R3 で閉にしない */
+  (function(){
+    var mo, cdn=cd.replace(/\(/g,'、').replace(/\)/g,'、');
+    var reC=new RegExp('(?:^|[、。/])((?:'+XR_RNG+'[、・]?\\s*)+)は?(?:無休|毎日営業|毎日開館|営業|開館|開園)','g');
+    while((mo=reC.exec(cdn))){ var rr2=new RegExp(XR_RNG,'g'), q2; while((q2=rr2.exec(mo[1]))){ var x4=xrRange(q2,1); if(x4) R.openRanges.push(x4); } }
+  })();
+  var all=[bh,cd], ti, m, re;
+  for(ti=0;ti<2;ti++){
+    var t=all[ti];
+    if(!t) continue;
+    /* R1 営業期間 */
+    re=new RegExp(XR_RNG+'(?:まで)?\\)?(?:の間)?のみ(?:の)?(?:開設|営業|開館|開園|開放|運航|運行|オープン)?','g');
+    while((m=re.exec(t))){
+      var pre1=t.slice(0,m.index), paren=/\)/.test(m[0]);
+      if(paren){ var po=pre1.lastIndexOf('('); if(po>=0) pre1=pre1.slice(0,po)+pre1.slice(po+1); }
+      if(xrHasSubject(pre1,paren)) continue;
+      /* [deploy 2026-09-23] 動詞（開設・営業…）の無い「11〜3月のみ」は、定休日欄にあるか直前に曜・休があれば
+         休みの適用期間（「月曜日（11〜3月のみ）」「11月〜2月のみ金曜日定休」）なので営業期間にしない */
+      if(!/(開設|営業|開館|開園|開放|運航|運行|オープン)$/.test(m[0]) && (ti===1 || /[曜休]/.test(t.slice(Math.max(0,m.index-12),m.index)))) continue;
+      var r1=xrRange(m,1); if(r1) R.periods.push(r1);
+    }
+    re=new RegExp('(?:営業|開設|開園|開館|開放)期間(?:は|:)?\\s*'+XR_RNG,'g');
+    while((m=re.exec(t))){
+      var pre=t.slice(0,m.index), k=Math.max(pre.lastIndexOf('、'),pre.lastIndexOf('。'),pre.lastIndexOf('/'),pre.lastIndexOf(')'));
+      if(/は/.test(pre.slice(k+1))) continue;
+      var r2=xrRange(m,1); if(r2) R.periods.push(r2);
+    }
+    re=new RegExp(XR_RNG+'の?(?:限定)?(?:営業|開設|開園)期間外は?(?:休業|休園|休み)','g');
+    while((m=re.exec(t))){ var r3=xrRange(m,1); if(r3) R.periods.push(r3); }
+    /* R6 季節限定（「春季限定運航」「夏季のみ営業」）。主語つき（「屋外プールは夏季」）は採らない */
+    re=/(春季|春期|夏季|夏期|秋季|秋期|冬季|冬期)(?:限定|のみ)(?:の)?(?:運航|運行|営業|開園|開館|開設|オープン)?/g;
+    while((m=re.exec(t))){ if(xrHasSubject(t.slice(0,m.index),false)) continue;
+      /* [deploy 2026-09-23] 節の頭に見出し（例「流水プール 10:00〜16:00（夏季のみ）」）があり、施設名にその語が無ければ一部施設の話なので採らない */
+      var pre6=t.slice(0,m.index), k6=Math.max(pre6.lastIndexOf('。'),pre6.lastIndexOf('/'),pre6.lastIndexOf('※'),pre6.lastIndexOf('、'),pre6.lastIndexOf('\n'));
+      var lab6=(pre6.slice(k6+1).trim().match(/^([^\d\s(:]{2,})/)||[])[1]||'';
+      if(lab6 && !/^(春|夏|秋|冬)/.test(lab6) && String(s.name||'').indexOf(lab6.replace(/[はの]$/,''))<0) continue;
+      R.seasonOnly.push({k:m[1].charAt(0), src:m[0]}); }
+    if(/指定日以外は(?:運航|運行|営業|開園|開館)(?:なし|しません|休み|休止)/.test(t)) R.designated=true;
+    /* R3 土日祝のみ */
+    re=/(土日祝日?|土・日・祝日?|土、日、祝日?|土日・祝日?|土曜日?・日曜日?(?:・祝日)?|土曜・日曜・祝日|土日|土・日|週末)(?:・?祝日?)?(?:の)?(?:のみ|だけ|限定)(?:の)?(営業|開館|開園|開放|オープン|運航|運行)?/g;
+    while((m=re.exec(t))){
+      var pre3=t.slice(0,m.index), nx=t.charAt(m.index+m[0].length);
+      if(!m[2] && !(nx===''||nx===')'||nx==='、'||nx==='。'||nx==='/'||nx===' ')) continue;   // 「土日祝のみの実施」等は営業日の話ではない
+      if(xrHasSubject(pre3,true)) continue;
+      if(/\d{1,2}月/.test(pre3.slice(Math.max(pre3.lastIndexOf('、'),pre3.lastIndexOf('/'),pre3.lastIndexOf('('))+1))) continue;
+      /* [deploy 2026-09-23] 営業時間欄に平日・曜日の営業も書かれていれば（「バイキング 土日祝限定／ランチ食堂 平日 11:00〜」）一部門の話なので採らない */
+      if(ti===0 && /平日|[月火水木金]曜/.test(t.slice(0,m.index)+' '+t.slice(m.index+m[0].length))) continue;
+      R.wkOnly={hol:/祝/.test(m[0]), src:m[0]};
+    }
+  }
+  /* R3b 営業時間が「土・日・祝日 10:00〜16:00」だけ */
+  if(!R.wkOnly && /^\s*(土日祝日?|土・日・祝日?|土、日、祝日?|土日|土・日|土、日|土曜・日曜・祝日|土曜日?・日曜日?(?:・祝日)?)\s*:?\s*\d{1,2}\s*[:時]/.test(bh)){
+    var rest=bh.replace(/^\s*(土日祝日?|土・日・祝日?|土、日、祝日?|土日|土・日|土、日|土曜・日曜・祝日|土曜日?・日曜日?(?:・祝日)?)/,'');
+    if(!/[月火水木金]曜|平日|毎日|[月火水木金]\s*[〜・、]|年中|夏休み|春休み|冬休み|学校休業/.test(rest)) R.wkOnly={hol:/祝/.test(bh.slice(0,8)), src:bh.slice(0,12)};
+  }
+  /* R3c 定休日に「平日」単独 */
+  if(!R.wkOnly && /(^|[、/])\s*平日(\s*\(月〜金曜?日?\))?\s*($|[、/])/.test(cd)) R.wkOnly={hol:true, src:'定休日: 平日'};
+  if(/(ランチ|昼営業|昼食)(タイム|営業)?は?\s*(土日祝?|土・日・?祝?|週末)日?のみ/.test(bh)) R.lunchWkOnly=true;
+  /* [deploy 2026-09-23] 「祝日は営業」「祝日・GW…は無休」: 祝日は曜日休（R2・R5）で閉にしない */
+  R.holOpen=/祝(?:祭)?日?[^、。\/]*?(?:は|も)(?:休まず)?(?:営業|開館|開園|無休)/.test(cd);
+  /* [deploy 2026-09-23] 「土日祝および長期休暇期間」: 長期休みの平日も営業するので、季節語の期間（広め）は閉にしない */
+  if(R.wkOnly && /長期休暇|長期休み|夏休み|春休み|冬休み|学校休業|GW|ゴールデンウ/.test(bh+' '+cd)) R.wkOnly.seasonEx=true;
+  /* R2 月つき曜日休（closed_days のみ） */
+  if(cd){
+    var RL=XR_RNG+'(?:\\s*[・、]\\s*'+XR_RNG+')*';
+    re=new RegExp('\\(?('+RL+')\\)?(?:は|の|:)?\\s*(?:毎週)?\\s*([日月火水木金土祝](?:\\s*曜日?)?(?:\\s*[・、〜]\\s*[日月火水木金土祝](?:\\s*曜日?)?)*)(曜日?|曜|祝日?)?(?:も)?(定休日?|休館日?|休園日?|休業|休み|休)?','g');
+    while((m=re.exec(cd))){
+      var wtxt=m[m.length-3]||'', tail=cd.slice(m.index+m[0].length, m.index+m[0].length+6);
+      if(!/曜|祝/.test(m[0].slice(m[1].length))) continue;           // 曜日語が無い（「3〜11月は無休」等）
+      if(/^\s*(不定休|は?営業|は?開館|は?開園|のみ|無休)/.test(tail)) continue;
+      /* [deploy 2026-09-23] 「11月〜3月の祝日の翌日」（祝日の翌日が休み）と「〜8月31日の月曜日並びに…は開園します」（営業日の指定）を休みにしない */
+      if(/^\s*日?の?翌/.test(tail)) continue;
+      var sent2=cd.slice(m.index+m[0].length).split(/[。\n]/)[0].slice(0,50);
+      if(/(開園|開館|営業(?!時間)|無休)/.test(sent2) && !/(休館|休園|休業|定休|休み)/.test(sent2)) continue;
+      if(/(不定休|のみ|営業|開館|開園)/.test(m[0])) continue;
+      var pre2=cd.slice(0,m.index), kk=Math.max(pre2.lastIndexOf('、'),pre2.lastIndexOf('/'),pre2.lastIndexOf('('));
+      if(/(夏休み|春休み|冬休み|GW|繁忙|を除|除く)/.test(pre2.slice(kk+1))) continue;
+      var rgs=[], rr=new RegExp(XR_RNG,'g'), mm;
+      while((mm=rr.exec(m[1]))){ var x=xrRange(mm,1); if(x) rgs.push(x); }
+      var ds=[], w2=wtxt.replace(/曜日?/g,'');
+      var span=w2.match(/([日月火水木金土])\s*〜\s*([日月火水木金土])/);
+      if(span){ var a=XR_WDS.indexOf(span[1]), b=XR_WDS.indexOf(span[2]); for(var q=a;q!==b;q=(q+1)%7) ds.push(q); ds.push(b); }
+      else { for(var qi=0;qi<w2.length;qi++){ var ix=XR_WDS.indexOf(w2.charAt(qi)); if(ix>=0&&ds.indexOf(ix)<0) ds.push(ix); } }
+      var holC=/祝/.test(w2), holEx=/^\s*\((?:祝|祭)/.test(tail)||/^\s*\([^)]*祝[^)]*(除|営業|開館|開園|翌)/.test(cd.slice(m.index+m[0].length,m.index+m[0].length+30));
+      if(rgs.length&&(ds.length||holC)) R.mwk.push({ranges:rgs, dows:ds, hol:holC, holEx:holEx, src:m[0]});
+    }
+    /* 月範囲そのものが休み（「平日、7月〜10月、12月〜2月」「12月〜3月は閉園」） */
+    var segs=cd.replace(/\([^)]*\)/g,'').split(/[、/。]/);
+    for(var si=0;si<segs.length;si++){
+      var sg=segs[si].trim();
+      m=sg.match(new RegExp('^'+XR_RNG+'(?:は)?(?:休館|休園|休業|閉園|閉館|休み|冬季休業|冬期休業)?$'));
+      if(m && (/(休|閉)/.test(sg) || /(^|[、/])\s*平日\s*($|[、/])/.test(cd))){ var x2=xrRange(m,1); if(x2) R.mclosed.push(x2); }
+      else { m=sg.match(new RegExp('^'+XR_RNG+'(?:は)(?:休館|休園|休業|閉園|閉館)$')); if(m){ var x3=xrRange(m,1); if(x3) R.mclosed.push(x3); } }
+    }
+  }
+  /* R7 月つきの「水曜不定休」: その期間のその曜日は unknown */
+  if(cd){
+    re=new RegExp(XR_RNG+'\\s*(?:は|:)?\\s*([日月火水木金土])曜?日?\\s*不定休','g');
+    while((m=re.exec(cd))){ var x5=xrRange(m,1); if(x5) R.mIrregular.push({r:x5, wd:XR_WDS.indexOf(m[7]), src:m[0]}); }
+  }
+  /* R4 第N X曜は開館、翌Y曜が休館 */
+  m=cd.match(/第([1-5一二三四五])\s*([日月火水木金土])曜日?は開館[、。]?\s*翌\s*([日月火水木金土])曜日?(?:が|は|を)?休館/);
+  if(m) R.nthOpen={n:('12345'.indexOf(m[1])>=0?+m[1]:'一二三四五'.indexOf(m[1])+1), wd:XR_WDS.indexOf(m[2]), next:XR_WDS.indexOf(m[3])};
+  XR_CACHE[key]=R;
+  return R;
+}
+/* 季節語の期間（広めにとる）。R5 は当日がこのどれにも入らない日だけ使う（どの季節語が書かれていても同じ扱い） */
+var XR_SEASON_WIN=[[3,10,4,15],[7,10,9,5],[12,15,1,15],[4,25,5,10],[8,8,8,20],[12,25,1,7]];
+function xrSeasonResolved(uq,date,cd){
+  if(/繁忙|特定日|イベント|臨時/.test(uq)) return false;
+  for(var i=0;i<XR_SEASON_WIN.length;i++) if(xrIn(date,XR_SEASON_WIN[i])) return false;
+  // 例外の中に当月が書かれている（「8月は営業」）なら使わない
+  var mo=date.getMonth()+1, mm, reM=/(\d{1,2})月/g, t=String(uq)+' '+String(cd||'').replace(/\d{1,2}月\d{1,2}日/g,'');
+  while((mm=reM.exec(t))){ if(+mm[1]===mo) return false; }
+  /* [deploy 2026-09-23] 定休日欄の「〈主語〉は無休／営業／開館／開園」をすべて見て、季節語・祝日・月以外の主語（紅葉期・各種イベント期間など）が1つでもあれば解決しない */
+  var reS=/([^、。()\/※\n]*?)(?:期間|期)?(?:中)?は(?:休まず)?(?:無休|営業|開館|開園)/g, ms, cdN=String(cd||'');
+  while((ms=reS.exec(cdN))){
+    var subj=ms[1].replace(/\d{1,2}月\d{1,2}日|\d{1,2}月|\d{1,2}日/g,'').replace(/春|夏|冬|休み|休暇|季|期|GW|ゴールデンウ[ィイ]ーク|大型連休|お盆|盆休|年末年始|振替休日/g,'')
+      .replace(/[・、,\s()（）〜]|間|中|は|の|と|祝日|祝祭日|祝|等|など|及び|および|並びに|ならびに|場合|ただし|但し|毎月|毎週|第[一二三四五1-5]|[日月火水木金土]曜日?|\d/g,'');
+    if(subj.length) return false;
+  }
+  var rest=String(uq).replace(/春|夏|冬|休み|休暇|季|期|GW|ゴールデンウ[ィイ]ーク|大型連休|お盆|盆休|年末年始|\d{1,2}月/g,'')
+    .replace(/[・、,\s()（）]|間|中|は|の|営業|開館|開園|無休|祝日|祝|等|など|及び|および|を除く|除く/g,'');
+  return rest.length===0;
+}
+function xrClosed(s,date,base){
+  if(!s||!(date instanceof Date)) return null;
+  if(!s.business_hours&&!s.closed_days) return null;
+  var R=xrParse(s), dow=date.getDay(), isHol=false;
+  try{ isHol=CLOSED_V3.isHolDate(date); }catch(e){}
+  var i, j, openR=false;
+  for(i=0;i<R.openRanges.length;i++) if(xrIn(date,R.openRanges[i])) openR=true;
+  if(R.periods.length){
+    var inAny=false; for(i=0;i<R.periods.length;i++) if(xrIn(date,R.periods[i])) inAny=true;
+    if(!inAny) return '営業期間外（'+R.periods.map(function(r){return r[0]+'/'+r[1]+'〜'+r[2]+'/'+r[3];}).join('・')+'）';
+  }
+  if(!openR) for(i=0;i<R.mclosed.length;i++) if(xrIn(date,R.mclosed[i])) return '休業期間（'+R.mclosed[i][0]+'〜'+R.mclosed[i][2]+'月）';
+  for(i=0;i<R.mwk.length&&!openR;i++){
+    var q=R.mwk[i], inR=false;
+    for(j=0;j<q.ranges.length;j++) if(xrIn(date,q.ranges[j])) inR=true;
+    if(!inR) continue;
+    if(isHol){ if(q.hol) return '月つき休: '+q.src; if(q.holEx||R.holOpen) continue; }
+    if(q.dows.indexOf(dow)>=0) return '月つき曜日休: '+q.src;
+  }
+  for(i=0;i<R.seasonOnly.length;i++){
+    var sw=XR_SEASON_ONLY[R.seasonOnly[i].k];
+    if(sw && !xrIn(date,sw)) return '季節限定の営業期間外: '+R.seasonOnly[i].src;
+  }
+  if(R.wkOnly && !openR && dow>=1 && dow<=5 && !isHol){
+    var inSeason=false; if(R.wkOnly.seasonEx) for(i=0;i<XR_SEASON_WIN.length;i++) if(xrIn(date,XR_SEASON_WIN[i])) inSeason=true;
+    if(!inSeason) return '土日祝のみ営業: '+R.wkOnly.src;
+  }
+  if(R.nthOpen && dow===R.nthOpen.next && !isHol){
+    var y=new Date(date.getFullYear(),date.getMonth(),date.getDate()-1);
+    if(y.getDay()===R.nthOpen.wd && Math.floor((y.getDate()-1)/7)+1===R.nthOpen.n) return '第'+R.nthOpen.n+XR_WDS.charAt(R.nthOpen.wd)+'曜開館の翌'+XR_WDS.charAt(R.nthOpen.next)+'曜休館';
+  }
+  if(R.nthOpen && dow===R.nthOpen.wd && Math.floor((date.getDate()-1)/7)+1===R.nthOpen.n) return null;   // 「第一月曜日は開館」
+  if(base&&base.state==='unknown'&&!(isHol&&R.holOpen)){
+    var mu=String(base.reason||'').match(/^期間が特定できない季節例外「([^」]*)」が休を打ち消しうる ／ (.*)$/);
+    /* [deploy 2026-09-23] 元の休みの節が「翌火曜日が休館」のような「翌〜」の節なら、毎週の休みとは言えないので採らない */
+    if(mu && /節「[^」]*翌/.test(mu[2])) mu=null;
+    if(mu && xrSeasonResolved(mu[1],date,xrNorm(s.closed_days))) return mu[2]+'（季節例外「'+mu[1]+'」は当日に掛からない）';
+  }
+  return null;
+}
+/* 季節限定の「明らかに季節外」とみなす範囲（広めにとる。この範囲の中は閉にせず unknown） */
+var XR_SEASON_ONLY={'春':[2,15,6,15],'夏':[6,1,9,30],'秋':[8,15,12,15],'冬':[11,1,3,31]};
+/* 閉とは言えないが、当日営業しているとも言えない行（→ unknown。カードに「営業日は公式でご確認ください」） */
+function xrUnknown(s,date){
+  if(!s||!(date instanceof Date)) return null;
+  if(!s.business_hours&&!s.closed_days) return null;
+  var R=xrParse(s), i;
+  if(R.seasonOnly.length) return '季節限定: '+R.seasonOnly[0].src;
+  if(R.designated) return '運航・営業の指定日以外は休み';
+  for(i=0;i<R.mIrregular.length;i++){ var q=R.mIrregular[i]; if(xrIn(date,q.r)&&date.getDay()===q.wd) return '月つき不定休: '+q.src; }
+  return null;
+}
+/* ランチ営業が土日（祝）のみと明記された店を、平日のランチ枠に入れない */
+function lunchWeekendOnlyClosed(s,date){
+  if(!s||!(date instanceof Date)) return false;
+  var R=xrParse(s); if(!R.lunchWkOnly) return false;
+  var dow=date.getDay(), isHol=false; try{ isHol=CLOSED_V3.isHolDate(date); }catch(e){}
+  return dow>=1&&dow<=5&&!isHol;
+}
 function judgeClosed(s,date){
-  try { return CLOSED_V3.judge(s,date); }
+  var r;
+  try { r=CLOSED_V3.judge(s,date); }
   catch(e){ return {state:'unknown', soft:true, reason:'判定に失敗'}; }
+  /* [plan-fix 2026-09-23] 3値判定が open / unknown の行だけ、営業期間・月つき曜日休・土日祝のみ を補助判定で読む。
+     閉にするのは表記が明示されている場合だけ。closed の結果は変えない。
+     「春季限定運航」「指定日以外は運航なし」「6月〜12月 水曜不定休」のように閉とも開とも言えない行は unknown に倒す。 */
+  if(r && r.state!=='closed'){
+    var xr=null; try{ xr=xrClosed(s,date,r); }catch(e){ xr=null; }
+    if(xr) return {state:'closed', soft:!!r.soft, reason:xr, viaExtra:true};
+  }
+  if(r && r.state==='open'){
+    var xu=null; try{ xu=xrUnknown(s,date); }catch(e){ xu=null; }
+    if(xu) return {state:'unknown', soft:true, reason:xu, viaExtra:true};
+  }
+  return r;
 }
 function isClosedOn(s,date){
   if(date instanceof Date) setPlanDate(date);
@@ -7680,6 +7931,15 @@ function clearIndoorPref(){
   if(typeof gtag==='function') gtag('event','indoor_pref_off',seoP());
   generate();
 }
+/* [plan-fix 2026-09-23] tier の控えめな加点（S>A>B）。年齢・天候の適合（+1〜+3）を覆さない大きさ。
+   「〜40分」には掛けない: 40分は近さを打ち消すシャッフルで 20〜40分圏の施設を自然に混ぜる設計で、
+   ここに加点すると同点の B より S/A が必ず前に来て diversifyHead の帯（裁定192）が S/A に閉じ、
+   3案のメインの顔ぶれが 9 県平均で約3割減った（REPORT.md の比較 F と M）。 */
+const TIER_SCORE_S=0.5, TIER_SCORE_A=0.25;
+/* [plan-fix 2026-09-23] おまかせで S が無いとき A を先頭にする範囲（メインの片道・分） */
+const ANY_A_MAX_MIN=90;
+/* [plan-fix 2026-09-23] 当日の休業判定が unknown（館内整理期間・不定休など）の施設は軽く減点（除外はしない） */
+const UNKNOWN_DAY_PENALTY=1.0;
 function scoreSpot(s,date,w,arrivalMin){
   let sc=0;
   // age
@@ -7725,6 +7985,8 @@ function scoreSpot(s,date,w,arrivalMin){
     // water play after 16:00: lower priority in favor of indoor/light/near-meal
     if(pt.includes('water')&&t>=16*60) sc-=4;
   }
+  if(state.driveTime!=='40'){ if(s.tier==='S') sc+=TIER_SCORE_S; else if(s.tier==='A') sc+=TIER_SCORE_A; }   // [plan-fix 2026-09-23]
+  if(date instanceof Date){ try{ if(judgeClosed(s,date).state==='unknown') sc-=UNKNOWN_DAY_PENALTY; }catch(e){} }
   return sc;
 }
 // 児童館・子育て支援センター系(is_jidokan===true)はプランナーの対象外。
@@ -7889,11 +8151,21 @@ function applyDriveMoodTier(pool){
     return pool;
   }
   if(state.driveTime==='any'){
+    /* [plan-fix 2026-09-23] 〜60分枝と同じく S/A を「目玉」として扱う（並びは S→A→その他）。
+       S が候補にあれば従来どおり S を先頭に（S の後ろはスコア順のまま）。S が候補に無いときだけ A を先頭にする。
+       旧実装は S しか見ず、S が0件の県（岐阜・静岡）や雨・距離で S が落ちた日は、おまかせでも並べ替えが一度も起きなかった。
+       画面の文言（1日たっぷり系）は S が先頭のときだけ出す（文言は変えない）。 */
     const sTier=pool.filter(s=>s.tier==='S');
     if(sTier.length){
       state.sFeatured=true;
       const rest=pool.filter(s=>s.tier!=='S');
       return sTier.concat(rest);
+    }
+    // A を先頭にするのはメイン片道 ANY_A_MAX_MIN 分以内の A だけ（遠方の A ばかりが主役になるのを防ぐ）。無ければ従来どおり
+    const aTier=pool.filter(s=>s.tier==='A'&&s.__dm!=null&&s.__dm<=ANY_A_MAX_MIN);
+    if(aTier.length){
+      const restA=pool.filter(s=>aTier.indexOf(s)<0);
+      return aTier.concat(restA);
     }
     return pool;
   }
@@ -7969,7 +8241,8 @@ function lunchCandidates(main,date){
   // ランチ枠の到着時刻の目安（出発→メイン→滞在→ランチ移動）。営業時間チェックに使う。
   const dmMain=driveMinutesFrom(o,main);
   const lunchBase=startMinutes()+(dmMain==null?30:dmMain)+stayMinutes(main);
-  const c=SPOTS.filter(s=>{
+  const __capHomeL=capHomeFor(state.ages);   // [plan-fix 2026-09-23] 帰宅上限（裁定172）
+  let c=SPOTS.filter(s=>{
     if(s===main||s.latitude==null) return false;
     if(isClosedNotice(s)) return false; // 閉店・休業告知のある店は全開放でも候補にしない
     if(isJidokan(s)) return false; // 児童館・子育て支援センター系はプランナー対象外（🏠チップ専用）
@@ -7984,22 +8257,32 @@ function lunchCandidates(main,date){
     const lp=parsePrice(s);
     if(lp!=null && lp>LUNCH_MAX_YEN) return false;
     if(isClosedOn(s,date)) return false;
+    if(lunchWeekendOnlyClosed(s,date)) return false;   // [plan-fix 2026-09-23] 「ランチは土日のみ」の店を平日に入れない
     const km=haversineKm(main.latitude,main.longitude,s.latitude,s.longitude);
     if(km>15) return false;
     // メインまで cap を超える移動を許容して選んだ場合、その周辺のランチも同じ移動圏として扱う。
     // (旧実装は「メインから15km圏」∩「出発地から CURRENT_CAP 分圏」の積集合になり、
     //  圏外メインを選ぶとメインから最も遠い候補だけが残っていた)
     // メインが圏内なら __capRef===CURRENT_CAP となり既存挙動と完全に一致する。
-    const __capRef=Math.max(CURRENT_CAP, driveMinutesFrom(o,main)||0);
+    /* [plan-fix 2026-09-23] 旧実装は「出発地から CURRENT_CAP 分以内」で絞っていたため、
+       メインのすぐ近くの店が「出発地からは少し遠い」だけで落ち、ランチ空やメインから遠い店が残っていた。
+       基準をメイン（=直前の地点）からの移動に改め、代わりに帰宅上限（capHomeFor）を候補の段階で守る:
+       ランチ到着＋最短30分の食事＋その店からの帰路 が上限を超える店は候補にしない。 */
+    const __leg=legMinutes(main.latitude,main.longitude,s.latitude,s.longitude);
     const dmO=driveMinutesFrom(o,s);
-    if(dmO==null||dmO>__capRef) return false;
+    if(dmO==null) return false;
     // 営業時間: ランチ到着時刻に閉店済み／開店前の店は除外（チェーン・地元店とも同じ扱い）
-    const arr=lunchBase+legMinutes(main.latitude,main.longitude,s.latitude,s.longitude);
+    const arr=lunchBase+__leg;
+    // メイン滞在は buildPlan が帰宅上限に合わせて最短45分まで縮めるので、判定は最短45分で行う（=組めない店だけ落とす）
+    if(startMinutes()+(dmMain==null?30:dmMain)+45+__leg+30+dmO>__capHomeL) return false;
+    s.__lleg=__leg;
     if(closingInfo(s,arr).exclude) return false;
     if(eveningBhNullBlocked(s,arr)){ noteReserve(s); return false; } // [A-8] 夕方到着は営業時間nullを確定枠に入れない
     if(hoursUnknown(s)){ noteReserve(s); return false; } // P0: 営業時間未登録の飲食店は確定枠に入れない
     s.__km=km; return true;
   });
+  /* [plan-fix 2026-09-23] メインから LUNCH_NEAR_MIN 分以内の店があればそれだけにする（無ければ従来の 15km 圏のまま） */
+  { const __near=c.filter(s=>s.__lleg<=LUNCH_NEAR_MIN); if(__near.length) c=__near; }
   // 適合スコア: 近さを基本に、座敷・キッズ対応で加点。上位10前後からシャッフル選択で多様化。
   // チェーン店は「近い・営業中・子連れ設備あり」なら地元店と同じ土俵で競わせるが、
   // 地元店をわずかに優先するため軽い減点(-0.5)を置く。
@@ -8158,6 +8441,7 @@ function capHomeFor(ages){
 function buildPlan(main,date,w,shareOverride){
   const o=state.origin;
   let lunch=shareOverride?(shareOverride.lunch||null):pickLunch(main,date);   // [裁定173] 余地が無ければ枠ごと落とすので let
+  const __noLunchCand=(!shareOverride&&!lunch);   // [plan-fix 2026-09-23] 候補0件（帰宅上限で枠を落とした場合は含まない）
   const dm=driveMinutesFrom(o,main)||30;
   let sub=shareOverride?(shareOverride.sub||null):pickSub(main,lunch,dm,date,w);
   let t=startMinutes();
@@ -8250,6 +8534,12 @@ function buildPlan(main,date,w,shareOverride){
       lastName=lunch.name; lastLat=lunch.latitude; lastLng=lunch.longitude; lastSpot=lunch;
     }
   }
+  /* [plan-fix 2026-09-23] ランチ候補が0件のときは枠を黙って消さず、お弁当の持参を案内する（店は作らない）。
+     お昼どき（mealLabelFor が「ランチ」＝10:30〜14:30）に当たるときだけ。夕方の食事枠には出さない。
+     さらに、お昼の後に午後の予定（午後スポット／余力があれば）が続くか、帰着が 12:30 より後のときだけ残す
+     （昼前後に帰宅するプランには出さない。判定は帰路を積み終えた後＝下の totals の直前）。 */
+  let __bentoRow=null;
+  if(__noLunchCand&&mealLabelFor(t)==='ランチ'){ __bentoRow={type:'note',time:t,icon:'🍙',label:'お昼',text:'この近くは食事処が少ないため、お弁当の持参がおすすめです'}; rows.push(__bentoRow); }
   // age-based fatigue: 0-2 -> no additional post-meal spot, go home; 3-5 -> max 1 extra spot (bonus tier);
   // 0-2歳のみでも「スポット→ランチ→スポット」の基本形は維持する(帰宅上限で滞在側を調整)
   let bonusNote=null;
@@ -8360,6 +8650,10 @@ function buildPlan(main,date,w,shareOverride){
     if(t+homeDm2>capHome) t=Math.max(lastArrive+45, capHome-homeDm2);
     rows.push({type:'move',time:t,label:'🚗 帰路（約'+homeDm2+'分）',sub:transitLabel(lastName,'ご自宅',homeDm2)+'／帰着めやす '+fmtTime(t+homeDm2)+'ごろ'});
     legSum+=homeDm2; rows.__retHome=t+homeDm2;
+  }
+  if(__bentoRow){   // [plan-fix 2026-09-23] お弁当案内は、午後の予定が続くか帰着が12:30より後のときだけ残す
+    const __after=rows.some(r=>r.type==='spot'&&(r.tag==='午後スポット'||r.tag==='余力があれば'));
+    if(!(__after||(rows.__retHome||0)>12*60+30)){ const __bi=rows.indexOf(__bentoRow); if(__bi>=0) rows.splice(__bi,1); }
   }
   // totals: 余力枠(タイムライン外の任意スポット)は基本プランの入場料合計に含めない
   const subInMain=afternoonMode&&sub?true:false;
@@ -8755,6 +9049,11 @@ function whyBadges(s,r){
   return '<div class="whybadges">'+b.slice(0,4).map(x=>'<span class="wpill">'+esc(x)+'</span>').join('')+'</div>';
 }
 function rowHtml(r){
+  if(r.type==='note'){   // [plan-fix 2026-09-23] 案内だけの行（お弁当の持参など）
+    return '<div class="tl note"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
+      '<span class="icon">'+esc(r.icon||'ℹ️')+'</span><span class="line"></span></div>'+
+      '<div class="body"><div class="sname">'+esc(r.label)+'</div><div class="meta">'+esc(r.text)+'</div></div></div>';
+  }
   if(r.type==='branch'){
     return '<div class="tl branch"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
       '<span class="icon">🏠</span><span class="line"></span></div>'+
@@ -8803,6 +9102,9 @@ function rowHtml(r){
       +(s.official_url?' <a href="'+esc(s.official_url)+'" target="_blank" rel="noopener" onclick="track(\'hours_unverified_official\')" style="color:#1a73e8;font-weight:700">'+esc(sourceLabelFor(s))+'で確認↗</a>':'')
       +'</div>';
   }
+  /* [plan-fix 2026-09-23] その日の休業判定が unknown（館内整理期間・不定休・期間の読めない例外など）なら短く注意する。
+     既存の「🕐 営業時間は要確認」が出るカードには出さない（2行重ねない。既存側の文言・扱いは変えない）。 */
+  try{ if(!isUnverifiedHours(s) && PLAN_DATE instanceof Date && judgeClosed(s,PLAN_DATE).state==='unknown') body+='<div class="meta dayunk" style="color:#b45309">📅 営業日は公式でご確認ください</div>'; }catch(e){}
   if(s.__jidokan){
     body+='<div class="notice">※市外の方は利用可否を公式サイトでご確認ください</div>';
   }
@@ -10991,6 +11293,7 @@ function planData(p){
   var conv=function(r){
     if(r.type==='move') return {k:'move',time:fmtTime(r.time),icon:'🚗',name:txt(r.label).replace(/^🚗\s*/,''),sub:txt(r.sub)};
     if(r.type==='branch') return {k:'branch',time:fmtTime(r.time),icon:'🏠',name:txt(r.label),sub:''};
+    if(r.type==='note') return {k:'branch',time:fmtTime(r.time),icon:r.icon||'ℹ️',name:txt(r.text),sub:''};   // [plan-fix 2026-09-23]
     var s=r.spot||{};
     return {k:'spot',time:fmtTime(r.time),icon:s.__temp?'📍':spotEmoji(s),name:String(s.name||''),sub:String(r.tag||'')+(s.city?'・'+s.city:'')};
   };
