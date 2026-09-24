@@ -356,9 +356,9 @@ textarea.fbtext{display:block;width:100%;box-sizing:border-box;font-family:inher
 <footer>
   <div class="wrap">
     <p class="odm-fbrand"><img src="/odemaru-mark.png" alt="" width="22" height="22" loading="lazy" decoding="async">いわて子育ておでかけマップ</p>
-    <p class="odm-fdesc">岩手県内<span data-stat="by_pref:iwate:total">180</span>カ所を掲載。二児のパパが個人で運営しています。</p>
+    <p class="odm-fdesc">岩手県内<span data-stat="by_pref:iwate:total">177</span>カ所を掲載。二児のパパが個人で運営しています。</p>
     <p class="odm-fnote">掲載情報は作成時点のものです。おでかけ前に各公式サイトで最終確認をお願いします。</p>
-    <p class="odm-fnat">🌏 <a href="/">全国版「おでまる｜子育ておでかけマップ」</a> — 全<span data-stat="prefs">47</span>都道府県・総掲載<span data-stat="total">17,642</span>スポット</p>
+    <p class="odm-fnat">🌏 <a href="/">全国版「おでまる｜子育ておでかけマップ」</a> — 全<span data-stat="prefs">47</span>都道府県・総掲載<span data-stat="total">17,540</span>スポット</p>
     <p class="odm-flinks"><a href="./index.html">いわて子育ておでかけマップ</a> | <a href="/about.html">運営者情報</a> | <a href="/disclaimer.html">免責事項</a> | <a href="/privacy.html">プライバシーポリシー</a> | <a href="/odemaru/">おでまるって？</a> | <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcSuUG_4MbFgNq-Ejn_cfDvXKhQdQZh4DxITrDiKlo4ocFfw/viewform" target="_blank" rel="noopener">お問い合わせ</a> | <a href="/request.html">掲載情報の修正・削除依頼</a></p>
   </div>
 </footer>
@@ -10061,6 +10061,96 @@ function shareSlotItems(){
   const a=(Array.isArray(e)&&e.length)?e:(state.cpPlanSlots||state.customSlots||[]);
   return a.map(s=>!s?null:(s.__bento?{n:s.name,bento:1}:(s.__temp?{n:s.name,lat:s.latitude,lng:s.longitude,addr:s.city,temp:1}:{n:s.name})));
 }
+/* ===== [short-share] 共有URLを短くする =====
+ * 施設名・出発地名の代わりに「名前から決まる短いID」を使う(FNV-1a 32bit を 36^6 で割った余りの base36、最大6文字)。
+ * SPOTS の並び順には依存しない。受け側は shareExpandQs() で従来の長い形式(share=1&from=…&main=…)に戻してから
+ * これまでどおり restoreFromShare() に渡すので、旧形式URL・名前が見つからないときの挙動は従来どおり。
+ * 短いキー: s=share f=from y=lat x=lng(10万倍の整数をbase36) d=drive w=when t=depart a=age(0/3/e を連結) b=budget
+ *           m=main l=lunch u=sub c=cs(ct=一時スポット) i=csli
+ * ID が別の名前と重なる／解決できない項目は、その項目だけ従来の長い形式のまま残す(復元はできる)。 */
+function shareNameId(s){
+  let h=0x811c9dc5; s=String(s);
+  for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193); }
+  return ((h>>>0)%2176782336).toString(36);
+}
+function shareIdMaps(){
+  const sp=new Map(), ci=new Map();
+  const add=(m,n)=>{ const k=shareNameId(n); if(!m.has(k)) m.set(k,n); else if(m.get(k)!==n) m.set(k,null); };
+  SPOTS.forEach(s=>{ if(s&&s.name) add(sp,s.name); });
+  CITIES.forEach(c=>{ if(c&&c[0]) add(ci,c[0]); });
+  return {sp,ci};
+}
+const SHARE_W={today:'n',tomorrow:'t',sat:'s',sun:'u'}, SHARE_T={'slot:am':'a','slot:noon':'n'}, SHARE_A={'0-2':'0','3-5':'3','elem':'e'};
+function shortShareUrl(longUrl){
+  try{
+    const u=new URL(longUrl), q=u.searchParams;
+    if(q.get('share')!=='1') return longUrl;
+    const M=shareIdMaps(), enc=encodeURIComponent, out=['s=1'];
+    const sid=(m,n)=>{ const k=shareNameId(n); return m.get(k)===n?k:null; };
+    const SK={main:'m',lunch:'l',sub:'u'};
+    for(const [k,v] of q){
+      let s=null;
+      if(k==='share') continue;
+      if(k==='from'){ const id=(v==='現在地')?'_h':sid(M.ci,v); if(id) s='f='+id; }
+      else if((k==='lat'||k==='lng')&&/^-?\d{1,3}\.\d{5}$/.test(v)) s=(k==='lat'?'y=':'x=')+Math.round(parseFloat(v)*1e5).toString(36);
+      else if(k==='drive') s='d='+enc(v);
+      else if(k==='when'&&SHARE_W[v]) s='w='+SHARE_W[v];
+      else if(k==='depart'){ if(SHARE_T[v]) s='t='+SHARE_T[v]; else if(/^offset:\d+$/.test(v)) s='t=o'+v.slice(7); }
+      else if(k==='age'&&v.split(',').every(x=>SHARE_A[x])) s='a='+v.split(',').map(x=>SHARE_A[x]).join('');
+      else if(k==='budget') s='b='+enc(v);
+      else if(SK[k]){ const id=sid(M.sp,v); if(id) s=SK[k]+'='+id; }
+      else if(k==='cs'){
+        try{
+          const arr=JSON.parse(v), t=[], tp=[];
+          if(Array.isArray(arr)) for(const it of arr){
+            if(!it){ t.push('-'); continue; }
+            const ks=Object.keys(it);
+            if(it.bento===1&&!it.temp&&ks.length===2&&'n' in it){ t.push('_b'); continue; }
+            if(it.temp===1&&ks.join()==='n,lat,lng,addr,temp'){ t.push('_t'); tp.push([it.n,it.lat,it.lng,it.addr]); continue; }
+            const id=(ks.length===1&&typeof it.n==='string')?sid(M.sp,it.n):null;
+            if(!id){ t.length=0; break; }
+            t.push(id);
+          }
+          if(t.length&&t.length===arr.length) s='c='+t.join('.')+(tp.length?'&ct='+enc(JSON.stringify(tp)):'');
+        }catch(e){}
+      }
+      else if(k==='csli'&&/^\d+$/.test(v)) s='i='+v;
+      out.push(s!=null?s:(enc(k)+'='+enc(v)));
+    }
+    return u.origin+u.pathname+'?'+out.join('&');
+  }catch(e){ return longUrl; }
+}
+function shareExpandQs(qs){
+  try{
+    if(qs.get('s')!=='1'||qs.has('share')) return qs;
+    const M=shareIdMaps(), o=new URLSearchParams();
+    const inv=m=>{ const r={}; Object.keys(m).forEach(k=>{ r[m[k]]=k; }); return r; };
+    const W=inv(SHARE_W), T=inv(SHARE_T), A=inv(SHARE_A);
+    const L={s:'share',d:'drive',b:'budget',i:'csli'}, SK={m:'main',l:'lunch',u:'sub'};
+    let tp=[]; try{ tp=JSON.parse(qs.get('ct')||'[]'); }catch(e){}
+    for(const [k,v] of qs){
+      if(k==='ct') continue;
+      if(L[k]) o.append(L[k],v);
+      else if(k==='f'){ const n=(v==='_h')?'現在地':M.ci.get(v); if(n) o.append('from',n); }
+      else if(k==='w') o.append('when',W[v]||v);
+      else if(k==='y'||k==='x') o.append(k==='y'?'lat':'lng',(parseInt(v,36)/1e5).toFixed(5));
+      else if(k==='t') o.append('depart',T[v]||(/^o\d+$/.test(v)?('offset:'+v.slice(1)):v));
+      else if(k==='a') o.append('age',v.split('').map(x=>A[x]||x).join(','));
+      else if(SK[k]){ const n=M.sp.get(v); if(n) o.append(SK[k],n); }
+      else if(k==='c'){
+        const arr=v.split('.').map(x=>{
+          if(x==='-') return null;
+          if(x==='_b'){ let n=''; try{ n=bentoSpot().name; }catch(e){} return {n,bento:1}; }
+          if(x==='_t'){ const a=tp.shift(); return Array.isArray(a)?{n:a[0],lat:a[1],lng:a[2],addr:a[3],temp:1}:null; }
+          const n=M.sp.get(x); return n?{n}:null;
+        });
+        o.append('cs',JSON.stringify(arr));
+      }
+      else o.append(k,v);
+    }
+    return o;
+  }catch(e){ return qs; }
+}
 function buildShareUrl(p){
   const parts=['share=1'];
   const originName=state.origin?state.origin.name:'盛岡市';
@@ -10125,7 +10215,7 @@ function copyToClipboard(text){
 async function sharePlan(){
   if(!state.plans.length) return;
   const p=state.plans[state.variant%state.plans.length];
-  const url=buildShareUrl(p);
+  const url=shortShareUrl(buildShareUrl(p));
   const text=parentSummary();
   if(navigator.share){
     try{
@@ -11132,7 +11222,7 @@ async function customGenerate(){
 }
 
 async function initFromShareOrWizard(){
-  const qs=new URLSearchParams(location.search);
+  const qs=shareExpandQs(new URLSearchParams(location.search));
   // SEOページからの条件引継ぎ: ?from=市町村&mode=indoor(旧rain=1互換)&budget=free&src=ページ識別子
   try{
     const _src=qs.get('src');
@@ -11639,13 +11729,13 @@ document.addEventListener('click',function(e){
   const st=e.target&&e.target.closest?e.target.closest('.step'):null;
   if(st){ window.__plannerStarted=true; try{ if(typeof gtag==='function') gtag('event','planner_start',seoP()); }catch(err){} }
 },true);
-try{ if(!/[?&]share=1/.test(location.search)) loadPrefs(); }catch(e){}
+try{ if(!/[?&](share|s)=1/.test(location.search)) loadPrefs(); }catch(e){}
 // [geofix2] トップの「📍 現在地から探す」から来たときは、その位置を出発地にする(取得から2分以内・範囲確認つき・1回だけ)
 try{
   const __h=JSON.parse(sessionStorage.getItem('odemaru_here_handoff')||'null');
   sessionStorage.removeItem('odemaru_here_handoff');
   const __age=(__h&&typeof __h.ts==='number')?Date.now()-__h.ts:NaN;
-  if(__h&&isFinite(__h.lat)&&isFinite(__h.lng)&&__age>=0&&__age<=120000&&!/[?&](share|custom)=1/.test(location.search)) geoUseHere(+__h.lat,+__h.lng,__h.ts);
+  if(__h&&isFinite(__h.lat)&&isFinite(__h.lng)&&__age>=0&&__age<=120000&&!/[?&](share|custom|s)=1/.test(location.search)) geoUseHere(+__h.lat,+__h.lng,__h.ts);
 }catch(e){}
 initFromShareOrWizard();
 // 「いつ行く？」を表示した時点で「今日これから」が適切に非活性になるよう、起動時にも反映する。
@@ -11889,7 +11979,7 @@ window.sharePlanImage=async function(btn){
   if(btn){ btn.disabled=true; btn.textContent='⏳ 画像を作成中…'; }
   try{
     var p=state.plans[state.variant%state.plans.length];
-    text='きょうのおでかけプラン（おでまる）\n'+buildShareUrl(p);
+    text='きょうのおでかけプラン（おでまる）\n'+shortShareUrl(buildShareUrl(p));
     blob=await buildImage(p);
     file=new File([blob],fileName(),{type:'image/png'});
   }catch(e){ blob=null; }
