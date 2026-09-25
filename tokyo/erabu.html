@@ -21,7 +21,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" referrerpolicy="no-referrer">
 <style>
 :root{--accent:#e08a5b;--accent-d:#c9713f;--food:#D95D77;--food-d:#b8425c;--bg:#faf6ef;--card:#fffdf9;--ink:#3d3a34;--sub:#7a746a;--line:#e7ddcd;--map:#e4e1db;
---animal:#E9A23B;--active:#4CAF6E;--water:#3FA9D6;--create:#9B6DD6;--vehicle:#E06C75;--indoor:#7A8AA0;--chain:#e8853d;--pm:#54709f;--ctlH:120px}
+--animal:#E9A23B;--active:#4CAF6E;--water:#3FA9D6;--create:#9B6DD6;--vehicle:#E06C75;--indoor:#7A8AA0;--chain:#e8853d;--pm:#54709f;--topH:48px;--ctlH:104px}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden;overscroll-behavior:none}
 body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;background:var(--bg);color:var(--ink);-webkit-text-size-adjust:100%}
@@ -33,36 +33,36 @@ button:disabled{opacity:.45;cursor:default}
 .hidden{display:none!important}
 .odm-brand{display:none}
 /* ヘッダー */
-.top{position:absolute;left:0;right:0;top:0;height:56px;display:flex;align-items:center;gap:6px;padding:4px 10px 4px 6px;background:var(--card);border-bottom:1px solid var(--line);z-index:900}
-.home{display:flex;align-items:center;gap:6px;min-height:48px;padding:0 8px;text-decoration:none;color:var(--ink);font-size:17px;font-weight:800;white-space:nowrap}
+.top{position:absolute;left:0;right:0;top:0;height:var(--topH);display:flex;align-items:center;gap:6px;padding:2px 10px 2px 4px;background:var(--card);border-bottom:1px solid var(--line);z-index:900}
+.home{display:flex;align-items:center;gap:5px;min-height:44px;padding:0 6px;text-decoration:none;color:var(--ink);font-size:16px;font-weight:800;white-space:nowrap}
 .home .ar{color:var(--accent-d);font-size:20px}
-.imk{display:inline-block;width:28px;height:28px;background:url(/odemaru-mark.png) center/contain no-repeat;flex:none}
+.imk{display:inline-block;width:24px;height:24px;background:url(/odemaru-mark.png) center/contain no-repeat;flex:none}
 .iwv{display:inline-block;background:url(/odemaru-wave.png) center/contain no-repeat;flex:none}
-.loc{position:relative;margin-left:auto;display:flex;align-items:center;min-height:48px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line);background:#fff;color:var(--accent-d);font-size:15px;font-weight:800;white-space:nowrap;max-width:190px;overflow:hidden}
+.loc{position:relative;margin-left:auto;display:flex;align-items:center;min-height:44px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line);background:#fff;color:var(--accent-d);font-size:15px;font-weight:800;white-space:nowrap;max-width:190px;overflow:hidden}
 .loc span{overflow:hidden;text-overflow:ellipsis}
 .loc select{position:absolute;inset:0;opacity:0;width:100%;height:100%;font-size:16px;cursor:pointer}
-.back{min-height:48px;padding:0 8px;color:var(--accent-d);font-size:16px;font-weight:800;white-space:nowrap}
+.back{min-height:44px;padding:0 8px;color:var(--accent-d);font-size:16px;font-weight:800;white-space:nowrap}
 .wx{margin-left:auto;font-size:15px;color:var(--sub);white-space:nowrap;padding-right:6px}
 /* 操作帯 */
-.ctl{position:absolute;left:0;right:0;top:56px;height:var(--ctlH);background:var(--bg);padding:8px 16px;z-index:800;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 8px rgba(0,0,0,.06)}
-.mode{display:flex;background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:2px;flex:none}
-.mode button{flex:1;height:48px;border-radius:999px;font-size:18px;font-weight:800;color:var(--sub)}
+.ctl{position:absolute;left:0;right:0;top:var(--topH);height:var(--ctlH);background:var(--bg);padding:6px 12px;z-index:800;display:flex;flex-direction:column;gap:4px;box-shadow:0 3px 8px rgba(0,0,0,.06)}
+.mode{display:flex;height:44px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--line);border-radius:999px;padding:0;flex:none}
+.mode button{flex:1;height:44px;border-radius:999px;font-size:15px;font-weight:800;color:var(--sub)}
 .mode button.on[data-m=play]{background:var(--accent-d);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
 .mode button.on[data-m=eat]{background:var(--food);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
-.srow{display:flex;gap:6px;align-items:center;height:48px;flex:none;min-width:0}
-.search{position:relative;display:flex;align-items:center;height:48px;border-radius:14px;background:#fff;border:1.5px solid var(--line);padding:0 0 0 10px;flex:1 1 auto;min-width:0}
+.srow{display:flex;gap:6px;align-items:center;height:44px;flex:none;min-width:0}
+.search{position:relative;display:flex;align-items:center;height:44px;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--line);padding:0 0 0 10px;flex:1 1 auto;min-width:0}
 /* 入力中は追加欄を横いっぱいに（条件ボタンは入力が終わると戻る） */
 .search:focus-within~#chips .chip{display:none}
-.search input{flex:1;height:44px;font-size:16px;outline:0;min-width:0;width:100%}
+.search input{flex:1;height:44px;font-size:16px;background:none;outline:0;min-width:0;width:100%}
 .search input::placeholder{color:var(--accent-d);font-weight:700;opacity:1}
 .search input::-webkit-search-cancel-button{display:none}
 .search .clr{width:44px;height:44px;font-size:17px;color:var(--sub);flex:none}
-.chip{flex:none;height:48px;min-width:48px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-size:15px;font-weight:700;white-space:nowrap;padding:0 8px;letter-spacing:-.05em}
+.chip{flex:none;height:44px;min-width:44px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-size:15px;font-weight:700;white-space:nowrap;padding:0 8px;letter-spacing:-.05em}
 .chip.on{background:var(--accent-d);color:#fff;border-color:transparent}
 .eat .chip.on{background:var(--food)}
 /* 地図 */
 .map{position:absolute;left:0;right:0;background:var(--map)}
-#map{top:calc(56px + var(--ctlH));bottom:0;z-index:0}
+#map{top:calc(var(--topH) + var(--ctlH));bottom:0;z-index:0}
 .leaflet-container{font:inherit;background:var(--map)}
 .leaflet-control-attribution{font-size:15px!important;line-height:1.3;padding:1px 6px!important;background:rgba(255,255,255,.75)!important;color:var(--sub)}
 .pinw{background:none;border:none}
@@ -72,11 +72,12 @@ button:disabled{opacity:.45;cursor:default}
 .pin.me{background:#6b5ea8}
 .pin.dim{opacity:.4;filter:saturate(.35)}
 .pinw .cnt{position:absolute;right:-8px;top:-10px;min-width:24px;height:24px;padding:0 5px;border-radius:12px;background:#fff;color:var(--ink);border:2px solid var(--accent-d);font-size:15px;line-height:20px;font-style:normal;font-weight:800;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.25)}
-/* 名前ラベル（ズーム14以上。押せる要素ではないので12px） */
-.pinw .lbl{display:none;position:absolute;top:50px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;line-height:1.3;white-space:nowrap;color:#3d3a34;background:rgba(255,255,255,.9);padding:0 5px;border-radius:6px;pointer-events:none;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+/* 名前ラベル（v4：ズーム15以上。押せる要素ではないので12px。背景の箱はやめて白い縁取りだけ） */
+.pinw .lbl{display:none;position:absolute;top:48px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:600;line-height:1.25;white-space:nowrap;color:#4a453d;background:none;padding:0 2px;pointer-events:none;
+  text-shadow:0 0 2px #fff,0 0 2px #fff,1px 1px 1px #fff,-1px -1px 1px #fff,1px -1px 1px #fff,-1px 1px 1px #fff}
 #map.lblon .pinw .lbl{display:block}
 #map.lblon .pinw .lbl.hide{visibility:hidden}
-.pinw .pin.dim~.lbl{opacity:.65}
+.pinw .pin.dim~.lbl{opacity:.6}
 .clw{background:none;border:none}
 .cl{width:100%;height:100%;border-radius:50%;background:var(--accent-d);color:#fff;font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 0 0 5px rgba(201,113,63,.28),0 2px 6px rgba(0,0,0,.3)}
 .eat .cl{background:var(--food);box-shadow:0 0 0 5px rgba(217,93,119,.28),0 2px 6px rgba(0,0,0,.3)}
@@ -87,7 +88,7 @@ button:disabled{opacity:.45;cursor:default}
 .grab{flex:none;height:26px;display:flex;align-items:center;justify-content:center;touch-action:none}
 .grab i{width:46px;height:5px;border-radius:9px;background:#d8ccb9}
 /* 検索欄の候補（地図の上に重ねる） */
-.sug{position:absolute;left:8px;right:8px;top:calc(56px + var(--ctlH) + 4px);max-height:calc(100% - 56px - var(--ctlH) - 20px);overflow-y:auto;background:var(--card);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.22);z-index:890;padding:0 8px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.sug{position:absolute;left:8px;right:8px;top:calc(var(--topH) + var(--ctlH) + 4px);max-height:calc(100% - var(--topH) - var(--ctlH) - 20px);overflow-y:auto;background:var(--card);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.22);z-index:890;padding:0 8px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;min-height:76px;padding:8px;border-bottom:1px solid var(--line)}
 .item .e{flex:none;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff}
 .item .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
@@ -107,12 +108,10 @@ button:disabled{opacity:.45;cursor:default}
 .card .ht{min-width:0}
 .card h2{font-size:18px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card .m{font-size:15px;color:var(--sub);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card .facts{font-size:15px;line-height:1.45;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card .facts span{margin-right:10px}
-.card .facts .hr{font-weight:800;color:#2f7d4f}
+.card .facts{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-size:15px;line-height:1.45;margin-top:6px}
+.card .facts .hr{font-weight:800;color:#2f7d4f;margin-right:2px;white-space:nowrap}
 .card .facts .hr.off{color:var(--food-d)}
-.card .tags{display:flex;flex-wrap:nowrap;overflow:hidden;gap:6px;margin-top:6px}
-.card .tags .tag{padding:1px 9px}
+.card .facts .tag{padding:0 8px}
 .primary{display:flex;align-items:center;justify-content:center;width:100%;height:58px;border-radius:999px;background:var(--accent);color:#fff;font-size:19px;font-weight:800;box-shadow:0 4px 12px rgba(201,113,63,.35);text-decoration:none}
 .primary.food{background:var(--food);box-shadow:0 4px 12px rgba(217,93,119,.35)}
 .gorow{display:flex;gap:10px;margin-top:10px}
@@ -152,29 +151,50 @@ button:disabled{opacity:.45;cursor:default}
 .field input{height:52px;border-radius:14px;background:#fff;border:1.5px solid var(--line);padding:0 14px;font-size:16px;color:var(--ink);font-weight:400}
 .field input.bad{border-color:var(--food)}
 .bs .primary{margin-top:16px}
-/* プラン */
-.planwrap{position:absolute;top:56px;left:0;right:0;bottom:0;padding:14px 16px 16px;display:flex;flex-direction:column;overflow-y:auto}
+/* プラン（v4：おまかせ plan.html の結果画面と同じ部品 .plancard / .timeline / .tl / .swapbtn / .whybadges / .links。文字15px以上・押せるもの44px以上に拡大） */
+.planwrap{position:absolute;top:var(--topH);left:0;right:0;bottom:0;padding:12px 16px 16px;display:flex;flex-direction:column;overflow-y:auto}
 .ph2 h1{font-size:24px;display:flex;align-items:center;gap:2px;flex-wrap:wrap}
 .ph2 .date{font:inherit;font-weight:800;color:var(--accent-d);min-height:48px;padding:0 6px 0 0}
 .ph2 p{font-size:15px;color:var(--sub)}
-.rows{margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;flex:none}
-.row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;min-height:74px;padding:10px 12px 10px 16px;border-bottom:1px solid var(--line)}
-.rowwrap{border-bottom:1px solid var(--line)}.rowwrap .row{border-bottom:0}
-.row .t{font-size:18px;font-weight:800;width:54px;flex:none;color:var(--accent-d)}
-.row .n{flex:1;display:flex;flex-direction:column;min-width:0}.row .n b{font-size:17px;line-height:1.35;overflow-wrap:anywhere}.row .n small{font-size:15px;color:var(--sub);margin-top:2px}
-.row.food .t{color:var(--food)}.row .chg{font-size:15px;color:var(--sub);white-space:nowrap}.row.food .chg{color:var(--food);font-weight:700}
-.row.home{background:#f7f1e6;border-bottom:0}.row.home .t{color:var(--ink)}
-.row.none .n b{color:var(--sub);font-weight:700}
-.skip{display:block;margin:-6px 16px 10px 82px;height:48px;padding:0 16px;border-radius:999px;border:1.5px dashed #d8ccb9;background:#fff;font-size:15px;font-weight:700;color:var(--sub)}
+.plancard{margin-top:10px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 12px 10px;box-shadow:0 3px 12px rgba(160,140,110,.14);flex:none}
+.timeline{position:relative}
+.tl{display:flex;gap:10px;padding:0 0 14px;position:relative}
+.tl:last-child{padding-bottom:0}
+.tl .rail{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;width:50px}
+.tl .time{font-size:15px;font-weight:800;color:var(--ink);white-space:nowrap}
+.tl .icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;margin-top:3px;background:#fff6ee;border:2px solid var(--accent)}
+.tl.move .icon{background:#eef2f6;border-color:#c9d3dd;font-size:16px}
+.tl .line{flex:1;width:2px;background:var(--line);margin-top:2px}
+.tl:last-child .line{display:none}
+.tl .body{flex:1;padding:1px 0 4px;min-width:0}
+.tl .sname{font-weight:800;font-size:17px;line-height:1.4;margin:0 0 2px;color:var(--ink);overflow-wrap:anywhere}
+.tl.move .sname{font-weight:700;font-size:15px;color:var(--sub)}
+.tl.none .sname{color:var(--sub);font-weight:700}
+.tl .role{font-size:15px;font-weight:600;color:var(--sub);margin:0 0 4px}
+.tl .appeal{font-size:15px;line-height:1.5;color:#5a4632;background:#fff6ee;border-left:3px solid var(--accent);border-radius:5px;padding:5px 8px;margin:4px 0 6px;word-break:break-word}
+.tl .meta{font-size:15px;line-height:1.5;color:var(--sub);margin:0 0 4px;word-break:break-word}
+.moveline{font-size:15px;color:var(--sub)}
+.whybadges{display:flex;flex-wrap:wrap;gap:5px;margin:2px 0 4px}
+.whybadges .wpill{display:inline-block;font-size:15px;font-weight:700;color:var(--accent-d);background:#fff6ee;border:1px solid var(--accent);border-radius:999px;padding:1px 9px;line-height:1.45}
+.tl .links{display:flex;gap:8px;flex-wrap:wrap}
+.tl .links a{display:inline-flex;align-items:center;min-height:44px;font-size:15px;font-weight:700;text-decoration:none;border-radius:999px;padding:0 14px;border:1.5px solid var(--accent);color:var(--accent-d);background:#fff}
+/* 🔁 変更する／🗺 マップで選び直す：見た目は plan.html の .swapbtn.sb-inline（押せる範囲は44px） */
+.swapbtn{display:inline-flex;align-items:center;min-height:44px;min-width:44px;padding:0 2px;margin-left:2px;vertical-align:middle;background:none;border:0;cursor:pointer}
+.swapbtn span{display:inline-block;background:#fff;border:1.5px solid var(--accent);color:var(--accent-d);font-weight:800;font-size:15px;line-height:1.3;border-radius:999px;padding:3px 11px;white-space:nowrap}
+.swapbtn.on span{background:#fff2e4}
+.swapbtn.repick span{background:#f3f6fb;border-color:var(--pm);color:var(--pm)}
+.swapbtn:active span{transform:scale(.97)}
+.skip{display:block;margin:8px 0 0;height:44px;padding:0 16px;border-radius:999px;border:1.5px dashed #d8ccb9;background:#fff;font-size:15px;font-weight:700;color:var(--sub)}
+.tl.open{background:#fff8f2;border-radius:12px}
 .big{display:flex;flex-direction:column;gap:10px;margin-top:16px;flex:none}
 .share{height:58px;border-radius:999px;background:var(--card);border:2px solid var(--accent);color:var(--accent-d);font-size:18px;font-weight:800}
 .note{margin:auto -6px 0;font-size:15px;letter-spacing:-.03em;white-space:nowrap;color:var(--sub);text-align:center;padding-top:12px;flex:none}
 .hello{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;flex:none}.hello .iwv{width:56px;height:60px}.hello p{font-size:17px;font-weight:700;color:var(--accent-d)}
 .more2{display:flex;gap:8px;margin:8px 0 0}
 .more2 button{flex:1;height:52px;border-radius:999px;border:2px solid var(--line);background:#fff;font-size:15px;font-weight:800;color:var(--ink);white-space:nowrap}
-.row.open{background:#fff8f2}
 /* 変えるパネル（おまかせ plan.html の .swapwrap と同じ組み立て。文字15px以上・押せるもの44px以上に拡大） */
-.swapwrap{margin:0 10px 12px;background:#fff8f2;border:1px solid #f0ddc8;border-radius:14px;padding:10px}
+.tl .body .swapwrap{margin-left:-60px}
+.swapwrap{margin:8px 0 4px;background:#fff8f2;border:1px solid #f0ddc8;border-radius:14px;padding:10px}
 .swapwrap .sc-head{font-size:15px;font-weight:800;color:var(--sub);margin:2px 0 4px 2px}
 .swapcard{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid #eadbc8;border-radius:12px;padding:10px 12px;margin:8px 0;min-height:64px;cursor:pointer}
 .swapcard:active{transform:scale(.99)}
@@ -217,7 +237,7 @@ button:disabled{opacity:.45;cursor:default}
   <header class="top"><button class="back" id="planBack">‹ マップにもどる</button><span class="wx" id="wx"></span></header>
   <main class="planwrap">
     <div class="ph2"><h1><button class="date" id="dateBtn"></button><span>のプラン</span></h1><p id="depLine"></p></div>
-    <div class="rows" id="rows"></div>
+    <div class="plancard"><div class="timeline" id="rows"></div></div>
     <div class="big"><a class="primary" id="routeBtn" href="#" target="_blank" rel="noopener">🚗 Googleマップで出発</a><button class="share" id="shareBtn">📤 家族に送る</button></div>
     <p class="note">営業時間・料金はおでかけ前に公式サイトで確認してね</p>
   </main>
@@ -229,7 +249,7 @@ button:disabled{opacity:.45;cursor:default}
   <main class="planwrap">
     <div class="hello"><i class="iwv"></i><p>おでかけプランが届いたよ</p></div>
     <div class="ph2"><h1 id="rTitle"></h1><p id="rDep"></p></div>
-    <div class="rows" id="rRows"></div>
+    <div class="plancard"><div class="timeline" id="rRows"></div></div>
     <div class="big"><a class="primary" id="rGo" href="#" target="_blank" rel="noopener">このプランで行く</a></div>
     <p class="note">営業時間・料金はおでかけ前に公式サイトで確認してね</p>
   </main>
@@ -6706,7 +6726,7 @@ window.sharePlanImage=async function(btn){
 })();
 </script>
 <script>
-/* ===== [erabu] マップから自分で選ぶ（v2：近い順リストなし・午前に行く／午後に行く・変えるはおまかせと同じ候補） =====
+/* ===== [erabu] マップから自分で選ぶ（v4：プランはおまかせの結果画面と同じ縦のタイムライン・自分で選んだ場所は「マップで選び直す」・名前はズーム15以上・カードは最小限） =====
  * 上の <script> は tokyo/plan.html のエンジン部分（宣言だけを取り出したもの）。ここではそれを呼ぶだけで、エンジンの中身は変えない。
  * 差し替えるのは次の6つだけ（このページの中だけ・window のプロパティを上書き）:
  *   targetDate … 'd:YYYYMMDD' を日付として受ける（あす・週末・共有の固定日）
@@ -6993,11 +7013,11 @@ function closeBS(){ $('dim').classList.remove('on'); document.querySelectorAll('
 
 /* ---------- 地図（画面いっぱい。下のリストは無し） ----------
    v3：数字の丸にまとめるのはズーム11以下だけ（disableClusteringAtZoom=12）。ズーム12以上は全部ピン（表示範囲の外は描かない）。
-       ピンを押しても拡大しない（カードに隠れるときだけ少しずらす）。ズーム14以上でピンの下に名前。
+       ピンを押しても拡大しない（カードに隠れるときだけ少しずらす）。ズーム15以上でピンの下に名前（v4）。
        30m以内に重なった場所は1本のピンにまとめ、押すと名前を並べて選べる。
        選んでいる日がお休みの場所はピンを薄くする（押せる）。 */
 let map=null, layers=null, selMk=null;
-const CLUSTER_OFF_ZOOM=12, CLUSTER_R=40, LABEL_ZOOM=14, SAME_KM=0.03;
+const CLUSTER_OFF_ZOOM=12, CLUSTER_R=40, LABEL_ZOOM=15, SPOT_ZOOM=14, SAME_KM=0.03;   // v4：名前はズーム15以上（送られた場所を開くときのズームは v3 と同じ14）
 function tiles(m){ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(m); m.attributionControl.setPrefix(false); m.attributionControl.setPosition('topright'); }
 const pinIcon=(s,cls,lab,cnt)=>L.divIcon({className:'pinw',html:'<div class="pin '+(cls||'')+'" style="background:'+look(s)[0]+'"><span>'+look(s)[1]+'</span></div>'+(cnt>1?'<em class="cnt">'+cnt+'</em>':'')+(lab?'<b class="lbl">'+esc(lab)+'</b>':''),iconSize:[44,44],iconAnchor:[22,50]});
 const homeIcon=(label,cls,emo)=>L.divIcon({className:'homew',html:'<div class="hm '+(cls||'')+'">'+emo+'<i>'+esc(label)+'</i></div>',iconSize:[44,44],iconAnchor:[22,22]});
@@ -7076,7 +7096,7 @@ function initMap(){
 }
 let redrawRaf=0;
 function schedRedraw(){ if(redrawRaf) return; redrawRaf=requestAnimationFrame(()=>{ redrawRaf=0; refresh({noSug:true}); }); }
-/* 名前ラベル：ズーム14以上。重なったら手前（z-index の大きい）ほうだけ出す */
+/* 名前ラベル：ズーム15以上（v4）。重なったら手前（z-index の大きい）ほうだけ出す */
 let lblRaf=0;
 function schedLabels(){ if(lblRaf) return; lblRaf=requestAnimationFrame(()=>{ lblRaf=0; placeLabels(); }); }
 function placeLabels(){
@@ -7154,22 +7174,24 @@ function fitRow(tg){ const R=tg.getBoundingClientRect(); if(!R.width) return; [.
 function spotFromData(d){ return d[0]==='m'?E.mine[+d.slice(1)]:E.sorted[+d]; }
 function layout(){ if(map) map.invalidateSize(); }
 
-/* ---------- カード（画面の3分の1ほど。名前・市区・距離・その日の営業時間・料金など・タグ・午前に行く｜午後に行く・小さなリンク1行） ---------- */
+/* ---------- カード（v4：名前・市区・距離・その日の営業時間・タグ2つまで・午前に行く｜午後に行く・小さなリンク1行「公式サイト」「この場所を送る」） ---------- */
 function gmapsSearch(s){ return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.__temp?(s.latitude+','+s.longitude):(s.name+' '+(s.city||''))); }
 function pickKind(s){ return s.__temp?'myplace':(isEat(s)?'eat':'play'); }
 const clip=(t,n)=>{ t=String(t||'').replace(/\s+/g,' ').trim(); return t.length>n?t.slice(0,n)+'…':t; };
-const NEG=/ません|なし|無し|ない/;
-// わかっていること：その日の営業時間（hoursInfo）・料金（price_text）・駐車場（フィールドがあれば）・授乳／おむつ（kid_features）。SPOTS の文言をそのまま、長ければ省略
+// v4：カードに出すのは、その日の営業時間（hoursInfo・読めるときだけ1行）だけ。料金・駐車場・授乳／おむつの行はやめた
 function cardFacts(s){
   const out=[]; if(s.__temp) return out;
   const h=hoursInfo(s); if(h) out.push('<span class="hr'+(h.closed?' off':'')+'">🕘 '+esc(h.t)+'</span>');
-  if(s.price_text) out.push('<span>💴 '+esc(clip(s.price_text,16))+'</span>');
-  const pk=s.parking_text||s.parking; if(typeof pk==='string'&&pk.trim()) out.push('<span>🅿️ '+esc(clip(pk,14))+'</span>');
-  const kf=s.kid_features||[];
-  const nurse=kf.find(x=>/授乳/.test(x)&&!NEG.test(x)), diaper=kf.find(x=>/おむつ|オムツ/.test(x)&&!NEG.test(x));
-  if(nurse) out.push('<span>🍼 '+esc(clip(nurse,12))+'</span>');
-  if(diaper&&diaper!==nurse) out.push('<span>🚼 '+esc(clip(diaper,12))+'</span>');
   return out;
+}
+// v4：カードのタグは最大2つ。あそぶは「無料」「雨でもOK」だけ（種類のタグは出さない）。たべるはお店の子連れ設備（おむつ替えは出さない）
+function cardTags(s){
+  if(s.__temp) return ['📌 自分の場所'];
+  if(isEat(s)) return tags(s,2,true);
+  const t=[];
+  if(s.is_free===true) t.push('🆓 無料');
+  if(s.rain_friendly===true||s.indoor_or_outdoor==='indoor') t.push('☔ 雨でもOK');
+  return t.slice(0,2);
 }
 function markSel(s,cnt){
   if(!map) return;
@@ -7209,14 +7231,11 @@ function openCard(s,opt){
     :'<div class="gorow"><button class="primary" data-act="am">午前に行く</button><button class="primary pm" data-act="pm">午後に行く</button></div>';
   const subs=[];
   if(!s.__temp&&s.official_url) subs.push('<a href="'+esc(s.official_url)+'" target="_blank" rel="noopener">公式サイト</a>');
-  if(!eat) subs.push('<a href="'+esc(gmapsSearch(s))+'" target="_blank" rel="noopener">Googleマップ</a>');
   if(!s.__temp) subs.push('<button type="button" data-act="send">📤 この場所を送る</button>');   // 自分の場所は送らない
-  const facts=cardFacts(s), tg=tags(s,4,true);
+  const facts=cardFacts(s), tg=cardTags(s);
   const c=cardShell('<div class="hd"><span class="e" style="background:'+L0[0]+'22">'+L0[1]+'</span><div class="ht"><h2>'+esc(s.name)+'</h2><p class="m">'+meta+'</p></div></div>'
-    +(facts.length?'<p class="facts">'+facts.join('')+'</p>':'')
-    +(tg.length?'<div class="tags">'+tg.map(x=>'<span class="tag'+(eat?' ftag':'')+'">'+x+'</span>').join('')+'</div>':'')
+    +((facts.length||tg.length)?'<div class="facts info">'+facts.join('')+tg.map(x=>'<span class="tag'+(eat?' ftag':'')+'">'+x+'</span>').join('')+'</div>':'')   // v4：営業時間とタグを1行に（入らないときだけ2行）
     +btn+(subs.length?'<div class="subs">'+subs.join('')+'</div>':''));
-  const tr=c.querySelector('.tags'); if(tr) fitRow(tr);
   markSel(s,1);
   keepVisible(s,!opt.noAnim);
 }
@@ -7386,11 +7405,21 @@ async function pmFeasible(P,k){   // その日に「午後に行く」で組め�
 }
 async function startPlan(P,slot){
   slot=slot==='pm'?'pm':'am';
+  const rp=E.repick; E.repick=null;
   E.pin={name:P.name,slot,spot:P};
   if(slot==='pm'&&!(await planPm(P))){ E.pin.slot=slot='am'; }   // 8日先まで組めないときだけ、午前に行くで組む
   if(slot==='am') await planAm(P);
   closeCard(); toPlanView(); renderPlan();
-  ga('erabu_plan',{when:whenKind(),main_kind:P.__temp?'myplace':'spot',tier:P.tier||'',ages:[...state.ages].join(',')});
+  ga('erabu_plan',Object.assign({when:whenKind(),main_kind:P.__temp?'myplace':'spot',tier:P.tier||'',ages:[...state.ages].join(',')},rp?{repick:rp.slot}:{}));
+}
+/* ⭐ の行の「🗺 マップで選び直す」：マップに戻る（表示位置・あそぶ/たべる・条件ボタンは backToMap が前回のまま戻す。検索欄の文字だけ消す）。
+   日付はそのまま。マップで別の場所の「午前に行く」「午後に行く」を押すと、startPlan() がその枠で組み直す */
+function repick(slot){
+  E.repick={slot:slot==='pm'?'pm':'am'}; E.sw=null;
+  ga('erabu_change',{slot:slot==='pm'?'sub':'main',to:'repick'});
+  if(E.q) clearQ();   // 検索で絞っていたら外して、ほかの場所のピンも見えるようにする（表示位置・あそぶ/たべる・条件ボタンはそのまま）
+  if(history.state&&history.state.erabu==='plan') history.back(); else backToMap();
+  setTimeout(()=>toast((slot==='pm'?'午後':'午前')+'に行く場所をマップから選んでね',2500),60);
 }
 function whenKind(){ if(E.when==='today') return 'today'; const o=whenOpts().find(x=>x.k===E.when); return o?(o.lab==='あす'?'tomorrow':'weekend'):'other'; }
 async function replan(){
@@ -7415,27 +7444,65 @@ function backToMap(){
   refresh();
 }
 
-/* ---------- 3行プラン ---------- */
+/* ---------- プラン（v4：おまかせ plan.html の結果画面と同じ縦のタイムライン） ----------
+   並びはエンジンが組んだ行（p.rows）そのまま：🚗 移動の行・各スポットのカード・🚗 帰路。余力の行（opt）は v3 と同じく出さない。
+   スポットのカード：名前・役割（メイン／ランチ／午後スポット・市区）・「出発地から約◯分」（メインだけ・plan.html の whyBadges と同じ）・一言（kid_appeal の最初の1文）・営業時間の行・公式サイト↗。
+   ボタン：自分がマップで選んだ場所（⭐）は「🗺 マップで選び直す」、ほかは「🔁 変更する」（v3 と同じ変えるパネルを開く）。午後の行には「午後は行かない」。
+   plan.html の「要確認」の行・ランチ代の注記・地図で見る・写真・条件サマリは出さない。 */
 function pinOf(v){   // ⭐ を付ける行（選んだ場所がその行にいるときだけ）
   const P=E.pin; if(!P) return null;
   if(P.slot==='am'&&v.m&&v.m.spot.name===P.name) return 'main';
   if(P.slot==='pm'&&v.s&&v.s.spot.name===P.name) return 'sub';
   return null;
 }
+const isBentoRow=r=>(r.type==='move'&&/^🍱/.test(r.label||''))||(r.type==='note'&&r.icon==='🍙')||(r.type==='spot'&&r.spot&&r.spot.__bento);
+function tlRail(time,icon){ return '<div class="rail"><span class="time">'+(time!=null?fmtTime(time):'—')+'</span><span class="icon">'+icon+'</span><span class="line"></span></div>'; }
+function tlBtn(slot,interactive,pinned,label){
+  if(!interactive||!slot) return '';
+  if(pinned) return ' <button type="button" class="swapbtn repick" data-act="repick" data-slot="'+(slot==='sub'?'pm':'am')+'"><span>🗺 マップで選び直す</span></button>';
+  return ' <button type="button" class="swapbtn'+(E.sw&&E.sw.slot===slot?' on':'')+'" data-act="'+slot+'"><span>'+(label||'🔁 変更する')+'</span></button>';
+}
+function tlHours(s){ const t=String(s.business_hours||'').replace(/\s+/g,' ').trim(); return t?'<div class="meta">🕐 '+esc(clip(t,60))+'</div>':''; }
+function tlSpot(r,slot,interactive,pin){
+  const s=r.spot, food=slot==='lunch'||isEat(s), pinned=!!slot&&pin===slot, open=interactive&&E.sw&&E.sw.slot===slot;
+  let b='<div class="sname">'+(pinned?'⭐ ':'')+esc(s.name)+tlBtn(slot,interactive,pinned)+'</div>';
+  b+='<div class="role">'+esc(r.tag||'')+(s.__temp?'・📌 自分の場所':(s.city?'・'+esc(s.city):''))+'</div>';
+  if(!s.__temp){
+    if(r.tag==='メイン'&&state.origin){ const dm=driveMinutesFrom(state.origin,s); if(dm!=null) b+='<div class="whybadges"><span class="wpill">🚗 出発地から約'+dm+'分</span></div>'; }
+    const one=firstSentence(s.kid_appeal); if(one) b+='<div class="appeal">'+esc(one)+'</div>';
+    b+=tlHours(s);
+    if(s.official_url) b+='<div class="links"><a href="'+esc(s.official_url)+'" target="_blank" rel="noopener" data-out="official">'+esc(officialLabelFor(s))+'↗</a></div>';
+  }
+  if(interactive&&slot==='sub') b+='<button type="button" class="skip" data-act="nosub">午後は行かない</button>';
+  if(open) b+=swHTML();
+  return '<div class="tl spot'+(food?' food':'')+(open?' open':'')+'" data-slot="'+(slot||'')+'">'+tlRail(r.time,s.__temp?'📍':spotEmoji(s))+'<div class="body">'+b+'</div></div>';
+}
+function tlPlain(time,icon,name,sub,slot,interactive,cls,label){   // お弁当・お昼はなし・午後はおうちでゆっくり
+  const open=interactive&&slot&&E.sw&&E.sw.slot===slot;
+  let b='<div class="sname">'+esc(name)+tlBtn(slot,interactive,false,label)+'</div>'+(sub?'<div class="role">'+esc(sub)+'</div>':'');
+  if(open) b+=swHTML();
+  return '<div class="tl '+(cls||'')+(open?' open':'')+'" data-slot="'+(slot||'')+'">'+tlRail(time,icon)+'<div class="body">'+b+'</div></div>';
+}
+function tlMove(r){ return '<div class="tl move">'+tlRail(r.time,'🚗')+'<div class="body"><div class="sname">'+esc(r.label||'')+'</div>'+(r.sub?'<div class="meta moveline">'+esc(r.sub)+'</div>':'')+'</div></div>'; }
 function rowsHTML(p,interactive){
-  const v=view3(p), T=interactive?'button':'div', pin=pinOf(v);
-  const R=(cls,act,time,name,small,chg)=>'<'+T+' class="row'+cls+(interactive&&E.sw&&E.sw.slot===act?' open':'')+'"'+(interactive&&act?' data-act="'+act+'"':'')+'><span class="t">'+time+'</span><span class="n"><b>'+(pin&&pin===act?'⭐ ':'')+esc(name)+'</b><small>'+small+'</small></span>'+(interactive&&chg?'<span class="chg">'+chg+' ›</span>':'')+'</'+T+'>';
-  const P=s=>(interactive&&E.sw&&E.sw.slot===s)?swHTML():'';
-  let h='';
-  if(v.m) h+=R('','main',fmtTime(v.m.time),v.m.spot.name,v.m.spot.__temp?'📌 自分の場所':'あそぶ','変える')+P('main');
-  if(v.l) h+=R(' food','lunch',fmtTime(v.l.time),v.l.spot.name,v.l.spot.__temp?'お昼・📌 自分の場所':'お昼','お昼を変える');
-  else if(v.b) h+=R(' food','lunch',fmtTime(v.b.time),'🍱 お弁当','お昼','お昼を変える');
-  else if(interactive) h+=R(' food none','lunch','—','お昼はなし','お昼','お昼を変える');
-  h+=P('lunch');
-  if(v.s){ const r=R('','sub',fmtTime(v.s.time),v.s.spot.name,v.s.spot.__temp?'午後・📌 自分の場所':'午後','変える'); h+=interactive?'<div class="rowwrap">'+r+'<button class="skip" data-act="nosub">午後は行かない</button></div>':r; }
-  else if(interactive) h+=R(' none','sub','—','午後はおうちでゆっくり','午後','午後も行く');
-  h+=P('sub');
-  h+='<div class="row home"><span class="t">'+(v.ret!=null?fmtTime(v.ret):'—')+'</span><span class="n"><b>おうち</b><small>帰りつく目安</small></span></div>';
+  const v=view3(p), pin=pinOf(v);
+  const rows=(p.rows||[]).filter(r=>!r.opt);
+  const slotOf=r=>r===v.m?'main':(r===v.l?'lunch':(r===v.s?'sub':null));
+  let h='', lunchDone=!!(v.l||v.b), subDone=!!v.s;
+  const lastMove=rows.length&&rows[rows.length-1].type==='move'?rows[rows.length-1]:null;
+  rows.forEach(r=>{
+    if(r===lastMove&&!subDone&&interactive){ h+=tlPlain(null,'🏠','午後はおうちでゆっくり','午後','sub',true,'none','＋ 午後も行く'); subDone=true; }
+    if(isBentoRow(r)&&r.type!=='spot'){ h+=tlPlain(r.time,'🍱','🍱 お弁当','お昼'+(r.type==='note'&&r.text?'・'+r.text:''),'lunch',interactive,'food'); return; }
+    if(r.type==='move'){ h+=tlMove(r); return; }
+    if(r.type==='spot'&&r.spot){
+      if(r.spot.__bento){ h+=tlPlain(r.time,'🍱','🍱 お弁当','お昼','lunch',interactive,'food'); return; }
+      h+=tlSpot(r,slotOf(r),interactive,pin);
+      if(r===v.m&&!lunchDone&&interactive){ h+=tlPlain(null,'🍽','お昼はなし','お昼','lunch',true,'food none'); lunchDone=true; }
+      return;
+    }
+    if(r.type==='note'||r.type==='branch'){ h+='<div class="tl note">'+tlRail(r.time,esc(r.icon||(r.type==='branch'?'🏠':'ℹ️')))+'<div class="body"><div class="sname">'+esc(r.label||'')+'</div>'+(r.text?'<div class="meta">'+esc(r.text)+'</div>':'')+'</div></div>'; }
+  });
+  if(!subDone&&interactive) h+=tlPlain(null,'🏠','午後はおうちでゆっくり','午後','sub',true,'none','＋ 午後も行く');
   return h;
 }
 function wxText(){ const w=state.weather; if(!w||w.tmax==null) return ''; return (isRainMode(w)?'☔ ':'☀ ')+Math.round(w.tmax)+'℃'; }
@@ -7466,7 +7533,7 @@ function openSw(slot){
   state.swapCands=state.swapCands||{}; state.swapCands[slot]=E.sw.shown.slice();
   E.sw.rest=swRest().length;
   renderPlan();
-  const w=document.querySelector('#rows .swapwrap'), r=document.querySelector('#rows .row.open');
+  const r=document.querySelector('#rows .tl.open');
   if(r) try{ r.scrollIntoView({block:'start'}); }catch(e){}
 }
 function swMore(){
@@ -7653,6 +7720,7 @@ function bind(){
     const c=e.target.closest('[data-sw]'); if(c){ pickSw(+c.dataset.sw); return; }
     const b=e.target.closest('[data-act]'); if(!b) return; const a=b.dataset.act;
     if(a==='main'||a==='sub'||a==='lunch') openSw(a);
+    else if(a==='repick') repick(b.dataset.slot);
     else if(a==='nosub'){ ga('erabu_change',{slot:'sub',to:'none'}); setSlot('sub',null); }
     else if(a==='swmore') swMore();
     else if(a==='swclose'){ E.sw=null; renderPlan(); }
@@ -7701,7 +7769,7 @@ function init(){
   if(sp){ E.mode=isEat(sp)?'eat':'play'; if(sp.is_jidokan===true) E.f.jidokan=true; }                    // 送られてきた場所：そのカードを開く
   setModeClass(); renderChips();
   show('vMap'); initMap(); layout();
-  if(sp){ map.setView([sp.latitude,sp.longitude],LABEL_ZOOM,{animate:false}); refresh(); openCard(sp,{noAnim:true}); }
+  if(sp){ map.setView([sp.latitude,sp.longitude],SPOT_ZOOM,{animate:false}); refresh(); openCard(sp,{noAnim:true}); }
   else if(v){ map.setView([v.lat,v.lng],v.z,{animate:false}); refresh(); }
   else refresh({fit:true});
   autoRain(sp);
