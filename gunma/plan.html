@@ -9997,6 +9997,7 @@ function scoreSpot(s,date,w,arrivalMin){
   if(date instanceof Date){ try{ if(judgeClosed(s,date).state==='unknown') sc-=UNKNOWN_DAY_PENALTY; }catch(e){} }
   /* [plan-fix2 2026-09-24] (2) 幼児だけ（0-2／3-5のみ）: 図書館・資料館などを下げる（雨 -4・晴れ -3）。雨なら屋内の遊び場・科学館・屋内プールなどを上げる */
   sc+=kidDullAdj(s,w);
+  sc+=eng3AgeAdj(s);   // [engine-fix3 2026-09-25] (1) 0〜5歳だけ: 美術館・資料館・図書館など（新マップの分類と同じ規則）を軽く下げる
   return sc;
 }
 // 児童館・子育て支援センター系(is_jidokan===true)はプランナーの対象外。
@@ -10157,20 +10158,21 @@ const SUB_STAY_MAX=120, SUB_STAY_SHORT=60;
 function isShortStaySpot(s){ var nm=String(s&&s.name||''); return STAY_SHORT_RE.test(nm)&&!KIDS_WORD_RE.test(nm); }
 function mainStayFor(s){
   var base=stayMinutes(s), nm=String(s.name||'');
+  if(eng3IsMyPlace(s)) return ENG3_MYPLACE_STAY;   // [engine-fix3 2026-09-25] (5) 自分の場所は長め（お昼の時刻・帰宅上限で縮む）
   if(isShortStaySpot(s)) return MAIN_STAY_SHORT;
-  var big=STAY_BIG_RE.test(nm);
+  var big=STAY_BIG_RE.test(nm)||eng3IsBigPark(s);   // [engine-fix3 2026-09-25] (5) tier S の大きな公園も大物扱い
   if(s.tier==='S') return big?MAIN_STAY_S_BIG:MAIN_STAY_S;
   if(big) return Math.max(base,MAIN_STAY_BIG);
   if(s.tier==='A') return Math.max(base,MAIN_STAY_A);
   return base;
 }
-function subStayCap(s){ return isShortStaySpot(s)?SUB_STAY_SHORT:SUB_STAY_MAX; }
+function subStayCap(s){ if(eng3IsMyPlace(s)) return ENG3_MYPLACE_STAY; if(eng3IsBigPark(s)) return ENG3_BIGPARK_STAY; return isShortStaySpot(s)?SUB_STAY_SHORT:SUB_STAY_MAX; }   /* [engine-fix3 2026-09-25] (5) 自分の場所 最大4時間・大きな公園 3時間 */
 /* 長く滞在する主役でも、お昼（ランチ到着）が LUNCH_TARGET_MIN を大きく過ぎないようにする（最短でも従来の滞在 stayMinutes は確保） */
 const LUNCH_TARGET_MIN=13*60+30;
 function mainStayAt(s,arr){
   var full=mainStayFor(s), base=stayMinutes(s);
-  if(arr==null||full<=base) return full;
-  return Math.max(base, Math.min(full, Math.floor((LUNCH_TARGET_MIN-10-arr)/15)*15));
+  var __v=(arr==null||full<=base)?full:Math.max(base, Math.min(full, Math.floor((LUNCH_TARGET_MIN-10-arr)/15)*15));
+  return eng3LateCap(__v,arr,null);   // [engine-fix3 2026-09-25] (3) 遅い出発はお昼を12:30までに（午前を短く）
 }
 
 /* ---- (1c) 遠いのに短い: 片道 FAR_TRIP_MIN 分超のメインは、滞在が片道の FAR_STAY_RATIO 倍以上とれるときだけ ---- */
@@ -10294,6 +10296,185 @@ function subOrder2(list,w){
     if(shown.indexOf(s)>=0) r+=3;
     return {s:s,i:i,r:r};
   }).sort(function(a,b){ return a.r-b.r||a.i-b.i; }).map(function(x){ return x.s; });
+}
+/* ===== [engine-fix3 2026-09-25] 年齢に合わない候補・無料の指定・遅い出発のお昼・お昼なし・滞在の指定 =====
+   どれも「並べ替え」と「滞在時間の決め方」だけで、3か所構成（メイン・お昼・午後）・帰宅上限（capHomeFor）・
+   島／ランチは飲食店だけ／遠いのに短い／季節外れ／閉館後到着の判定（plan-fix2）はそのまま。SPOTS・CITIES は読むだけ。
+   東京の新マップ（tokyo/erabu.html）はこのエンジンの宣言をそのまま取り込むので、ここは宣言（var・function）だけにしている。
+   buildPlan(main,date,w,opts) の opts（4つ目の引数。従来の {lunch,sub} の指定と同じ場所）に次を足した:
+     opts.lunch='none' … お昼の枠を作らない（午前 → 帰路。午後も組まない）
+     opts.freeOnly=true … 午後の候補と「変える」の候補を無料の施設から先に出す（無いときは有料も出す）
+     opts.stayMain=分 / opts.staySub=分 … 午前・午後の滞在（帰宅上限・閉館時刻の範囲に収める）
+   {freeOnly,stayMain,staySub} だけを渡したときは、お昼・午後は従来どおり自動で選ぶ。lunch か sub のキーがあれば従来どおりその指定で組む。 */
+
+/* ---- (1) 年齢に合わない候補: 東京の新マップのピン分類（mapnew/icons/work/classify.js の pinKind）と同じ規則 ---- */
+function eng3PinKind(s){
+  var pt = s.play_types || [], n = String(s.name || '');
+  if (s.is_chain === true) return 'chain';
+  if (pt.indexOf('food') >= 0) return 'food';
+  if (s.is_jidokan === true) return 'jidokan';
+  if (/森林科学園|山のふるさと村/.test(n)) return 'park';
+  if (/おもちゃ美術館|あそびのせかい|あそびの森|HUGHUG|ちきゅうのにわ|PLAY! PARK|こどもひろば|0123|まんがぱーく|キッズ|プレイルーム/.test(n)) return 'indoor';
+  if (/動物|水族|ZOO|牧場|ポニー|リス園|さる園|生物園|自然文化園/.test(n)) return 'animal';
+  if (/科学|サイエンス|プラネタリウム|天文|宇宙|鉄道|れーる|電車|地下鉄|東武博物館|交通|消防|防災館|防災センター|そなエリア|ケーブルカー|警察|ポリス|郵政|通信|下水道|水道|水の|ガス|くすり|放送|寄生虫|南極|teamLab|工場|印刷|たばこと塩|紙の博物館|お札|貨幣|子ども未来館|ギャラクシティ|遊園|ランド|花やしき|都電|展望|タワー/.test(n)) return 'science';
+  if (/美術館|資料館|資料室|図書|文学館|記念館|郷土|歴史|民俗|民家園|たてもの園|博物館|ミュージアム|MUSEUM|文化館|ふるさと館|ふるさと村|版画|彫刻|古墳|埋蔵文化財|本陣|展示|絵本|ことばらんど|はちはく|史料館|インターメディアテク|昭和館|復興記念|屋敷|住宅|水と緑のふれあい館/.test(n)) return 'book';
+  if (/公園|広場|緑地|庭園|植物園|御苑|プレーパーク|鍾乳洞|釣場|菖蒲園|花木園|ビジターセンター/.test(n)) return 'park';
+  if (pt.indexOf('animal') >= 0) return 'animal';
+  if (pt.indexOf('vehicle') >= 0) return 'science';
+  if (pt.indexOf('museum_science') >= 0) return 'book';
+  if (pt.indexOf('active') >= 0 || pt.indexOf('water') >= 0 || pt.indexOf('nature') >= 0) return 'park';
+  return 'indoor';
+}
+/* 全国で使うための除外（名前の語）: 子ども向けの語がある館（こども図書館・えほん館・こども美術館など）、公園（歴史公園・記念公園など）、
+   説明に子どもの遊び場があると書いてある館、乗り物（play_types の vehicle）の館、生き物（animal）の展示がある館は下げない */
+var ENG3_PARK_NAME_RE=/公園|広場|パーク|緑地|の森(?!美術館)/;   // 「〜の森美術館」は美術館として扱う
+var ENG3_KIDPLAY_AP_RE=/キッズスペース|キッズコーナー|キッズルーム|プレイルーム|プレイコーナー|あそびコーナー|遊びコーナー|遊び場|あそび場|ボールプール|遊具|ふわふわ|おもちゃ/;
+/* 2026-09-25 追記: 東京の新マップの乗り物・遊園地（classify.js の vehicle）と同じ語を足した。「ランド」だけでは決めない（室内の遊び場が多い）。遊園地は名前で1つずつ */
+var ENG3_VEHICLE_NAME_RE=/航空|飛行機|自動車|鉄道|電車|機関車|のりもの|乗り物|バス|ロマンスカー|トヨタ博物館|汽車|(^|[^A-Za-z])SL([^A-Za-z]|$)|れーる|ミニトレイン|地下鉄|モノレール|ゴーカート|ケーブルカー|ロープウェイ|交通|消防|ポリス|警察|都電|東武博物館|(^|[^童東])遊園地|あらかわ遊園|みかさ遊園|花やしき|よみうりランド(?!.*プール)|サマーランド|レゴランド・ジャパン|シートレインランド|富士急ハイランド|スパーランド|東京ドームシティ|アミューズメントパーク/;
+var ENG3_TODDLER_MUSEUM_RE=/博物館|ミュージアム|寄生虫|資料/;
+var ENG3_UNFIT_MAIN_ADJ=2, ENG3_MILD_MAIN_ADJ=1;
+/* 2 = 図書館・郷土資料館・歴史館・文学館・美術館・大学博物館・記念館・史料館など（0〜5歳だけのとき下げる）
+   1 = 0〜2歳だけのときの博物館型の科学館（国立科学博物館・寄生虫館など。軽く下げる）  0 = 下げない */
+function ageUnfitLevel(s){
+  if(!s||s.__temp||s.__bento) return 0;
+  var k=eng3PinKind(s), nm=String(s.name||''), ap=String(s.kid_appeal||'');
+  var pt=s.play_types||[];
+  if(KIDS_WORD_RE.test(nm)||ENG3_KIDPLAY_AP_RE.test(ap)) return 0;
+  if(pt.indexOf('vehicle')>=0||ENG3_VEHICLE_NAME_RE.test(nm)) return 0;   // 電車・乗り物のミュージアム（ロマンスカーミュージアム・京急ミュージアム・東武博物館など）は幼児向き
+  if(k==='book') return (ENG3_PARK_NAME_RE.test(nm)||pt.indexOf('animal')>=0)?0:2;   // 生き物の展示（ニフレルなど）も下げない
+  if(k==='science'&&toddlerOnlyNow()&&ENG3_TODDLER_MUSEUM_RE.test(nm)) return 1;
+  return 0;
+}
+/* scoreSpot の加減点（主役）: 0〜5歳だけのとき。plan-fix2 の kidDullAdj が既に下げている館（図書館・資料館など）には重ねない */
+function eng3AgeAdj(s){
+  if(!smallKidOnly()) return 0;
+  var u=ageUnfitLevel(s);
+  if(u===2) return isDullForToddler(s)?0:-ENG3_UNFIT_MAIN_ADJ;
+  if(u===1) return -ENG3_MILD_MAIN_ADJ;
+  return 0;
+}
+
+/* ---- (2) 無料の指定 ---- */
+var ENG3_FREE=false;   // buildPlan の opts.freeOnly の間だけ true
+function eng3IsFree(s){ if(!s) return false; if(s.is_free===true) return true; try{ return parsePrice(s)===0; }catch(e){ return false; } }
+function eng3FreePref(){ return ENG3_FREE===true||state.budget==='free'; }
+/* 並べ替えの順位（小さいほど先）: 無料の指定で有料 +4、0〜5歳だけで年齢に合わない +2（軽い方 +1） */
+function eng3Rank(s){
+  var r=0;
+  if(eng3FreePref()&&!eng3IsFree(s)) r+=4;
+  if(smallKidOnly()){ var u=ageUnfitLevel(s); if(u===2) r+=2; else if(u===1) r+=1; }
+  return r;
+}
+function eng3Order(list){
+  if(!list||list.length<2) return list||[];
+  return list.map(function(s,i){ return {s:s,i:i,r:eng3Rank(s)}; })
+    .sort(function(a,b){ return a.r-b.r||a.i-b.i; }).map(function(x){ return x.s; });
+}
+/* 午後の自動選択用: 無料・年齢の条件に合う候補が1件でもあれば、それだけから選ぶ（無いときは全体から＝除外ではなく順位を下げるだけ） */
+function eng3Prefer(list){
+  var o=eng3Order(list);
+  if(!o.length) return o;
+  var hard=function(s){ return Math.floor(eng3Rank(s)/2); };   // 軽い方（+1）は絞り込みに使わない
+  var h0=hard(o[0]), f=o.filter(function(s){ return hard(s)===h0; });
+  return f.length?f:o;
+}
+/* 「変える」の候補（午前・午後・自分で選ぶの非お昼の枠）: 近い順に並べた後で、無料・年齢に合う候補を前へ */
+function eng3SwapOrder(list,slot){
+  if(slot==='lunch') return list;
+  try{ if(csIndex(slot)!=null&&csIsLunchSlot(slot)) return list; }catch(e){}
+  var f0=ENG3_FREE;
+  try{ var p=currentPlanObj(); ENG3_FREE=!!(p&&p.freeOnly); return eng3Order(list); }
+  finally{ ENG3_FREE=f0; }
+}
+
+/* ---- (3) 遅い出発: お昼を 12:30 までに始める（午前の滞在を短くする。最短 45 分）。
+   0〜2歳がいるときは午後を 16:00 帰宅めどに短くし、60分とれなければ午後なし（帰宅上限 capHomeFor はそのまま守る） ---- */
+var ENG3_LATE_START=10*60, ENG3_LUNCH_BY=12*60+30, ENG3_MAIN_MIN_LATE=45, ENG3_LUNCH_LEG_EST=10, ENG3_TODDLER_LATE_HOME=16*60;
+function eng3IsLate(st){ try{ return (st==null?startMinutes():st)>=ENG3_LATE_START; }catch(e){ return false; } }
+function eng3LateCap(stay,arr,leg){
+  if(arr==null||stay==null||!eng3IsLate()) return stay;
+  if(arr>=ENG3_LUNCH_BY) return stay;   // お昼どきを過ぎて着く（正午スロットなど）は従来どおり
+  var c=Math.floor((ENG3_LUNCH_BY-(leg==null?ENG3_LUNCH_LEG_EST:leg)-arr)/5)*5;
+  return Math.min(stay,Math.max(ENG3_MAIN_MIN_LATE,c));
+}
+function eng3SoftHome(bdm,st){
+  if(!(state.ages&&state.ages.has&&state.ages.has('0-2'))||!eng3IsLate(st)) return Infinity;
+  return ENG3_TODDLER_LATE_HOME-(bdm||0);
+}
+
+/* ---- (4) お昼なし: 家でお昼を食べる。午前の遊び場から 13:00 ごろ帰着（最短 45 分は遊ぶ） ---- */
+var ENG3_HOME_LUNCH=13*60;
+function eng3HomeLunchCap(stay,t,homeDm){
+  if(t==null||t>=ENG3_LUNCH_BY) return stay;
+  var c=Math.floor((ENG3_HOME_LUNCH-(homeDm||0)-t)/15)*15;
+  return Math.min(stay,Math.max(ENG3_MAIN_MIN_LATE,c));
+}
+
+/* ---- (5) 滞在: 自分の場所（マイプレイス・自分で追加した場所）と tier S の大きな公園は長め ---- */
+var ENG3_MYPLACE_STAY=240, ENG3_BIGPARK_STAY=180;
+var ENG3_BIGPARK_NAME_RE=/公園|パーク|緑地|の森|森林|丘陵|自然園/;
+function eng3IsMyPlace(s){ return !!(s&&s.__temp===true&&!s.__bento); }
+function eng3IsBigPark(s){ return !!(s&&s.tier==='S'&&!isShortStaySpot(s)&&ENG3_BIGPARK_NAME_RE.test(String(s.name||''))); }
+function eng3StayNum(v){ var n=Number(v); if(!isFinite(n)||n<=0) return null; return Math.max(30,Math.min(600,Math.round(n/5)*5)); }
+
+/* ---- buildPlan の opts の読み取り ---- */
+var ENG3_OPT_KEYS=['freeOnly','stayMain','staySub'];
+function eng3Opts(o){
+  var r={ov:false,lunchNone:false,freeOnly:false,stayMain:null,staySub:null};
+  if(!o||typeof o!=='object') return r;
+  r.lunchNone=(o.lunch==='none');
+  r.freeOnly=o.freeOnly===true;
+  r.stayMain=eng3StayNum(o.stayMain);
+  r.staySub=eng3StayNum(o.staySub);
+  var ks=Object.keys(o), onlyOpt=ks.length>0&&ks.every(function(k){ return ENG3_OPT_KEYS.indexOf(k)>=0; });
+  r.ov=!r.lunchNone&&!onlyOpt;   // 従来どおり: {lunch,sub} の指定（空の {} を含む）はその指定で組む
+  return r;
+}
+/* 画面の差し替え（変えるパネル）でも、同じプランの指定（無料・お昼なし・滞在）を引き継ぐ */
+function eng3CarryOpts(p,slot,base){
+  var o={}; for(var k in base) o[k]=base[k];
+  if(!p) return o;
+  if(p.freeOnly) o.freeOnly=true;
+  if(p.lunchNone&&slot!=='lunch') o.lunch='none';
+  if(p.stayMainOpt&&slot!=='main') o.stayMain=p.stayMainOpt;
+  if(p.staySubOpt&&slot!=='sub') o.staySub=p.staySubOpt;
+  return o;
+}
+/* おまかせの「変える」パネル（お昼）の1行: お昼なし（家で食べる） */
+function eng3LunchNone(){
+  var p=currentPlanObj(); if(!p||!p.main) return;
+  if(typeof gtag==='function') gtag('event','plan_swap_apply',{slot:'lunch_none'});
+  var date=targetDate(state.when), w=state.weather;
+  var np=buildPlan(p.main,date,w,eng3CarryOpts(p,'lunch',{lunch:'none',sub:null}));
+  state.plans[state.variant%state.plans.length]=np;
+  var sy=window.scrollY||window.pageYOffset||0;
+  state.keepScroll=true;
+  showResult();
+  try{ window.scrollTo({top:sy}); }catch(e){}
+}
+/* 共有URL: お昼なし nl=1・無料 fo=1・滞在 sm=分 / ss=分（無いURL＝従来の形式は従来どおりに開く） */
+function eng3SharePush(p,parts){
+  if(!p) return;
+  if(p.lunchNone) parts.push('nl=1');
+  if(p.freeOnly) parts.push('fo=1');
+  if(p.stayMainOpt) parts.push('sm='+p.stayMainOpt);
+  if(p.staySubOpt) parts.push('ss='+p.staySubOpt);
+}
+function eng3ShareOpts(qs){
+  var e={};
+  try{
+    if(qs.get('nl')==='1') e.lunch='none';
+    if(qs.get('fo')==='1') e.freeOnly=true;
+    var sm=eng3StayNum(qs.get('sm')), ss=eng3StayNum(qs.get('ss'));
+    if(sm) e.stayMain=sm;
+    if(ss) e.staySub=ss;
+  }catch(err){}
+  return {e3:e};
+}
+function eng3RestoreOpts(r){
+  var o={lunch:r.lunchSpot,sub:r.subSpot}, e=(r&&r.e3)||{};
+  for(var k in e) o[k]=e[k];
+  return o;
 }
 function poolFrom(list,date,w){
   if(date instanceof Date) setPlanDate(date);
@@ -10564,7 +10745,7 @@ function lunchCandidates(main,date){
   cc=bandedTiebreak(cc,function(s){return s.__km;},function(s){return s.__tie;},2);
   return cc;
 }
-function pickSub(main,lunch,mainDriveMin,date,w){ return pickVariety(subCandidates(main,lunch,mainDriveMin,date,w),'shownSubs',8); } // ④ 近距離上位8件を母集団に
+function pickSub(main,lunch,mainDriveMin,date,w){ return pickVariety(eng3Prefer(subCandidates(main,lunch,mainDriveMin,date,w)),'shownSubs',8); }   /* [engine-fix3 2026-09-25] 無料・年齢に合う候補があればその中から */ // ④ 近距離上位8件を母集団に
 function subCandidates(main,lunch,mainDriveMin,date,w){
   if(date instanceof Date) setPlanDate(date);
   const o=state.origin;
@@ -10622,7 +10803,7 @@ function subCandidates(main,lunch,mainDriveMin,date,w){
   });
   // ①⑥ 並べ替えは prev からの距離 __subkm 昇順。__homeward(帰り道方向)は ±2km 帯内のタイブレークに降格。
   /* [plan-fix2 2026-09-24] (2) 雨×幼児は遊び場を前・図書館等を後ろへ。直前までに主役で出した施設は後ろへ */
-  return subOrder2(bandedTiebreak(c,function(s){return s.__subkm;},function(s){return s.__homeward?1:0;},2),w);
+  return eng3Order(subOrder2(bandedTiebreak(c,function(s){return s.__subkm;},function(s){return s.__homeward?1:0;},2),w));   // [engine-fix3 2026-09-25] (1)(2) 無料の指定・年齢に合う候補を前へ
 }
 // 当日プラン(「今日これから」)として現実的な出発時刻の上限。
 // 既存ロジックの境界に合わせている: 0-2歳のみは到着17:30以降を除外、帰宅上限は18:00(乳児)/18:30(未就学)、
@@ -10687,10 +10868,13 @@ function capHomeFor(ages){
 }
 function buildPlan(main,date,w,shareOverride){
   const o=state.origin;
-  let lunch=shareOverride?(shareOverride.lunch||null):pickLunch(main,date);   // [裁定173] 余地が無ければ枠ごと落とすので let
-  const __noLunchCand=(!shareOverride&&!lunch);   // [plan-fix 2026-09-23] 候補0件（帰宅上限で枠を落とした場合は含まない）
+  /* [engine-fix3 2026-09-25] opts（4つ目の引数）: {lunch,sub} の指定は従来どおり。lunch:'none'＝お昼なし、freeOnly・stayMain・staySub を追加 */
+  const __E3=eng3Opts(shareOverride), __fo0=ENG3_FREE;
+  ENG3_FREE=__E3.freeOnly;
+  let lunch=__E3.lunchNone?null:(__E3.ov?(shareOverride.lunch||null):pickLunch(main,date));   // [裁定173] 余地が無ければ枠ごと落とすので let
+  const __noLunchCand=(!__E3.ov&&!__E3.lunchNone&&!lunch);   // [plan-fix 2026-09-23] 候補0件（帰宅上限で枠を落とした場合は含まない）
   const dm=driveMinutesFrom(o,main)||30;
-  let sub=shareOverride?(shareOverride.sub||null):pickSub(main,lunch,dm,date,w);
+  let sub=__E3.lunchNone?null:(__E3.ov?(shareOverride.sub||null):pickSub(main,lunch,dm,date,w));   // [engine-fix3 2026-09-25] お昼なしは午後も組まない（午前だけ）
   let t=startMinutes();
   const startMin=t;
   const rows=[];
@@ -10702,6 +10886,10 @@ function buildPlan(main,date,w,shareOverride){
   legSum+=dm;
   t+=dm;
   let stay=mainStayAt(main,t);   // [plan-fix2 2026-09-24] (3) 大物は長く・図書館や資料館は短く（お昼は13:30ごろまで。帰宅上限・閉館の短縮は下の既存処理のまま）
+  /* [engine-fix3 2026-09-25] 滞在の指定（stayMain）→ そのまま。お昼なし → 13:00ごろ帰着。遅い出発 → 実際のお店までの移動で、お昼を12:30までに */
+  if(__E3.stayMain!=null) stay=__E3.stayMain;
+  else if(__E3.lunchNone) stay=eng3HomeLunchCap(stay,t,dm);
+  else if(lunch&&lunch.latitude!=null&&main.latitude!=null) stay=eng3LateCap(stay,t,legMinutes(main.latitude,main.longitude,lunch.latitude,lunch.longitude));
   const onlyToddler=state.ages.has('0-2')&&state.ages.size===1;   // homePriority の判定にだけ使う
   /* [裁定172] 帰宅上限を超えそうならメイン滞在を自動短縮する(最短45分)。
      旧実装は onlyToddler(=0-2歳のみ)限定で、3-5 を併記した瞬間に外れていた。
@@ -10801,7 +10989,7 @@ function buildPlan(main,date,w,shareOverride){
   // 選定済みsubが時間割に収まらない場合も、候補を順に試して必ず午後スポットを確保する(物理的に不可能な場合のみ余力枠へ)
   let __subTry=[];
   if(sub&&lunch) __subTry.push(sub);
-  if(lunch&&!shareOverride){
+  if(lunch&&!__E3.ov){   // [engine-fix3 2026-09-25] opts だけ（freeOnly・滞在）のときも従来の自動選択と同じ
     try{
       const __more=subCandidates(main,lunch,dm,date,w).filter(x=>x&&x!==sub&&!(x.play_types||[]).includes('food'));
       __subTry=__subTry.concat(__more.slice(0,12));
@@ -10818,9 +11006,11 @@ function buildPlan(main,date,w,shareOverride){
     const __capHome=capHome;   // [裁定172] 年齢別の帰宅上限に統一（旧: 18:00 固定）
     const limit0=Math.min(bh0?(bh0.closeMin-15):Infinity, __capHome-bdm0);  // 閉館15分前までに退場
     let depart0=Math.min(Math.max(arr0+90, 16*60+30), limit0, arr0+subStayCap(__cand));   // [plan-fix2 2026-09-24] (3) 午後は最長2時間（図書館・資料館などは1時間）
+    if(__E3.staySub!=null) depart0=Math.min(arr0+__E3.staySub, limit0);   // [engine-fix3 2026-09-25] (5) 午後の滞在の指定
+    depart0=Math.min(depart0, eng3SoftHome(bdm0,startMin));   // [engine-fix3 2026-09-25] (3) 遅い出発×0〜2歳は16:00帰宅めど（取れなければ午後なし）
     depart0=Math.floor(depart0/15)*15;
     // 60分以上遊べない場合はこの候補を諦めて次へ
-    let __ok0=(!ci0.exclude && depart0>=arr0+60);
+    let __ok0=(!ci0.exclude && depart0>=arr0+Math.min(60,__E3.staySub||60));
     if(!__ok0 && isUserPick(__cand)){
       /* [裁定146] えらんだ場所は営業時間を理由に落とさない(営業時間外なら上部に警告を出す)。
          この枠にかぎり閉館時刻のキャップを外し、帰宅上限も CP_PICK_HOME_CAP まで伸ばす。
@@ -10867,7 +11057,7 @@ function buildPlan(main,date,w,shareOverride){
       if(ci.exclude&&!isUserPick(sub)){ sub=null; return; }   // [裁定146] えらんだ場所は落とさない
       const bdm=driveMinutesFrom(o,sub)||legMinutes(sub.latitude,sub.longitude,o.lat,o.lng);
       const bh=parseBusinessHours(sub);
-      const limit=Math.min(bh?(bh.closeMin-15):Infinity, capHome-bdm);  // 閉館15分前までに退場／[裁定172] 帰宅上限も年齢別に
+      const limit=Math.min(bh?(bh.closeMin-15):Infinity, capHome-bdm, eng3SoftHome(bdm,startMin));  // 閉館15分前までに退場／[裁定172] 帰宅上限も年齢別に／[engine-fix3 2026-09-25] (3)
       let stayB=Math.floor(Math.min(60, limit-arrival)/15)*15;
       if(stayB<30){ sub=null; return; }   // 30分遊べないなら余力枠ごと出さない
       const departB=arrival+stayB, retB=departB+bdm;
@@ -10917,7 +11107,8 @@ function buildPlan(main,date,w,shareOverride){
   else if(known===0&&hasUnknown) cost='入場料などは公式サイトで確認（ランチ代は別）';
   else cost='入場料など 大人1人あたり 目安'+known.toLocaleString()+'円'+(hasUnknown?'（一部要確認）':'')+'・ランチ代は別';
   const homePriority = onlyToddler && !sub;
-  return {rows,main,lunch,sub,totalDrive,cost,hasUnknown,homePriority,mainStay:rows.__mainStay,bonusExtra:rows.__bonusExtra||0,bonusReturn:rows.__bonusReturn||null,retHome:rows.__retHome||null,costKnown:known,bonusPrice:(rows.__bonusIsBonus?rows.__bonusPrice:null)};
+  ENG3_FREE=__fo0;   // [engine-fix3 2026-09-25]
+  return {rows,main,lunch,sub,totalDrive,cost,hasUnknown,homePriority,mainStay:rows.__mainStay,lunchNone:__E3.lunchNone,freeOnly:__E3.freeOnly,stayMainOpt:__E3.stayMain,staySubOpt:__E3.staySub,bonusExtra:rows.__bonusExtra||0,bonusReturn:rows.__bonusReturn||null,retHome:rows.__retHome||null,costKnown:known,bonusPrice:(rows.__bonusIsBonus?rows.__bonusPrice:null)};
 }
 // 当日プランとして出発時刻が現実的か。UI(refreshTodayAvailability)を迂回した経路
 // (共有URLの復元など)でも過去時刻・深夜のプランを生成しないための保険。
@@ -11042,7 +11233,7 @@ function nextVarietyPlan(date,w){
   /* [plan-fix2 2026-09-24] 画面に主役として出した回数が最も少ない施設から選ぶ（まだ見せていない施設を先に。同じ館のループを防ぐ） */
   { const __H=state.__mainHist||[], __cnt=s=>__H.filter(x=>x===s).length, __mc=Math.min.apply(null,fresh.map(__cnt)); fresh=fresh.filter(s=>__cnt(s)===__mc); }
   /* [plan-fix2 2026-09-24] (2) 幼児だけ（雨の日を含む）: 図書館・資料館などは、ほかに候補があれば選ばない */
-  if(smallKidOnly()){ const __nd=fresh.filter(s=>!isDullForToddler(s)); if(__nd.length) fresh=__nd; }
+  if(smallKidOnly()){ const __nd=fresh.filter(s=>!isDullForToddler(s)&&ageUnfitLevel(s)!==2); if(__nd.length) fresh=__nd; }   // [engine-fix3 2026-09-25] (1)
   state.cycledNote=cycled;
   // B) 初回生成(generatePlans)と同じ年齢・負担軽減ガードを適用する。
   //    旧実装は総運転190分の一律判定のみで、0-2歳のみの130分上限と帰宅時刻上限が抜けていた。
@@ -11568,6 +11759,7 @@ function swapCandidates(slot,widenSteps){
     const near=cands.filter(s=>s.__anchorKm<=nearAllowKm);
     list=near.length>=3?near:cands;
   }
+  list=eng3SwapOrder(list,slot);   // [engine-fix3 2026-09-25] (1)(2)
   const out=swapFilter(list);
   // 指定圏を超える候補に「遠め」フラグ（黙って条件を破らないための明示）
   if(usedCap!==cap){
@@ -11685,6 +11877,7 @@ function renderSwapPanel(slot,wrap){
   if(g&&g.cands.length<3&&!g.widened){
     inner+='<button type="button" class="swapwiden" onclick="widenSwap(\''+slot+'\',this)">🔍 条件を少し広げて候補を見る</button>';
   }
+  if(slot==='lunch'&&!state.isCustomView) inner+='<button type="button" class="swapwiden" onclick="eng3LunchNone()">🏠 お昼なし（家で食べる）</button>';   // [engine-fix3 2026-09-25] (4)
   inner+=swapCloseHtml(slot);
   wrap.innerHTML=inner;
   wrap.style.display='block';
@@ -11758,6 +11951,7 @@ function swapFilterAll(slot){
     const near=cands.filter(s=>s.__anchorKm<=nearKm);
     list=near.length>=3?near:cands;
   }
+  list=eng3SwapOrder(list,slot);   // [engine-fix3 2026-09-25] (1)(2)
   const inPlan=swapInPlanList(p);   // 【実装3-2】カスタム時は枠の中身を見る
   list=jidokanCap2(list); // 児童館は最大2件(同一市町村優先→近い順)
   const out=[];
@@ -11839,7 +12033,7 @@ function applySwap(slot,i){
   const main=slot==='main'?ns:p.main;
   const lunch=slot==='lunch'?ns:p.lunch;
   const sub=slot==='sub'?ns:p.sub;
-  const np=buildPlan(main,date,w,{lunch:lunch||null,sub:sub||null});
+  const np=buildPlan(main,date,w,eng3CarryOpts(p,slot,{lunch:lunch||null,sub:sub||null}));   // [engine-fix3 2026-09-25] お昼なし・無料・滞在の指定を引き継ぐ
   state.plans[state.variant%state.plans.length]=np;
   if(slot==='main'&&!state.shownMains.includes(ns)) state.shownMains.push(ns);
   const sy=window.scrollY||window.pageYOffset||0;
@@ -12004,6 +12198,7 @@ function buildShareUrl(p){
   const subRow=spots.find(r=>r!==mainRow&&r!==lunchRow&&(r.tag==='午後スポット'||r.tag==='余力があれば'));
   if(lunchRow) parts.push('lunch='+encodeURIComponent(lunchRow.spot.name));
   if(subRow) parts.push('sub='+encodeURIComponent(subRow.spot.name));
+  try{ eng3SharePush(p,parts); }catch(e){}   // [engine-fix3 2026-09-25] お昼なし nl=1・無料 fo=1・滞在 sm/ss（通常のプランでは何も足さない）
   // 【実装2】カスタムのときだけ枠順(cs)とお昼枠位置(csli)を追加する。
   // 通常プランではこのブロックを通らないのでURLは従来と完全に同一。失敗時は従来URLにフォールバック。
   try{
@@ -12124,7 +12319,7 @@ function restoreFromShare(qs){
     try{ if(typeof cpNormalizeLunch==='function') cpNormalizeLunch(); }catch(e){}
     return {mainSpot,lunchSpot,subSpot,customSlots:state.customSlots.slice()};
   }
-  return {mainSpot,lunchSpot,subSpot};
+  return Object.assign({mainSpot,lunchSpot,subSpot},eng3ShareOpts(qs));   // [engine-fix3 2026-09-25] nl/fo/sm/ss（無ければ従来と同じ）
 }
 
 /* ===== 自分で選ぶ（カスタム）プラン ===== */
@@ -13107,7 +13302,7 @@ async function initFromShareOrWizard(){
           plan=buildCustomPlanFromSlots(r.customSlots.slice(),date,state.weather);
           state.custom5Warn=!!plan.__warn;
         } else {
-          plan=buildPlan(r.mainSpot,date,state.weather,{lunch:r.lunchSpot,sub:r.subSpot});
+          plan=buildPlan(r.mainSpot,date,state.weather,eng3RestoreOpts(r));   // [engine-fix3 2026-09-25] 従来の形式は {lunch,sub} のまま
         }
         state.plans=[plan];
         state.variant=0;
