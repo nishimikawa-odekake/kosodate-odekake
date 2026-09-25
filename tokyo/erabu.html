@@ -66,23 +66,23 @@ button:disabled{opacity:.45;cursor:default}
 .leaflet-container{font:inherit;background:var(--map)}
 .leaflet-control-attribution{font-size:15px!important;line-height:1.3;padding:1px 6px!important;background:rgba(255,255,255,.75)!important;color:var(--sub)}
 .pinw{background:none;border:none}
-.pin{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 5px rgba(0,0,0,.3);border:2.5px solid #fff}
-.pin span{transform:rotate(45deg);font-size:21px;line-height:1}
-.pin.sel{outline:4px solid rgba(201,113,63,.45);outline-offset:3px}
-.pin.me{background:#6b5ea8}
-.pin.dim{opacity:.4;filter:saturate(.35)}
+.pin{position:relative;width:44px;height:51px}
+/* v5：ピンは pin-*.svg（しずく型＋白い線画）。休みの日は薄くするだけ（.rest。画面を暗くする幕は .scrim で別の名前） */
+.pin .pg{display:block;width:44px;height:51px;overflow:visible}
+.pin.sel .pg{filter:drop-shadow(0 0 2px rgba(201,113,63,1)) drop-shadow(0 0 5px rgba(201,113,63,.85))}
+.pin.rest{opacity:.45;filter:saturate(.35)}
 .pinw .cnt{position:absolute;right:-8px;top:-10px;min-width:24px;height:24px;padding:0 5px;border-radius:12px;background:#fff;color:var(--ink);border:2px solid var(--accent-d);font-size:15px;line-height:20px;font-style:normal;font-weight:800;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.25)}
-/* 名前ラベル（v4：ズーム15以上。押せる要素ではないので12px。背景の箱はやめて白い縁取りだけ） */
-.pinw .lbl{display:none;position:absolute;top:48px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:600;line-height:1.25;white-space:nowrap;color:#4a453d;background:none;padding:0 2px;pointer-events:none;
-  text-shadow:0 0 2px #fff,0 0 2px #fff,1px 1px 1px #fff,-1px -1px 1px #fff,1px -1px 1px #fff,-1px 1px 1px #fff}
+/* 名前ラベル（ズーム15以上。押せる要素ではないので12px。v5：v3 と同じ白い箱に戻す） */
+.pinw .lbl{display:none;position:absolute;top:51px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;line-height:1.3;white-space:nowrap;color:#3d3a34;background:rgba(255,255,255,.92);padding:0 5px;border-radius:6px;pointer-events:none;box-shadow:0 1px 2px rgba(0,0,0,.15)}
 #map.lblon .pinw .lbl{display:block}
 #map.lblon .pinw .lbl.hide{visibility:hidden}
-.pinw .pin.dim~.lbl{opacity:.6}
+.pinw .pin.rest~.lbl{opacity:.6}
 .clw{background:none;border:none}
 .cl{width:100%;height:100%;border-radius:50%;background:var(--accent-d);color:#fff;font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 0 0 5px rgba(201,113,63,.28),0 2px 6px rgba(0,0,0,.3)}
 .eat .cl{background:var(--food);box-shadow:0 0 0 5px rgba(217,93,119,.28),0 2px 6px rgba(0,0,0,.3)}
 .homew{background:none;border:none}
-.hm{position:relative;width:44px;height:44px;border-radius:50%;background:#fff;border:3px solid var(--accent-d);box-shadow:0 3px 10px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-size:22px}
+.hm{position:relative;width:44px;height:44px}
+.hm .pg{display:block;width:44px;height:44px;border-radius:50%;box-shadow:0 3px 10px rgba(0,0,0,.35)}
 .hm i{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:3px;background:var(--accent-d);color:#fff;font-size:15px;font-style:normal;font-weight:800;white-space:nowrap;padding:1px 9px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.25);max-width:220px;overflow:hidden;text-overflow:ellipsis}
 .hm.star{border-color:var(--food)}.hm.star i{background:var(--food)}
 .grab{flex:none;height:26px;display:flex;align-items:center;justify-content:center;touch-action:none}
@@ -115,24 +115,24 @@ button:disabled{opacity:.45;cursor:default}
 .primary{display:flex;align-items:center;justify-content:center;width:100%;height:58px;border-radius:999px;background:var(--accent);color:#fff;font-size:19px;font-weight:800;box-shadow:0 4px 12px rgba(201,113,63,.35);text-decoration:none}
 .primary.food{background:var(--food);box-shadow:0 4px 12px rgba(217,93,119,.35)}
 .gorow{display:flex;gap:10px;margin-top:10px}
-.gorow .primary{flex:1 1 0;margin-top:0!important;padding:0 6px;white-space:nowrap;height:52px;font-size:18px}
+.gorow .primary{flex:1 1 0;margin-top:0!important;padding:0 6px;white-space:nowrap;height:48px;font-size:16px}
 .primary.pm{background:var(--pm);box-shadow:0 4px 12px rgba(84,112,159,.35)}
 .card .primary{margin-top:10px;height:52px;font-size:18px}
-.card .gorow .primary{margin-top:0}
+.card .gorow .primary{margin-top:0;height:48px;font-size:16px}
 .subs{display:flex;justify-content:space-between;gap:4px;margin-top:2px}
 .subs a,.subs button{flex:none;display:flex;align-items:center;justify-content:center;height:44px;min-width:44px;padding:0 6px;background:none;border:0;font-size:15px;font-weight:700;color:var(--accent-d);text-decoration:none;white-space:nowrap}
 .glist{display:flex;flex-direction:column;margin-top:6px}
 .gi{display:flex;align-items:center;gap:10px;width:100%;text-align:left;min-height:56px;padding:6px 4px;border-bottom:1px solid var(--line)}
 .gi:last-child{border-bottom:0}
 .gi .e{flex:none;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;color:#fff}
-.gi.dim .e{opacity:.45}
+.gi.rest .e{opacity:.45;filter:saturate(.35)}
 .gi .tx{flex:1;min-width:0;display:flex;flex-direction:column}
 .gi b{font-size:16px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gi small{font-size:15px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gi .go{flex:none;color:#b9ae9e;font-size:22px}
 /* 下から出るシート（年齢・変える・日付・追加） */
-.dim{position:fixed;inset:0;background:rgba(40,30,20,.45);z-index:950;display:none}
-.dim.on{display:block}
+.scrim{position:fixed;inset:0;background:rgba(40,30,20,.45);z-index:950;display:none}
+.scrim.on{display:block}
 .bs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-radius:24px 24px 0 0;z-index:960;padding:6px 18px 24px;display:none;max-height:86%;overflow-y:auto}
 .bs.on{display:block}
 .bs .x{position:absolute;right:8px;top:6px;width:48px;height:48px;font-size:22px;color:var(--sub)}
@@ -140,7 +140,7 @@ button:disabled{opacity:.45;cursor:default}
 .bs .hdr{display:flex;align-items:center;gap:10px;margin:4px 0}.bs .hdr .iwv{width:58px;height:62px}
 .ages{display:flex;flex-direction:column;gap:10px;margin:12px 0 16px}
 .age{height:64px;border-radius:18px;background:#fff;border:2px solid var(--line);font-size:20px;font-weight:800;display:flex;align-items:center;gap:14px;padding:0 20px;text-align:left}
-.age span{font-size:30px}.age.on{border-color:var(--accent);background:#fff3ea;color:var(--accent-d)}.age.on::after{content:"✓";margin-left:auto;font-size:22px}
+.age.on{border-color:var(--accent);background:#fff3ea;color:var(--accent-d)}.age.on::after{content:"✓";margin-left:auto;font-size:22px}
 .opts{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .opt{display:flex;align-items:center;gap:12px;min-height:64px;width:100%;text-align:left;padding:8px 14px;border-radius:16px;background:#fff;border:1.5px solid var(--line)}
 .opt .e{flex:none;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff}
@@ -212,6 +212,56 @@ button:disabled{opacity:.45;cursor:default}
 .toast.show{opacity:.95}
 #shareToast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:15px;font-weight:700;padding:12px 18px;border-radius:999px;z-index:2000;opacity:0;pointer-events:none;transition:opacity .2s}
 #shareToast.show{opacity:.95}
+/* ===== v5：オリジナルの SVG アイコン（i-*.svg。色は文字色） ===== */
+.oi{display:inline-block;width:18px;height:18px;vertical-align:-3px;flex:none;margin-right:4px}
+.og{display:block;width:24px;height:24px;color:#fff}
+.mode button{display:flex;align-items:center;justify-content:center;gap:2px}
+.mode .oi{width:20px;height:20px}
+.chip{display:inline-flex;align-items:center}
+.chip .oi{margin-right:2px}
+.sic{display:flex;color:var(--accent-d);margin-right:4px}.sic .oi{width:20px;height:20px;margin:0}
+.search{padding-left:8px}
+.search .clr{display:flex;align-items:center;justify-content:center}.search .clr .oi{margin:0;width:20px;height:20px}
+#locTxt{display:flex;align-items:center;min-width:0}#locTxt span{overflow:hidden;text-overflow:ellipsis}
+.tag{display:inline-flex;align-items:center}.tag .oi{width:16px;height:16px;margin-right:3px}
+.hr .oi{width:17px;height:17px;margin-right:3px;vertical-align:-3px}
+.x{display:flex;align-items:center;justify-content:center}.x .oi{width:22px;height:22px;margin:0}
+.card .hd .e{color:#fff}
+.gi .e .og{width:21px;height:21px}
+.primary .oi{width:22px;height:22px;margin-right:6px}
+.share{display:flex;align-items:center;justify-content:center}.share .oi{width:22px;height:22px;margin-right:6px}
+.subs .oi{width:18px;height:18px}
+.oi.ex{width:14px;height:14px;margin:0 0 0 3px;vertical-align:-2px}
+.wx{display:flex;align-items:center}.wx .oi{margin-right:3px}
+.tl .icon{color:var(--accent-d)}.tl .icon .oi{width:19px;height:19px;margin:0}
+.tl.move .icon{color:var(--sub)}.tl.move .icon .oi{width:17px;height:17px}
+.oi.star{color:#e0a020;width:19px;height:19px;vertical-align:-3px}
+.role .oi{width:16px;height:16px;margin-right:2px}
+.swapbtn span{display:inline-flex;align-items:center}.swapbtn span .oi{width:16px;height:16px;margin-right:3px}
+.wpill{display:inline-flex!important;align-items:center}.wpill .oi{width:16px;height:16px;margin-right:4px}
+.more2 button{display:flex;align-items:center;justify-content:center}
+.bs h2 .oi{width:22px;height:22px;margin-right:6px;vertical-align:-3px;color:#2F7F8C}
+/* 日付を自動で変えたときのひとこと（見出しの下に1回だけ） */
+.dnote{display:flex;align-items:center;gap:6px;margin-top:6px;padding:7px 12px;border-radius:12px;background:#fff3ea;border:1px solid #f3cdb3;color:var(--accent-d);font-size:15px;font-weight:700;line-height:1.4}
+.dnote .oi{width:18px;height:18px;margin:0}
+.dnote.hidden{display:none}
+/* 夕方の日付選び（大きなボタン） */
+.opt.bigw{min-height:72px}.opt.bigw b{font-size:20px;font-weight:800}.opt .go{flex:none;color:#b9ae9e;font-size:22px}
+/* 地図の隅の「？」（マークの見かた） */
+.legq{position:absolute;left:10px;top:calc(var(--topH) + var(--ctlH) + 10px);z-index:780;width:44px;height:44px;border-radius:50%;background:#fff;border:1.5px solid var(--line);box-shadow:0 2px 6px rgba(0,0,0,.22);font-size:20px;font-weight:800;color:var(--accent-d);display:flex;align-items:center;justify-content:center}
+#vMap:not(.on) .legq{display:none}
+.leg{margin-top:6px}
+/* v7：種類が9つ＋出発地・自分の場所・うすいピンになったので、行の高さを 54→50px（ピン 44px＋上下 3px）にして1画面に収める */
+.leg .li{display:flex;align-items:center;gap:12px;min-height:50px;border-bottom:1px solid var(--line);padding:3px 0}
+.leg .li.last{border-bottom:0}
+.lpin{flex:none;display:block;width:38px;height:44px;margin:0 4px}.lpin .pg{display:block;width:38px;height:44px;overflow:visible}
+.lpin.home{height:38px}.lpin.home .pg{height:38px}
+.lpin.rest{opacity:.45;filter:saturate(.35)}
+.leg .tx b{display:block;font-size:16px;font-weight:800;line-height:1.35}.leg .tx small{display:block;font-size:15px;color:var(--sub);line-height:1.35;letter-spacing:-.04em}
+/* v6：お昼なし（家で食べる）＝午前だけ。お昼の行のあった場所に「＋ お昼を入れる」を小さく1行 */
+.swapwiden.nolunch{display:flex;align-items:center;justify-content:center}.swapwiden.nolunch .oi{width:18px;height:18px;margin-right:5px}
+.tl.addl{padding-bottom:6px}.tl.addl .icon{width:26px;height:26px;border-width:1.5px;opacity:.55}.tl.addl .icon .oi{width:15px;height:15px}
+.addlunch{display:inline-flex;align-items:center;height:44px;padding:0 16px;border-radius:999px;border:1.5px dashed var(--accent);background:#fff;font-size:15px;font-weight:700;color:var(--accent-d);cursor:pointer}
 </style>
 </head>
 <body>
@@ -221,13 +271,14 @@ button:disabled{opacity:.45;cursor:default}
 <section class="view" id="vMap">
   <header class="top">
     <a class="home" id="homeA" href="./index.html"><span class="ar">←</span><i class="imk"></i>おでまる 東京</a>
-    <label class="loc" id="locBtn"><span id="locTxt">📍</span><select id="originPick" aria-label="出発地"></select></label>
+    <label class="loc" id="locBtn"><span id="locTxt"></span><select id="originPick" aria-label="出発地"></select></label>
   </header>
   <div class="ctl" id="ctl">
-    <div class="mode"><button data-m="play" class="on">🛝 あそぶ</button><button data-m="eat">🍽 たべる</button></div>
-    <div class="srow" id="srow"><label class="search"><input type="search" id="q" placeholder="＋ 場所を追加" enterkeyhint="search" autocomplete="off" aria-label="行きたい場所を追加（名前・住所）"><button class="clr hidden" id="qClr" aria-label="消す">✕</button></label><span id="chips"></span></div>
+    <div class="mode"><button data-m="play" class="on"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 20.5V4.5M8.5 20.5V4.5M4.5 9.5h4M4.5 13.5h4M4.5 17.5h4M8.5 7.5c6 0 5.5 12 12 12.5M8.5 11.5c3.6 0 4.6 7.2 7.6 9M3 20.5h18.5"/></svg>あそぶ</button><button data-m="eat"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="7.8" cy="7.2" rx="2.7" ry="3.7"/><path d="M7.8 10.9v9.6M16.2 3.5v17M13.6 3.5v4.9a2.6 2.6 0 0 0 5.2 0V3.5"/></svg>たべる</button></div>
+    <div class="srow" id="srow"><label class="search"><span class="sic"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6-7-11.3a7 7 0 0 1 14 0C19 15 12 21 12 21zM12 6.5v6.4M8.8 9.7h6.4"/></svg></span><input type="search" id="q" placeholder="場所を追加" enterkeyhint="search" autocomplete="off" aria-label="行きたい場所を追加（名前・住所）"><button class="clr hidden" id="qClr" aria-label="消す"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></label><span id="chips"></span></div>
   </div>
   <div class="map" id="map"></div>
+  <button class="legq" id="legBtn" aria-label="マークの見かた">？</button>
   <div class="sug hidden" id="sug"></div>
   <div class="card hidden" id="card"></div>
 </section>
@@ -236,9 +287,9 @@ button:disabled{opacity:.45;cursor:default}
 <section class="view" id="vPlan">
   <header class="top"><button class="back" id="planBack">‹ マップにもどる</button><span class="wx" id="wx"></span></header>
   <main class="planwrap">
-    <div class="ph2"><h1><button class="date" id="dateBtn"></button><span>のプラン</span></h1><p id="depLine"></p></div>
+    <div class="ph2"><h1><button class="date" id="dateBtn"></button><span>のプラン</span></h1><p id="depLine"></p><p class="dnote hidden" id="dateNote" role="status"></p></div>
     <div class="plancard"><div class="timeline" id="rows"></div></div>
-    <div class="big"><a class="primary" id="routeBtn" href="#" target="_blank" rel="noopener">🚗 Googleマップで出発</a><button class="share" id="shareBtn">📤 家族に送る</button></div>
+    <div class="big"><a class="primary" id="routeBtn" href="#" target="_blank" rel="noopener"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.3 17H3.5v-4.1c0-.8.5-1.4 1.2-1.6l1.8-.5 2-3.8c.3-.6.9-1 1.6-1h3.8c.7 0 1.3.4 1.6 1l2 3.8 1.8.5c.7.2 1.2.8 1.2 1.6V17h-1.8M9.6 17h4.8M6.5 11.3h11"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/></svg>Googleマップで出発</a><button class="share" id="shareBtn"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 3.5L3.5 10.3l6.8 3.4 3.4 6.8zM20.5 3.5l-10.2 10.2"/></svg>家族に送る</button></div>
     <p class="note">営業時間・料金はおでかけ前に公式サイトで確認してね</p>
   </main>
 </section>
@@ -255,23 +306,31 @@ button:disabled{opacity:.45;cursor:default}
   </main>
 </section>
 
-<div class="dim" id="dim"></div>
+<div class="scrim" id="dim"></div>
 <!-- 年齢（初回だけ） -->
 <div class="bs" id="ageSheet">
   <div class="grab"><i></i></div>
   <div class="hdr"><i class="iwv"></i><div><h2>お子さんの年齢は？</h2><p class="q">はじめの1回だけ・いくつでも選べます</p></div></div>
-  <div class="ages"><button class="age" data-age="0-2"><span>👶</span>0〜2歳</button><button class="age" data-age="3-5"><span>🧒</span>3〜5歳</button><button class="age" data-age="elem"><span>🎒</span>小学生</button></div>
+  <div class="ages"><button class="age" data-age="0-2">0〜2歳</button><button class="age" data-age="3-5">3〜5歳</button><button class="age" data-age="elem">小学生</button></div>
   <button class="primary" id="ageGo" disabled>この年齢でプランを作る</button>
 </div>
 <!-- 日付／自分の場所 -->
-<div class="bs" id="optSheet"><button class="x" data-close aria-label="閉じる">✕</button><div id="optBody"></div></div>
+<div class="bs" id="optSheet"><button class="x" data-close aria-label="閉じる"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div id="optBody"></div></div>
 <!-- 住所で追加 -->
 <div class="bs" id="addSheet">
-  <button class="x" data-close aria-label="閉じる">✕</button>
-  <h2>📌 自分の場所を追加</h2>
+  <button class="x" data-close aria-label="閉じる"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <h2><svg class="oi" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 21V3.5M6.5 4.5h11.5l-2.8 4.2L18 13H6.5"/></svg>自分の場所を追加</h2>
   <label class="field">名前<input id="addName" autocomplete="off"></label>
   <label class="field">住所<input id="addAddr" placeholder="例：杉並区阿佐谷南1丁目" data-ph="例：杉並区阿佐谷南1丁目" autocomplete="off"></label>
   <button class="primary" id="addGo">保存する</button>
+</div>
+<!-- v5：マークの見かた（地図の「？」） -->
+<div class="bs" id="legSheet">
+  <div class="grab"><i></i></div>
+  <button class="x" data-close aria-label="閉じる"><svg class="oi" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <h2>マークの見かた</h2>
+  <p class="q">ピンの色と絵で、どんな場所かが分かります。</p>
+  <div class="leg" id="legBody"></div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -2933,6 +2992,7 @@ function scoreSpot(s,date,w,arrivalMin){
   if(date instanceof Date){ try{ if(judgeClosed(s,date).state==='unknown') sc-=UNKNOWN_DAY_PENALTY; }catch(e){} }
   /* [plan-fix2 2026-09-24] (2) 幼児だけ（0-2／3-5のみ）: 図書館・資料館などを下げる（雨 -4・晴れ -3）。雨なら屋内の遊び場・科学館・屋内プールなどを上げる */
   sc+=kidDullAdj(s,w);
+  sc+=eng3AgeAdj(s);   // [engine-fix3 2026-09-25] (1) 0〜5歳だけ: 美術館・資料館・図書館など（新マップの分類と同じ規則）を軽く下げる
   return sc;
 }
 // 児童館・子育て支援センター系(is_jidokan===true)はプランナーの対象外。
@@ -3093,20 +3153,21 @@ const SUB_STAY_MAX=120, SUB_STAY_SHORT=60;
 function isShortStaySpot(s){ var nm=String(s&&s.name||''); return STAY_SHORT_RE.test(nm)&&!KIDS_WORD_RE.test(nm); }
 function mainStayFor(s){
   var base=stayMinutes(s), nm=String(s.name||'');
+  if(eng3IsMyPlace(s)) return ENG3_MYPLACE_STAY;   // [engine-fix3 2026-09-25] (5) 自分の場所は長め（お昼の時刻・帰宅上限で縮む）
   if(isShortStaySpot(s)) return MAIN_STAY_SHORT;
-  var big=STAY_BIG_RE.test(nm);
+  var big=STAY_BIG_RE.test(nm)||eng3IsBigPark(s);   // [engine-fix3 2026-09-25] (5) tier S の大きな公園も大物扱い
   if(s.tier==='S') return big?MAIN_STAY_S_BIG:MAIN_STAY_S;
   if(big) return Math.max(base,MAIN_STAY_BIG);
   if(s.tier==='A') return Math.max(base,MAIN_STAY_A);
   return base;
 }
-function subStayCap(s){ return isShortStaySpot(s)?SUB_STAY_SHORT:SUB_STAY_MAX; }
+function subStayCap(s){ if(eng3IsMyPlace(s)) return ENG3_MYPLACE_STAY; if(eng3IsBigPark(s)) return ENG3_BIGPARK_STAY; return isShortStaySpot(s)?SUB_STAY_SHORT:SUB_STAY_MAX; }   /* [engine-fix3 2026-09-25] (5) 自分の場所 最大4時間・大きな公園 3時間 */
 /* 長く滞在する主役でも、お昼（ランチ到着）が LUNCH_TARGET_MIN を大きく過ぎないようにする（最短でも従来の滞在 stayMinutes は確保） */
 const LUNCH_TARGET_MIN=13*60+30;
 function mainStayAt(s,arr){
   var full=mainStayFor(s), base=stayMinutes(s);
-  if(arr==null||full<=base) return full;
-  return Math.max(base, Math.min(full, Math.floor((LUNCH_TARGET_MIN-10-arr)/15)*15));
+  var __v=(arr==null||full<=base)?full:Math.max(base, Math.min(full, Math.floor((LUNCH_TARGET_MIN-10-arr)/15)*15));
+  return eng3LateCap(__v,arr,null);   // [engine-fix3 2026-09-25] (3) 遅い出発はお昼を12:30までに（午前を短く）
 }
 
 /* ---- (1c) 遠いのに短い: 片道 FAR_TRIP_MIN 分超のメインは、滞在が片道の FAR_STAY_RATIO 倍以上とれるときだけ ---- */
@@ -3230,6 +3291,185 @@ function subOrder2(list,w){
     if(shown.indexOf(s)>=0) r+=3;
     return {s:s,i:i,r:r};
   }).sort(function(a,b){ return a.r-b.r||a.i-b.i; }).map(function(x){ return x.s; });
+}
+/* ===== [engine-fix3 2026-09-25] 年齢に合わない候補・無料の指定・遅い出発のお昼・お昼なし・滞在の指定 =====
+   どれも「並べ替え」と「滞在時間の決め方」だけで、3か所構成（メイン・お昼・午後）・帰宅上限（capHomeFor）・
+   島／ランチは飲食店だけ／遠いのに短い／季節外れ／閉館後到着の判定（plan-fix2）はそのまま。SPOTS・CITIES は読むだけ。
+   東京の新マップ（tokyo/erabu.html）はこのエンジンの宣言をそのまま取り込むので、ここは宣言（var・function）だけにしている。
+   buildPlan(main,date,w,opts) の opts（4つ目の引数。従来の {lunch,sub} の指定と同じ場所）に次を足した:
+     opts.lunch='none' … お昼の枠を作らない（午前 → 帰路。午後も組まない）
+     opts.freeOnly=true … 午後の候補と「変える」の候補を無料の施設から先に出す（無いときは有料も出す）
+     opts.stayMain=分 / opts.staySub=分 … 午前・午後の滞在（帰宅上限・閉館時刻の範囲に収める）
+   {freeOnly,stayMain,staySub} だけを渡したときは、お昼・午後は従来どおり自動で選ぶ。lunch か sub のキーがあれば従来どおりその指定で組む。 */
+
+/* ---- (1) 年齢に合わない候補: 東京の新マップのピン分類（mapnew/icons/work/classify.js の pinKind）と同じ規則 ---- */
+function eng3PinKind(s){
+  var pt = s.play_types || [], n = String(s.name || '');
+  if (s.is_chain === true) return 'chain';
+  if (pt.indexOf('food') >= 0) return 'food';
+  if (s.is_jidokan === true) return 'jidokan';
+  if (/森林科学園|山のふるさと村/.test(n)) return 'park';
+  if (/おもちゃ美術館|あそびのせかい|あそびの森|HUGHUG|ちきゅうのにわ|PLAY! PARK|こどもひろば|0123|まんがぱーく|キッズ|プレイルーム/.test(n)) return 'indoor';
+  if (/動物|水族|ZOO|牧場|ポニー|リス園|さる園|生物園|自然文化園/.test(n)) return 'animal';
+  if (/科学|サイエンス|プラネタリウム|天文|宇宙|鉄道|れーる|電車|地下鉄|東武博物館|交通|消防|防災館|防災センター|そなエリア|ケーブルカー|警察|ポリス|郵政|通信|下水道|水道|水の|ガス|くすり|放送|寄生虫|南極|teamLab|工場|印刷|たばこと塩|紙の博物館|お札|貨幣|子ども未来館|ギャラクシティ|遊園|ランド|花やしき|都電|展望|タワー/.test(n)) return 'science';
+  if (/美術館|資料館|資料室|図書|文学館|記念館|郷土|歴史|民俗|民家園|たてもの園|博物館|ミュージアム|MUSEUM|文化館|ふるさと館|ふるさと村|版画|彫刻|古墳|埋蔵文化財|本陣|展示|絵本|ことばらんど|はちはく|史料館|インターメディアテク|昭和館|復興記念|屋敷|住宅|水と緑のふれあい館/.test(n)) return 'book';
+  if (/公園|広場|緑地|庭園|植物園|御苑|プレーパーク|鍾乳洞|釣場|菖蒲園|花木園|ビジターセンター/.test(n)) return 'park';
+  if (pt.indexOf('animal') >= 0) return 'animal';
+  if (pt.indexOf('vehicle') >= 0) return 'science';
+  if (pt.indexOf('museum_science') >= 0) return 'book';
+  if (pt.indexOf('active') >= 0 || pt.indexOf('water') >= 0 || pt.indexOf('nature') >= 0) return 'park';
+  return 'indoor';
+}
+/* 全国で使うための除外（名前の語）: 子ども向けの語がある館（こども図書館・えほん館・こども美術館など）、公園（歴史公園・記念公園など）、
+   説明に子どもの遊び場があると書いてある館、乗り物（play_types の vehicle）の館、生き物（animal）の展示がある館は下げない */
+var ENG3_PARK_NAME_RE=/公園|広場|パーク|緑地|の森(?!美術館)/;   // 「〜の森美術館」は美術館として扱う
+var ENG3_KIDPLAY_AP_RE=/キッズスペース|キッズコーナー|キッズルーム|プレイルーム|プレイコーナー|あそびコーナー|遊びコーナー|遊び場|あそび場|ボールプール|遊具|ふわふわ|おもちゃ/;
+/* 2026-09-25 追記: 東京の新マップの乗り物・遊園地（classify.js の vehicle）と同じ語を足した。「ランド」だけでは決めない（室内の遊び場が多い）。遊園地は名前で1つずつ */
+var ENG3_VEHICLE_NAME_RE=/航空|飛行機|自動車|鉄道|電車|機関車|のりもの|乗り物|バス|ロマンスカー|トヨタ博物館|汽車|(^|[^A-Za-z])SL([^A-Za-z]|$)|れーる|ミニトレイン|地下鉄|モノレール|ゴーカート|ケーブルカー|ロープウェイ|交通|消防|ポリス|警察|都電|東武博物館|(^|[^童東])遊園地|あらかわ遊園|みかさ遊園|花やしき|よみうりランド(?!.*プール)|サマーランド|レゴランド・ジャパン|シートレインランド|富士急ハイランド|スパーランド|東京ドームシティ|アミューズメントパーク/;
+var ENG3_TODDLER_MUSEUM_RE=/博物館|ミュージアム|寄生虫|資料/;
+var ENG3_UNFIT_MAIN_ADJ=2, ENG3_MILD_MAIN_ADJ=1;
+/* 2 = 図書館・郷土資料館・歴史館・文学館・美術館・大学博物館・記念館・史料館など（0〜5歳だけのとき下げる）
+   1 = 0〜2歳だけのときの博物館型の科学館（国立科学博物館・寄生虫館など。軽く下げる）  0 = 下げない */
+function ageUnfitLevel(s){
+  if(!s||s.__temp||s.__bento) return 0;
+  var k=eng3PinKind(s), nm=String(s.name||''), ap=String(s.kid_appeal||'');
+  var pt=s.play_types||[];
+  if(KIDS_WORD_RE.test(nm)||ENG3_KIDPLAY_AP_RE.test(ap)) return 0;
+  if(pt.indexOf('vehicle')>=0||ENG3_VEHICLE_NAME_RE.test(nm)) return 0;   // 電車・乗り物のミュージアム（ロマンスカーミュージアム・京急ミュージアム・東武博物館など）は幼児向き
+  if(k==='book') return (ENG3_PARK_NAME_RE.test(nm)||pt.indexOf('animal')>=0)?0:2;   // 生き物の展示（ニフレルなど）も下げない
+  if(k==='science'&&toddlerOnlyNow()&&ENG3_TODDLER_MUSEUM_RE.test(nm)) return 1;
+  return 0;
+}
+/* scoreSpot の加減点（主役）: 0〜5歳だけのとき。plan-fix2 の kidDullAdj が既に下げている館（図書館・資料館など）には重ねない */
+function eng3AgeAdj(s){
+  if(!smallKidOnly()) return 0;
+  var u=ageUnfitLevel(s);
+  if(u===2) return isDullForToddler(s)?0:-ENG3_UNFIT_MAIN_ADJ;
+  if(u===1) return -ENG3_MILD_MAIN_ADJ;
+  return 0;
+}
+
+/* ---- (2) 無料の指定 ---- */
+var ENG3_FREE=false;   // buildPlan の opts.freeOnly の間だけ true
+function eng3IsFree(s){ if(!s) return false; if(s.is_free===true) return true; try{ return parsePrice(s)===0; }catch(e){ return false; } }
+function eng3FreePref(){ return ENG3_FREE===true||state.budget==='free'; }
+/* 並べ替えの順位（小さいほど先）: 無料の指定で有料 +4、0〜5歳だけで年齢に合わない +2（軽い方 +1） */
+function eng3Rank(s){
+  var r=0;
+  if(eng3FreePref()&&!eng3IsFree(s)) r+=4;
+  if(smallKidOnly()){ var u=ageUnfitLevel(s); if(u===2) r+=2; else if(u===1) r+=1; }
+  return r;
+}
+function eng3Order(list){
+  if(!list||list.length<2) return list||[];
+  return list.map(function(s,i){ return {s:s,i:i,r:eng3Rank(s)}; })
+    .sort(function(a,b){ return a.r-b.r||a.i-b.i; }).map(function(x){ return x.s; });
+}
+/* 午後の自動選択用: 無料・年齢の条件に合う候補が1件でもあれば、それだけから選ぶ（無いときは全体から＝除外ではなく順位を下げるだけ） */
+function eng3Prefer(list){
+  var o=eng3Order(list);
+  if(!o.length) return o;
+  var hard=function(s){ return Math.floor(eng3Rank(s)/2); };   // 軽い方（+1）は絞り込みに使わない
+  var h0=hard(o[0]), f=o.filter(function(s){ return hard(s)===h0; });
+  return f.length?f:o;
+}
+/* 「変える」の候補（午前・午後・自分で選ぶの非お昼の枠）: 近い順に並べた後で、無料・年齢に合う候補を前へ */
+function eng3SwapOrder(list,slot){
+  if(slot==='lunch') return list;
+  try{ if(csIndex(slot)!=null&&csIsLunchSlot(slot)) return list; }catch(e){}
+  var f0=ENG3_FREE;
+  try{ var p=currentPlanObj(); ENG3_FREE=!!(p&&p.freeOnly); return eng3Order(list); }
+  finally{ ENG3_FREE=f0; }
+}
+
+/* ---- (3) 遅い出発: お昼を 12:30 までに始める（午前の滞在を短くする。最短 45 分）。
+   0〜2歳がいるときは午後を 16:00 帰宅めどに短くし、60分とれなければ午後なし（帰宅上限 capHomeFor はそのまま守る） ---- */
+var ENG3_LATE_START=10*60, ENG3_LUNCH_BY=12*60+30, ENG3_MAIN_MIN_LATE=45, ENG3_LUNCH_LEG_EST=10, ENG3_TODDLER_LATE_HOME=16*60;
+function eng3IsLate(st){ try{ return (st==null?startMinutes():st)>=ENG3_LATE_START; }catch(e){ return false; } }
+function eng3LateCap(stay,arr,leg){
+  if(arr==null||stay==null||!eng3IsLate()) return stay;
+  if(arr>=ENG3_LUNCH_BY) return stay;   // お昼どきを過ぎて着く（正午スロットなど）は従来どおり
+  var c=Math.floor((ENG3_LUNCH_BY-(leg==null?ENG3_LUNCH_LEG_EST:leg)-arr)/5)*5;
+  return Math.min(stay,Math.max(ENG3_MAIN_MIN_LATE,c));
+}
+function eng3SoftHome(bdm,st){
+  if(!(state.ages&&state.ages.has&&state.ages.has('0-2'))||!eng3IsLate(st)) return Infinity;
+  return ENG3_TODDLER_LATE_HOME-(bdm||0);
+}
+
+/* ---- (4) お昼なし: 家でお昼を食べる。午前の遊び場から 13:00 ごろ帰着（最短 45 分は遊ぶ） ---- */
+var ENG3_HOME_LUNCH=13*60;
+function eng3HomeLunchCap(stay,t,homeDm){
+  if(t==null||t>=ENG3_LUNCH_BY) return stay;
+  var c=Math.floor((ENG3_HOME_LUNCH-(homeDm||0)-t)/15)*15;
+  return Math.min(stay,Math.max(ENG3_MAIN_MIN_LATE,c));
+}
+
+/* ---- (5) 滞在: 自分の場所（マイプレイス・自分で追加した場所）と tier S の大きな公園は長め ---- */
+var ENG3_MYPLACE_STAY=240, ENG3_BIGPARK_STAY=180;
+var ENG3_BIGPARK_NAME_RE=/公園|パーク|緑地|の森|森林|丘陵|自然園/;
+function eng3IsMyPlace(s){ return !!(s&&s.__temp===true&&!s.__bento); }
+function eng3IsBigPark(s){ return !!(s&&s.tier==='S'&&!isShortStaySpot(s)&&ENG3_BIGPARK_NAME_RE.test(String(s.name||''))); }
+function eng3StayNum(v){ var n=Number(v); if(!isFinite(n)||n<=0) return null; return Math.max(30,Math.min(600,Math.round(n/5)*5)); }
+
+/* ---- buildPlan の opts の読み取り ---- */
+var ENG3_OPT_KEYS=['freeOnly','stayMain','staySub'];
+function eng3Opts(o){
+  var r={ov:false,lunchNone:false,freeOnly:false,stayMain:null,staySub:null};
+  if(!o||typeof o!=='object') return r;
+  r.lunchNone=(o.lunch==='none');
+  r.freeOnly=o.freeOnly===true;
+  r.stayMain=eng3StayNum(o.stayMain);
+  r.staySub=eng3StayNum(o.staySub);
+  var ks=Object.keys(o), onlyOpt=ks.length>0&&ks.every(function(k){ return ENG3_OPT_KEYS.indexOf(k)>=0; });
+  r.ov=!r.lunchNone&&!onlyOpt;   // 従来どおり: {lunch,sub} の指定（空の {} を含む）はその指定で組む
+  return r;
+}
+/* 画面の差し替え（変えるパネル）でも、同じプランの指定（無料・お昼なし・滞在）を引き継ぐ */
+function eng3CarryOpts(p,slot,base){
+  var o={}; for(var k in base) o[k]=base[k];
+  if(!p) return o;
+  if(p.freeOnly) o.freeOnly=true;
+  if(p.lunchNone&&slot!=='lunch') o.lunch='none';
+  if(p.stayMainOpt&&slot!=='main') o.stayMain=p.stayMainOpt;
+  if(p.staySubOpt&&slot!=='sub') o.staySub=p.staySubOpt;
+  return o;
+}
+/* おまかせの「変える」パネル（お昼）の1行: お昼なし（家で食べる） */
+function eng3LunchNone(){
+  var p=currentPlanObj(); if(!p||!p.main) return;
+  if(typeof gtag==='function') gtag('event','plan_swap_apply',{slot:'lunch_none'});
+  var date=targetDate(state.when), w=state.weather;
+  var np=buildPlan(p.main,date,w,eng3CarryOpts(p,'lunch',{lunch:'none',sub:null}));
+  state.plans[state.variant%state.plans.length]=np;
+  var sy=window.scrollY||window.pageYOffset||0;
+  state.keepScroll=true;
+  showResult();
+  try{ window.scrollTo({top:sy}); }catch(e){}
+}
+/* 共有URL: お昼なし nl=1・無料 fo=1・滞在 sm=分 / ss=分（無いURL＝従来の形式は従来どおりに開く） */
+function eng3SharePush(p,parts){
+  if(!p) return;
+  if(p.lunchNone) parts.push('nl=1');
+  if(p.freeOnly) parts.push('fo=1');
+  if(p.stayMainOpt) parts.push('sm='+p.stayMainOpt);
+  if(p.staySubOpt) parts.push('ss='+p.staySubOpt);
+}
+function eng3ShareOpts(qs){
+  var e={};
+  try{
+    if(qs.get('nl')==='1') e.lunch='none';
+    if(qs.get('fo')==='1') e.freeOnly=true;
+    var sm=eng3StayNum(qs.get('sm')), ss=eng3StayNum(qs.get('ss'));
+    if(sm) e.stayMain=sm;
+    if(ss) e.staySub=ss;
+  }catch(err){}
+  return {e3:e};
+}
+function eng3RestoreOpts(r){
+  var o={lunch:r.lunchSpot,sub:r.subSpot}, e=(r&&r.e3)||{};
+  for(var k in e) o[k]=e[k];
+  return o;
 }
 function poolFrom(list,date,w){
   if(date instanceof Date) setPlanDate(date);
@@ -3500,7 +3740,7 @@ function lunchCandidates(main,date){
   cc=bandedTiebreak(cc,function(s){return s.__km;},function(s){return s.__tie;},2);
   return cc;
 }
-function pickSub(main,lunch,mainDriveMin,date,w){ return pickVariety(subCandidates(main,lunch,mainDriveMin,date,w),'shownSubs',8); } // ④ 近距離上位8件を母集団に
+function pickSub(main,lunch,mainDriveMin,date,w){ return pickVariety(eng3Prefer(subCandidates(main,lunch,mainDriveMin,date,w)),'shownSubs',8); }   /* [engine-fix3 2026-09-25] 無料・年齢に合う候補があればその中から */ // ④ 近距離上位8件を母集団に
 function subCandidates(main,lunch,mainDriveMin,date,w){
   if(date instanceof Date) setPlanDate(date);
   const o=state.origin;
@@ -3558,7 +3798,7 @@ function subCandidates(main,lunch,mainDriveMin,date,w){
   });
   // ①⑥ 並べ替えは prev からの距離 __subkm 昇順。__homeward(帰り道方向)は ±2km 帯内のタイブレークに降格。
   /* [plan-fix2 2026-09-24] (2) 雨×幼児は遊び場を前・図書館等を後ろへ。直前までに主役で出した施設は後ろへ */
-  return subOrder2(bandedTiebreak(c,function(s){return s.__subkm;},function(s){return s.__homeward?1:0;},2),w);
+  return eng3Order(subOrder2(bandedTiebreak(c,function(s){return s.__subkm;},function(s){return s.__homeward?1:0;},2),w));   // [engine-fix3 2026-09-25] (1)(2) 無料の指定・年齢に合う候補を前へ
 }
 // 当日プラン(「今日これから」)として現実的な出発時刻の上限。
 // 既存ロジックの境界に合わせている: 0-2歳のみは到着17:30以降を除外、帰宅上限は18:00(乳児)/18:30(未就学)、
@@ -3623,10 +3863,13 @@ function capHomeFor(ages){
 }
 function buildPlan(main,date,w,shareOverride){
   const o=state.origin;
-  let lunch=shareOverride?(shareOverride.lunch||null):pickLunch(main,date);   // [裁定173] 余地が無ければ枠ごと落とすので let
-  const __noLunchCand=(!shareOverride&&!lunch);   // [plan-fix 2026-09-23] 候補0件（帰宅上限で枠を落とした場合は含まない）
+  /* [engine-fix3 2026-09-25] opts（4つ目の引数）: {lunch,sub} の指定は従来どおり。lunch:'none'＝お昼なし、freeOnly・stayMain・staySub を追加 */
+  const __E3=eng3Opts(shareOverride), __fo0=ENG3_FREE;
+  ENG3_FREE=__E3.freeOnly;
+  let lunch=__E3.lunchNone?null:(__E3.ov?(shareOverride.lunch||null):pickLunch(main,date));   // [裁定173] 余地が無ければ枠ごと落とすので let
+  const __noLunchCand=(!__E3.ov&&!__E3.lunchNone&&!lunch);   // [plan-fix 2026-09-23] 候補0件（帰宅上限で枠を落とした場合は含まない）
   const dm=driveMinutesFrom(o,main)||30;
-  let sub=shareOverride?(shareOverride.sub||null):pickSub(main,lunch,dm,date,w);
+  let sub=__E3.lunchNone?null:(__E3.ov?(shareOverride.sub||null):pickSub(main,lunch,dm,date,w));   // [engine-fix3 2026-09-25] お昼なしは午後も組まない（午前だけ）
   let t=startMinutes();
   const startMin=t;
   const rows=[];
@@ -3638,6 +3881,10 @@ function buildPlan(main,date,w,shareOverride){
   legSum+=dm;
   t+=dm;
   let stay=mainStayAt(main,t);   // [plan-fix2 2026-09-24] (3) 大物は長く・図書館や資料館は短く（お昼は13:30ごろまで。帰宅上限・閉館の短縮は下の既存処理のまま）
+  /* [engine-fix3 2026-09-25] 滞在の指定（stayMain）→ そのまま。お昼なし → 13:00ごろ帰着。遅い出発 → 実際のお店までの移動で、お昼を12:30までに */
+  if(__E3.stayMain!=null) stay=__E3.stayMain;
+  else if(__E3.lunchNone) stay=eng3HomeLunchCap(stay,t,dm);
+  else if(lunch&&lunch.latitude!=null&&main.latitude!=null) stay=eng3LateCap(stay,t,legMinutes(main.latitude,main.longitude,lunch.latitude,lunch.longitude));
   const onlyToddler=state.ages.has('0-2')&&state.ages.size===1;   // homePriority の判定にだけ使う
   /* [裁定172] 帰宅上限を超えそうならメイン滞在を自動短縮する(最短45分)。
      旧実装は onlyToddler(=0-2歳のみ)限定で、3-5 を併記した瞬間に外れていた。
@@ -3737,7 +3984,7 @@ function buildPlan(main,date,w,shareOverride){
   // 選定済みsubが時間割に収まらない場合も、候補を順に試して必ず午後スポットを確保する(物理的に不可能な場合のみ余力枠へ)
   let __subTry=[];
   if(sub&&lunch) __subTry.push(sub);
-  if(lunch&&!shareOverride){
+  if(lunch&&!__E3.ov){   // [engine-fix3 2026-09-25] opts だけ（freeOnly・滞在）のときも従来の自動選択と同じ
     try{
       const __more=subCandidates(main,lunch,dm,date,w).filter(x=>x&&x!==sub&&!(x.play_types||[]).includes('food'));
       __subTry=__subTry.concat(__more.slice(0,12));
@@ -3754,9 +4001,11 @@ function buildPlan(main,date,w,shareOverride){
     const __capHome=capHome;   // [裁定172] 年齢別の帰宅上限に統一（旧: 18:00 固定）
     const limit0=Math.min(bh0?(bh0.closeMin-15):Infinity, __capHome-bdm0);  // 閉館15分前までに退場
     let depart0=Math.min(Math.max(arr0+90, 16*60+30), limit0, arr0+subStayCap(__cand));   // [plan-fix2 2026-09-24] (3) 午後は最長2時間（図書館・資料館などは1時間）
+    if(__E3.staySub!=null) depart0=Math.min(arr0+__E3.staySub, limit0);   // [engine-fix3 2026-09-25] (5) 午後の滞在の指定
+    depart0=Math.min(depart0, eng3SoftHome(bdm0,startMin));   // [engine-fix3 2026-09-25] (3) 遅い出発×0〜2歳は16:00帰宅めど（取れなければ午後なし）
     depart0=Math.floor(depart0/15)*15;
     // 60分以上遊べない場合はこの候補を諦めて次へ
-    let __ok0=(!ci0.exclude && depart0>=arr0+60);
+    let __ok0=(!ci0.exclude && depart0>=arr0+Math.min(60,__E3.staySub||60));
     if(!__ok0 && isUserPick(__cand)){
       /* [裁定146] えらんだ場所は営業時間を理由に落とさない(営業時間外なら上部に警告を出す)。
          この枠にかぎり閉館時刻のキャップを外し、帰宅上限も CP_PICK_HOME_CAP まで伸ばす。
@@ -3803,7 +4052,7 @@ function buildPlan(main,date,w,shareOverride){
       if(ci.exclude&&!isUserPick(sub)){ sub=null; return; }   // [裁定146] えらんだ場所は落とさない
       const bdm=driveMinutesFrom(o,sub)||legMinutes(sub.latitude,sub.longitude,o.lat,o.lng);
       const bh=parseBusinessHours(sub);
-      const limit=Math.min(bh?(bh.closeMin-15):Infinity, capHome-bdm);  // 閉館15分前までに退場／[裁定172] 帰宅上限も年齢別に
+      const limit=Math.min(bh?(bh.closeMin-15):Infinity, capHome-bdm, eng3SoftHome(bdm,startMin));  // 閉館15分前までに退場／[裁定172] 帰宅上限も年齢別に／[engine-fix3 2026-09-25] (3)
       let stayB=Math.floor(Math.min(60, limit-arrival)/15)*15;
       if(stayB<30){ sub=null; return; }   // 30分遊べないなら余力枠ごと出さない
       const departB=arrival+stayB, retB=departB+bdm;
@@ -3853,7 +4102,8 @@ function buildPlan(main,date,w,shareOverride){
   else if(known===0&&hasUnknown) cost='入場料などは公式サイトで確認（ランチ代は別）';
   else cost='入場料など 大人1人あたり 目安'+known.toLocaleString()+'円'+(hasUnknown?'（一部要確認）':'')+'・ランチ代は別';
   const homePriority = onlyToddler && !sub;
-  return {rows,main,lunch,sub,totalDrive,cost,hasUnknown,homePriority,mainStay:rows.__mainStay,bonusExtra:rows.__bonusExtra||0,bonusReturn:rows.__bonusReturn||null,retHome:rows.__retHome||null,costKnown:known,bonusPrice:(rows.__bonusIsBonus?rows.__bonusPrice:null)};
+  ENG3_FREE=__fo0;   // [engine-fix3 2026-09-25]
+  return {rows,main,lunch,sub,totalDrive,cost,hasUnknown,homePriority,mainStay:rows.__mainStay,lunchNone:__E3.lunchNone,freeOnly:__E3.freeOnly,stayMainOpt:__E3.stayMain,staySubOpt:__E3.staySub,bonusExtra:rows.__bonusExtra||0,bonusReturn:rows.__bonusReturn||null,retHome:rows.__retHome||null,costKnown:known,bonusPrice:(rows.__bonusIsBonus?rows.__bonusPrice:null)};
 }
 // 当日プランとして出発時刻が現実的か。UI(refreshTodayAvailability)を迂回した経路
 // (共有URLの復元など)でも過去時刻・深夜のプランを生成しないための保険。
@@ -3978,7 +4228,7 @@ function nextVarietyPlan(date,w){
   /* [plan-fix2 2026-09-24] 画面に主役として出した回数が最も少ない施設から選ぶ（まだ見せていない施設を先に。同じ館のループを防ぐ） */
   { const __H=state.__mainHist||[], __cnt=s=>__H.filter(x=>x===s).length, __mc=Math.min.apply(null,fresh.map(__cnt)); fresh=fresh.filter(s=>__cnt(s)===__mc); }
   /* [plan-fix2 2026-09-24] (2) 幼児だけ（雨の日を含む）: 図書館・資料館などは、ほかに候補があれば選ばない */
-  if(smallKidOnly()){ const __nd=fresh.filter(s=>!isDullForToddler(s)); if(__nd.length) fresh=__nd; }
+  if(smallKidOnly()){ const __nd=fresh.filter(s=>!isDullForToddler(s)&&ageUnfitLevel(s)!==2); if(__nd.length) fresh=__nd; }   // [engine-fix3 2026-09-25] (1)
   state.cycledNote=cycled;
   // B) 初回生成(generatePlans)と同じ年齢・負担軽減ガードを適用する。
   //    旧実装は総運転190分の一律判定のみで、0-2歳のみの130分上限と帰宅時刻上限が抜けていた。
@@ -4504,6 +4754,7 @@ function swapCandidates(slot,widenSteps){
     const near=cands.filter(s=>s.__anchorKm<=nearAllowKm);
     list=near.length>=3?near:cands;
   }
+  list=eng3SwapOrder(list,slot);   // [engine-fix3 2026-09-25] (1)(2)
   const out=swapFilter(list);
   // 指定圏を超える候補に「遠め」フラグ（黙って条件を破らないための明示）
   if(usedCap!==cap){
@@ -4621,6 +4872,7 @@ function renderSwapPanel(slot,wrap){
   if(g&&g.cands.length<3&&!g.widened){
     inner+='<button type="button" class="swapwiden" onclick="widenSwap(\''+slot+'\',this)">🔍 条件を少し広げて候補を見る</button>';
   }
+  if(slot==='lunch'&&!state.isCustomView) inner+='<button type="button" class="swapwiden" onclick="eng3LunchNone()">🏠 お昼なし（家で食べる）</button>';   // [engine-fix3 2026-09-25] (4)
   inner+=swapCloseHtml(slot);
   wrap.innerHTML=inner;
   wrap.style.display='block';
@@ -4694,6 +4946,7 @@ function swapFilterAll(slot){
     const near=cands.filter(s=>s.__anchorKm<=nearKm);
     list=near.length>=3?near:cands;
   }
+  list=eng3SwapOrder(list,slot);   // [engine-fix3 2026-09-25] (1)(2)
   const inPlan=swapInPlanList(p);   // 【実装3-2】カスタム時は枠の中身を見る
   list=jidokanCap2(list); // 児童館は最大2件(同一市町村優先→近い順)
   const out=[];
@@ -4775,7 +5028,7 @@ function applySwap(slot,i){
   const main=slot==='main'?ns:p.main;
   const lunch=slot==='lunch'?ns:p.lunch;
   const sub=slot==='sub'?ns:p.sub;
-  const np=buildPlan(main,date,w,{lunch:lunch||null,sub:sub||null});
+  const np=buildPlan(main,date,w,eng3CarryOpts(p,slot,{lunch:lunch||null,sub:sub||null}));   // [engine-fix3 2026-09-25] お昼なし・無料・滞在の指定を引き継ぐ
   state.plans[state.variant%state.plans.length]=np;
   if(slot==='main'&&!state.shownMains.includes(ns)) state.shownMains.push(ns);
   const sy=window.scrollY||window.pageYOffset||0;
@@ -4940,6 +5193,7 @@ function buildShareUrl(p){
   const subRow=spots.find(r=>r!==mainRow&&r!==lunchRow&&(r.tag==='午後スポット'||r.tag==='余力があれば'));
   if(lunchRow) parts.push('lunch='+encodeURIComponent(lunchRow.spot.name));
   if(subRow) parts.push('sub='+encodeURIComponent(subRow.spot.name));
+  try{ eng3SharePush(p,parts); }catch(e){}   // [engine-fix3 2026-09-25] お昼なし nl=1・無料 fo=1・滞在 sm/ss（通常のプランでは何も足さない）
   // 【実装2】カスタムのときだけ枠順(cs)とお昼枠位置(csli)を追加する。
   // 通常プランではこのブロックを通らないのでURLは従来と完全に同一。失敗時は従来URLにフォールバック。
   try{
@@ -5060,7 +5314,7 @@ function restoreFromShare(qs){
     try{ if(typeof cpNormalizeLunch==='function') cpNormalizeLunch(); }catch(e){}
     return {mainSpot,lunchSpot,subSpot,customSlots:state.customSlots.slice()};
   }
-  return {mainSpot,lunchSpot,subSpot};
+  return Object.assign({mainSpot,lunchSpot,subSpot},eng3ShareOpts(qs));   // [engine-fix3 2026-09-25] nl/fo/sm/ss（無ければ従来と同じ）
 }
 
 /* ===== 自分で選ぶ（カスタム）プラン ===== */
@@ -6043,7 +6297,7 @@ async function initFromShareOrWizard(){
           plan=buildCustomPlanFromSlots(r.customSlots.slice(),date,state.weather);
           state.custom5Warn=!!plan.__warn;
         } else {
-          plan=buildPlan(r.mainSpot,date,state.weather,{lunch:r.lunchSpot,sub:r.subSpot});
+          plan=buildPlan(r.mainSpot,date,state.weather,eng3RestoreOpts(r));   // [engine-fix3 2026-09-25] 従来の形式は {lunch,sub} のまま
         }
         state.plans=[plan];
         state.variant=0;
@@ -6726,7 +6980,9 @@ window.sharePlanImage=async function(btn){
 })();
 </script>
 <script>
-/* ===== [erabu] マップから自分で選ぶ（v4：プランはおまかせの結果画面と同じ縦のタイムライン・自分で選んだ場所は「マップで選び直す」・名前はズーム15以上・カードは最小限） =====
+/* ===== [erabu v5] オリジナルアイコン（icons/svg の i-*.svg・pin-*.svg をそのまま） ===== */
+const OI={"g":{"add":"<path d=\"M12 21s-7-6-7-11.3a7 7 0 0 1 14 0C19 15 12 21 12 21zM12 6.5v6.4M8.8 9.7h6.4\"/>","animal":"<circle cx=\"12\" cy=\"13.4\" r=\"7.6\"/><path d=\"M5.6 9.3A2.7 2.7 0 1 1 8.8 6.5\"/><path d=\"M15.2 6.5A2.7 2.7 0 1 1 18.4 9.3\"/><circle fill=\"currentColor\" stroke=\"none\" cx=\"9.3\" cy=\"12.6\" r=\"1.2\"/><circle fill=\"currentColor\" stroke=\"none\" cx=\"14.7\" cy=\"12.6\" r=\"1.2\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M10.6 15.6h2.8L12 17.2z\" stroke=\"currentColor\" stroke-width=\"1.2\"/>","book":"<path d=\"M12 6.6C10 5 7 4.6 3.5 5.2v13.4c3.5-.6 6.5-.2 8.5 1.4 2-1.6 5-2 8.5-1.4V5.2C17 4.6 14 5 12 6.6zM12 6.6V20\"/>","car":"<path d=\"M5.3 17H3.5v-4.1c0-.8.5-1.4 1.2-1.6l1.8-.5 2-3.8c.3-.6.9-1 1.6-1h3.8c.7 0 1.3.4 1.6 1l2 3.8 1.8.5c.7.2 1.2.8 1.2 1.6V17h-1.8M9.6 17h4.8M6.5 11.3h11\"/><circle cx=\"7.5\" cy=\"17\" r=\"2\"/><circle cx=\"16.5\" cy=\"17\" r=\"2\"/>","chair":"<path d=\"M8 11V5.2c0-.9.7-1.7 1.7-1.7h4.6c.9 0 1.7.8 1.7 1.7V11M6 11h12M7.5 11L5.5 21M16.5 11l2 10M6.6 16h10.8\"/>","change":"<path d=\"M4 8.5h13.5M14 5l3.5 3.5-3.5 3.5M20 15.5H6.5M10 12l-3.5 3.5L10 19\"/>","clock":"<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M12 7.3V12l3.2 2.1\"/>","close":"<path d=\"M6 6l12 12M18 6L6 18\"/>","closed":"<path d=\"M18.8 14.6A7.6 7.6 0 1 1 9.4 5.2a6.2 6.2 0 0 0 9.4 9.4z\"/><path d=\"M15.5 3.5h3.5l-3.5 4h3.5\"/>","create":"<path d=\"M4 20l1.3-4.6L15.4 5.3a2 2 0 0 1 2.8 0l.5.5a2 2 0 0 1 0 2.8L8.6 18.7zM13.4 7.3l3.3 3.3\"/>","diaper":"<path d=\"M3.5 7h17v3c0 5-3.8 8.5-8.5 8.5S3.5 15 3.5 10zM3.5 11.2c2.4 0 4 1.4 4.6 3.6M20.5 11.2c-2.4 0-4 1.4-4.6 3.6\"/>","eat":"<ellipse cx=\"7.8\" cy=\"7.2\" rx=\"2.7\" ry=\"3.7\"/><path d=\"M7.8 10.9v9.6M16.2 3.5v17M13.6 3.5v4.9a2.6 2.6 0 0 0 5.2 0V3.5\"/>","ext":"<path d=\"M13.5 4h6.5v6.5M20 4l-9 9M17.5 14v4.5c0 .8-.7 1.5-1.5 1.5H5.5c-.8 0-1.5-.7-1.5-1.5V8c0-.8.7-1.5 1.5-1.5H10\"/>","free":"<path d=\"M3.5 11.8V4.8c0-.7.6-1.3 1.3-1.3h7l8.4 8.4c.5.5.5 1.4 0 1.9l-6.8 6.8c-.5.5-1.4.5-1.9 0z\"/><circle fill=\"currentColor\" stroke=\"none\" cx=\"8\" cy=\"8\" r=\"1.4\"/><ellipse cx=\"14\" cy=\"14\" rx=\"1.9\" ry=\"2.7\" transform=\"rotate(-45 14 14)\"/>","jidokan":"<path d=\"M3 11.5L12 4l9 7.5M5.5 9.6v10.9h13V9.6\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M12 15.6c-1.2-0.9-3.6-2.6-3.6-4.6a1.9 1.9 0 0 1 3.6-1a1.9 1.9 0 0 1 3.6 1c0 2-2.4 3.7-3.6 4.6z\"/>","kids":"<rect x=\"3.5\" y=\"12.5\" width=\"8\" height=\"8\" rx=\"1.3\"/><rect x=\"12.5\" y=\"12.5\" width=\"8\" height=\"8\" rx=\"1.3\"/><path d=\"M12 3.8l4.4 6.9H7.6z\"/>","kidsmenu":"<path d=\"M3 16h18c-1 2.5-4.5 4-9 4s-8-1.5-9-4zM7.5 16a4.5 4.5 0 0 1 9 0M12 11.5V4l4.5 1.8L12 7.6\"/>","leaf":"<path d=\"M5 19.5C5 10.5 10 5 19.5 4.5 19.5 14 14 19.5 5 19.5zM5 19.5l7.5-7.5\"/>","map":"<path d=\"M3.5 6.2L9 4l6 2.5L20.5 4.2v13.6L15 20l-6-2.5-5.5 2.3zM9 4v13.5M15 6.5V20\"/>","myplace":"<path d=\"M6.5 21V3.5M6.5 4.5h11.5l-2.8 4.2L18 13H6.5\"/>","origin":"<path d=\"M12 21s-7-6-7-11.3a7 7 0 0 1 14 0C19 15 12 21 12 21z\"/><circle cx=\"12\" cy=\"9.7\" r=\"2.5\"/>","play":"<path d=\"M4.5 20.5V4.5M8.5 20.5V4.5M4.5 9.5h4M4.5 13.5h4M4.5 17.5h4M8.5 7.5c6 0 5.5 12 12 12.5M8.5 11.5c3.6 0 4.6 7.2 7.6 9M3 20.5h18.5\"/>","rain":"<path d=\"M3 12C3 7 7 3.5 12 3.5S21 7 21 12c-1.5-1.1-3-1.1-4.5 0-1.5-1.1-3-1.1-4.5 0-1.5-1.1-3-1.1-4.5 0-1.5-1.1-3-1.1-4.5 0zM12 12v6.3a2.2 2.2 0 0 1-4.4 0\"/>","science":"<path d=\"M9.5 3.5h5M10.5 3.5v5.3l-5 8.6a2 2 0 0 0 1.7 3.1h9.6a2 2 0 0 0 1.7-3.1l-5-8.6V3.5M7.6 14.5h8.8\"/><circle fill=\"currentColor\" stroke=\"none\" cx=\"11\" cy=\"17.4\" r=\"1\"/><circle fill=\"currentColor\" stroke=\"none\" cx=\"14\" cy=\"16.8\" r=\".7\"/>","send":"<path d=\"M20.5 3.5L3.5 10.3l6.8 3.4 3.4 6.8zM20.5 3.5l-10.2 10.2\"/>","shop":"<path d=\"M4.5 10L6 4h12l1.5 6M4.5 10a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0M9.5 10L10.5 4M14.5 10L13.5 4M6 12.2v8.3h12v-8.3M10 20.5V16h4v4.5\"/>","star":"<path d=\"M12 3.6L14.4 9.3L20.6 9.8L15.9 13.9L17.3 19.9L12 16.7L6.7 19.9L8.1 13.9L3.4 9.8L9.6 9.3Z\"/>","sun":"<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7\"/>","vehicle":"<rect x=\"5.5\" y=\"3.5\" width=\"13\" height=\"13.5\" rx=\"3\"/><path d=\"M8.3 6.5h7.4v4H8.3zM8 17l-2 4M16 17l2 4\"/><circle fill=\"currentColor\" stroke=\"none\" cx=\"8.8\" cy=\"13.8\" r=\"1.1\"/><circle fill=\"currentColor\" stroke=\"none\" cx=\"15.2\" cy=\"13.8\" r=\"1.1\"/>","water":"<path d=\"M12 3c-2.5 3.3-4.4 5.5-4.4 7.9a4.4 4.4 0 0 0 8.8 0C16.4 8.5 14.5 6.3 12 3zM3 18.5c1.5 1.2 3 1.2 4.5 0s3-1.2 4.5 0 3 1.2 4.5 0 3-1.2 4.5 0\"/>","zashiki":"<rect x=\"3.5\" y=\"6.5\" width=\"17\" height=\"3\" rx=\"1.5\"/><path d=\"M7 9.5v4.5M17 9.5v4.5\"/><rect x=\"6\" y=\"16.5\" width=\"12\" height=\"4\" rx=\"2\"/>","home":"<path d=\"M3 11.5L12 4l9 7.5M5.5 9.6v10.9h13V9.6M10 20.5v-5.5h4v5.5\"/>"},"pin":{"animal":{"vb":"0 0 48 56","c":"#B98A1C","svg":"<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#B98A1C\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><g transform=\"translate(10.8 10.8) scale(1.1)\" color=\"#fff\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"13.4\" r=\"7.6\"/><path d=\"M5.6 9.3A2.7 2.7 0 1 1 8.8 6.5\"/><path d=\"M15.2 6.5A2.7 2.7 0 1 1 18.4 9.3\"/><circle fill=\"currentColor\" stroke=\"none\" cx=\"9.3\" cy=\"12.6\" r=\"1.2\"/><circle fill=\"currentColor\" stroke=\"none\" cx=\"14.7\" cy=\"12.6\" r=\"1.2\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M10.6 15.6h2.8L12 17.2z\" stroke=\"currentColor\" stroke-width=\"1.2\"/></g>","d":"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z"},"book":{"vb":"0 0 48 56","c":"#6C8196","svg":"<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#6C8196\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><g transform=\"translate(10.8 10.8) scale(1.1)\" color=\"#fff\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 6.6C10 5 7 4.6 3.5 5.2v13.4c3.5-.6 6.5-.2 8.5 1.4 2-1.6 5-2 8.5-1.4V5.2C17 4.6 14 5 12 6.6zM12 6.6V20\"/></g>","d":"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z"},"chain":{"vb":"0 0 48 56","c":"#A0503F","svg":"<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#A0503F\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><g transform=\"translate(10.8 10.8) scale(1.1)\" color=\"#fff\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4.5 10L6 4h12l1.5 6M4.5 10a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0M9.5 10L10.5 4M14.5 10L13.5 4M6 12.2v8.3h12v-8.3M10 20.5V16h4v4.5\"/></g>","d":"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z"},"food":{"vb":"0 0 48 56","c":"#D95D77","svg":"<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#D95D77\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><g transform=\"translate(10.8 10.8) scale(1.1)\" color=\"#fff\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><ellipse cx=\"7.8\" cy=\"7.2\" rx=\"2.7\" ry=\"3.7\"/><path d=\"M7.8 10.9v9.6M16.2 3.5v17M13.6 3.5v4.9a2.6 2.6 0 0 0 5.2 0V3.5\"/></g>","d":"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z"},"home":{"vb":"0 0 48 48","c":"#c9713f","svg":"<circle cx=\"24\" cy=\"24\" r=\"20.5\" fill=\"#fff\" stroke=\"#c9713f\" stroke-width=\"3\"/><g transform=\"translate(12 11.5)\" color=\"#c9713f\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 11.5L12 4l9 7.5M5.5 9.6v10.9h13V9.6M10 20.5v-5.5h4v5.5\"/></g>","d":""},"indoor":{"vb":"0 0 48 56","c":"#CC7630","svg":"<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#CC7630\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><g transform=\"translate(10.8 10.8) scale(1.1)\" color=\"#fff\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3.5\" y=\"12.5\" width=\"8\" height=\"8\" rx=\"1.3\"/><rect x=\"12.5\" y=\"12.5\" width=\"8\" height=\"8\" rx=\"1.3\"/><path d=\"M12 3.8l4.4 6.9H7.6z\"/></g>","d":"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z"},"jidokan":{"vb":"0 0 48 56","c":"#E06B5E","svg":"<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#E06B5E\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><g transform=\"translate(10.8 10.8) scale(1.1)\" color=\"#fff\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 11.5L12 4l9 7.5M5.5 9.6v10.9h13V9.6\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M12 15.6c-1.2-0.9-3.6-2.6-3.6-4.6a1.9 1.9 0 0 1 3.6-1a1.9 1.9 0 0 1 3.6 1c0 2-2.4 3.7-3.6 4.6z\"/></g>","d":"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z"},"myplace":{"vb":"0 0 48 56","c":"#2F7F8C","svg":"<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#2F7F8C\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><g transform=\"translate(10.8 10.8) scale(1.1)\" color=\"#fff\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6.5 21V3.5M6.5 4.5h11.5l-2.8 4.2L18 13H6.5\"/></g>","d":"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z"},"park":{"vb":"0 0 48 56","c":"#4E9A63","svg":"<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#4E9A63\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><g transform=\"translate(10.8 10.8) scale(1.1)\" color=\"#fff\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4.5 20.5V4.5M8.5 20.5V4.5M4.5 9.5h4M4.5 13.5h4M4.5 17.5h4M8.5 7.5c6 0 5.5 12 12 12.5M8.5 11.5c3.6 0 4.6 7.2 7.6 9M3 20.5h18.5\"/></g>","d":"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z"},"science":{"vb":"0 0 48 56","c":"#8A68C6","svg":"<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#8A68C6\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><g transform=\"translate(10.8 10.8) scale(1.1)\" color=\"#fff\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9.5 3.5h5M10.5 3.5v5.3l-5 8.6a2 2 0 0 0 1.7 3.1h9.6a2 2 0 0 0 1.7-3.1l-5-8.6V3.5M7.6 14.5h8.8\"/><circle fill=\"currentColor\" stroke=\"none\" cx=\"11\" cy=\"17.4\" r=\"1\"/><circle fill=\"currentColor\" stroke=\"none\" cx=\"14\" cy=\"16.8\" r=\".7\"/></g>","d":"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z"},"vehicle":{"vb":"0 0 48 56","c":"#2563EB","svg":"<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#2563EB\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><g transform=\"translate(10.8 10.8) scale(1.1)\" color=\"#fff\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"5.5\" y=\"3.5\" width=\"13\" height=\"13.5\" rx=\"3\"/><path d=\"M8.3 6.5h7.4v4H8.3zM8 17l-2 4M16 17l2 4\"/><circle fill=\"currentColor\" stroke=\"none\" cx=\"8.8\" cy=\"13.8\" r=\"1.1\"/><circle fill=\"currentColor\" stroke=\"none\" cx=\"15.2\" cy=\"13.8\" r=\"1.1\"/></g>","d":"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z"}}};
+/* ===== [erabu] マップから自分で選ぶ（v6：エンジンを engine-fix3 の tokyo/plan.html に。無料で絞っているときは freeOnly、お昼の「変える」に「お昼なし（家で食べる）」＝ lunch:'none'（午前だけ）、共有URLに nl・fo・sm・ss。以下 v5：アイコンはオリジナルの SVG（OI）・休みのピンは薄くするだけ・日付を変えたらひとこと・夕方は先に日付を選ぶ。以下 v4：プランはおまかせの結果画面と同じ縦のタイムライン・自分で選んだ場所は「マップで選び直す」・名前はズーム15以上・カードは最小限） =====
  * 上の <script> は tokyo/plan.html のエンジン部分（宣言だけを取り出したもの）。ここではそれを呼ぶだけで、エンジンの中身は変えない。
  * 差し替えるのは次の6つだけ（このページの中だけ・window のプロパティを上書き）:
  *   targetDate … 'd:YYYYMMDD' を日付として受ける（あす・週末・共有の固定日）
@@ -6742,10 +6998,25 @@ window.sharePlanImage=async function(btn){
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
+/* ---------- v5：アイコン（OI は build.js が icons/svg から入れる。絵文字は使わない） ---------- */
+const ic=(k,cls)=>'<svg class="'+(cls||'oi')+'" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(OI.g[k]||'')+'</svg>';
+// ピンの影は CSS の filter（drop-shadow）だと100本近いピンで描画が重くなるので、同じ輪郭を少し下にずらした薄い黒で SVG の中に描く
+const pinSvg=k=>{ const p=OI.pin[k]; return '<svg class="pg" viewBox="'+p.vb+'" aria-hidden="true" focusable="false">'+(p.d?'<path d="'+p.d+'" transform="translate(0 1.8)" fill="#000" fill-opacity=".24"/>':'')+p.svg+'</svg>'; };
+// エンジンが HTML 用に変換済みの文字列（transitLabel など）を、いったん普通の文字に戻す（esc を2回かけない）
+const _ta=document.createElement('textarea');
+const plain=h=>{ _ta.innerHTML=String(h==null?'':h); return _ta.value; };
 function ga(n,p){ try{ if(typeof gtag==='function') gtag('event',n,p||{}); }catch(e){} }
 const E={mode:'play',f:{},q:'',sugOff:false,sel:null,when:null,fixedStart:null,
   main:null,L:undefined,S:undefined,userL:false,userS:false,shared:false,pending:null,addFor:null,wx:{},lastShare:null,
-  pin:null,pmAuto:false,sw:null};   // pin={name,slot:'am'|'pm',spot}：カードで選んだ場所と午前／午後。sw：開いている「変える」パネル
+  pin:null,pmAuto:false,sw:null,
+  noLunch:false,fo:false,stay:null};   // v6：noLunch＝お昼なし（家で食べる・午前だけ）、fo＝無料で絞ってプランを組んだ、stay＝共有で受け取った滞在の指定 {stayMain,staySub}（このページからは指定しない）
+/* v6：buildPlan の4つ目の引数に、無料の指定・受け取った滞在の指定を足す（lunch/sub のキーの有無はそのまま＝従来の意味） */
+function planOpts(base){
+  const o=Object.assign({},base||{});
+  if(E.fo) o.freeOnly=true;
+  if(E.stay){ if(E.stay.stayMain) o.stayMain=E.stay.stayMain; if(E.stay.staySub) o.staySub=E.stay.staySub; }
+  return Object.keys(o).length?o:undefined;
+}   // pin={name,slot:'am'|'pm',spot}：カードで選んだ場所と午前／午後。sw：開いている「変える」パネル
 window.__ERABU=E;
 
 /* ---------- エンジンの差し替え（このページの中だけ） ---------- */
@@ -6757,7 +7028,8 @@ window.targetDate=function(when){
 };
 E.shift=0;   // 主役の開く時刻より早く着くときだけ、出発をその分おそくする（このページだけの調整）
 window.startMinutes=function(){ return E.fixedStart!=null?E.fixedStart:_startMinutes()+E.shift; };
-window.whenLabel=function(){ return dateLabel(targetDate(state.when)); };
+// v5：共有画像の2行目。見出しを「9/27（日）のおでかけプラン」にするので（下の fillText の置きかえ）、ここは出発時刻
+window.whenLabel=function(){ try{ const p=currentPlanObj(), v=p?view3(p):null; if(v&&v.start!=null) return fmtTime(v.start)+' 出発'; }catch(e){} return dateLabel(targetDate(state.when)); };
 window.showResult=function(){ syncFromPlan(); renderPlan(); };
 
 /* ---------- 日付 ---------- */
@@ -6780,18 +7052,45 @@ function whenOpts(){
 function defaultWhen(){ return todayPlanAvailable()?'today':dk(addDays(today0(),1)); }
 
 /* ---------- 見た目の材料 ---------- */
-// v3：ピンの絵は play_types から1つ（PIN_ORDER の順で先に当たったもの）。雨でもOKは絵にせずタグで出す。たべるはお店の絵でそろえる
-const PLAYC={animal:['#E9A23B','🦁','動物'],vehicle:['#E06C75','🚃','のりもの'],water:['#3FA9D6','💦','水あそび'],museum_science:['#5C6BC0','🔬','博物館・科学'],create:['#9B6DD6','✂️','つくる'],active:['#4CAF6E','🛝','公園・からだ'],nature:['#6E9A3A','🌳','しぜん'],indoor:['#7A8AA0','🧸','屋内'],food:['#D95D77','🍴','ごはん']};
-const PIN_ORDER=['animal','vehicle','museum_science','active','water','nature','create','indoor'];   // 動物＞乗り物＞博物館・科学＞公園・からだ＞水＞自然＞つくる＞屋内（水遊び場のある公園は🛝、科学館は🔬）
+// v7：乗り物（vehicle）を独立。ピンの分類（icons/work/classify.js の規則をそのまま）：たべる（チェーン店／個人店）→ 児童館 → 名前（例外を先に）→ play_types
+function pinKind(s){
+  const pt=s.play_types||[], n=String(s.name||'');
+  if(s.is_chain===true) return 'chain';
+  if(pt.indexOf('food')>=0) return 'food';
+  if(s.is_jidokan===true) return 'jidokan';
+  // 名前：例外（「科学」「ふるさと村」の名前でも中身は公園）
+  if(/森林科学園|山のふるさと村/.test(n)) return 'park';
+  // 名前：例外（美術館・公園などの名前でも中身が室内あそび場）
+  if(/おもちゃ美術館|あそびのせかい|あそびの森|HUGHUG|ちきゅうのにわ|PLAY! PARK|こどもひろば|0123|まんがぱーく|キッズ|プレイルーム|サンリオピューロランド/.test(n)) return 'indoor';
+  if(/動物|水族|ZOO|牧場|ポニー|リス園|さる園|生物園|自然文化園/.test(n)) return 'animal';
+  // 名前：例外（防災館は消防署が運営していても体験施設。乗り物にしない）
+  if(/防災館|防災センター|そなエリア/.test(n)) return 'science';
+  // 乗り物（電車・バス・消防車・パトカー・飛行機・ケーブルカー・交通公園など）と、乗り物に乗れる遊園地・テーマパーク（名前で1つずつ。「ランド」だけでは決めない）
+  if(/交通|鉄道|電車|汽車|(^|[^A-Za-z])SL([^A-Za-z]|$)|れーる|ミニトレイン|地下鉄|バス(?!ケ|ク)|消防|航空|飛行機|のりもの|乗り物|ゴーカート|ケーブルカー|ロープウェイ|モノレール|機関車|都電|東武博物館|ポリス|警察|(^|[^童東])遊園地|あらかわ遊園|みかさ遊園|花やしき|よみうりランド(?!.*プール)|サマーランド|レゴランド・ジャパン|シートレインランド|富士急ハイランド|スパーランド|東京ドームシティ|アミューズメントパーク/.test(n)) return 'vehicle';
+  if(/科学|サイエンス|プラネタリウム|天文|宇宙|郵政|通信|下水道|水道|水の|ガス|くすり|放送|寄生虫|南極|teamLab|工場|印刷|たばこと塩|紙の博物館|お札|貨幣|子ども未来館|ギャラクシティ|遊園|ランド|花やしき|展望|タワー/.test(n)) return 'science';
+  if(/美術館|資料館|資料室|図書|文学館|記念館|郷土|歴史|民俗|民家園|たてもの園|博物館|ミュージアム|MUSEUM|文化館|ふるさと館|ふるさと村|版画|彫刻|古墳|埋蔵文化財|本陣|展示|絵本|ことばらんど|はちはく|史料館|インターメディアテク|昭和館|復興記念|屋敷|住宅|水と緑のふれあい館/.test(n)) return 'book';
+  if(/公園|広場|緑地|庭園|植物園|御苑|プレーパーク|鍾乳洞|釣場|菖蒲園|花木園|ビジターセンター/.test(n)) return 'park';
+  // play_types
+  if(pt.indexOf('animal')>=0) return 'animal';
+  if(pt.indexOf('vehicle')>=0) return 'vehicle';
+  if(pt.indexOf('museum_science')>=0) return 'book';
+  if(pt.indexOf('active')>=0||pt.indexOf('water')>=0||pt.indexOf('nature')>=0) return 'park';
+  return 'indoor';   // create・indoor・何もなし
+}
+const KIND_ICON={park:'play',indoor:'kids',jidokan:'jidokan',animal:'animal',vehicle:'vehicle',science:'science',book:'book',food:'eat',chain:'shop',myplace:'myplace'};
+const KIND_NAME={park:'公園・外あそび',indoor:'室内あそび場',jidokan:'児童館',animal:'動物・水族館',vehicle:'乗り物・遊園地',science:'科学館・体験',book:'美術館・資料館・図書館',food:'ごはん（個人店）',chain:'ごはん（チェーン店）',myplace:'自分の場所'};
 const isEat=s=>s.is_chain===true||(s.play_types||[]).includes('food');
 const isPlay=s=>!isEat(s);
-function kindOf(s){ const pt=s.play_types||[]; for(const k of PIN_ORDER) if(pt.includes(k)) return k; return 'indoor'; }
-const look=s=>{ if(s.__temp) return ['#6b5ea8','📌']; if(isEat(s)) return [PLAYC.food[0],PLAYC.food[1]]; const p=PLAYC[kindOf(s)]; return [p[0],p[1]]; };
+const kindOfS=s=>s.__temp?'myplace':pinKind(s);
+const look=s=>{ const k=kindOfS(s); return [OI.pin[k].c,ic(KIND_ICON[k],'og'),k]; };   // [色, 白い線画, 種類]
+// 種類のタグ（候補の一覧）：play_types → [アイコン, 文字]。水あそび・乗り物はピンではなくタグで出す
+const PT_TAG={animal:['animal','動物'],vehicle:['vehicle','乗り物'],water:['water','水あそび'],museum_science:['science','博物館・科学'],create:['create','つくる'],active:['play','公園・からだ'],nature:['leaf','しぜん']};
+const tagHTML=(t,cls)=>'<span class="tag'+(cls||'')+'">'+ic(t[0])+esc(t[1])+'</span>';
 const kfHas=(s,re)=>(s.kid_features||[]).some(x=>re.test(x));
 const RE_KS=/キッズスペース|キッズルーム|キッズコーナー|プレイスペース/, RE_Z=/座敷|小上がり|掘りごたつ/, RE_KC=/キッズチェア|子ども椅子|子供椅子|ハイチェア|ベビーチェア|まめイス/;
 const hasKS=s=>s.has_kids_space===true||kfHas(s,RE_KS), hasZ=s=>s.has_zashiki===true||kfHas(s,RE_Z), hasKC=s=>s.has_kids_chair===true||kfHas(s,RE_KC);
 // v3：追加欄と同じ段に並べるので、絵文字＋短い語（aria-label は元の長い語）
-const CHIPS={play:[['rain','☔雨OK','雨でもOK'],['free','🆓無料','無料'],['jidokan','🏠児童館','児童館']],eat:[['zashiki','🍵座敷','座敷'],['kids_chair','🪑イス','子ども椅子'],['kids','🧸キッズ','キッズスペース']]};
+const CHIPS={play:[['rain','雨OK','雨でもOK','rain'],['free','無料','無料','free'],['jidokan','児童館','児童館','jidokan']],eat:[['zashiki','座敷','座敷','zashiki'],['kids_chair','イス','子ども椅子','chair'],['kids','キッズ','キッズスペース','kids']]};
 // map.html の matches() と同じ考え方（児童館は🏠を押したときだけ／押すと児童館だけ）。たべるの3条件は kid_features の記載も見る
 function matchE(s){
   const f=E.f;
@@ -6808,20 +7107,20 @@ function matchE(s){
   }
   return true;
 }
-function tags(s,max,noDiaper){
+function tags(s,max,noDiaper){   // v5：[アイコン, 文字] の配列
   const t=[];
-  if(s.__temp){ t.push('📌 自分の場所'); return t; }
+  if(s.__temp){ t.push(['myplace','自分の場所']); return t; }
   if(isEat(s)){
-    if(hasKS(s)) t.push('🧸 キッズスペース');
-    if(hasZ(s)) t.push('🍵 座敷');
-    if(hasKC(s)) t.push('🪑 子ども椅子');
-    if(kfHas(s,/キッズ.?メニュー|お子様メニュー/)) t.push('🍛 キッズメニュー');
-    if(!noDiaper&&kfHas(s,/おむつ|オムツ/)) t.push('🚼 おむつ替え');   // カードでは下の「わかっていること」の行に出すので省く
+    if(hasKS(s)) t.push(['kids','キッズスペース']);
+    if(hasZ(s)) t.push(['zashiki','座敷']);
+    if(hasKC(s)) t.push(['chair','子ども椅子']);
+    if(kfHas(s,/キッズ.?メニュー|お子様メニュー/)) t.push(['kidsmenu','キッズメニュー']);
+    if(!noDiaper&&kfHas(s,/おむつ|オムツ/)) t.push(['diaper','おむつ替え']);   // カードでは下の「わかっていること」の行に出すので省く
   } else {
-    if(s.is_jidokan===true) t.push('🏠 児童館');
-    if(s.is_free===true) t.push('🆓 無料');
-    if(s.rain_friendly===true||s.indoor_or_outdoor==='indoor') t.push('☔ 雨でもOK');
-    (s.play_types||[]).forEach(p=>{ if(PLAYC[p]&&p!=='indoor'&&p!=='food') t.push(PLAYC[p][1]+' '+PLAYC[p][2]); });
+    if(s.is_jidokan===true) t.push(['jidokan','児童館']);
+    if(s.is_free===true) t.push(['free','無料']);
+    if(s.rain_friendly===true||s.indoor_or_outdoor==='indoor') t.push(['rain','雨でもOK']);
+    (s.play_types||[]).forEach(p=>{ if(PT_TAG[p]) t.push(PT_TAG[p]); });
   }
   return t.slice(0,max);
 }
@@ -6840,7 +7139,7 @@ function distText(s,ref,named){
   ref=ref||refPoint();
   const d=distOf(s,ref), from=named?shortName(ref.name)+'から':'';   // 基準の場所は見出しに書くので、行では省く
   if(d.km<3) return from+(Math.round(d.km*10)/10).toFixed(1)+'km';
-  return '🚗 '+from+'車で'+d.min+'分';
+  return from+'車で'+d.min+'分';
 }
 // v3：地図の画面（カード・追加欄の候補）だけの距離表示。6km未満は「◯km」、それ以上は「車で◯分」（driveMinutesFrom）。
 //     driveMinutesFrom は最小でも約18分になる式なので、近い場所は距離で出す。プランの時刻計算（エンジン）は変えない
@@ -6848,7 +7147,7 @@ const MAP_KM_MAX=6;
 function mapDist(s,named){
   const o=state.origin, km=haversineKm(o.lat,o.lng,s.latitude,s.longitude), from=named?shortName(o.name)+'から':'';
   if(km<MAP_KM_MAX) return from+(Math.round(km*10)/10).toFixed(1)+'km';
-  return '🚗 '+from+'車で'+driveMinutesFrom(o,s)+'分';
+  return from+'車で'+driveMinutesFrom(o,s)+'分';
 }
 const originRef=()=>({lat:state.origin.lat,lng:state.origin.lng,name:state.origin.name,isOrigin:true});
 function sortNear(list,ref){
@@ -6871,6 +7170,7 @@ function cityOrigin(name){
 }
 function initPrefs(){
   state.origin=cityOrigin(HOME_CITY);
+  E.hadOrigin=false; try{ E.hadOrigin=!!sanitizeOrigin(rawPrefs().origin); }catch(e){}   // v5：この人の保存済みの出発地があるか
   try{ loadPrefs(); }catch(e){}          // 出発地（市区町村）はここで戻る
   if(!state.origin||!isFinite(state.origin.lat)) state.origin=cityOrigin(HOME_CITY);
   const p=rawPrefs();
@@ -6882,6 +7182,7 @@ function savePrefsKeep(){
   const p=rawPrefs(), dt=state.driveTime, bd=state.budget, o=state.origin;
   state.driveTime=p.driveTime||null; state.budget=p.budget||null;
   if(o&&o.name==='現在地') state.origin=savedCity();
+  if(E.originFromLink) state.origin=E.hadOrigin?savedCity():{};   // v5：送られてきた場所のリンクの出発地は、この人の保存値にしない（保存が無ければ空のまま）
   try{ savePrefs(); }catch(e){}
   state.driveTime=dt; state.budget=bd; state.origin=o;
 }
@@ -6899,7 +7200,7 @@ function useHere(){
   if(geoBusy){ syncLoc(); return; }
   const miss=(res,msg)=>{ syncLoc(); toast(msg,3000); ga('erabu_geo',{result:res}); };
   if(!navigator.geolocation){ miss('fail','現在地を取得できませんでした'); return; }
-  geoBusy=true; $('locTxt').textContent='📍 現在地を取得中…';
+  geoBusy=true; $('locTxt').innerHTML=ic('origin')+'現在地を取得中…';
   let done=false;
   const fail=()=>{ if(done) return; done=true; geoBusy=false; clearTimeout(wd); miss('fail','現在地を取得できませんでした'); };
   const wd=setTimeout(fail,11000);   // 応答が無いときも「取得中…」のままにしない（plan.html と同じ11秒）
@@ -6911,7 +7212,7 @@ function useHere(){
       if(state.origin&&state.origin.name==='現在地'){ setOrigin(savedCity()); cpSaveOrigin(); }   // plan.html の geoResetHere と同じ
       miss('out','現在地が地域の外なので、'+state.origin.name+'のままです'); return;
     }
-    __hereExpired=false; __hereOut=false;
+    __hereExpired=false; __hereOut=false; E.originFromLink=false;
     setOrigin({name:'現在地',lat:lat,lng:lng,isAnjo:false,ts:Date.now()});
     cpSaveOrigin();
     ga('erabu_geo',{result:'ok'});
@@ -6920,7 +7221,7 @@ function useHere(){
 function syncLoc(){
   const here=state.origin&&state.origin.name==='現在地';
   $('originPick').value=here?'__here':state.origin.name;
-  $('locTxt').textContent='📍 '+state.origin.name+'から ▾';
+  $('locTxt').innerHTML=ic('origin')+'<span>'+esc(state.origin.name)+'から ▾</span>';
 }
 function setOrigin(o){ state.origin=o; E.wx={}; syncLoc(); closeCard(); if(map) map.setView([o.lat,o.lng],CLUSTER_OFF_ZOOM,{animate:false}); refresh(); }
 
@@ -6943,13 +7244,13 @@ function autoPlan(main){
     state.shownLunches=[]; state.shownSubs=[]; state.excludedSpots=[]; state.jidokanActive=false;
     // generatePlans() と同じ修復（移動合計・帰宅上限 capHomeFor）を主役固定で当てる
     const onlyT=state.ages.has('0-2')&&state.ages.size===1, kidCap=capHomeFor(state.ages);
-    let pl=buildPlan(main,date,w);
+    let pl=buildPlan(main,date,w,planOpts());   // v6：無料で絞っているときは {freeOnly:true}（お昼・午後はエンジンが自動で選ぶ）
     const driveLimit=onlyT?130:190;
-    if(pl.totalDrive>driveLimit&&pl.sub){ const p2=buildPlan(main,date,w,{lunch:pl.lunch||null,sub:null}); if(p2.totalDrive<pl.totalDrive) pl=p2; }
+    if(pl.totalDrive>driveLimit&&pl.sub){ const p2=buildPlan(main,date,w,planOpts({lunch:pl.lunch||null,sub:null})); if(p2.totalDrive<pl.totalDrive) pl=p2; }
     if(kidCap&&pl.retHome&&pl.retHome>kidCap){
       let fixed=null;
-      if(pl.sub){ const p1=buildPlan(main,date,w,{lunch:pl.lunch||null,sub:null}); if(p1.retHome&&p1.retHome<=kidCap) fixed=p1; }
-      if(!fixed&&pl.lunch){ const p2=buildPlan(main,date,w,{lunch:null,sub:null}); if(p2.retHome&&p2.retHome<=kidCap) fixed=p2; }
+      if(pl.sub){ const p1=buildPlan(main,date,w,planOpts({lunch:pl.lunch||null,sub:null})); if(p1.retHome&&p1.retHome<=kidCap) fixed=p1; }
+      if(!fixed&&pl.lunch){ const p2=buildPlan(main,date,w,planOpts({lunch:null,sub:null})); if(p2.retHome&&p2.retHome<=kidCap) fixed=p2; }
       if(fixed) pl=fixed;
     }
     return pl;
@@ -6971,12 +7272,15 @@ function compose(){
 function compose0(){
   prep();
   const main=E.main, date=targetDate(state.when), w=state.weather;
-  let a={L:null,S:null};
-  if(!(E.userL&&E.userS)) a=partsOf(autoPlan(main));
-  const L=E.userL?E.L:a.L, S=E.userS?E.S:a.S;
   let p;
-  if(L==='bento') p=buildCustomPlanFromSlots([main,bentoSpot(),S||null],date,w);   // お弁当は既存の「自分で選ぶ」と同じ組み方
-  else p=buildPlan(main,date,w,{lunch:L||null,sub:S||null});                     // 画面の表示＝共有で再現する形（lunch/sub を明示）
+  if(E.noLunch) p=buildPlan(main,date,w,planOpts({lunch:'none'}));   // v6：お昼なし（家で食べる）＝午前だけ。お昼・午後の選択（E.L/E.S）は残しておき、「＋ お昼を入れる」で戻す
+  else {
+    let a={L:null,S:null};
+    if(!(E.userL&&E.userS)) a=partsOf(autoPlan(main));
+    const L=E.userL?E.L:a.L, S=E.userS?E.S:a.S;
+    if(L==='bento'){ p=buildCustomPlanFromSlots([main,bentoSpot(),S||null],date,w); if(E.fo) p.freeOnly=true; }   // お弁当は既存の「自分で選ぶ」と同じ組み方（v6：無料の指定は「変える」の並びと共有に引き継ぐ）
+    else p=buildPlan(main,date,w,planOpts({lunch:L||null,sub:S||null}));            // 画面の表示＝共有で再現する形（lunch/sub を明示）
+  }
   state.plans=[p]; state.variant=0; state.shownMains=[main]; state.excludedSpots=[]; state.swapFixed={}; state.swapSeen={};
   return p;
 }
@@ -7019,8 +7323,9 @@ function closeBS(){ $('dim').classList.remove('on'); document.querySelectorAll('
 let map=null, layers=null, selMk=null;
 const CLUSTER_OFF_ZOOM=12, CLUSTER_R=40, LABEL_ZOOM=15, SPOT_ZOOM=14, SAME_KM=0.03;   // v4：名前はズーム15以上（送られた場所を開くときのズームは v3 と同じ14）
 function tiles(m){ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(m); m.attributionControl.setPrefix(false); m.attributionControl.setPosition('topright'); }
-const pinIcon=(s,cls,lab,cnt)=>L.divIcon({className:'pinw',html:'<div class="pin '+(cls||'')+'" style="background:'+look(s)[0]+'"><span>'+look(s)[1]+'</span></div>'+(cnt>1?'<em class="cnt">'+cnt+'</em>':'')+(lab?'<b class="lbl">'+esc(lab)+'</b>':''),iconSize:[44,44],iconAnchor:[22,50]});
-const homeIcon=(label,cls,emo)=>L.divIcon({className:'homew',html:'<div class="hm '+(cls||'')+'">'+emo+'<i>'+esc(label)+'</i></div>',iconSize:[44,44],iconAnchor:[22,22]});
+// v5：ピンは pin-*.svg（しずく型＋白い線画）。幅44・高さ51、先端が地点
+const pinIcon=(s,cls,lab,cnt)=>{ const k=kindOfS(s); return L.divIcon({className:'pinw',html:'<div class="pin '+(cls||'')+'" data-k="'+k+'">'+pinSvg(k)+'</div>'+(cnt>1?'<em class="cnt">'+cnt+'</em>':'')+(lab?'<b class="lbl">'+esc(lab)+'</b>':''),iconSize:[44,51],iconAnchor:[22,49]}); };
+const homeIcon=(label,cls)=>L.divIcon({className:'homew',html:'<div class="hm '+(cls||'')+'">'+pinSvg('home')+'<i>'+esc(label)+'</i></div>',iconSize:[44,44],iconAnchor:[22,22]});
 function clusterGroup(){
   return L.markerClusterGroup({maxClusterRadius:CLUSTER_R,disableClusteringAtZoom:CLUSTER_OFF_ZOOM,showCoverageOnHover:false,spiderfyOnMaxZoom:false,zoomToBoundsOnClick:true,removeOutsideVisibleBounds:true,chunkedLoading:false,
     iconCreateFunction:c=>{ const n=c.getChildCount(), z=n<10?44:(n<100?50:58); return L.divIcon({html:'<div class="cl"><span>'+n+'</span></div>',className:'clw',iconSize:[z,z]}); }});
@@ -7072,10 +7377,10 @@ function drawPins(m,list,extra){
   let nDim=0, nGroup=0;
   groupNear(list).forEach(g=>{
     g.sort((a,b)=>(dimOf(a)-dimOf(b))||(tierRank(a)-tierRank(b)));
-    const s=g[0], dim=g.every(x=>dimOf(x)), cls=(s.__temp?'me':'')+(dim?' dim':'');
+    const s=g[0], dim=g.every(x=>dimOf(x)), cls=(s.__temp?'me':'')+(dim?' rest':'');   // v5：休みは .rest（画面を暗くする幕 .scrim とは別の名前）
     if(dim) nDim++; if(g.length>1) nGroup++;
     const lab=shortName(s.name)+(g.length>1?' ほか'+(g.length-1):'');
-    const mk=L.marker([s.latitude,s.longitude],{icon:pinIcon(s,cls,lab,g.length),title:g.map(x=>x.name).join('／'),keyboard:false,zIndexOffset:(g.some(x=>x.tier==='S')?600:0)-(dim?300:0)});
+    const mk=L.marker([s.latitude,s.longitude],{icon:pinIcon(s,cls,lab,g.length),title:g.map(x=>x.name).join('／'),keyboard:false,zIndexOffset:(g.some(x=>x.tier==='S')?600:0)});   // v5：休みのピンも沈めない（薄くするだけ）
     mk.on('click',()=>{ if(g.length>1) openGroup(g); else openCard(g[0]); });
     if(g.some(x=>x.tier==='S'||x.__temp)) al.addLayer(mk); else cg.addLayer(mk);
   });
@@ -7133,7 +7438,7 @@ function refresh(opt){
   if(map){
     if(layers){ map.removeLayer(layers.cg); map.removeLayer(layers.al); }
     const ref=refPoint(), extra=[];
-    extra.push(L.marker([state.origin.lat,state.origin.lng],{icon:homeIcon(state.origin.name,'','🏠'),interactive:false,keyboard:false,zIndexOffset:3000}));
+    extra.push(L.marker([state.origin.lat,state.origin.lng],{icon:homeIcon(state.origin.name,''),interactive:false,keyboard:false,zIndexOffset:3000}));
     if(opt.fit){   // 先に表示位置を決めてから描く（描き直しを1回にする）
       const pts=(E.q?E.sorted.slice(0,25):[]).map(s=>[s.latitude,s.longitude]).concat((E.q?mine:[]).map(s=>[s.latitude,s.longitude]));
       if(E.q&&pts.length){ pts.push([ref.lat,ref.lng]); map.fitBounds(L.latLngBounds(pts),{padding:[40,40],maxZoom:14,animate:false}); }
@@ -7148,15 +7453,15 @@ function refresh(opt){
 }
 function setModeClass(){ const eat=E.mode==='eat'; $('vMap').classList.toggle('eat',eat); $('ctl').classList.toggle('eat',eat); document.querySelectorAll('.mode button').forEach(b=>b.classList.toggle('on',b.dataset.m===E.mode)); }
 function renderChips(){
-  $('chips').outerHTML='<span id="chips" style="display:contents">'+CHIPS[E.mode].map(c=>'<button class="chip'+(E.f[c[0]]?' on':'')+'" data-f="'+c[0]+'" aria-label="'+c[2]+'" aria-pressed="'+(E.f[c[0]]?'true':'false')+'">'+c[1]+'</button>').join('')+'</span>';
+  $('chips').outerHTML='<span id="chips" style="display:contents">'+CHIPS[E.mode].map(c=>'<button class="chip'+(E.f[c[0]]?' on':'')+'" data-f="'+c[0]+'" aria-label="'+c[2]+'" aria-pressed="'+(E.f[c[0]]?'true':'false')+'">'+ic(c[3])+c[1]+'</button>').join('')+'</span>';
 }
 
 /* ---------- 検索欄（＋ 行きたい場所を追加）の候補 ---------- */
 function itemHTML(s,i){
   const L0=look(s);
-  const meta=s.__temp?(mapDist(s)+(s.city?'・'+esc(s.city):'')):(esc(s.city||'')+(s.city?'・':'')+mapDist(s));
+  const meta=s.__temp?(esc(mapDist(s))+(s.city?'・'+esc(s.city):'')):(esc(s.city||'')+(s.city?'・':'')+esc(mapDist(s)));
   return '<button class="item'+(s.__temp?' me':'')+'" data-i="'+i+'"><span class="e" style="background:'+L0[0]+'">'+L0[1]+'</span><span class="tx"><b>'+esc(s.name)+'</b><span class="m">'+meta+'</span>'
-    +(s.__temp?'':'<span class="tg">'+tags(s,2).map(x=>'<span class="tag">'+x+'</span>').join('')+'</span>')+'</span><span class="go">›</span></button>';
+    +(s.__temp?'':'<span class="tg">'+tags(s,2).map(x=>tagHTML(x)).join('')+'</span>')+'</span><span class="go">›</span></button>';
 }
 const SUG_MAX=20;
 function renderSug(){
@@ -7181,17 +7486,19 @@ const clip=(t,n)=>{ t=String(t||'').replace(/\s+/g,' ').trim(); return t.length>
 // v4：カードに出すのは、その日の営業時間（hoursInfo・読めるときだけ1行）だけ。料金・駐車場・授乳／おむつの行はやめた
 function cardFacts(s){
   const out=[]; if(s.__temp) return out;
-  const h=hoursInfo(s); if(h) out.push('<span class="hr'+(h.closed?' off':'')+'">🕘 '+esc(h.t)+'</span>');
+  const h=hoursInfo(s); if(h) out.push('<span class="hr'+(h.closed?' off':'')+'">'+ic(h.closed?'closed':'clock')+esc(h.t)+'</span>');
   return out;
 }
-// v4：カードのタグは最大2つ。あそぶは「無料」「雨でもOK」だけ（種類のタグは出さない）。たべるはお店の子連れ設備（おむつ替えは出さない）
+// v4：カードのタグは最大2つ。あそぶは「無料」「雨でもOK」。v5：水あそび・乗り物もタグで出す（ピンの絵にはしない）ので、あそぶは最大3つ
 function cardTags(s){
-  if(s.__temp) return ['📌 自分の場所'];
+  if(s.__temp) return [['myplace','自分の場所']];
   if(isEat(s)) return tags(s,2,true);
-  const t=[];
-  if(s.is_free===true) t.push('🆓 無料');
-  if(s.rain_friendly===true||s.indoor_or_outdoor==='indoor') t.push('☔ 雨でもOK');
-  return t.slice(0,2);
+  const t=[], pt=s.play_types||[];
+  if(s.is_free===true) t.push(['free','無料']);
+  if(s.rain_friendly===true||s.indoor_or_outdoor==='indoor') t.push(['rain','雨でもOK']);
+  if(pt.includes('water')) t.push(PT_TAG.water);
+  if(pt.includes('vehicle')) t.push(PT_TAG.vehicle);
+  return t.slice(0,3);
 }
 function markSel(s,cnt){
   if(!map) return;
@@ -7215,7 +7522,7 @@ function keepVisible(s,animate){
 }
 function cardShell(inner){
   const c=$('card');
-  c.innerHTML='<button class="x" data-act="close" aria-label="閉じる">✕</button>'+inner;
+  c.innerHTML='<button class="x" data-act="close" aria-label="閉じる">'+ic('close')+'</button>'+inner;
   c.classList.remove('hidden'); c.scrollTop=0;
   return c;
 }
@@ -7226,15 +7533,16 @@ function openCard(s,opt){
   try{ $('q').blur(); }catch(e){}
   ga('erabu_pick',{mode:E.mode,kind:pickKind(s),tier:s.tier||'',pick_for:''});
   const L0=look(s), eat=isEat(s)&&!s.__temp;
-  const meta=esc(s.city||'')+(s.city?'・':'')+esc(mapDist(s,true))+(s.is_chain===true?'・チェーン店':'');   // 距離が省略されないよう、チェーン店は後ろ
-  const btn=eat?'<a class="primary food" href="'+esc(gmapsSearch(s))+'" target="_blank" rel="noopener" data-out="gmaps">🚗 Googleマップで行く</a>'
+  // 距離が省略されないよう、チェーン店は後ろ。v5：自分の場所は住所が長いので距離を先に（「目…」で切れないように）
+  const meta=s.__temp?(esc(mapDist(s,true))+(s.city?'・'+esc(s.city):'')):(esc(s.city||'')+(s.city?'・':'')+esc(mapDist(s,true))+(s.is_chain===true?'・チェーン店':''));
+  const btn=eat?'<a class="primary food" href="'+esc(gmapsSearch(s))+'" target="_blank" rel="noopener" data-out="gmaps">'+ic('car')+'Googleマップで行く</a>'
     :'<div class="gorow"><button class="primary" data-act="am">午前に行く</button><button class="primary pm" data-act="pm">午後に行く</button></div>';
   const subs=[];
-  if(!s.__temp&&s.official_url) subs.push('<a href="'+esc(s.official_url)+'" target="_blank" rel="noopener">公式サイト</a>');
-  if(!s.__temp) subs.push('<button type="button" data-act="send">📤 この場所を送る</button>');   // 自分の場所は送らない
+  if(!s.__temp&&s.official_url) subs.push('<a href="'+esc(s.official_url)+'" target="_blank" rel="noopener">公式サイト'+ic('ext','oi ex')+'</a>');
+  if(!s.__temp) subs.push('<button type="button" data-act="send">'+ic('send')+'この場所を送る</button>');   // 自分の場所は送らない
   const facts=cardFacts(s), tg=cardTags(s);
-  const c=cardShell('<div class="hd"><span class="e" style="background:'+L0[0]+'22">'+L0[1]+'</span><div class="ht"><h2>'+esc(s.name)+'</h2><p class="m">'+meta+'</p></div></div>'
-    +((facts.length||tg.length)?'<div class="facts info">'+facts.join('')+tg.map(x=>'<span class="tag'+(eat?' ftag':'')+'">'+x+'</span>').join('')+'</div>':'')   // v4：営業時間とタグを1行に（入らないときだけ2行）
+  const c=cardShell('<div class="hd"><span class="e" style="background:'+L0[0]+'">'+L0[1]+'</span><div class="ht"><h2>'+esc(s.name)+'</h2><p class="m">'+meta+'</p></div></div>'
+    +((facts.length||tg.length)?'<div class="facts info">'+facts.join('')+tg.map(x=>tagHTML(x,eat?' ftag':'')).join('')+'</div>':'')   // v4：営業時間とタグを1行に（入らないときだけ2行）
     +btn+(subs.length?'<div class="subs">'+subs.join('')+'</div>':''));
   markSel(s,1);
   keepVisible(s,!opt.noAnim);
@@ -7243,16 +7551,18 @@ function openGroup(g){   // 同じ場所に重なった場所：名前を並べ�
   E.sel=null; E.selG=g;
   if(E.q&&!E.sugOff){ E.sugOff=true; renderSug(); }
   const s=g[0];
-  cardShell('<div class="hd"><span class="e" style="background:#8a7a6622">📍</span><div class="ht"><h2>この場所に'+g.length+'か所</h2><p class="m">'+esc(s.city||'')+(s.city?'・':'')+esc(mapDist(s,true))+'</p></div></div>'
-    +'<div class="glist">'+g.map((x,i)=>{ const L0=look(x), h=hoursInfo(x); const sm=[h&&h.closed?h.t:''].concat(tags(x,2,true)).filter(Boolean).join('・');
-      return '<button type="button" class="gi'+(dimOf(x)?' dim':'')+'" data-gi="'+i+'"><span class="e" style="background:'+L0[0]+'">'+L0[1]+'</span><span class="tx"><b>'+esc(x.name)+'</b>'+(sm?'<small>'+esc(sm)+'</small>':'')+'</span><span class="go">›</span></button>'; }).join('')+'</div>');
+  cardShell('<div class="hd"><span class="e" style="background:#8a7a66">'+ic('origin','og')+'</span><div class="ht"><h2>この場所に'+g.length+'か所</h2><p class="m">'+esc(s.city||'')+(s.city?'・':'')+esc(mapDist(s,true))+'</p></div></div>'
+    +'<div class="glist">'+g.map((x,i)=>{ const L0=look(x), h=hoursInfo(x); const sm=[h&&h.closed?h.t:''].concat(tags(x,2,true).map(t=>t[1])).filter(Boolean).join('・');
+      return '<button type="button" class="gi'+(dimOf(x)?' rest':'')+'" data-gi="'+i+'"><span class="e" style="background:'+L0[0]+'">'+L0[1]+'</span><span class="tx"><b>'+esc(x.name)+'</b>'+(sm?'<small>'+esc(sm)+'</small>':'')+'</span><span class="go">›</span></button>'; }).join('')+'</div>');
   markSel(s,g.length);
   keepVisible(s,true);
 }
 function closeCard(){ $('card').classList.add('hidden'); if(selMk&&map){ map.removeLayer(selMk); selMk=null; } E.sel=null; E.selG=null; }
 
 /* ---------- この場所を送る（erabu.html?spot=<shareNameId>。開くとその場所のカードが開く） ---------- */
-function spotUrl(s){ return location.origin+location.pathname+'?spot='+shareNameId(s.name); }
+// v5：送った人の出発地（市区町村名）も入れる。開いた人に保存済みの出発地が無いときだけ使う。現在地の座標は送らない（保存済みの市にする）
+function spotUrl(s){ const o=state.origin, f=(o&&o.name!=='現在地')?o.name:savedCity().name; return location.origin+location.pathname+'?spot='+shareNameId(s.name)+(f?'&from='+encodeURIComponent(f):''); }
+function spotFromOrigin(){ try{ const f=new URLSearchParams(location.search).get('from'); return f?cityOrigin(f):null; }catch(e){ return null; } }
 async function shareSpot(s){
   if(!s||s.__temp) return;
   const url=spotUrl(s), text='ここどう？ '+s.name+(s.city?'（'+s.city+'）':'');
@@ -7289,7 +7599,27 @@ async function autoRain(sp){
 function go(s,slot){
   E.pending={s,slot};
   if(!state.ages||!state.ages.size){ openAge(); return; }
-  startPlan(s,slot);
+  proceed(s,slot);
+}
+/* v5：夕方以降（きょうのプランが組めない、またはきょう組むと出発が15時以降）は、先に「きょう／あす／週末」を選んでもらう（1タップ） */
+const LATE_START=15*60;
+function needWhenAsk(){
+  if(E.whenChosen) return false;
+  if(E.when&&E.when!=='today') return false;    // もう日付を選んでいる（プランの日付・選び直し）
+  if(!todayPlanAvailable()) return true;
+  const sv=E.when; let st=0;
+  try{ E.when='today'; prep(); st=_startMinutes(); }catch(e){ st=0; } finally{ E.when=sv; if(sv) prep(); }
+  return st>=LATE_START;
+}
+function proceed(s,slot){
+  if(!needWhenAsk()){ E.pending=null; startPlan(s,slot); return; }
+  E.pending={s,slot};
+  let o=whenOpts(); const o1=o.filter(x=>x.k!=='today'||(slot==='am'?okOn(s,'today'):!closedOn(s,'today')));   // きょうお休み・もう閉まる場所には「きょう」を出さない
+  if(o1.length) o=o1;
+  $('optBody').innerHTML='<h2>いつ行く？</h2><p class="q">'+(todayPlanAvailable()?'きょうはもう夕方なので、先に日付を選んでね':'きょうはもう遅いので、日付を選んでね')+'</p><div class="opts">'
+    +o.map(x=>'<button class="opt bigw" data-act="ask" data-k="'+x.k+'"><span class="tx"><b>'+x.lab+'</b><small>'+dateLabel(x.d)+'</small></span><span class="go">›</span></button>').join('')+'</div>';
+  openBS('optSheet');
+  ga('erabu_when_ask',{n:o.length});
 }
 function openAge(){ document.querySelectorAll('#ageSheet .age').forEach(b=>b.classList.toggle('on',state.ages.has(b.dataset.age))); $('ageGo').disabled=!state.ages.size; openBS('ageSheet'); }
 // その日に主役へ行けるか（休館日・きょうは着いた時点で閉まっている）。行けない日は黙って次の日にする
@@ -7318,16 +7648,32 @@ function dayKeysFrom(from){   // from（きょう／d:YYYYMMDD）から8日分
   for(let i=s0;i<s0+8;i++){ if(i===0&&!todayPlanAvailable()) continue; a.push(i===0?'today':dk(addDays(t,i))); }
   return a;
 }
+/* v5：日付が自動で変わったときの「ひとこと」（プラン画面の見出しの下に1回だけ） */
+function isTomorrowKey(k){ return k!=='today'&&ymd(targetDate(k))===ymd(addDays(today0(),1)); }
+function dayMsg(P,req,fin,why){
+  if(!req||!fin||req===fin) return null;
+  const fd=targetDate(fin), fl=(isTomorrowKey(fin)?'あす ':'')+dateLabel(fd);
+  const rd=req==='today'?today0():targetDate(req);
+  if(why!=='late'&&P&&closedOn(P,req)){
+    // 毎週のお休み（1週間後の同じ曜日も休み）なら「月曜は」、そうでなければ日付で
+    const wk=closedOn(P,dk(addDays(rd,7)));
+    return (wk?WDJ[rd.getDay()]+'曜':(req==='today'?'きょう':dateLabel(rd)))+'はお休みなので、'+dateLabel(fd)+'にしました';
+  }
+  if(why==='late') return 'きょうはもう遅いので、'+fl+'にしました';
+  return (req==='today'?'きょう':dateLabel(rd))+'は'+(why==='pm'?'午後に入れられなかった':'組めなかった')+'ので、'+fl+'にしました';
+}
 // 午前に行く：選んだ場所をメインにして、お昼と午後を組む（これまでと同じ）
 async function planAm(main){
   E.main=main; E.L=undefined; E.S=undefined; E.userL=false; E.userS=false; E.fixedStart=null; E.shared=false; E.pmAuto=false; E.sw=null;
-  if(!E.when||(E.when==='today'&&!todayPlanAvailable())) E.when=defaultWhen();
-  if(!okOn(main,E.when)) E.when=nextOkWhen(main,E.when);
+  const req=E.when||'today'; let why=null;
+  if(!E.when||(E.when==='today'&&!todayPlanAvailable())){ E.when=defaultWhen(); if(E.when!=='today') why='late'; }
+  if(!okOn(main,E.when)){ if(E.when==='today'&&!closedOn(main,'today')) why='late'; E.when=nextOkWhen(main,E.when); }
   await ensureWeather();
   let p=compose();
   if(E.when==='today'&&p.retHome&&p.retHome>capHomeFor(state.ages)){   // きょうだと帰宅上限を超える → 次に行ける日
-    const k=nextOkWhen(main,dk(addDays(today0(),1))); if(k!==E.when){ E.when=k; await ensureWeather(); compose(); }
+    const k=nextOkWhen(main,dk(addDays(today0(),1))); if(k!==E.when){ E.when=k; why='late'; await ensureWeather(); compose(); }
   }
+  E.dateMsg=dayMsg(main,req,E.when,why);
 }
 /* 午後に行く：選んだ場所 P を午後の枠に固定し、午前の遊び場とお昼を P の近くで組む。
    ・午前の遊び場 … buildPool()（エンジンの主役候補：年齢・雨・休館・開館時刻・帰宅上限で絞り、点数順）のうち P から車で20分以内（3件未満なら近い順8件）。
@@ -7386,12 +7732,13 @@ function pmBuild(P){
 }
 async function planPm(P){
   E.fixedStart=null; E.shared=false; E.sw=null;
-  if(!E.when||(E.when==='today'&&!todayPlanAvailable())) E.when=defaultWhen();
+  const req=E.when||'today'; let why=null;
+  if(!E.when||(E.when==='today'&&!todayPlanAvailable())){ E.when=defaultWhen(); if(E.when!=='today') why='late'; }
   const w0=E.when;
   for(const k of dayKeysFrom(E.when)){
     if(closedOn(P,k)) continue;
     E.when=k; await ensureWeather();
-    if(pmBuild(P)){ E.pmAuto=true; return true; }
+    if(pmBuild(P)){ E.pmAuto=true; E.dateMsg=dayMsg(P,req,k,why||'pm'); return true; }
   }
   E.when=w0;
   return false;
@@ -7406,9 +7753,13 @@ async function pmFeasible(P,k){   // その日に「午後に行く」で組め�
 async function startPlan(P,slot){
   slot=slot==='pm'?'pm':'am';
   const rp=E.repick; E.repick=null;
+  E.fo=E.f.free===true; E.stay=null;   // v6：地図で「無料」を押しているときは、午後の候補・「変える」の候補も無料から
+  if(!(rp&&slot==='am')) E.noLunch=false;   // v6：お昼なしは「マップで選び直す」（午前）のときだけ引き継ぐ
   E.pin={name:P.name,slot,spot:P};
-  if(slot==='pm'&&!(await planPm(P))){ E.pin.slot=slot='am'; }   // 8日先まで組めないときだけ、午前に行くで組む
+  E.dateMsg=null; let pmFail=false;
+  if(slot==='pm'&&!(await planPm(P))){ E.pin.slot=slot='am'; pmFail=true; }   // 8日先まで組めないときだけ、午前に行くで組む
   if(slot==='am') await planAm(P);
+  if(pmFail) E.dateMsg='午後に入れられる日がなかったので、午前に行くで組みました';
   closeCard(); toPlanView(); renderPlan();
   ga('erabu_plan',Object.assign({when:whenKind(),main_kind:P.__temp?'myplace':'spot',tier:P.tier||'',ages:[...state.ages].join(',')},rp?{repick:rp.slot}:{}));
 }
@@ -7423,6 +7774,7 @@ function repick(slot){
 }
 function whenKind(){ if(E.when==='today') return 'today'; const o=whenOpts().find(x=>x.k===E.when); return o?(o.lab==='あす'?'tomorrow':'weekend'):'other'; }
 async function replan(){
+  E.dateMsg=null;
   await ensureWeather();
   if(E.pin&&E.pin.slot==='pm'&&E.pmAuto&&E.pin.spot){ if(!(await planPm(E.pin.spot))){ E.pmAuto=false; await ensureWeather(); compose(); } }   // 組めない日は黙って次の日
   else compose();
@@ -7456,26 +7808,34 @@ function pinOf(v){   // ⭐ を付ける行（選んだ場所がその行にい�
   return null;
 }
 const isBentoRow=r=>(r.type==='move'&&/^🍱/.test(r.label||''))||(r.type==='note'&&r.icon==='🍙')||(r.type==='spot'&&r.spot&&r.spot.__bento);
+// v5：icon は ic() の SVG
 function tlRail(time,icon){ return '<div class="rail"><span class="time">'+(time!=null?fmtTime(time):'—')+'</span><span class="icon">'+icon+'</span><span class="line"></span></div>'; }
 function tlBtn(slot,interactive,pinned,label){
   if(!interactive||!slot) return '';
-  if(pinned) return ' <button type="button" class="swapbtn repick" data-act="repick" data-slot="'+(slot==='sub'?'pm':'am')+'"><span>🗺 マップで選び直す</span></button>';
-  return ' <button type="button" class="swapbtn'+(E.sw&&E.sw.slot===slot?' on':'')+'" data-act="'+slot+'"><span>'+(label||'🔁 変更する')+'</span></button>';
+  if(pinned) return ' <button type="button" class="swapbtn repick" data-act="repick" data-slot="'+(slot==='sub'?'pm':'am')+'"><span>'+ic('map')+'マップで選び直す</span></button>';
+  return ' <button type="button" class="swapbtn'+(E.sw&&E.sw.slot===slot?' on':'')+'" data-act="'+slot+'"><span>'+(label?esc(label):ic('change')+'変更する')+'</span></button>';
 }
-function tlHours(s){ const t=String(s.business_hours||'').replace(/\s+/g,' ').trim(); return t?'<div class="meta">🕐 '+esc(clip(t,60))+'</div>':''; }
+function tlHours(s){ const t=String(s.business_hours||'').replace(/\s+/g,' ').trim(); return t?'<div class="meta">'+ic('clock')+esc(clip(t,60))+'</div>':''; }
+// v5：メインの「出発地から」。エンジンの driveMinutesFrom は近くても約20分になる式なので、6km未満は距離で出す（時刻の計算はエンジンのまま）
+function fromOriginText(s){
+  const o=state.origin, km=haversineKm(o.lat,o.lng,s.latitude,s.longitude), k=(Math.round(km*10)/10).toFixed(1);
+  if(km<2) return 'すぐ近く（'+k+'km）';
+  if(km<MAP_KM_MAX) return '出発地から'+k+'km';
+  const dm=driveMinutesFrom(o,s); return dm!=null?'出発地から車で約'+dm+'分':null;
+}
 function tlSpot(r,slot,interactive,pin){
   const s=r.spot, food=slot==='lunch'||isEat(s), pinned=!!slot&&pin===slot, open=interactive&&E.sw&&E.sw.slot===slot;
-  let b='<div class="sname">'+(pinned?'⭐ ':'')+esc(s.name)+tlBtn(slot,interactive,pinned)+'</div>';
-  b+='<div class="role">'+esc(r.tag||'')+(s.__temp?'・📌 自分の場所':(s.city?'・'+esc(s.city):''))+'</div>';
+  let b='<div class="sname">'+(pinned?ic('star','oi star'):'')+esc(s.name)+tlBtn(slot,interactive,pinned)+'</div>';
+  b+='<div class="role">'+esc(r.tag||'')+(s.__temp?'・'+ic('myplace')+'自分の場所':(s.city?'・'+esc(s.city):''))+'</div>';
   if(!s.__temp){
-    if(r.tag==='メイン'&&state.origin){ const dm=driveMinutesFrom(state.origin,s); if(dm!=null) b+='<div class="whybadges"><span class="wpill">🚗 出発地から約'+dm+'分</span></div>'; }
+    if(r.tag==='メイン'&&state.origin){ const ft=fromOriginText(s); if(ft) b+='<div class="whybadges"><span class="wpill">'+ic('car')+esc(ft)+'</span></div>'; }
     const one=firstSentence(s.kid_appeal); if(one) b+='<div class="appeal">'+esc(one)+'</div>';
     b+=tlHours(s);
-    if(s.official_url) b+='<div class="links"><a href="'+esc(s.official_url)+'" target="_blank" rel="noopener" data-out="official">'+esc(officialLabelFor(s))+'↗</a></div>';
+    if(s.official_url) b+='<div class="links"><a href="'+esc(s.official_url)+'" target="_blank" rel="noopener" data-out="official">'+esc(officialLabelFor(s))+ic('ext','oi ex')+'</a></div>';
   }
   if(interactive&&slot==='sub') b+='<button type="button" class="skip" data-act="nosub">午後は行かない</button>';
   if(open) b+=swHTML();
-  return '<div class="tl spot'+(food?' food':'')+(open?' open':'')+'" data-slot="'+(slot||'')+'">'+tlRail(r.time,s.__temp?'📍':spotEmoji(s))+'<div class="body">'+b+'</div></div>';
+  return '<div class="tl spot'+(food?' food':'')+(open?' open':'')+'" data-slot="'+(slot||'')+'">'+tlRail(r.time,ic(KIND_ICON[kindOfS(s)]))+'<div class="body">'+b+'</div></div>';
 }
 function tlPlain(time,icon,name,sub,slot,interactive,cls,label){   // お弁当・お昼はなし・午後はおうちでゆっくり
   const open=interactive&&slot&&E.sw&&E.sw.slot===slot;
@@ -7483,35 +7843,42 @@ function tlPlain(time,icon,name,sub,slot,interactive,cls,label){   // お弁当�
   if(open) b+=swHTML();
   return '<div class="tl '+(cls||'')+(open?' open':'')+'" data-slot="'+(slot||'')+'">'+tlRail(time,icon)+'<div class="body">'+b+'</div></div>';
 }
-function tlMove(r){ return '<div class="tl move">'+tlRail(r.time,'🚗')+'<div class="body"><div class="sname">'+esc(r.label||'')+'</div>'+(r.sub?'<div class="meta moveline">'+esc(r.sub)+'</div>':'')+'</div></div>'; }
+// v5：エンジンの文字列は HTML 用に変換済み（transitLabel が esc 済み）なので plain() で戻してから1回だけ esc。先頭の絵文字はアイコンにする
+const noEmo=t=>plain(t).replace(/^(?:\u{1F697}|\u{1F371}|\u{1F3E0}|\u{1F359}|\u2139\uFE0F?)\s*/u,'');
+function tlMove(r){ return '<div class="tl move">'+tlRail(r.time,ic(/^\u{1F371}/u.test(r.label||'')?'eat':'car'))+'<div class="body"><div class="sname">'+esc(noEmo(r.label))+'</div>'+(r.sub?'<div class="meta moveline">'+esc(plain(r.sub))+'</div>':'')+'</div></div>'; }
 function rowsHTML(p,interactive){
   const v=view3(p), pin=pinOf(v);
   const rows=(p.rows||[]).filter(r=>!r.opt);
   const slotOf=r=>r===v.m?'main':(r===v.l?'lunch':(r===v.s?'sub':null));
-  let h='', lunchDone=!!(v.l||v.b), subDone=!!v.s;
+  const nl=!!p.lunchNone;   // v6：お昼なし＝午前だけ（お昼の行・午後の行は出さない）
+  let h='', lunchDone=!!(v.l||v.b)||nl, subDone=!!v.s||nl;
   const lastMove=rows.length&&rows[rows.length-1].type==='move'?rows[rows.length-1]:null;
   rows.forEach(r=>{
-    if(r===lastMove&&!subDone&&interactive){ h+=tlPlain(null,'🏠','午後はおうちでゆっくり','午後','sub',true,'none','＋ 午後も行く'); subDone=true; }
-    if(isBentoRow(r)&&r.type!=='spot'){ h+=tlPlain(r.time,'🍱','🍱 お弁当','お昼'+(r.type==='note'&&r.text?'・'+r.text:''),'lunch',interactive,'food'); return; }
+    if(r===lastMove&&!subDone&&interactive){ h+=tlPlain(null,ic('home'),'午後はおうちでゆっくり','午後','sub',true,'none','＋ 午後も行く'); subDone=true; }
+    if(isBentoRow(r)&&r.type!=='spot'){ h+=tlPlain(r.time,ic('eat'),'お弁当','お昼'+(r.type==='note'&&r.text?'・'+plain(r.text):''),'lunch',interactive,'food'); return; }
     if(r.type==='move'){ h+=tlMove(r); return; }
     if(r.type==='spot'&&r.spot){
-      if(r.spot.__bento){ h+=tlPlain(r.time,'🍱','🍱 お弁当','お昼','lunch',interactive,'food'); return; }
+      if(r.spot.__bento){ h+=tlPlain(r.time,ic('eat'),'お弁当','お昼','lunch',interactive,'food'); return; }
       h+=tlSpot(r,slotOf(r),interactive,pin);
-      if(r===v.m&&!lunchDone&&interactive){ h+=tlPlain(null,'🍽','お昼はなし','お昼','lunch',true,'food none'); lunchDone=true; }
+      if(r===v.m&&nl&&interactive) h+='<div class="tl addl"><div class="rail"><span class="time"></span><span class="icon">'+ic('eat')+'</span><span class="line"></span></div><div class="body"><button type="button" class="addlunch" data-act="addlunch">＋ お昼を入れる</button></div></div>';   // v6：元に戻す（1行だけ）
+      if(r===v.m&&!lunchDone&&interactive){ h+=tlPlain(null,ic('eat'),'お昼はなし','お昼','lunch',true,'food none'); lunchDone=true; }
       return;
     }
-    if(r.type==='note'||r.type==='branch'){ h+='<div class="tl note">'+tlRail(r.time,esc(r.icon||(r.type==='branch'?'🏠':'ℹ️')))+'<div class="body"><div class="sname">'+esc(r.label||'')+'</div>'+(r.text?'<div class="meta">'+esc(r.text)+'</div>':'')+'</div></div>'; }
+    if(r.type==='note'||r.type==='branch'){ h+='<div class="tl note">'+tlRail(r.time,ic(r.icon==='\u{1F359}'?'eat':(r.type==='branch'?'home':'clock')))+'<div class="body"><div class="sname">'+esc(noEmo(r.label))+'</div>'+(r.text?'<div class="meta">'+esc(plain(r.text))+'</div>':'')+'</div></div>'; }
   });
-  if(!subDone&&interactive) h+=tlPlain(null,'🏠','午後はおうちでゆっくり','午後','sub',true,'none','＋ 午後も行く');
+  if(!subDone&&interactive) h+=tlPlain(null,ic('home'),'午後はおうちでゆっくり','午後','sub',true,'none','＋ 午後も行く');
   return h;
 }
-function wxText(){ const w=state.weather; if(!w||w.tmax==null) return ''; return (isRainMode(w)?'☔ ':'☀ ')+Math.round(w.tmax)+'℃'; }
+function wxText(){ const w=state.weather; if(!w||w.tmax==null) return ''; return ic(isRainMode(w)?'rain':'sun')+Math.round(w.tmax)+'℃'; }
 function renderPlan(){
   const p=currentPlanObj(); if(!p) return;
   const v=view3(p), d=targetDate(state.when);
   $('dateBtn').textContent=dateLabel(d)+' ▾';
   $('depLine').textContent=fmtTime(v.start)+' '+state.origin.name+'を出発';
-  $('wx').textContent=wxText();
+  const dn=$('dateNote');   // v5：日付を自動で変えたときのひとこと（1回だけ。次に描き直すと消える）
+  if(E.dateMsg){ dn.innerHTML=ic(/お休み/.test(E.dateMsg)?'closed':'clock')+'<span>'+esc(E.dateMsg)+'</span>'; dn.classList.remove('hidden'); E.dateMsg=null; ga('erabu_date_note',{}); }
+  else { dn.classList.add('hidden'); dn.innerHTML=''; }
+  $('wx').innerHTML=wxText();
   $('rows').innerHTML=rowsHTML(p,true);
   const u=buildRouteUrl(p); const rb=$('routeBtn'); if(u) rb.href=u; else rb.removeAttribute('href');
 }
@@ -7547,15 +7914,16 @@ function swMore(){
 }
 function swHTML(){
   const sw=E.sw, slot=sw.slot, v=view3(currentPlanObj()), ref=swRef(slot);
-  const cur=slot==='main'?(v.m&&v.m.spot):(slot==='lunch'?(v.l?v.l.spot:(v.b?{name:'🍱 お弁当'}:null)):(v.s&&v.s.spot));
+  const cur=slot==='main'?(v.m&&v.m.spot):(slot==='lunch'?(v.l?v.l.spot:(v.b?{name:'お弁当'}:null)):(v.s&&v.s.spot));
   let h='<div class="swapwrap'+(slot==='lunch'?' eat':'')+'">';
   if(cur) h+='<div class="sc-current"><span class="sc-cur-label">現在選択中</span><span class="sc-cur-name">'+esc(cur.name)+'</span></div>';
   if(sw.shown.length){
     h+='<div class="sc-head">かわりの候補：</div>'+sw.shown.map((s,i)=>'<button type="button" class="swapcard" data-sw="'+i+'"><span class="sc-name"><span class="sc-choose">これに変更 →</span>'+esc(s.name)+'</span>'
-      +'<span class="sc-meta">'+[distText(s,ref)].concat(tags(s,2)).map(esc).join('・')+'</span></button>').join('');
+      +'<span class="sc-meta">'+[distText(s,ref)].concat(tags(s,2).map(t=>t[1])).map(esc).join('・')+'</span></button>').join('');
   }
   if(sw.rest>0) h+='<button type="button" class="swapwiden" data-act="swmore">もっと見る</button>';
-  if(slot==='lunch') h+='<div class="more2"><button type="button" data-act="bento">🍱 お弁当</button><button type="button" data-act="mine-lunch">📌 自分の場所で食べる</button></div>';
+  if(slot==='lunch') h+='<div class="more2"><button type="button" data-act="bento">'+ic('eat')+'お弁当</button><button type="button" data-act="mine-lunch">'+ic('myplace')+'自分の場所で食べる</button></div>';
+  if(slot==='lunch'&&pinOf(v)!=='sub') h+='<button type="button" class="swapwiden nolunch" data-act="nolunch">'+ic('home')+'お昼なし（家で食べる）</button>';   // v6：午前だけにする（「午後に行く」で選んだ場所があるときは出さない）
   h+='<button type="button" class="swapwiden" data-act="addmine-'+slot+'">＋ 自分で追加（名前・住所）</button>';
   h+='<button type="button" class="swapclose" data-act="swclose">変更しない・閉じる</button></div>';
   return h;
@@ -7581,7 +7949,7 @@ function pickSw(i){
 function openMine(slot){
   const a=myPlaces().map(x=>tempSpot(x.n,x.lat,x.lng,x.addr));
   E.mineOpts=a;
-  $('optBody').innerHTML='<h2>📌 自分の場所'+(slot==='lunch'?'で食べる':'')+'</h2><div class="opts">'
+  $('optBody').innerHTML='<h2>'+ic('myplace','oi h2i')+'自分の場所'+(slot==='lunch'?'で食べる':'')+'</h2><div class="opts">'
     +a.map((s,i)=>'<button class="opt" data-act="usemine-'+slot+'" data-i="'+i+'"><span class="e" style="background:'+look(s)[0]+'">'+look(s)[1]+'</span><span class="tx"><b>'+esc(s.name)+'</b><small>'+esc(s.city||'')+'</small></span><span class="go">›</span></button>').join('')
     +'<button class="opt plain" data-act="addmine-'+slot+'">＋ 住所で追加</button></div>';
   openBS('optSheet');
@@ -7600,6 +7968,7 @@ window.buildShareUrl=function(p){
   if(v.l){ const l=v.l.spot; if(l.__temp) parts.push('lunch=_t','lt='+enc(tp(l))); else parts.push('lunch='+enc(l.name)); }
   else if(v.b) parts.push('lunch=_b'); else parts.push('lunch=_n');
   if(v.s){ const s=v.s.spot; if(s.__temp) parts.push('sub=_t','st='+enc(tp(s))); else parts.push('sub='+enc(s.name)); }
+  try{ eng3SharePush(p,parts); }catch(e){}   // v6：エンジンと同じ nl=1（お昼なし）・fo=1（無料）・sm/ss（滞在の分）
   const long=location.origin+location.pathname+'?'+parts.join('&');
   const t=v.start, hhmm=String(Math.floor(t/60)).padStart(2,'0')+String(t%60).padStart(2,'0');
   const pin=pinOf(v);
@@ -7631,11 +8000,13 @@ function parseShared(){
   const L0=lv==='_b'?'bento':(lv==='_n'||!lv?null:spot(lv,'lt'));
   const S0=qs.get('sub')?spot(qs.get('sub'),'st'):null;
   const sl=raw.get('sl');
-  return {o,ages,d,start:(+t.slice(0,2))*60+(+t.slice(2)),main,L:L0,S:S0,sl:(sl==='pm'||sl==='am')?sl:null};
+  let e3={}; try{ e3=eng3ShareOpts(qs).e3||{}; }catch(e){ e3={}; }   // v6：nl・fo・sm・ss（エンジンと同じ読み方）
+  return {o,ages,d,start:(+t.slice(0,2))*60+(+t.slice(2)),main,L:L0,S:S0,sl:(sl==='pm'||sl==='am')?sl:null,e3};
 }
 function showShared(x){
   E.shared=true; state.origin=x.o; state.ages=new Set(x.ages.length?x.ages:['3-5']);
   E.when='d:'+x.d; E.fixedStart=x.start; E.main=x.main; E.L=x.L; E.S=x.S; E.userL=true; E.userS=true;
+  const e3=x.e3||{}; E.noLunch=e3.lunch==='none'; E.fo=e3.freeOnly===true; E.stay=(e3.stayMain||e3.staySub)?{stayMain:e3.stayMain||null,staySub:e3.staySub||null}:null;
   E.pin=x.sl==='pm'&&x.S?{name:x.S.name,slot:'pm'}:(x.sl==='am'?{name:x.main.name,slot:'am'}:null);
   state.weather=null;
   const p=compose(), v=view3(p);
@@ -7645,6 +8016,34 @@ function showShared(x){
   const u=buildRouteUrl(p); if(u) $('rGo').href=u;
   show('vRecv');
 }
+
+/* ---------- v5：共有画像の見出しと共有の文言を実際の日付に（エンジンの共有画像は「きょうの」固定の文字列なので、このページの中だけで差しかえる） ----------
+   ・見出し：canvas の fillText に「きょうのおでかけプラン」が来たら「9/27（日）のおでかけプラン」にして、幅に入るよう文字を小さくする
+   ・文言：navigator.share に渡る text の先頭の「きょうのおでかけプラン」を同じく差しかえる */
+const shareTitle=()=>dateLabel(targetDate(state.when))+'のおでかけプラン';
+(function(){
+  try{
+    const P=CanvasRenderingContext2D.prototype, ft=P.fillText;
+    P.fillText=function(t,x,y,mw){
+      if(t==='きょうのおでかけプラン'&&this.canvas&&this.canvas.width===1080){
+        const nt=shareTitle(), f0=this.font, room=this.canvas.width-x-64;
+        let w=this.measureText(nt).width;
+        if(w>room){ const m=/(\d+(?:\.\d+)?)px/.exec(f0); if(m){ const px=Math.floor(+m[1]*room/w); this.font=f0.replace(m[0],px+'px'); } }
+        try{ return ft.call(this,nt,x,y); } finally{ this.font=f0; }
+      }
+      return mw===undefined?ft.call(this,t,x,y):ft.call(this,t,x,y,mw);
+    };
+  }catch(e){}
+  try{
+    const ns=navigator.share;
+    if(typeof ns==='function'){
+      Object.defineProperty(navigator,'share',{configurable:true,writable:true,value:function(d){
+        try{ if(d&&typeof d.text==='string'&&/^きょうのおでかけプラン/.test(d.text)) d=Object.assign({},d,{text:d.text.replace(/^きょうのおでかけプラン/,shareTitle())}); }catch(e){}
+        return ns.call(navigator,d);
+      }});
+    }
+  }catch(e){}
+})();
 
 /* ---------- 自分の場所（住所→座標は cpAddPlace と同じ国土地理院の住所検索） ---------- */
 function openAdd(name,forSlot){
@@ -7684,6 +8083,17 @@ async function doAdd(){
   }
 }
 
+/* ---------- v5：マークの見かた（地図の隅の「？」。見本 icons/legend.png のとおり） ---------- */
+const KIND_ONE={park:'公園・広場・水あそび場など外あそび',indoor:'屋内のあそび場・キッズスペース・工作など',jidokan:'児童館・子どもセンター（無料が多い）',animal:'動物園・ふれあい広場・水族館',vehicle:'電車の博物館・交通公園・遊園地',science:'科学館・プラネタリウム・防災館など',book:'美術館・郷土資料館・図書館など',food:'子連れで入りやすい、町のお店',chain:'ファミレスなど、おなじみのチェーン店'};
+function openLegend(){
+  const li=(pin,b,sm,cls)=>'<div class="li'+(cls||'')+'">'+pin+'<div class="tx"><b>'+b+'</b><small>'+sm+'</small></div></div>';
+  $('legBody').innerHTML=['park','indoor','jidokan','animal','vehicle','science','book','food','chain'].map(k=>li('<span class="lpin">'+pinSvg(k)+'</span>',KIND_NAME[k],KIND_ONE[k])).join('')
+    +li('<span class="lpin home">'+pinSvg('home')+'</span>','出発地','ここから近い順・車の時間を出します',' sm')
+    +li('<span class="lpin">'+pinSvg('myplace')+'</span>','自分の場所','自分で追加した場所',' sm')
+    +li('<span class="lpin rest">'+pinSvg('park')+'</span>','うすいピン','選んだ日はお休みの場所（押せます）',' sm last');
+  openBS('legSheet'); ga('erabu_legend',{});
+}
+
 /* ---------- 操作 ---------- */
 function bind(){
   document.querySelector('.mode').addEventListener('click',e=>{ const b=e.target.closest('button[data-m]'); if(!b||b.dataset.m===E.mode) return; E.mode=b.dataset.m; ga('erabu_mode',{mode:E.mode}); setModeClass(); renderChips(); closeCard(); refresh(); });
@@ -7702,17 +8112,17 @@ function bind(){
     else if(b.dataset.act==='am') go(s,'am');
     else if(b.dataset.act==='pm'){ ga('erabu_pick',{mode:E.mode,kind:pickKind(s),tier:s.tier||'',pick_for:'',slot:'pm'}); go(s,'pm'); }
   });
-  $('originPick').innerHTML='<option value="__here">📍 現在地</option>'+CITIES.map(c=>'<option>'+esc(c[0])+'</option>').join('');
+  $('originPick').innerHTML='<option value="__here">現在地（いまいる場所）</option>'+CITIES.map(c=>'<option>'+esc(c[0])+'</option>').join('');
   $('originPick').addEventListener('change',()=>{
     const v=$('originPick').value;
     if(v==='__here'){ useHere(); return; }
     const o=cityOrigin(v); if(!o) return;
-    __hereOut=false; __hereExpired=false;
+    __hereOut=false; __hereExpired=false; E.originFromLink=false;
     setOrigin(o); savePrefsKeep(); dropSavedHere();
   });
   // 年齢
   $('ageSheet').addEventListener('click',e=>{ const b=e.target.closest('.age'); if(!b) return; const a=b.dataset.age; if(state.ages.has(a)) state.ages.delete(a); else state.ages.add(a); b.classList.toggle('on',state.ages.has(a)); $('ageGo').disabled=!state.ages.size; });
-  $('ageGo').addEventListener('click',()=>{ if(!state.ages.size) return; savePrefsKeep(); closeBS(); const x=E.pending; E.pending=null; if(x) startPlan(x.s,x.slot); });
+  $('ageGo').addEventListener('click',()=>{ if(!state.ages.size) return; savePrefsKeep(); closeBS(); const x=E.pending; E.pending=null; if(x) proceed(x.s,x.slot); });
   // プラン
   $('planBack').addEventListener('click',()=>{ if(history.state&&history.state.erabu==='plan') history.back(); else backToMap(); });   // 戻る（スワイプ・ブラウザの戻る）と同じ動き
   window.addEventListener('popstate',()=>{ if($('vPlan').classList.contains('on')) backToMap(); });
@@ -7726,6 +8136,8 @@ function bind(){
     else if(a==='swclose'){ E.sw=null; renderPlan(); }
     else if(a==='bento'){ ga('erabu_change',{slot:'lunch',to:'bento'}); setSlot('lunch','bento'); }
     else if(a==='mine-lunch') openMine('lunch');
+    else if(a==='nolunch'){ ga('erabu_change',{slot:'lunch',to:'none'}); E.noLunch=true; E.sw=null; compose(); renderPlan(); }   // v6：お昼なし（家で食べる）→ 午前だけ
+    else if(a==='addlunch'){ ga('erabu_change',{slot:'lunch',to:'add'}); E.noLunch=false; E.sw=null; compose(); renderPlan(); }   // v6：元に戻す
     else if(/^addmine-/.test(a)) openAdd('',a.slice(8));
   });
   $('dateBtn').addEventListener('click',async()=>{
@@ -7740,17 +8152,23 @@ function bind(){
   $('shareBtn').addEventListener('click',()=>{
     let img=false; try{ img=!!(navigator.share&&navigator.canShare&&navigator.canShare({files:[new File([''],'x.png',{type:'image/png'})]})); }catch(e){}
     ga('erabu_share',{method:img?'image':'link'});
-    if(typeof window.sharePlanImage==='function') window.sharePlanImage($('shareBtn')); else sharePlan();
+    // v5：エンジンは渡したボタンの文字を textContent で書きかえる（アイコンが消え、⏳ が出る）ので、ボタンは渡さずにこちらで表示する
+    const bt=$('shareBtn'); if(bt.disabled) return;
+    const h0=bt.innerHTML; bt.disabled=true; bt.innerHTML=ic('send')+'画像を作っています…';
+    Promise.resolve().then(()=>typeof window.sharePlanImage==='function'?window.sharePlanImage(null):sharePlan()).catch(()=>{}).then(()=>{ bt.disabled=false; bt.innerHTML=h0; });
   });
   $('optSheet').addEventListener('click',async e=>{
     const b=e.target.closest('[data-act],[data-close]'); if(!b) return;
     if(b.hasAttribute('data-close')){ closeBS(); return; }
     const a=b.dataset.act, i=+b.dataset.i;
-    if(a==='when'){ closeBS(); if(b.dataset.k!==E.when){ E.when=b.dataset.k; ga('erabu_change',{slot:'date',to:whenKind()}); await replan(); } }
+    if(a==='when'){ closeBS(); if(b.dataset.k!==E.when){ E.when=b.dataset.k; E.whenChosen=true; ga('erabu_change',{slot:'date',to:whenKind()}); await replan(); } }
+    else if(a==='ask'){ closeBS(); const x=E.pending; E.pending=null; E.when=b.dataset.k; E.whenChosen=true; ga('erabu_change',{slot:'date',to:whenKind(),ask:1}); if(x) startPlan(x.s,x.slot); }
     else if(/^addmine-/.test(a)){ closeBS(); openAdd('',a.slice(8)); }
     else if(/^usemine-/.test(a)){ const slot=a.slice(8), s=E.mineOpts[i]; closeBS(); if(!s) return; ga('erabu_change',{slot,to:'myplace'}); setSlot(slot,s); }
   });
   $('addSheet').addEventListener('click',e=>{ if(e.target.closest('[data-close]')) closeBS(); });
+  $('legSheet').addEventListener('click',e=>{ if(e.target.closest('[data-close]')) closeBS(); });
+  $('legBtn').addEventListener('click',openLegend);
   $('addGo').addEventListener('click',doAdd);
   ['addName','addAddr'].forEach(id=>$(id).addEventListener('input',()=>$(id).classList.remove('bad')));
   $('dim').addEventListener('click',()=>{ closeBS(); E.pending=null; });
@@ -7763,8 +8181,10 @@ function init(){
   bind();
   const sh=parseShared();
   if(sh){ showShared(sh); ga('erabu_open',{shared:1}); window.__ERABU_READY=true; return; }
-  restoreHere(); syncLoc();
+  restoreHere();
   const sp=spotFromUrl(), v=sp?null:loadView();
+  if(sp&&!E.hadOrigin&&state.origin.name!=='現在地'){ const fo=spotFromOrigin(); if(fo){ state.origin=fo; E.originFromLink=true; } }   // v5：保存済みの出発地が無ければ送った人の出発地
+  syncLoc();
   if(v){ E.mode=v.mode==='eat'?'eat':'play'; E.f=(v.f&&typeof v.f==='object')?v.f:{}; E.fTouched=true; }   // プラン→戻る・開き直し：前の表示に戻す
   if(sp){ E.mode=isEat(sp)?'eat':'play'; if(sp.is_jidokan===true) E.f.jidokan=true; }                    // 送られてきた場所：そのカードを開く
   setModeClass(); renderChips();
