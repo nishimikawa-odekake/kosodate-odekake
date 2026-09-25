@@ -7101,7 +7101,7 @@ const kfHas=(s,re)=>(s.kid_features||[]).some(x=>re.test(x));
 const RE_KS=/キッズスペース|キッズルーム|キッズコーナー|プレイスペース/, RE_Z=/座敷|小上がり|掘りごたつ/, RE_KC=/キッズチェア|子ども椅子|子供椅子|ハイチェア|ベビーチェア|まめイス/;
 const hasKS=s=>s.has_kids_space===true||kfHas(s,RE_KS), hasZ=s=>s.has_zashiki===true||kfHas(s,RE_Z), hasKC=s=>s.has_kids_chair===true||kfHas(s,RE_KC);
 // v3：追加欄と同じ段に並べるので、絵文字＋短い語（aria-label は元の長い語）
-const CHIPS={play:[['rain','雨OK','雨でもOK','rain'],['free','無料','無料','free'],['jidokan','児童館','児童館','jidokan']],eat:[['zashiki','座敷','座敷','zashiki'],['kids_chair','イス','子ども椅子','chair'],['kids','キッズ','キッズスペース','kids']]};
+const CHIPS={play:[['rain','雨OK','雨でもOK','rain'],['free','無料','無料','free'],['jidokan','児童館','児童館','jidokan']],eat:[['zashiki','座敷','座敷','zashiki'],['kids','キッズ','キッズスペース','kids']]};
 // map.html の matches() と同じ考え方（児童館は🏠を押したときだけ／押すと児童館だけ）。たべるの3条件は kid_features の記載も見る
 function matchE(s){
   const f=E.f;
@@ -7113,7 +7113,6 @@ function matchE(s){
   } else {
     if(!isEat(s)) return false;
     if(f.zashiki&&!hasZ(s)) return false;
-    if(f.kids_chair&&!hasKC(s)) return false;
     if(f.kids&&!hasKS(s)) return false;
   }
   return true;
@@ -7124,7 +7123,6 @@ function tags(s,max,noDiaper){   // v5：[アイコン, 文字] の配列
   if(isEat(s)){
     if(hasKS(s)) t.push(['kids','キッズスペース']);
     if(hasZ(s)) t.push(['zashiki','座敷']);
-    if(hasKC(s)) t.push(['chair','子ども椅子']);
     if(kfHas(s,/キッズ.?メニュー|お子様メニュー/)) t.push(['kidsmenu','キッズメニュー']);
     if(!noDiaper&&kfHas(s,/おむつ|オムツ/)) t.push(['diaper','おむつ替え']);   // カードでは下の「わかっていること」の行に出すので省く
   } else {
