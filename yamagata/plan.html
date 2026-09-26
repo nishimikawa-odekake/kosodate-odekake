@@ -98,6 +98,8 @@ select.origin{width:100%;padding:14px;font-size:1rem;border:2px solid var(--line
 .tl .rail{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;width:52px}
 .tl .time{font-size:.82rem;font-weight:800;color:var(--ink);white-space:nowrap}
 .tl .icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.05rem;margin-top:3px;background:#fff6ee;border:2px solid var(--accent)}
+.tl .icon.pic{width:40px;height:40px;background:#fff;border-width:2.5px;border-style:solid}.tl .icon.pic .il{display:block;width:29px;height:29px}
+.tl.move .icon.pic{width:34px;height:34px}.tl.move .icon.pic .il{width:24px;height:24px}
 .tl.move .icon{background:#eef2f6;border-color:#c9d3dd;font-size:.95rem}
 .tl .line{flex:1;width:2px;background:var(--line);margin-top:2px}
 .tl:last-child .line{display:none}
@@ -4540,6 +4542,42 @@ function spotEmoji(s){
   const p=(s.play_types||[])[0]||'indoor';
   return (PLAY[p]||PLAY.indoor).e;
 }
+/* [ill-icons 2026-09-26] 行アイコンは erabu と同じオリジナルの絵（白い丸＋種類の色の輪） */
+const PLIL={"park": "<ellipse cx=\"32\" cy=\"50\" rx=\"26\" ry=\"9\" fill=\"#7CCB5B\"/><ellipse cx=\"32\" cy=\"48\" rx=\"24\" ry=\"6\" fill=\"#95DB72\"/> <rect x=\"14\" y=\"16\" width=\"4\" height=\"32\" rx=\"2\" fill=\"#E8793A\"/><rect x=\"24\" y=\"16\" width=\"4\" height=\"32\" rx=\"2\" fill=\"#E8793A\"/> <rect x=\"15\" y=\"22\" width=\"12\" height=\"3\" rx=\"1.5\" fill=\"#F6A55E\"/><rect x=\"15\" y=\"30\" width=\"12\" height=\"3\" rx=\"1.5\" fill=\"#F6A55E\"/><rect x=\"15\" y=\"38\" width=\"12\" height=\"3\" rx=\"1.5\" fill=\"#F6A55E\"/> <rect x=\"12\" y=\"13\" width=\"18\" height=\"5\" rx=\"2.5\" fill=\"#E8793A\"/> <path d=\"M28 15 C38 15 40 30 46 38 C49 42 52 45 55 46 L53 50 C48 49 44 45 41 41 C35 33 34 21 28 21 Z\" fill=\"#FFC930\" stroke=\"#E6A800\" stroke-width=\"1.2\"/>", "indoor": "<rect x=\"10\" y=\"36\" width=\"18\" height=\"18\" rx=\"3\" fill=\"#4C8BD9\"/><rect x=\"30\" y=\"36\" width=\"18\" height=\"18\" rx=\"3\" fill=\"#FFC930\"/> <rect x=\"20\" y=\"18\" width=\"18\" height=\"18\" rx=\"3\" fill=\"#E94B3C\"/><path d=\"M40 30 L52 8 L60 30 Z\" fill=\"#7CCB5B\"/> <text x=\"19\" y=\"50\" font-size=\"11\" font-weight=\"800\" fill=\"#fff\" font-family=\"Arial\">A</text><text x=\"36\" y=\"50\" font-size=\"11\" font-weight=\"800\" fill=\"#fff\" font-family=\"Arial\">B</text><text x=\"26\" y=\"32\" font-size=\"11\" font-weight=\"800\" fill=\"#fff\" font-family=\"Arial\">C</text>", "jidokan": "<path d=\"M8 30 L32 10 L56 30 Z\" fill=\"#F2605A\"/><rect x=\"14\" y=\"28\" width=\"36\" height=\"26\" rx=\"2\" fill=\"#FFF3E2\"/> <rect x=\"27\" y=\"38\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#B07642\"/><rect x=\"17\" y=\"33\" width=\"7\" height=\"7\" rx=\"1.2\" fill=\"#9ED8F5\"/><rect x=\"40\" y=\"33\" width=\"7\" height=\"7\" rx=\"1.2\" fill=\"#9ED8F5\"/> <path d=\"M32 26 C29 22 24 24 26 28 L32 33 L38 28 C40 24 35 22 32 26 Z\" fill=\"#FF8FA3\"/>", "animal": "<circle cx=\"17\" cy=\"18\" r=\"8\" fill=\"#B07642\"/><circle cx=\"47\" cy=\"18\" r=\"8\" fill=\"#B07642\"/><circle cx=\"17\" cy=\"18\" r=\"4\" fill=\"#E6B98C\"/><circle cx=\"47\" cy=\"18\" r=\"4\" fill=\"#E6B98C\"/> <circle cx=\"32\" cy=\"35\" r=\"21\" fill=\"#C58B52\"/><ellipse cx=\"32\" cy=\"42\" rx=\"10\" ry=\"8\" fill=\"#F1D3AE\"/> <circle cx=\"24\" cy=\"31\" r=\"2.8\" fill=\"#3B2A1E\"/><circle cx=\"40\" cy=\"31\" r=\"2.8\" fill=\"#3B2A1E\"/><ellipse cx=\"32\" cy=\"38.5\" rx=\"3.6\" ry=\"2.6\" fill=\"#3B2A1E\"/> <path d=\"M28.5 44 Q32 47 35.5 44\" stroke=\"#3B2A1E\" stroke-width=\"1.8\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"19\" cy=\"39\" r=\"3.2\" fill=\"#F39A8F\" opacity=\".8\"/><circle cx=\"45\" cy=\"39\" r=\"3.2\" fill=\"#F39A8F\" opacity=\".8\"/>", "vehicle": "<rect x=\"13\" y=\"8\" width=\"38\" height=\"40\" rx=\"10\" fill=\"#E94B3C\"/><rect x=\"13\" y=\"30\" width=\"38\" height=\"6\" fill=\"#FFFFFF\" opacity=\".9\"/> <rect x=\"18\" y=\"13\" width=\"28\" height=\"14\" rx=\"4\" fill=\"#9ED8F5\"/><rect x=\"31\" y=\"13\" width=\"2\" height=\"14\" fill=\"#E94B3C\"/> <circle cx=\"20\" cy=\"41\" r=\"3.5\" fill=\"#FFE066\"/><circle cx=\"44\" cy=\"41\" r=\"3.5\" fill=\"#FFE066\"/> <path d=\"M20 48 L14 57 M44 48 L50 57\" stroke=\"#6B6B6B\" stroke-width=\"4\" stroke-linecap=\"round\"/><rect x=\"10\" y=\"55\" width=\"44\" height=\"3\" rx=\"1.5\" fill=\"#9A9A9A\"/>", "science": "<path d=\"M32 4 C43 12 46 26 44 40 H20 C18 26 21 12 32 4 Z\" fill=\"#F7F7FA\" stroke=\"#C9CED6\" stroke-width=\"1.5\"/> <path d=\"M32 4 C37 8 40 12 42 17 H22 C24 12 27 8 32 4 Z\" fill=\"#E94B3C\"/><circle cx=\"32\" cy=\"26\" r=\"6\" fill=\"#9ED8F5\" stroke=\"#4C8BD9\" stroke-width=\"2.5\"/> <path d=\"M20 32 L11 44 L12 50 L21 42 Z M44 32 L53 44 L52 50 L43 42 Z\" fill=\"#E94B3C\"/><rect x=\"26\" y=\"40\" width=\"12\" height=\"4\" rx=\"1.5\" fill=\"#9AA5B1\"/> <path d=\"M27 45 Q32 62 37 45 Z\" fill=\"#FFC930\"/><path d=\"M29.5 45 Q32 55 34.5 45 Z\" fill=\"#FF8A3D\"/>", "book": "<rect x=\"8\" y=\"12\" width=\"11\" height=\"40\" rx=\"2\" fill=\"#E94B3C\"/><rect x=\"10\" y=\"18\" width=\"7\" height=\"3\" rx=\"1\" fill=\"#FFE066\"/> <rect x=\"20\" y=\"8\" width=\"10\" height=\"44\" rx=\"2\" fill=\"#2F9AA8\"/><rect x=\"22\" y=\"14\" width=\"6\" height=\"3\" rx=\"1\" fill=\"#fff\"/> <rect x=\"31\" y=\"16\" width=\"10\" height=\"36\" rx=\"2\" fill=\"#FFC930\"/><rect x=\"33\" y=\"22\" width=\"6\" height=\"3\" rx=\"1\" fill=\"#E94B3C\"/> <path d=\"M42 20 L52 17 L60 50 L50 53 Z\" fill=\"#7CCB5B\"/><rect x=\"4\" y=\"52\" width=\"56\" height=\"5\" rx=\"2.5\" fill=\"#B07642\"/>", "food": "<path d=\"M22 14 Q19 9 22 5 M32 13 Q29 8 32 4 M42 14 Q39 9 42 5\" stroke=\"#C9CED6\" stroke-width=\"2.5\" fill=\"none\" stroke-linecap=\"round\"/> <ellipse cx=\"32\" cy=\"42\" rx=\"27\" ry=\"12\" fill=\"#FFFFFF\" stroke=\"#E5E0D8\" stroke-width=\"2\"/><ellipse cx=\"32\" cy=\"38\" rx=\"17\" ry=\"9\" fill=\"#FFD23F\"/> <path d=\"M18 36 Q32 26 46 36\" stroke=\"#E84A3C\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"26\" cy=\"41\" r=\"2.5\" fill=\"#7CCB5B\"/><circle cx=\"38\" cy=\"42\" r=\"2.2\" fill=\"#7CCB5B\"/>", "chain": "<rect x=\"11\" y=\"24\" width=\"42\" height=\"30\" rx=\"3\" fill=\"#FFF3E2\"/><rect x=\"26\" y=\"36\" width=\"12\" height=\"18\" rx=\"2\" fill=\"#4C8BD9\"/> <rect x=\"14\" y=\"34\" width=\"9\" height=\"9\" rx=\"1.5\" fill=\"#9ED8F5\"/><rect x=\"41\" y=\"34\" width=\"9\" height=\"9\" rx=\"1.5\" fill=\"#9ED8F5\"/> <path d=\"M7 16 H57 L55 27 Q51 31 47 27 Q43 31 39 27 Q35 31 32 27 Q29 31 25 27 Q21 31 17 27 Q13 31 9 27 Z\" fill=\"#E94B3C\"/> <path d=\"M17 16 L15 27 M27 16 L26 27 M37 16 L38 27 M47 16 L49 27\" stroke=\"#FFFFFF\" stroke-width=\"4\"/><rect x=\"7\" y=\"11\" width=\"50\" height=\"6\" rx=\"3\" fill=\"#C73A2D\"/>", "myplace": "<ellipse cx=\"32\" cy=\"55\" rx=\"16\" ry=\"4\" fill=\"#D6E9EC\"/><rect x=\"18\" y=\"8\" width=\"4\" height=\"48\" rx=\"2\" fill=\"#6B6B6B\"/> <path d=\"M22 10 H50 L43 21 L50 32 H22 Z\" fill=\"#2F9AA8\"/><path d=\"M36 16 L37.8 19.8 L42 20.3 L38.9 23.1 L39.8 27.2 L36 25.1 L32.2 27.2 L33.1 23.1 L30 20.3 L34.2 19.8 Z\" fill=\"#FFE066\"/>", "car": "<path d=\"M10 38 L14 25 Q16 20 22 20 H42 Q48 20 50 25 L54 38 Z\" fill=\"#E94B3C\"/><rect x=\"7\" y=\"36\" width=\"50\" height=\"12\" rx=\"5\" fill=\"#E94B3C\"/> <path d=\"M18 34 L20 26 Q21 24 24 24 H31 V34 Z M33 34 V24 H40 Q43 24 44 26 L46 34 Z\" fill=\"#9ED8F5\"/> <circle cx=\"18\" cy=\"48\" r=\"6.5\" fill=\"#444\"/><circle cx=\"46\" cy=\"48\" r=\"6.5\" fill=\"#444\"/><circle cx=\"18\" cy=\"48\" r=\"2.5\" fill=\"#bbb\"/><circle cx=\"46\" cy=\"48\" r=\"2.5\" fill=\"#bbb\"/><rect x=\"8\" y=\"39\" width=\"5\" height=\"3\" rx=\"1.5\" fill=\"#FFE066\"/><rect x=\"51\" y=\"39\" width=\"5\" height=\"3\" rx=\"1.5\" fill=\"#FFE066\"/>"};
+const PLIL_C={"park": "#1FA055", "indoor": "#F28C1E", "jidokan": "#F2605A", "animal": "#E6A700", "vehicle": "#1565FF", "science": "#7466D9", "book": "#A0673A", "food": "#E8436B", "chain": "#C0392B", "myplace": "#2F7F8C", "car": "#9AA5B1"};
+// ピンの分類（見本）：名前で先に判定 → 残りを play_types で判定。たべるは is_chain で個人店／チェーン店
+// ページにもそのまま埋め込むので、ES5 的に書く（外部の変数を使わない）
+// v7（2026-09-25）：乗り物（vehicle）を「科学館・乗り物・体験」から独立させた。science は「科学館・体験」
+// v7b：乗り物に乗れる遊園地・テーマパークも vehicle（種類名「乗り物・遊園地」）。屋内のテーマパーク（サンリオピューロランド）は室内あそび場
+function plKind(s){
+  var pt = s.play_types || [], n = String(s.name || '');
+  if (s.is_chain === true) return 'chain';
+  if (pt.indexOf('food') >= 0) return 'food';
+  if (s.is_jidokan === true) return 'jidokan';
+  // 名前：例外（「科学」「ふるさと村」の名前でも中身は公園）
+  if (/森林科学園|山のふるさと村/.test(n)) return 'park';
+  // 名前：例外（美術館・公園などの名前でも中身が室内あそび場）
+  if (/おもちゃ美術館|あそびのせかい|あそびの森|HUGHUG|ちきゅうのにわ|PLAY! PARK|こどもひろば|0123|まんがぱーく|キッズ|プレイルーム|サンリオピューロランド/.test(n)) return 'indoor';
+  if (/動物|水族|ZOO|牧場|ポニー|リス園|さる園|生物園|自然文化園/.test(n)) return 'animal';
+  // 名前：例外（防災館は消防署が運営していても体験施設。乗り物にしない）
+  if (/防災館|防災センター|そなエリア/.test(n)) return 'science';
+  // 乗り物（電車・バス・消防車・パトカー・飛行機・ケーブルカー・交通公園など）と、乗り物に乗れる遊園地・テーマパーク
+  // 「ランド」だけでは決めない（キッズランドなど室内の遊び場が多い）。遊園地は名前で1つずつ。「児童遊園（地）」「東遊園地」「〇〇遊園」は公園、「水遊園」は水族館なので遊園地にしない
+  if (/交通|鉄道|電車|汽車|(^|[^A-Za-z])SL([^A-Za-z]|$)|れーる|ミニトレイン|地下鉄|バス(?!ケ|ク)|消防|航空|飛行機|のりもの|乗り物|ゴーカート|ケーブルカー|ロープウェイ|モノレール|機関車|都電|東武博物館|ポリス|警察|(^|[^童東])遊園地|あらかわ遊園|みかさ遊園|花やしき|よみうりランド(?!.*プール)|サマーランド|レゴランド・ジャパン|シートレインランド|富士急ハイランド|スパーランド|東京ドームシティ|アミューズメントパーク/.test(n)) return 'vehicle';
+  if (/科学|サイエンス|プラネタリウム|天文|宇宙|郵政|通信|下水道|水道|水の|ガス|くすり|放送|寄生虫|南極|teamLab|工場|印刷|たばこと塩|紙の博物館|お札|貨幣|子ども未来館|ギャラクシティ|遊園|ランド|花やしき|展望|タワー/.test(n)) return 'science';
+  if (/美術館|資料館|資料室|図書|文学館|記念館|郷土|歴史|民俗|民家園|たてもの園|博物館|ミュージアム|MUSEUM|文化館|ふるさと館|ふるさと村|版画|彫刻|古墳|埋蔵文化財|本陣|展示|絵本|ことばらんど|はちはく|史料館|インターメディアテク|昭和館|復興記念|屋敷|住宅|水と緑のふれあい館/.test(n)) return 'book';
+  if (/公園|広場|緑地|庭園|植物園|御苑|プレーパーク|鍾乳洞|釣場|菖蒲園|花木園|ビジターセンター/.test(n)) return 'park';
+  // play_types
+  if (pt.indexOf('animal') >= 0) return 'animal';
+  if (pt.indexOf('vehicle') >= 0) return 'vehicle';
+  if (pt.indexOf('museum_science') >= 0) return 'book';
+  // v12（2026-09-26）：屋内の施設（屋内あそび場・温水プールなど）は公園の絵にしない
+  if (pt.indexOf('active') >= 0 || pt.indexOf('water') >= 0 || pt.indexOf('nature') >= 0) return s.indoor_or_outdoor === 'indoor' ? 'indoor' : 'park';
+  return 'indoor';   // create・indoor・何もなし
+}
+function plIllKey(s){ return (s&&s.__temp)?'myplace':plKind(s||{}); }
+function plIllHtml(k){ const c=PLIL_C[k]||'#9AA5B1'; return '<span class="icon pic" style="border-color:'+c+'"><svg class="il" viewBox="0 0 64 64" aria-hidden="true" focusable="false">'+(PLIL[k]||'')+'</svg></span>'; }
+const PLIL_IMG=(function(){ const o={}; try{ if(typeof Image==='undefined') return o; Object.keys(PLIL).forEach(function(k){ const im=new Image(); im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="128" height="128">'+PLIL[k]+'</svg>'); o[k]=im; }); if(o.car){ o.car.onload=function(){ try{ const c=document.createElement('canvas'); c.width=c.height=8; c.getContext('2d').drawImage(o.car,0,0,8,8); c.toDataURL(); }catch(e){ o.__taint=true; } }; } }catch(e){} return o; })();
 // price parse: return representative per-person upper number, or null(unknown)
 function parsePrice(s){
   if(s.is_free) return 0;
@@ -8572,7 +8610,7 @@ function whyBadges(s,r){
 function rowHtml(r){
   if(r.type==='note'){   // [plan-fix 2026-09-23] 案内だけの行（お弁当の持参など）
     return '<div class="tl note"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
-      '<span class="icon">'+esc(r.icon||'ℹ️')+'</span><span class="line"></span></div>'+
+      (/^(🍙|🍱|🍽)/.test(r.icon||'')?plIllHtml('food'):'<span class="icon">'+esc(r.icon||'ℹ️')+'</span>')+'<span class="line"></span></div>'+
       '<div class="body"><div class="sname">'+esc(r.label)+'</div><div class="meta">'+esc(r.text)+'</div></div></div>';
   }
   if(r.type==='branch'){
@@ -8582,7 +8620,7 @@ function rowHtml(r){
   }
   if(r.type==='move'){
     return '<div class="tl move'+(r.opt?' bonus':'')+'"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
-      '<span class="icon">🚗</span><span class="line"></span></div>'+
+      plIllHtml('car')+'<span class="line"></span></div>'+
       '<div class="body"><div class="sname">'+esc(r.label)+'</div><div class="meta moveline">'+r.sub+'</div></div></div>';
   }
   const s=r.spot;
@@ -8595,7 +8633,7 @@ function rowHtml(r){
     if(r.closeNote) b+='<div class="hourwarn">'+esc(r.closeNote)+'</div>';
     if(!s.__bento) b+='<div class="links"><a class="map" href="'+esc('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent((s.latitude||'')+','+(s.longitude||'')))+'" target="_blank" rel="noopener" onclick="track(\'maps\')">地図で見る↗</a></div>';
     return '<div class="tl'+(r.opt?' bonus':'')+'"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
-      '<span class="icon">📍</span><span class="line"></span></div>'+
+      plIllHtml('myplace')+'<span class="line"></span></div>'+
       '<div class="body">'+b+'</div></div>';
   }
   const slot=swapSlotFor(r);
@@ -8657,7 +8695,7 @@ function rowHtml(r){
   if(__ph==='sub') body+=photoCreditHTML(s,'credit-s subph');
   const __hero=(__ph==='main')?'<div class="photo tlphoto"><img loading="lazy" decoding="async" width="960" height="400" src="'+esc(s.image_url)+'" alt="'+esc(s.name)+'" onerror="this.closest(\'.photo\').remove()">'+photoCreditHTML(s)+'</div>':'';
   return __hero+'<div class="tl'+(r.opt?' bonus':'')+'"><div class="rail"><span class="time">'+fmtTime(r.time)+'</span>'+
-    '<span class="icon">'+spotEmoji(s)+'</span><span class="line"></span></div>'+
+    plIllHtml(plIllKey(s))+'<span class="line"></span></div>'+
     '<div class="body'+(__ph==='sub'?' hasthumb':'')+'">'+body+'</div></div>';
 }
 // ===== カスタムプランの枠キー(cs<k>) 共通ヘルパー =====
@@ -10907,11 +10945,11 @@ function planData(p){
   var rows=p.rows||[], main=[], bonus=[];
   rows.forEach(function(r){ (r.opt?bonus:main).push(r); });
   var conv=function(r){
-    if(r.type==='move') return {k:'move',time:fmtTime(r.time),icon:'🚗',name:txt(r.label).replace(/^🚗\s*/,''),sub:txt(r.sub)};
+    if(r.type==='move') return {k:'move',ik:'car',time:fmtTime(r.time),icon:'🚗',name:txt(r.label).replace(/^🚗\s*/,''),sub:txt(r.sub)};
     if(r.type==='branch') return {k:'branch',time:fmtTime(r.time),icon:'🏠',name:txt(r.label),sub:''};
-    if(r.type==='note') return {k:'branch',time:fmtTime(r.time),icon:r.icon||'ℹ️',name:txt(r.text),sub:''};   // [plan-fix 2026-09-23]
+    if(r.type==='note') return {k:'branch',ik:(/^(🍙|🍱|🍽)/.test(r.icon||'')?'food':null),time:fmtTime(r.time),icon:r.icon||'ℹ️',name:txt(r.text),sub:''};   // [plan-fix 2026-09-23]
     var s=r.spot||{};
-    return {k:'spot',time:fmtTime(r.time),icon:s.__temp?'📍':spotEmoji(s),name:String(s.name||''),sub:String(r.tag||'')+(s.city?'・'+s.city:'')};
+    return {k:'spot',ik:(typeof plIllKey==='function'?plIllKey(s):null),time:fmtTime(r.time),icon:s.__temp?'📍':spotEmoji(s),name:String(s.name||''),sub:String(r.tag||'')+(s.city?'・'+s.city:'')};
   };
   var h=Math.floor(p.totalDrive/60), m=p.totalDrive%60;
   return {main:main.map(conv),bonus:bonus.map(conv),
@@ -10963,9 +11001,11 @@ function paint(ctx,H,d){
       var nh=isMove?44:58, sh=isMove?34:38, bh=nl.length*nh+sl.length*sh, rowH=Math.max(isMove?60:84,bh)+(isMove?22:30);
       if(i<list.length-1){ ctx.strokeStyle=C.line; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(iX,top+30); ctx.lineTo(iX,top+rowH+30); ctx.stroke(); }
       var rr=isMove?26:36;
-      ctx.beginPath(); ctx.arc(iX,top+rr,rr,0,Math.PI*2); ctx.fillStyle='#fff6ee'; ctx.fill();
-      ctx.lineWidth=isMove?3:4; ctx.strokeStyle=isMove?C.line:C.acc; ctx.stroke();
-      f('400',isMove?26:36); ctx.textAlign='center'; ctx.fillStyle=C.ink; ctx.fillText(r.icon,iX,top+rr-(isMove?15:20)); ctx.textAlign='left';
+      var im=(r.ik&&typeof PLIL_IMG!=='undefined')?PLIL_IMG[r.ik]:null, useIm=!!(im&&im.complete&&im.naturalWidth&&!PLIL_IMG.__taint);   // [ill-icons 2026-09-26]
+      ctx.beginPath(); ctx.arc(iX,top+rr,rr,0,Math.PI*2); ctx.fillStyle=useIm?'#fff':'#fff6ee'; ctx.fill();
+      ctx.lineWidth=isMove?3:(useIm?5:4); ctx.strokeStyle=useIm?(PLIL_C[r.ik]||C.acc):(isMove?C.line:C.acc); ctx.stroke();
+      if(useIm){ var sz=rr*1.45; try{ ctx.drawImage(im,iX-sz/2,top+rr-sz/2,sz,sz); }catch(e){ useIm=false; } }
+      if(!useIm){ f('400',isMove?26:36); ctx.textAlign='center'; ctx.fillStyle=C.ink; ctx.fillText(r.icon,iX,top+rr-(isMove?15:20)); ctx.textAlign='left'; }
       var yy=top;
       f('800',isMove?32:44); ctx.fillStyle=isMove?C.sub:C.ink; nl.forEach(function(l){ ctx.fillText(l,bX,yy); yy+=nh; });
       f('600',isMove?26:28); ctx.fillStyle=C.sub; sl.forEach(function(l){ ctx.fillText(l,bX,yy); yy+=sh; });
