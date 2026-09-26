@@ -267,6 +267,10 @@ footer p{margin:0 0 6px}
 .planhero .ph-s{margin:8px 0 0;font-size:.72rem;opacity:.85}
 .ph-grid{display:grid;gap:11px;margin:12px 0 0}
 .ph-opt{display:block;text-decoration:none;color:inherit}
+/* [quick 2026-09-26] 前回の条件ですぐプランを作る（保存があるときだけ） */
+.ph-quick .ph-btn{background:#fff7d6;color:#8a5a00;border:2px solid #fff}
+.ph-quick[hidden]{display:none}
+
 .ph-opt .ph-btn{display:block;width:100%;box-sizing:border-box;padding:13px 14px;font-size:1.05rem}
 .ph-opt.is-sub .ph-btn{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.92);box-shadow:none}
 .ph-cap{margin:5px 0 0;font-size:.73rem;opacity:.9;line-height:1.45}
@@ -330,6 +334,7 @@ footer p{margin:0 0 6px}
       <p class="ph-q">今日どこ行く？</p>
       <p class="ph-t">30秒で今日のおでかけが決まる</p>
       <div class="ph-grid">
+        <a class="ph-opt ph-quick" id="phQuick" hidden onclick="if(typeof gtag==='function')gtag('event','seo_cta_click',{src:'top',position:'hero-quick'})" href="./plan.html?quick=1&amp;src=top_hero_quick"><span class="ph-btn">▶ 前回の条件ですぐプランを作る</span><span class="ph-cap" id="phQuickCap" style="display:block"></span></a>
         <a class="ph-opt" onclick="if(typeof gtag==='function')gtag('event','seo_cta_click',{src:'top',position:'hero-plan'})" href="./plan.html?src=top_hero_planner"><span class="ph-btn">🎯 おでかけプランを作る</span><span class="ph-cap" style="display:block">おでまるが条件から自動で組み立て・質問に答えるだけ30秒</span></a>
         <a class="ph-opt is-sub" onclick="if(typeof gtag==='function')gtag('event','seo_cta_click',{src:'top',position:'hero-map'})" href="./erabu.html?src=top_hero_mapselect"><span class="ph-btn">🗺️ マップから自分で選ぶ</span><span class="ph-cap" style="display:block">行きたい場所を選んでプランに・祖父母の家や予約したお店も入れられる</span></a>
       </div>
@@ -1073,5 +1078,7 @@ updateWeather();
 setTimeout(()=>{try{if(map)map.invalidateSize();}catch(e){console.warn('map invalidateSize failed',e);}},300);
 </script>
 <script>(function(){try{fetch('https://kosodate-odekake.jp/stats.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(s){if(!s)return;document.querySelectorAll('[data-stat]').forEach(function(el){var k=el.getAttribute('data-stat');var v=s;var parts=k.split(':');for(var i=0;i<parts.length;i++){if(v==null)return;v=v[parts[i]];}if(v==null||isNaN(Number(v)))return;el.textContent=Number(v).toLocaleString('ja-JP');});}).catch(function(){});}catch(e){}})();</script>
+<script>/* [quick 2026-09-26] 前回の条件（自動プランナーの保存）があるときだけボタンを出す */
+(function(){try{var p=JSON.parse(localStorage.getItem('odemaru_prefs_v1_miyagi')||'null');if(!p||!p.origin||!p.origin.name||!p.driveTime||!p.budget||!Array.isArray(p.ages)||!p.ages.length) return;if(typeof CITIES!=='undefined'&&!CITIES.some(function(c){return c[0]===p.origin.name;})) return;var A={'0-2':'0〜2歳','3-5':'3〜5歳','elem':'小学生'},D={'20':'車で20分まで','40':'車で40分まで','60':'車で60分まで','any':'遠くてもOK'};var ages=p.ages.map(function(a){return A[a]||'';}).filter(Boolean).join('・');var b=document.getElementById('phQuick'),c=document.getElementById('phQuickCap');if(!b||!c) return;c.textContent=p.origin.name+'から・'+ages+(D[p.driveTime]?'・'+D[p.driveTime]:'');b.hidden=false;}catch(e){}})();</script>
 </body>
 </html>
