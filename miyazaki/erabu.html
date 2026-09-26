@@ -7769,7 +7769,30 @@ function swapCandidates(slot,widenSteps){
   if(nearAllowKm!=null){
     out.forEach(s=>{ if(s.__swapDistKm!=null&&s.__swapDistKm>nearAllowKm) s.__swapFar=true; });
   }
+  if(slot==='main') return eng4RainJidokan(out);   // [plan-fix4 2026-09-26]
   return out;
+}
+/* [plan-fix4 2026-09-26] 雨の日は、メインの「変更する」の候補の最後に、出発地から車で20分以内（運転の時間）の児童館を最大3か所（ランダム）足す。
+ * すでに入っている児童館も3か所に数える。この日お休みと分かっている館・プランに入っている館・外した館は出さない。 */
+function eng4RainJidokan(out){
+  try{
+    if(!isRainMode(state.weather)) return out;
+    const o=state.origin; if(!o||o.lat==null) return out;
+    const p=currentPlanObj(); const inPlan=p?swapInPlanList(p):[];
+    const ex=state.excludedSpots||[];
+    const have=out.filter(s=>isJidokan(s)).length; if(have>=3) return out;
+    const date=targetDate(state.when||'today');
+    const pool=SPOTS_JIDOKAN.filter(s=>{
+      if(s.latitude==null||s.longitude==null) return false;
+      if(out.includes(s)||inPlan.includes(s)||ex.includes(s)) return false;
+      if(legMinutes(o.lat,o.lng,s.latitude,s.longitude)>20) return false;   // 運転の時間（スポット間と同じ式：km×2.2）で20分以内。カードの「車で約◯分」は駐車などを含む別の式
+      try{ if(isClosedOn(s,date)) return false; }catch(e){}
+      return true;
+    });
+    const add=shuffle(pool).slice(0,3-have);
+    add.forEach(s=>{ s.__swapFar=false; });
+    return out.concat(add);
+  }catch(e){ return out; }
 }
 // 変更候補カードの所要時間の基準点。main枠は出発地、それ以外は直前の地点。
 function swapPrevSpot(slot){
@@ -9623,7 +9646,6 @@ function showResult(){
   } else {
     html+='<button class="act-reroll" onclick="reroll()">🔄 別のプランにする</button>';
   }
-  html+='<a class="act-map" href="./index.html" onclick="track(\'map\')">🗺 地図でこのへんを見る</a>';
   html+='<button class="act-restart" onclick="restart()">最初からやり直す</button>';
   html+='</div>';
   html+=fbHtml(); // プランの評価（.actions の直後・各注記より上）
@@ -10538,9 +10560,10 @@ function openCard(s,opt){
   const L0=look(s), eat=isEat(s)&&!s.__temp;
   // 距離が省略されないよう、チェーン店は後ろ。v5：自分の場所は住所が長いので距離を先に（「目…」で切れないように）
   const meta=s.__temp?(esc(mapDist(s,true))+(s.city?'・'+esc(s.city):'')):(esc(s.city||'')+(s.city?'・':'')+esc(mapDist(s,true))+(s.is_chain===true?'・チェーン店':''));
-  const btn=eat?'<a class="primary food" href="'+esc(gmapsSearch(s))+'" target="_blank" rel="noopener" data-out="gmaps">'+ic('car')+'Googleマップで行く</a>'
+  const btn=eat?'<div class="gorow"><button class="primary food" data-act="lu">'+ic('eat')+'お昼にここへ行く</button></div>'   // v13：お店は「お昼にここへ行く」（Googleマップは下の小さいリンク）
     :'<div class="gorow"><button class="primary" data-act="am">午前に行く</button><button class="primary pm" data-act="pm">午後に行く</button></div>';
   const subs=[];
+  if(eat) subs.push('<a href="'+esc(gmapsSearch(s))+'" target="_blank" rel="noopener" data-out="gmaps">Googleマップ'+ic('ext','oi ex')+'</a>');
   if(!s.__temp&&s.official_url) subs.push('<a href="'+esc(s.official_url)+'" target="_blank" rel="noopener">公式サイト'+ic('ext','oi ex')+'</a>');
   if(!s.__temp) subs.push('<button type="button" data-act="send">'+ic('send')+'この場所を送る</button>');   // 自分の場所は送らない
   const facts=cardFacts(s), tg=cardTags(s);
@@ -10746,6 +10769,56 @@ async function planPm(P){
   E.when=w0;
   return false;
 }
+/* v13：お昼にここへ行く：選んだお店 L をお昼に固定し、午前の遊び場を L の近くで選ぶ（午後はエンジンが組む）。
+   ・午前の遊び場 … buildPool() のうち L から車で20分以内（5・10・15・20分の4段、同じ段は点数順）。3件未満なら近い順8件
+   ・採用するのは L がお昼の行に入り、お昼が11:00〜13:30、帰宅上限と移動合計の上限（午後に行くと同じ）に収まる案だけ
+   ・お店がお休みの日は飛ばして、8日先まで。乱数は「L の名前＋|lu」で固定 */
+const LU_MIN=11*60, LU_MAX=13*60+30;
+function luOk(p,M,L){
+  const v=view3(p), lim=pmLimits();
+  if(!v.m||v.m.spot!==M) return false;
+  if(!v.l||v.l.spot!==L) return false;
+  if(v.l.time<LU_MIN||v.l.time>LU_MAX) return false;
+  if(lim.kidCap&&p.retHome&&p.retHome>lim.kidCap) return false;
+  if(p.totalDrive!=null&&p.totalDrive>lim.driveLimit) return false;
+  return true;
+}
+function luBuild(L){
+  const saved=saveParts();
+  const date=targetDate(E.when);
+  E.fixedStart=null; E.shift=0; prep();
+  let pool=[];
+  const _rm=window.recentMains;
+  try{
+    window.recentMains=function(){ return []; };
+    pool=withSeed(L.name+'|lu',()=>buildPool(date,state.weather))||[];
+  }catch(e){ pool=[]; } finally{ window.recentMains=_rm; }
+  pool=pool.filter(s=>s!==L&&s.name!==L.name&&isPlay(s)&&!isSamePlace(s,L,0.3));
+  const leg=s=>legMinutes(s.latitude,s.longitude,L.latitude,L.longitude);
+  const band=s=>{ const m=leg(s); return m<=5?0:(m<=10?1:(m<=15?2:3)); };
+  let near=pool.map((s,i)=>({s,i})).filter(x=>leg(x.s)<=20).sort((a,b)=>(band(a.s)-band(b.s))||(a.i-b.i)).map(x=>x.s);
+  if(near.length<3) near=pool.map((s,i)=>({s,i,k:haversineKm(s.latitude,s.longitude,L.latitude,L.longitude)})).sort((a,b)=>(a.k-b.k)||(a.i-b.i)).slice(0,8).map(x=>x.s);
+  for(const M of near.slice(0,10)){
+    E.main=M; E.L=L; E.userL=true; E.S=null; E.userS=false; E.shift=0;
+    let p; try{ p=compose(); }catch(e){ continue; }
+    if(luOk(p,M,L)) return true;
+  }
+  restoreParts(saved);
+  return false;
+}
+async function planLu(L){
+  E.fixedStart=null; E.shared=false; E.sw=null; E.pmAuto=false;
+  const req=E.when||'today'; let why=null;
+  if(!E.when||(E.when==='today'&&!todayPlanAvailable())){ E.when=defaultWhen(); if(E.when!=='today') why='late'; }
+  const w0=E.when;
+  for(const k of dayKeysFrom(E.when)){
+    if(closedOn(L,k)) continue;
+    E.when=k; await ensureWeather();
+    if(luBuild(L)){ E.dateMsg=dayMsg(L,req,k,why); return true; }
+  }
+  E.when=w0;
+  return false;
+}
 async function pmFeasible(P,k){   // その日に「午後に行く」で組めるか（中身は変えない。日付の選択肢に使う）
   if(closedOn(P,k)) return false;
   const sv=E.when, saved=saveParts(); let ok=false;
@@ -10754,12 +10827,13 @@ async function pmFeasible(P,k){   // その日に「午後に行く」で組め�
   return ok;
 }
 async function startPlan(P,slot){
-  slot=slot==='pm'?'pm':'am';
+  slot=slot==='pm'?'pm':(slot==='lu'?'lu':'am');
   const rp=E.repick; E.repick=null;
   E.fo=E.f.free===true; E.stay=null;   // v6：地図で「無料」を押しているときは、午後の候補・「変える」の候補も無料から
   if(!(rp&&slot==='am')) E.noLunch=false;   // v6：お昼なしは「マップで選び直す」（午前）のときだけ引き継ぐ
   E.pin={name:P.name,slot,spot:P};
   E.dateMsg=null; let pmFail=false;
+  if(slot==='lu'&&!(await planLu(P))){ E.pin=null; toast('このお店の近くでは、プランを組めませんでした',2600); return; }   // v13：組めないときは地図のまま
   if(slot==='pm'&&!(await planPm(P))){ E.pin.slot=slot='am'; pmFail=true; }   // 8日先まで組めないときだけ、午前に行くで組む
   if(slot==='am') await planAm(P);
   if(pmFail) E.dateMsg='午後に入れられる日がなかったので、午前に行くで組みました';
@@ -10769,11 +10843,12 @@ async function startPlan(P,slot){
 /* ⭐ の行の「🗺 マップで選び直す」：マップに戻る（表示位置・あそぶ/たべる・条件ボタンは backToMap が前回のまま戻す。検索欄の文字だけ消す）。
    日付はそのまま。マップで別の場所の「午前に行く」「午後に行く」を押すと、startPlan() がその枠で組み直す */
 function repick(slot){
-  E.repick={slot:slot==='pm'?'pm':'am'}; E.sw=null;
-  ga('erabu_change',{slot:slot==='pm'?'sub':'main',to:'repick'});
+  slot=slot==='pm'?'pm':(slot==='lu'?'lu':'am');
+  E.repick={slot}; E.sw=null;
+  ga('erabu_change',{slot:slot==='pm'?'sub':(slot==='lu'?'lunch':'main'),to:'repick'});
   if(E.q) clearQ();   // 検索で絞っていたら外して、ほかの場所のピンも見えるようにする（表示位置・あそぶ/たべる・条件ボタンはそのまま）
   if(history.state&&history.state.erabu==='plan') history.back(); else backToMap();
-  setTimeout(()=>toast((slot==='pm'?'午後':'午前')+'に行く場所をマップから選んでね',2500),60);
+  setTimeout(()=>toast(slot==='lu'?'お昼に行くお店をマップから選んでね':((slot==='pm'?'午後':'午前')+'に行く場所をマップから選んでね'),2500),60);
 }
 function whenKind(){ if(E.when==='today') return 'today'; const o=whenOpts().find(x=>x.k===E.when); return o?(o.lab==='あす'?'tomorrow':'weekend'):'other'; }
 async function replan(){
@@ -10808,6 +10883,7 @@ function pinOf(v){   // ⭐ を付ける行（選んだ場所がその行にい�
   const P=E.pin; if(!P) return null;
   if(P.slot==='am'&&v.m&&v.m.spot.name===P.name) return 'main';
   if(P.slot==='pm'&&v.s&&v.s.spot.name===P.name) return 'sub';
+  if(P.slot==='lu'&&v.l&&v.l.spot.name===P.name) return 'lunch';   // v13
   return null;
 }
 const isBentoRow=r=>(r.type==='move'&&/^🍱/.test(r.label||''))||(r.type==='note'&&r.icon==='🍙')||(r.type==='spot'&&r.spot&&r.spot.__bento);
@@ -10815,7 +10891,7 @@ const isBentoRow=r=>(r.type==='move'&&/^🍱/.test(r.label||''))||(r.type==='not
 function tlRail(time,icon,ring){ return '<div class="rail"><span class="time">'+(time!=null?fmtTime(time):'—')+'</span><span class="icon'+(ring?' pic':'')+'"'+(ring?' style="border-color:'+ring+'"':'')+'>'+icon+'</span><span class="line"></span></div>'; }
 function tlBtn(slot,interactive,pinned,label){
   if(!interactive||!slot) return '';
-  if(pinned) return ' <button type="button" class="swapbtn repick" data-act="repick" data-slot="'+(slot==='sub'?'pm':'am')+'"><span>'+ic('map')+'マップで選び直す</span></button>';
+  if(pinned) return ' <button type="button" class="swapbtn repick" data-act="repick" data-slot="'+(slot==='sub'?'pm':(slot==='lunch'?'lu':'am'))+'"><span>'+ic('map')+'マップで選び直す</span></button>';
   return ' <button type="button" class="swapbtn'+(E.sw&&E.sw.slot===slot?' on':'')+'" data-act="'+slot+'"><span>'+(label?esc(label):ic('change')+'変更する')+'</span></button>';
 }
 function tlHours(s){ const t=String(s.business_hours||'').replace(/\s+/g,' ').trim(); return t?'<div class="meta">'+ic('clock')+esc(clip(t,60))+'</div>':''; }
@@ -10943,6 +11019,7 @@ function pickSw(i){
       if(pmTry(s,v.s.spot)){ E.pmAuto=false; renderPlan(); return; }
       restoreParts(saved); applySwap('main',i); return;
     }
+    if(pinOf(v)==='lunch'){ E.main=s; E.L=v.l.spot; E.userL=true; E.S=null; E.userS=false; compose(); renderPlan(); return; }   // v13：お昼に選んだお店はそのまま
     planAm(s).then(()=>renderPlan());   // 行き先が変わる → これまでと同じくお昼と午後を組み直す
     return;
   }
@@ -10975,7 +11052,7 @@ window.buildShareUrl=function(p){
   const long=location.origin+location.pathname+'?'+parts.join('&');
   const t=v.start, hhmm=String(Math.floor(t/60)).padStart(2,'0')+String(t%60).padStart(2,'0');
   const pin=pinOf(v);
-  const u=shortShareUrl(long)+'&d='+ymd(targetDate(state.when))+'&t='+hhmm+(pin?'&sl='+(pin==='sub'?'pm':'am'):'');   // 既存の短縮形式＋日付・出発時刻・午前/午後
+  const u=shortShareUrl(long)+'&d='+ymd(targetDate(state.when))+'&t='+hhmm+(pin?'&sl='+(pin==='sub'?'pm':(pin==='lunch'?'lu':'am')):'');   // 既存の短縮形式＋日付・出発時刻・午前/午後
   E.lastShare=u;
   return u;
 };
@@ -11004,13 +11081,13 @@ function parseShared(){
   const S0=qs.get('sub')?spot(qs.get('sub'),'st'):null;
   const sl=raw.get('sl');
   let e3={}; try{ e3=eng3ShareOpts(qs).e3||{}; }catch(e){ e3={}; }   // v6：nl・fo・sm・ss（エンジンと同じ読み方）
-  return {o,ages,d,start:(+t.slice(0,2))*60+(+t.slice(2)),main,L:L0,S:S0,sl:(sl==='pm'||sl==='am')?sl:null,e3};
+  return {o,ages,d,start:(+t.slice(0,2))*60+(+t.slice(2)),main,L:L0,S:S0,sl:(sl==='pm'||sl==='am'||sl==='lu')?sl:null,e3};
 }
 function showShared(x){
   E.shared=true; state.origin=x.o; state.ages=new Set(x.ages.length?x.ages:['3-5']);
   E.when='d:'+x.d; E.fixedStart=x.start; E.main=x.main; E.L=x.L; E.S=x.S; E.userL=true; E.userS=true;
   const e3=x.e3||{}; E.noLunch=e3.lunch==='none'; E.fo=e3.freeOnly===true; E.stay=(e3.stayMain||e3.staySub)?{stayMain:e3.stayMain||null,staySub:e3.staySub||null}:null;
-  E.pin=x.sl==='pm'&&x.S?{name:x.S.name,slot:'pm'}:(x.sl==='am'?{name:x.main.name,slot:'am'}:null);
+  E.pin=x.sl==='pm'&&x.S?{name:x.S.name,slot:'pm'}:(x.sl==='am'?{name:x.main.name,slot:'am'}:(x.sl==='lu'&&x.L&&x.L.name?{name:x.L.name,slot:'lu'}:null));
   state.weather=null;
   const p=compose(), v=view3(p);
   $('rTitle').textContent=dateLabel(targetDate(state.when))+'のプラン';
@@ -11077,6 +11154,7 @@ async function doAdd(){
     ga('erabu_change',{slot:'main',to:'myplace'});
     const v=view3(currentPlanObj());
     if(pinOf(v)==='sub'){ E.pmAuto=false; E.sw=null; E.main=sp; const x=partsOf(currentPlanObj()); E.L=x.L; E.S=x.S; E.userL=true; E.userS=true; compose(); renderPlan(); }
+    else if(pinOf(v)==='lunch'){ E.main=sp; E.L=v.l.spot; E.userL=true; E.S=null; E.userS=false; compose(); renderPlan(); }   // v13
     else { await planAm(sp); renderPlan(); }
   }
   else if(f==='sub'||f==='lunch'){ ga('erabu_change',{slot:f,to:'myplace'}); setSlot(f,sp); }
@@ -11113,6 +11191,7 @@ function bind(){
     if(b.dataset.act==='close') closeCard();
     else if(b.dataset.act==='send') shareSpot(s);
     else if(b.dataset.act==='am') go(s,'am');
+    else if(b.dataset.act==='lu'){ ga('erabu_pick',{mode:E.mode,kind:pickKind(s),tier:s.tier||'',pick_for:'',slot:'lunch'}); go(s,'lu'); }
     else if(b.dataset.act==='pm'){ ga('erabu_pick',{mode:E.mode,kind:pickKind(s),tier:s.tier||'',pick_for:'',slot:'pm'}); go(s,'pm'); }
   });
   $('originPick').innerHTML='<option value="__here">現在地（いまいる場所）</option>'+CITIES.map(c=>'<option>'+esc(c[0])+'</option>').join('');
@@ -11147,7 +11226,7 @@ function bind(){
     const pm=E.pin&&E.pin.slot==='pm'&&E.pmAuto&&E.pin.spot;
     const all=whenOpts(); let o0=[];
     if(pm){ for(const x of all){ if(x.k===E.when||await pmFeasible(E.pin.spot,x.k)) o0.push(x); } }   // 午後に行く：その日に組めない日は出さない
-    else o0=all.filter(x=>okOn(E.main,x.k));   // 行く場所がお休みの日は出さない
+    else o0=all.filter(x=>okOn(E.main,x.k)&&!(E.pin&&E.pin.slot==='lu'&&E.pin.spot&&closedOn(E.pin.spot,x.k)));   // 行く場所（お昼に選んだお店も）がお休みの日は出さない
     const o=o0.length?o0:all;
     $('optBody').innerHTML='<h2>いつ行く？</h2><div class="opts">'+o.map(x=>'<button class="opt'+(x.k===E.when?' on':'')+'" data-act="when" data-k="'+x.k+'"><span class="tx"><b>'+x.lab+'</b><small>'+dateLabel(x.d)+'</small></span></button>').join('')+'</div>';
     openBS('optSheet');
