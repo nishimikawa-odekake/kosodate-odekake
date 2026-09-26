@@ -13884,6 +13884,20 @@ try{
   if(__h&&isFinite(__h.lat)&&isFinite(__h.lng)&&__age>=0&&__age<=120000&&!/[?&](share|custom|s)=1/.test(location.search)) geoUseHere(+__h.lat,+__h.lng,__h.ts);
 }catch(e){}
 initFromShareOrWizard();
+/* [quick 2026-09-26] トップの「前回の条件ですぐプランを作る」から来たとき（?quick=1）。保存した出発地・移動時間・年齢・予算がそろっているときだけ、
+   いつ＝きょう（30分後に出発）、出発が15時を過ぎるならあす（午前）で、そのまま組む。そろっていなければ、いつもの質問から */
+setTimeout(function(){
+  try{
+    if(!/[?&]quick=1/.test(location.search)||/[?&](share|custom|s)=1/.test(location.search)) return;
+    const raw=JSON.parse(localStorage.getItem(PREF_KEY)||'null');
+    if(!raw||!raw.origin||!raw.driveTime||!raw.budget||!Array.isArray(raw.ages)||!raw.ages.length) return;
+    if(!state.origin||!state.driveTime||!state.budget||!state.ages||!state.ages.size) return;
+    if(todayPlanAvailable()&&nowMinutes()+30<=15*60){ state.when='today'; state.depart={mode:'offset',min:30}; }   // 15時を過ぎる出発になるなら、あすの午前
+    else { state.when='tomorrow'; state.depart={mode:'slot',slot:'am'}; }
+    if(typeof gtag==='function') gtag('event','plan_quick',{when:state.when});
+    generate();
+  }catch(e){}
+},0);
 // 「いつ行く？」を表示した時点で「今日これから」が適切に非活性になるよう、起動時にも反映する。
 // (旧実装は日付ボタンを押したときにしか呼ばれず、初回表示では有効なままだった)
 try{ refreshTodayAvailability(); }catch(e){}
