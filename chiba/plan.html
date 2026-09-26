@@ -22011,7 +22011,30 @@ function swapCandidates(slot,widenSteps){
   if(nearAllowKm!=null){
     out.forEach(s=>{ if(s.__swapDistKm!=null&&s.__swapDistKm>nearAllowKm) s.__swapFar=true; });
   }
+  if(slot==='main') return eng4RainJidokan(out);   // [plan-fix4 2026-09-26]
   return out;
+}
+/* [plan-fix4 2026-09-26] 雨の日は、メインの「変更する」の候補の最後に、出発地から車で20分以内（運転の時間）の児童館を最大3か所（ランダム）足す。
+ * すでに入っている児童館も3か所に数える。この日お休みと分かっている館・プランに入っている館・外した館は出さない。 */
+function eng4RainJidokan(out){
+  try{
+    if(!isRainMode(state.weather)) return out;
+    const o=state.origin; if(!o||o.lat==null) return out;
+    const p=currentPlanObj(); const inPlan=p?swapInPlanList(p):[];
+    const ex=state.excludedSpots||[];
+    const have=out.filter(s=>isJidokan(s)).length; if(have>=3) return out;
+    const date=targetDate(state.when||'today');
+    const pool=SPOTS_JIDOKAN.filter(s=>{
+      if(s.latitude==null||s.longitude==null) return false;
+      if(out.includes(s)||inPlan.includes(s)||ex.includes(s)) return false;
+      if(legMinutes(o.lat,o.lng,s.latitude,s.longitude)>20) return false;   // 運転の時間（スポット間と同じ式：km×2.2）で20分以内。カードの「車で約◯分」は駐車などを含む別の式
+      try{ if(isClosedOn(s,date)) return false; }catch(e){}
+      return true;
+    });
+    const add=shuffle(pool).slice(0,3-have);
+    add.forEach(s=>{ s.__swapFar=false; });
+    return out.concat(add);
+  }catch(e){ return out; }
 }
 // 変更候補カードの所要時間の基準点。main枠は出発地、それ以外は直前の地点。
 function swapPrevSpot(slot){
@@ -23865,7 +23888,6 @@ function showResult(){
   } else {
     html+='<button class="act-reroll" onclick="reroll()">🔄 別のプランにする</button>';
   }
-  html+='<a class="act-map" href="./index.html" onclick="track(\'map\')">🗺 地図でこのへんを見る</a>';
   html+='<button class="act-restart" onclick="restart()">最初からやり直す</button>';
   html+='</div>';
   html+=fbHtml(); // プランの評価（.actions の直後・各注記より上）
