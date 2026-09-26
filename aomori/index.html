@@ -69,13 +69,6 @@ header.hero .creator{font-size:.72rem;color:var(--sub);margin:2px 0 4px;opacity:
   color:var(--sub);font-size:.76rem;opacity:.9}
 .odemaru-note img{width:34px;height:auto;flex:none}
 
-/* mood buttons */
-.moods{padding:14px 0 4px}
-.moods h2{font-size:.95rem;margin:0 0 8px;color:var(--sub)}
-.mood-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
-.mood-btn{flex:0 0 auto;border:none;border-radius:18px;padding:14px 16px;min-width:104px;font-size:.95rem;font-weight:700;color:#4a4640;background:var(--card);box-shadow:0 2px 6px rgba(160,140,110,.18);cursor:pointer;text-align:center;line-height:1.35;transition:transform .1s}
-.mood-btn:active{transform:scale(.96)}
-.mood-btn .emo{font-size:1.5rem;display:block;margin-bottom:4px}
 
 /* filter bar */
 .filterbar{position:sticky;top:0;z-index:900;background:rgba(250,246,239,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 0}
@@ -280,6 +273,33 @@ footer p{margin:0 0 6px}
 @media(max-width:389px){.ph-opt .ph-btn{font-size:1rem;padding:12px 10px}}
 /* AFF_HIDE_20260816: アフィリエイト表示の一時停止。復帰時はこのブロックを削除するだけでよい */
 .card .aff{display:none!important}
+
+/* [top-erabu 2026-09-26] 操作帯・ピン・全画面ボタンを erabu と同じに */
+.ebar{padding:10px 0 8px}
+.ebar .fi{width:18px;height:18px;flex:none;margin-right:4px;vertical-align:-3px}
+.emode{display:flex;max-width:520px;height:46px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--line);border-radius:999px;margin-bottom:8px}
+.emode button{flex:1;display:flex;align-items:center;justify-content:center;height:46px;border:0;background:none;border-radius:999px;font:inherit;font-size:16px;font-weight:800;color:var(--sub);cursor:pointer}
+.emode button.on[data-m=play]{background:#c9713f;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.emode button.on[data-m=eat]{background:#D95D77;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.echips{flex-wrap:nowrap;overflow-x:auto;gap:6px}
+.echips .chip{display:inline-flex;align-items:center;height:42px;padding:0 12px;font-size:15px;font-weight:700;background:#fff;flex:none}
+.echips .chip[hidden]{display:none}
+.echips .chip.on{background:#c9713f;border-color:transparent;color:#fff}
+.ebar.eat .echips .chip.on{background:#D95D77}
+.echips .count{margin-left:auto;padding-left:6px;white-space:nowrap;font-size:14px}
+.eorigin{flex-wrap:nowrap;gap:6px;color:#c9713f;margin-bottom:0}
+.eorigin .origin-sel{flex:1;min-width:0;height:40px;font-size:15px}
+.eorigin .origin-btn{flex:none;height:40px;font-size:14px}
+.mapbanners{display:flex;flex-direction:column;gap:0;margin:0 0 16px}
+.mapbanners .topbanner{margin-top:8px;max-width:100%;box-sizing:border-box;font-size:.8rem;padding:9px 12px}
+#fullscreenMapBtn{top:auto;right:auto;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;height:52px;padding:0 24px;font-size:17px;font-weight:800;color:#fff;background:#c9713f;border:3px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.28);white-space:nowrap;z-index:450}
+#fullscreenMapBtn:active{transform:translateX(-50%) scale(.96)}
+#fullscreenMapBtn .fi{width:22px;height:22px}
+.epw{background:none;border:0}
+.epw .pg{display:block;width:40px;height:47px;overflow:visible}
+.clw{background:none;border:none}
+.cl{width:100%;height:100%;border-radius:50%;background:#c9713f;color:#fff;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 0 0 5px rgba(201,113,63,.28),0 2px 6px rgba(0,0,0,.3)}
+#map.eat .cl{background:#D95D77;box-shadow:0 0 0 5px rgba(217,93,119,.28),0 2px 6px rgba(0,0,0,.3)}
 </style>
 <style id="odm-chrome">
 .odm-sitebar{background:#fffdf9;border-bottom:1px solid #e8e0d4}
@@ -311,7 +331,7 @@ footer p{margin:0 0 6px}
       <p class="ph-t">30秒で今日のおでかけが決まる</p>
       <div class="ph-grid">
         <a class="ph-opt" onclick="if(typeof gtag==='function')gtag('event','seo_cta_click',{src:'top',position:'hero-plan'})" href="./plan.html?src=top_hero_planner"><span class="ph-btn">🎯 おでかけプランを作る</span><span class="ph-cap" style="display:block">おでまるが条件から自動で組み立て・質問に答えるだけ30秒</span></a>
-        <a class="ph-opt is-sub" onclick="if(typeof gtag==='function')gtag('event','seo_cta_click',{src:'top',position:'hero-map'})" href="./map.html?src=top_hero_mapselect"><span class="ph-btn">🗺️ マップから自分で選ぶ</span><span class="ph-cap" style="display:block">行きたい場所を選んでプランに・祖父母の家や予約したお店も入れられる</span></a>
+        <a class="ph-opt is-sub" onclick="if(typeof gtag==='function')gtag('event','seo_cta_click',{src:'top',position:'hero-map'})" href="./erabu.html?src=top_hero_mapselect"><span class="ph-btn">🗺️ マップから自分で選ぶ</span><span class="ph-cap" style="display:block">行きたい場所を選んでプランに・祖父母の家や予約したお店も入れられる</span></a>
       </div>
       <p class="ph-s">無料・登録不要</p>
     </div>
@@ -325,68 +345,14 @@ footer p{margin:0 0 6px}
       <p class="wxbar-src">天気: Open-Meteo</p>
     </div>
     <!-- weekly-banner: 週次更新時に件数を書き換え -->
-    <a class="topbanner amebanner" href="./ame.html">☔ 雨の日でも遊べる室内スポット41選（エリア別）→</a>
-    <a class="topbanner muryobanner" href="./muryo.html">🆓 無料で遊べる子連れスポット37選（エリア別）→</a>
-    <a class="topbanner articlesbanner" href="./articles.html">📚 市町村別・テーマ別のおでかけ記事 →</a>
   </div>
 </header>
 
-<section class="moods">
+<div class="filterbar ebar" id="filterbar">
   <div class="wrap">
-    <h2>気分で選ぶ</h2>
-    <div class="mood-scroll" id="moods" role="list">
-      <button class="mood-btn" data-mood="rain"    role="listitem"><span class="emo">☔</span>雨でも室内</button>
-      <button class="mood-btn" data-mood="free"    role="listitem"><span class="emo">🆓</span>無料</button>
-      <button class="mood-btn" data-mood="animal"  role="listitem"><span class="emo">🦁</span>動物とふれあう</button>
-      <button class="mood-btn" data-mood="active"  role="listitem"><span class="emo">🛝</span>からだを動かす</button>
-      <button class="mood-btn" data-mood="water"   role="listitem"><span class="emo">💦</span>水であそぶ</button>
-      <button class="mood-btn" data-mood="create"  role="listitem"><span class="emo">🔬</span>つくる・体験</button>
-      <button class="mood-btn" data-mood="vehicle" role="listitem"><span class="emo">🚃</span>のりもの・電車</button>
-      <button class="mood-btn" data-mood="food"    role="listitem"><span class="emo">🍽</span>子連れランチ</button>
-    </div>
-  </div>
-</section>
-
-<div class="filterbar" id="filterbar">
-  <div class="wrap">
-    <div class="frow" role="group" aria-label="出発地を選ぶ">
-      <span class="flabel">🚗 どこから行く？</span>
-      <select class="origin-sel" id="originSel" aria-label="出発地の街"></select>
-      <button class="origin-btn" id="originGeo" type="button">📍現在地から</button>
-      <span class="origin-note">※所要時間は目安です</span>
-      <span class="origin-msg" id="originMsg" role="status" aria-live="polite" style="display:none"></span>
-    </div>
-    <div class="frow" role="group" aria-label="遊びタイプで絞り込み">
-      <span class="flabel">遊び</span>
-      <button class="chip play" data-t="animal"  aria-pressed="false">🦁 動物</button>
-      <button class="chip play" data-t="active"  aria-pressed="false">🛝 からだ</button>
-      <button class="chip play" data-t="water"   aria-pressed="false">💦 水</button>
-      <button class="chip play" data-t="create"  aria-pressed="false">🔬 つくる</button>
-      <button class="chip play" data-t="vehicle" aria-pressed="false">🚃 のりもの</button>
-      <button class="chip play" data-t="food"    aria-pressed="false">🍽 ごはん</button>
-    </div>
-    <div class="frow" role="group" aria-label="出発地からの所要時間で絞り込み">
-      <span class="flabel" id="driveLabel">青森から</span>
-      <button class="chip drive" data-d="20" aria-pressed="false">20分</button>
-      <button class="chip drive" data-d="30" aria-pressed="false">30分</button>
-      <button class="chip drive" data-d="40" aria-pressed="false">40分</button>
-      <button class="chip drive" data-d="50" aria-pressed="false">50分</button>
-      <button class="chip drive" data-d="60" aria-pressed="false">60分</button>
-    </div>
-    <div class="frow">
-      <button class="chip" data-f="rain" aria-pressed="false">☔ 雨でもOK</button>
-      <button class="chip" data-f="free" aria-pressed="false">🆓 無料</button>
-      <button class="chip" data-f="kids" aria-pressed="false">🧸 キッズスペース</button>
-      <button class="chip" data-f="jidokan" aria-pressed="false">🏠 児童館</button>
-      <span class="count" id="count" aria-live="polite">該当32件</span>
-      <button class="reset" id="reset">リセット</button>
-    </div>
-    <div class="frow" id="foodSubChips" role="group" aria-label="ごはん店の追加条件" style="display:none">
-      <span class="flabel">ごはん店の条件</span>
-      <button class="chip" data-f="zashiki" aria-pressed="false">🍵 座敷あり</button>
-      <button class="chip" data-f="kids_chair" aria-pressed="false">🪑 子ども椅子</button>
-      <button class="chip" data-f="chain" aria-pressed="false">🍴 子連れチェーン店</button>
-    </div>
+    <div class="emode" role="group" aria-label="あそぶ・たべる"><button type="button" data-m="play" class="on" aria-pressed="true"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 20.5V4.5M8.5 20.5V4.5M4.5 9.5h4M4.5 13.5h4M4.5 17.5h4M8.5 7.5c6 0 5.5 12 12 12.5M8.5 11.5c3.6 0 4.6 7.2 7.6 9M3 20.5h18.5"/></svg>あそぶ</button><button type="button" data-m="eat" aria-pressed="false"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="7.8" cy="7.2" rx="2.7" ry="3.7"/><path d="M7.8 10.9v9.6M16.2 3.5v17M13.6 3.5v4.9a2.6 2.6 0 0 0 5.2 0V3.5"/></svg>たべる</button></div>
+    <div class="frow echips"><button class="chip" data-f="rain" data-mode="play" aria-pressed="false"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12C3 7 7 3.5 12 3.5S21 7 21 12c-1.5-1.1-3-1.1-4.5 0-1.5-1.1-3-1.1-4.5 0-1.5-1.1-3-1.1-4.5 0-1.5-1.1-3-1.1-4.5 0zM12 12v6.3a2.2 2.2 0 0 1-4.4 0"/></svg>雨OK</button><button class="chip" data-f="free" data-mode="play" aria-pressed="false"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11.8V4.8c0-.7.6-1.3 1.3-1.3h7l8.4 8.4c.5.5.5 1.4 0 1.9l-6.8 6.8c-.5.5-1.4.5-1.9 0z"/><circle fill="currentColor" stroke="none" cx="8" cy="8" r="1.4"/><ellipse cx="14" cy="14" rx="1.9" ry="2.7" transform="rotate(-45 14 14)"/></svg>無料</button><button class="chip" data-f="jidokan" data-mode="play" aria-pressed="false"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5L12 4l9 7.5M5.5 9.6v10.9h13V9.6"/><path fill="currentColor" stroke="none" d="M12 15.6c-1.2-0.9-3.6-2.6-3.6-4.6a1.9 1.9 0 0 1 3.6-1a1.9 1.9 0 0 1 3.6 1c0 2-2.4 3.7-3.6 4.6z"/></svg>児童館</button><button class="chip" data-f="zashiki" data-mode="eat" aria-pressed="false" hidden><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="6.5" width="17" height="3" rx="1.5"/><path d="M7 9.5v4.5M17 9.5v4.5"/><rect x="6" y="16.5" width="12" height="4" rx="2"/></svg>座敷</button><button class="chip" data-f="kids" data-mode="eat" aria-pressed="false" hidden><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="12.5" width="8" height="8" rx="1.3"/><rect x="12.5" y="12.5" width="8" height="8" rx="1.3"/><path d="M12 3.8l4.4 6.9H7.6z"/></svg>キッズ</button><span class="count" id="count" aria-live="polite"></span><button class="reset" id="reset" hidden>リセット</button></div>
+    <div class="frow eorigin" role="group" aria-label="出発地を選ぶ"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6-7-11.3a7 7 0 0 1 14 0C19 15 12 21 12 21z"/><circle cx="12" cy="9.7" r="2.5"/></svg><select class="origin-sel" id="originSel" aria-label="出発地の街"></select><button class="origin-btn" id="originGeo" type="button">現在地から</button><span class="origin-msg" id="originMsg" role="status" aria-live="polite" style="display:none"></span></div>
   </div>
 </div>
 
@@ -394,11 +360,16 @@ footer p{margin:0 0 6px}
   <div class="main">
     <div id="mapwrap">
       <div id="map" role="application" aria-label="スポットの地図"></div>
-      <button id="fullscreenMapBtn" type="button">⛶ 全画面で見る</button>
+      <button id="fullscreenMapBtn" type="button"><svg class="fi" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.2L9 4l6 2.5L20.5 4.2v13.6L15 20l-6-2.5-5.5 2.3zM9 4v13.5M15 6.5V20"/></svg>全画面で見る</button>
       <button id="recenterBtn" type="button" aria-label="現在地へ戻る" title="現在地へ戻る">⌖</button>
     </div>
     <button id="backToMap" type="button" aria-label="マップに戻る">🗺 マップに戻る</button>
     <div class="listwrap">
+      <div class="mapbanners">
+      <a class="topbanner amebanner" href="./ame.html">☔ 雨の日でも遊べる室内スポット41選（エリア別）→</a>
+      <a class="topbanner muryobanner" href="./muryo.html">🆓 無料で遊べる子連れスポット37選（エリア別）→</a>
+      <a class="topbanner articlesbanner" href="./articles.html">📚 市町村別・テーマ別のおでかけ記事 →</a>
+      </div>
       <h2 class="section-title">スポット一覧 <small id="listcount"></small></h2>
       <div class="cards" id="cards"></div>
       <div class="empty" id="empty" style="display:none">条件に合うスポットがありません。条件をゆるめてみてください。</div>
@@ -449,6 +420,7 @@ footer p{margin:0 0 6px}
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js" referrerpolicy="no-referrer"></script>
 <script>
 const SPOTS=[
   {
@@ -5083,14 +5055,50 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;'
 const primary=s=>(s.play_types&&s.play_types[0])||'indoor';
 const PLAYF=s=>PLAY[primary(s)]||{c:'#8a8a8a',e:'📍',label:'スポット'};
 
+/* [top-erabu 2026-09-26] erabu と同じピン（絵）と分類 */
+const EPIN={"animal": {"svg": "<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#E6A700\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><circle cx=\"24\" cy=\"24\" r=\"16.2\" fill=\"#fff\"/><svg x=\"10.5\" y=\"10.5\" width=\"27\" height=\"27\" viewBox=\"0 0 64 64\"><circle cx=\"17\" cy=\"18\" r=\"8\" fill=\"#B07642\"/><circle cx=\"47\" cy=\"18\" r=\"8\" fill=\"#B07642\"/><circle cx=\"17\" cy=\"18\" r=\"4\" fill=\"#E6B98C\"/><circle cx=\"47\" cy=\"18\" r=\"4\" fill=\"#E6B98C\"/> <circle cx=\"32\" cy=\"35\" r=\"21\" fill=\"#C58B52\"/><ellipse cx=\"32\" cy=\"42\" rx=\"10\" ry=\"8\" fill=\"#F1D3AE\"/> <circle cx=\"24\" cy=\"31\" r=\"2.8\" fill=\"#3B2A1E\"/><circle cx=\"40\" cy=\"31\" r=\"2.8\" fill=\"#3B2A1E\"/><ellipse cx=\"32\" cy=\"38.5\" rx=\"3.6\" ry=\"2.6\" fill=\"#3B2A1E\"/> <path d=\"M28.5 44 Q32 47 35.5 44\" stroke=\"#3B2A1E\" stroke-width=\"1.8\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"19\" cy=\"39\" r=\"3.2\" fill=\"#F39A8F\" opacity=\".8\"/><circle cx=\"45\" cy=\"39\" r=\"3.2\" fill=\"#F39A8F\" opacity=\".8\"/></svg>", "vb": "0 0 48 56", "d": "M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z", "c": "#E6A700"}, "book": {"svg": "<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#A0673A\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><circle cx=\"24\" cy=\"24\" r=\"16.2\" fill=\"#fff\"/><svg x=\"10.5\" y=\"10.5\" width=\"27\" height=\"27\" viewBox=\"0 0 64 64\"><rect x=\"8\" y=\"12\" width=\"11\" height=\"40\" rx=\"2\" fill=\"#E94B3C\"/><rect x=\"10\" y=\"18\" width=\"7\" height=\"3\" rx=\"1\" fill=\"#FFE066\"/> <rect x=\"20\" y=\"8\" width=\"10\" height=\"44\" rx=\"2\" fill=\"#2F9AA8\"/><rect x=\"22\" y=\"14\" width=\"6\" height=\"3\" rx=\"1\" fill=\"#fff\"/> <rect x=\"31\" y=\"16\" width=\"10\" height=\"36\" rx=\"2\" fill=\"#FFC930\"/><rect x=\"33\" y=\"22\" width=\"6\" height=\"3\" rx=\"1\" fill=\"#E94B3C\"/> <path d=\"M42 20 L52 17 L60 50 L50 53 Z\" fill=\"#7CCB5B\"/><rect x=\"4\" y=\"52\" width=\"56\" height=\"5\" rx=\"2.5\" fill=\"#B07642\"/></svg>", "vb": "0 0 48 56", "d": "M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z", "c": "#A0673A"}, "chain": {"svg": "<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#C0392B\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><circle cx=\"24\" cy=\"24\" r=\"16.2\" fill=\"#fff\"/><svg x=\"10.5\" y=\"10.5\" width=\"27\" height=\"27\" viewBox=\"0 0 64 64\"><rect x=\"11\" y=\"24\" width=\"42\" height=\"30\" rx=\"3\" fill=\"#FFF3E2\"/><rect x=\"26\" y=\"36\" width=\"12\" height=\"18\" rx=\"2\" fill=\"#4C8BD9\"/> <rect x=\"14\" y=\"34\" width=\"9\" height=\"9\" rx=\"1.5\" fill=\"#9ED8F5\"/><rect x=\"41\" y=\"34\" width=\"9\" height=\"9\" rx=\"1.5\" fill=\"#9ED8F5\"/> <path d=\"M7 16 H57 L55 27 Q51 31 47 27 Q43 31 39 27 Q35 31 32 27 Q29 31 25 27 Q21 31 17 27 Q13 31 9 27 Z\" fill=\"#E94B3C\"/> <path d=\"M17 16 L15 27 M27 16 L26 27 M37 16 L38 27 M47 16 L49 27\" stroke=\"#FFFFFF\" stroke-width=\"4\"/><rect x=\"7\" y=\"11\" width=\"50\" height=\"6\" rx=\"3\" fill=\"#C73A2D\"/></svg>", "vb": "0 0 48 56", "d": "M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z", "c": "#C0392B"}, "food": {"svg": "<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#E8436B\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><circle cx=\"24\" cy=\"24\" r=\"16.2\" fill=\"#fff\"/><svg x=\"10.5\" y=\"10.5\" width=\"27\" height=\"27\" viewBox=\"0 0 64 64\"><path d=\"M22 14 Q19 9 22 5 M32 13 Q29 8 32 4 M42 14 Q39 9 42 5\" stroke=\"#C9CED6\" stroke-width=\"2.5\" fill=\"none\" stroke-linecap=\"round\"/> <ellipse cx=\"32\" cy=\"42\" rx=\"27\" ry=\"12\" fill=\"#FFFFFF\" stroke=\"#E5E0D8\" stroke-width=\"2\"/><ellipse cx=\"32\" cy=\"38\" rx=\"17\" ry=\"9\" fill=\"#FFD23F\"/> <path d=\"M18 36 Q32 26 46 36\" stroke=\"#E84A3C\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"26\" cy=\"41\" r=\"2.5\" fill=\"#7CCB5B\"/><circle cx=\"38\" cy=\"42\" r=\"2.2\" fill=\"#7CCB5B\"/></svg>", "vb": "0 0 48 56", "d": "M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z", "c": "#E8436B"}, "indoor": {"svg": "<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#F28C1E\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><circle cx=\"24\" cy=\"24\" r=\"16.2\" fill=\"#fff\"/><svg x=\"10.5\" y=\"10.5\" width=\"27\" height=\"27\" viewBox=\"0 0 64 64\"><rect x=\"10\" y=\"36\" width=\"18\" height=\"18\" rx=\"3\" fill=\"#4C8BD9\"/><rect x=\"30\" y=\"36\" width=\"18\" height=\"18\" rx=\"3\" fill=\"#FFC930\"/> <rect x=\"20\" y=\"18\" width=\"18\" height=\"18\" rx=\"3\" fill=\"#E94B3C\"/><path d=\"M40 30 L52 8 L60 30 Z\" fill=\"#7CCB5B\"/> <text x=\"19\" y=\"50\" font-size=\"11\" font-weight=\"800\" fill=\"#fff\" font-family=\"Arial\">A</text><text x=\"36\" y=\"50\" font-size=\"11\" font-weight=\"800\" fill=\"#fff\" font-family=\"Arial\">B</text><text x=\"26\" y=\"32\" font-size=\"11\" font-weight=\"800\" fill=\"#fff\" font-family=\"Arial\">C</text></svg>", "vb": "0 0 48 56", "d": "M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z", "c": "#F28C1E"}, "jidokan": {"svg": "<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#F2605A\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><circle cx=\"24\" cy=\"24\" r=\"16.2\" fill=\"#fff\"/><svg x=\"10.5\" y=\"10.5\" width=\"27\" height=\"27\" viewBox=\"0 0 64 64\"><path d=\"M8 30 L32 10 L56 30 Z\" fill=\"#F2605A\"/><rect x=\"14\" y=\"28\" width=\"36\" height=\"26\" rx=\"2\" fill=\"#FFF3E2\"/> <rect x=\"27\" y=\"38\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#B07642\"/><rect x=\"17\" y=\"33\" width=\"7\" height=\"7\" rx=\"1.2\" fill=\"#9ED8F5\"/><rect x=\"40\" y=\"33\" width=\"7\" height=\"7\" rx=\"1.2\" fill=\"#9ED8F5\"/> <path d=\"M32 26 C29 22 24 24 26 28 L32 33 L38 28 C40 24 35 22 32 26 Z\" fill=\"#FF8FA3\"/></svg>", "vb": "0 0 48 56", "d": "M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z", "c": "#F2605A"}, "park": {"svg": "<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#1FA055\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><circle cx=\"24\" cy=\"24\" r=\"16.2\" fill=\"#fff\"/><svg x=\"10.5\" y=\"10.5\" width=\"27\" height=\"27\" viewBox=\"0 0 64 64\"><ellipse cx=\"32\" cy=\"50\" rx=\"26\" ry=\"9\" fill=\"#7CCB5B\"/><ellipse cx=\"32\" cy=\"48\" rx=\"24\" ry=\"6\" fill=\"#95DB72\"/> <rect x=\"14\" y=\"16\" width=\"4\" height=\"32\" rx=\"2\" fill=\"#E8793A\"/><rect x=\"24\" y=\"16\" width=\"4\" height=\"32\" rx=\"2\" fill=\"#E8793A\"/> <rect x=\"15\" y=\"22\" width=\"12\" height=\"3\" rx=\"1.5\" fill=\"#F6A55E\"/><rect x=\"15\" y=\"30\" width=\"12\" height=\"3\" rx=\"1.5\" fill=\"#F6A55E\"/><rect x=\"15\" y=\"38\" width=\"12\" height=\"3\" rx=\"1.5\" fill=\"#F6A55E\"/> <rect x=\"12\" y=\"13\" width=\"18\" height=\"5\" rx=\"2.5\" fill=\"#E8793A\"/> <path d=\"M28 15 C38 15 40 30 46 38 C49 42 52 45 55 46 L53 50 C48 49 44 45 41 41 C35 33 34 21 28 21 Z\" fill=\"#FFC930\" stroke=\"#E6A800\" stroke-width=\"1.2\"/></svg>", "vb": "0 0 48 56", "d": "M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z", "c": "#1FA055"}, "science": {"svg": "<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#7466D9\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><circle cx=\"24\" cy=\"24\" r=\"16.2\" fill=\"#fff\"/><svg x=\"10.5\" y=\"10.5\" width=\"27\" height=\"27\" viewBox=\"0 0 64 64\"><path d=\"M32 4 C43 12 46 26 44 40 H20 C18 26 21 12 32 4 Z\" fill=\"#F7F7FA\" stroke=\"#C9CED6\" stroke-width=\"1.5\"/> <path d=\"M32 4 C37 8 40 12 42 17 H22 C24 12 27 8 32 4 Z\" fill=\"#E94B3C\"/><circle cx=\"32\" cy=\"26\" r=\"6\" fill=\"#9ED8F5\" stroke=\"#4C8BD9\" stroke-width=\"2.5\"/> <path d=\"M20 32 L11 44 L12 50 L21 42 Z M44 32 L53 44 L52 50 L43 42 Z\" fill=\"#E94B3C\"/><rect x=\"26\" y=\"40\" width=\"12\" height=\"4\" rx=\"1.5\" fill=\"#9AA5B1\"/> <path d=\"M27 45 Q32 62 37 45 Z\" fill=\"#FFC930\"/><path d=\"M29.5 45 Q32 55 34.5 45 Z\" fill=\"#FF8A3D\"/></svg>", "vb": "0 0 48 56", "d": "M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z", "c": "#7466D9"}, "vehicle": {"svg": "<path d=\"M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z\" fill=\"#1565FF\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><circle cx=\"24\" cy=\"24\" r=\"16.2\" fill=\"#fff\"/><svg x=\"10.5\" y=\"10.5\" width=\"27\" height=\"27\" viewBox=\"0 0 64 64\"><rect x=\"13\" y=\"8\" width=\"38\" height=\"40\" rx=\"10\" fill=\"#E94B3C\"/><rect x=\"13\" y=\"30\" width=\"38\" height=\"6\" fill=\"#FFFFFF\" opacity=\".9\"/> <rect x=\"18\" y=\"13\" width=\"28\" height=\"14\" rx=\"4\" fill=\"#9ED8F5\"/><rect x=\"31\" y=\"13\" width=\"2\" height=\"14\" fill=\"#E94B3C\"/> <circle cx=\"20\" cy=\"41\" r=\"3.5\" fill=\"#FFE066\"/><circle cx=\"44\" cy=\"41\" r=\"3.5\" fill=\"#FFE066\"/> <path d=\"M20 48 L14 57 M44 48 L50 57\" stroke=\"#6B6B6B\" stroke-width=\"4\" stroke-linecap=\"round\"/><rect x=\"10\" y=\"55\" width=\"44\" height=\"3\" rx=\"1.5\" fill=\"#9A9A9A\"/></svg>", "vb": "0 0 48 56", "d": "M24 53.3L9.3 38.7A20.75 20.75 0 1 1 38.7 38.7Z", "c": "#1565FF"}};
+// ピンの分類（見本）：名前で先に判定 → 残りを play_types で判定。たべるは is_chain で個人店／チェーン店
+// ページにもそのまま埋め込むので、ES5 的に書く（外部の変数を使わない）
+// v7（2026-09-25）：乗り物（vehicle）を「科学館・乗り物・体験」から独立させた。science は「科学館・体験」
+// v7b：乗り物に乗れる遊園地・テーマパークも vehicle（種類名「乗り物・遊園地」）。屋内のテーマパーク（サンリオピューロランド）は室内あそび場
+function pinKind(s){
+  var pt = s.play_types || [], n = String(s.name || '');
+  if (s.is_chain === true) return 'chain';
+  if (pt.indexOf('food') >= 0) return 'food';
+  if (s.is_jidokan === true) return 'jidokan';
+  // 名前：例外（「科学」「ふるさと村」の名前でも中身は公園）
+  if (/森林科学園|山のふるさと村/.test(n)) return 'park';
+  // 名前：例外（美術館・公園などの名前でも中身が室内あそび場）
+  if (/おもちゃ美術館|あそびのせかい|あそびの森|HUGHUG|ちきゅうのにわ|PLAY! PARK|こどもひろば|0123|まんがぱーく|キッズ|プレイルーム|サンリオピューロランド/.test(n)) return 'indoor';
+  if (/動物|水族|ZOO|牧場|ポニー|リス園|さる園|生物園|自然文化園/.test(n)) return 'animal';
+  // 名前：例外（防災館は消防署が運営していても体験施設。乗り物にしない）
+  if (/防災館|防災センター|そなエリア/.test(n)) return 'science';
+  // 乗り物（電車・バス・消防車・パトカー・飛行機・ケーブルカー・交通公園など）と、乗り物に乗れる遊園地・テーマパーク
+  // 「ランド」だけでは決めない（キッズランドなど室内の遊び場が多い）。遊園地は名前で1つずつ。「児童遊園（地）」「東遊園地」「〇〇遊園」は公園、「水遊園」は水族館なので遊園地にしない
+  if (/交通|鉄道|電車|汽車|(^|[^A-Za-z])SL([^A-Za-z]|$)|れーる|ミニトレイン|地下鉄|バス(?!ケ|ク)|消防|航空|飛行機|のりもの|乗り物|ゴーカート|ケーブルカー|ロープウェイ|モノレール|機関車|都電|東武博物館|ポリス|警察|(^|[^童東])遊園地|あらかわ遊園|みかさ遊園|花やしき|よみうりランド(?!.*プール)|サマーランド|レゴランド・ジャパン|シートレインランド|富士急ハイランド|スパーランド|東京ドームシティ|アミューズメントパーク/.test(n)) return 'vehicle';
+  if (/科学|サイエンス|プラネタリウム|天文|宇宙|郵政|通信|下水道|水道|水の|ガス|くすり|放送|寄生虫|南極|teamLab|工場|印刷|たばこと塩|紙の博物館|お札|貨幣|子ども未来館|ギャラクシティ|遊園|ランド|花やしき|展望|タワー/.test(n)) return 'science';
+  if (/美術館|資料館|資料室|図書|文学館|記念館|郷土|歴史|民俗|民家園|たてもの園|博物館|ミュージアム|MUSEUM|文化館|ふるさと館|ふるさと村|版画|彫刻|古墳|埋蔵文化財|本陣|展示|絵本|ことばらんど|はちはく|史料館|インターメディアテク|昭和館|復興記念|屋敷|住宅|水と緑のふれあい館/.test(n)) return 'book';
+  if (/公園|広場|緑地|庭園|植物園|御苑|プレーパーク|鍾乳洞|釣場|菖蒲園|花木園|ビジターセンター/.test(n)) return 'park';
+  // play_types
+  if (pt.indexOf('animal') >= 0) return 'animal';
+  if (pt.indexOf('vehicle') >= 0) return 'vehicle';
+  if (pt.indexOf('museum_science') >= 0) return 'book';
+  // v12（2026-09-26）：屋内の施設（屋内あそび場・温水プールなど）は公園の絵にしない
+  if (pt.indexOf('active') >= 0 || pt.indexOf('water') >= 0 || pt.indexOf('nature') >= 0) return s.indoor_or_outdoor === 'indoor' ? 'indoor' : 'park';
+  return 'indoor';   // create・indoor・何もなし
+}
+const epinIcon=s=>{const k=pinKind(s),p=EPIN[k]||EPIN.indoor;return L.divIcon({className:'epw',html:'<svg class="pg" viewBox="'+p.vb+'" aria-hidden="true">'+(p.d?'<path d="'+p.d+'" transform="translate(0 1.8)" fill="#000" fill-opacity=".24"/>':'')+p.svg+'</svg>',iconSize:[40,47],iconAnchor:[20,45],popupAnchor:[0,-40]});};
+const kfHasT=(s,re)=>(s.kid_features||[]).some(x=>re.test(x));
+const isEatS=s=>s.is_chain===true||(s.play_types||[]).includes('food');
+let clusterLayer=null;
 // state
-const state={play:new Set(),drive:null,rain:false,free:false,kids:false,jidokan:false,zashiki:false,kids_chair:false,chain:false};
+const state={mode:'play',play:new Set(),drive:null,rain:false,free:false,kids:false,jidokan:false,zashiki:false,kids_chair:false,chain:false};
 
 // --- map init (isolated: map failures must never block cards/filters) ---
 let map=null;
 const markers={};
 try{
-  map=L.map('map',{scrollWheelZoom:false}).setView([40.6133,140.7515],9);
+  map=L.map('map',{scrollWheelZoom:false}).setView([origin.lat,origin.lng],12);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
     maxZoom:18,
     attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -5102,15 +5110,16 @@ try{
   // spot markers
   SPOTS.forEach((s,i)=>{
     if(s.latitude==null||s.longitude==null) return;
-    const pf=PLAYF(s), col=(s.is_chain===true?'#e8853d':pf.c), emo=(s.is_chain===true?'🍴':pf.e);
-    const icon=L.divIcon({className:'',html:`<div class="pin" style="background:${col}"><span>${emo}</span></div>`,iconSize:[34,34],iconAnchor:[17,34],popupAnchor:[0,-30]});
+    const icon=epinIcon(s);
     const m=L.marker([s.latitude,s.longitude],{icon,title:s.name});
     // popup content is generated on each open so drive-minutes always reflect the current origin
     m.bindPopup(()=>popupHTML(s,i),{maxWidth:290,minWidth:220,autoPan:false,closeOnClick:false,className:'minipop',maxHeight:Math.max(180,Math.round(window.innerHeight*0.34)),offset:[0,-6]});
     m._spotIndex=i;
     markers[i]=m;
-    m.addTo(map);
   });
+  clusterLayer=L.markerClusterGroup({maxClusterRadius:40,disableClusteringAtZoom:12,showCoverageOnHover:false,spiderfyOnMaxZoom:false,zoomToBoundsOnClick:true,removeOutsideVisibleBounds:true,
+    iconCreateFunction:c=>{const n=c.getChildCount(),z=n<10?42:(n<100?48:56);return L.divIcon({html:'<div class="cl"><span>'+n+'</span></div>',className:'clw',iconSize:[z,z]});}});
+  map.addLayer(clusterLayer);
   // whole mini-card is tappable: close popup + scroll to the detail card
   map.on('popupopen',e=>{
     const el=e.popup.getElement(); if(!el) return;
@@ -5329,28 +5338,16 @@ function cardHTML(s,i){
 }
 
 function matches(s){
-  // チェーン飲食店は初期非表示。🍽ごはん配下の「子連れチェーン店」チップON時のみ表示する。
-  if(s.is_chain===true && state.chain!==true) return false;
-  if(state.play.size){
-    const pts=s.play_types||[];
-    if(![...state.play].some(t=>pts.includes(t))) return false;
+  if(state.mode==='eat'){
+    if(!isEatS(s)) return false;
+    if(state.zashiki&&!(s.has_zashiki===true||kfHasT(s,/座敷|小上がり|掘りごたつ/))) return false;
+    if(state.kids&&!(s.has_kids_space===true||kfHasT(s,/キッズスペース|キッズルーム|キッズコーナー|プレイスペース/))) return false;
+    return true;
   }
-  if(state.drive!=null){
-    const dm=driveMinutes(s);
-    if(dm==null||dm>state.drive) return false;
-  }
-  if(state.rain){ if(!(s.rain_friendly===true||s.indoor_or_outdoor==='indoor')) return false; }
-  if(state.free){ if(s.is_free!==true) return false; }
-  if(state.kids){ if(s.has_kids_space!==true) return false; }
-  if(state.jidokan){ if(s.is_jidokan!==true) return false; }
-  else { if(s.is_jidokan===true) return false; }
-  if(state.zashiki){ if(s.has_zashiki!==true) return false; }
-  if(state.kids_chair){ if(s.has_kids_chair!==true) return false; }
-  // 条件チップ単独時（ごはんチップ未選択）は、foodのみのスポット（飲食店）を除外。
-  // ただし🧸キッズスペースは飲食店と児童館にしか付かない条件なので、ONのときはこのガードを外す
-  // （外さないと「キッズスペース」単独指定が常に0件になる）
-  const pts0=s.play_types||[];
-  if(pts0.length&&pts0.every(t=>t==='food')&&!state.play.has('food')&&!state.kids&&(state.rain||state.free||state.drive!=null)) return false;
+  if(isEatS(s)) return false;
+  if(state.rain&&!(s.rain_friendly===true||s.indoor_or_outdoor==='indoor')) return false;
+  if(state.free&&s.is_free!==true) return false;
+  if(state.jidokan){ if(s.is_jidokan!==true) return false; } else if(s.is_jidokan===true) return false;
   return true;
 }
 
@@ -5371,104 +5368,48 @@ function applyRender(keep){
   }
   // card list rendering must always happen, regardless of map state
   cardsEl.innerHTML=frag.join('');
-  document.getElementById('count').textContent='該当'+n+'件';
+  document.getElementById('count').textContent=n+'件';
   document.getElementById('listcount').textContent='('+n+'件)';
   document.getElementById('empty').style.display=n?'none':'block';
 
   // map marker sync is best-effort and isolated from card rendering
   try{
-    if(map){
-      SPOTS.forEach((s,i)=>{
-        const ok=matches(s);
-        const m=markers[i];
-        if(m){ if(ok){ if(!map.hasLayer(m))m.addTo(map);} else { if(map.hasLayer(m))map.removeLayer(m);} }
-      });
+    if(map&&clusterLayer){
+      const on=[]; SPOTS.forEach((s,i)=>{ const m=markers[i]; if(m&&matches(s)) on.push(m); });
+      map.closePopup(); clusterLayer.clearLayers(); clusterLayer.addLayers(on);
+      const me=document.getElementById('map'); if(me) me.classList.toggle('eat',state.mode==='eat');
     }
   }catch(e){
     console.warn('map update failed',e);
   }
 }
 
-// --- filter chip wiring ---
-function updateFoodSubChips(){
-  const el=document.getElementById('foodSubChips');
-  if(!el) return;
-  const show=state.play.has('food');
-  el.style.display=show?'':'none';
-  if(!show){
-    let changed=false;
-    ['zashiki','kids_chair','chain'].forEach(f=>{
-      if(state[f]){ state[f]=false; changed=true; }
-    });
-    document.querySelectorAll('#foodSubChips .chip').forEach(c=>{c.classList.remove('on');c.setAttribute('aria-pressed','false')});
-  }
+// --- filter chip wiring（[top-erabu] あそぶ・たべる＋3つ／2つ） ---
+function setMode(md){
+  state.mode=md; state.rain=state.free=state.jidokan=state.zashiki=state.kids=false;
+  document.querySelectorAll('.emode button').forEach(b=>{const on=b.dataset.m===md;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
+  document.querySelectorAll('.echips .chip').forEach(c=>{c.hidden=c.dataset.mode!==md;c.classList.remove('on');c.setAttribute('aria-pressed','false');});
+  const fb=document.getElementById('filterbar'); if(fb) fb.classList.toggle('eat',md==='eat');
+  apply();
 }
-document.querySelectorAll('.chip.play').forEach(c=>{
-  c.addEventListener('click',()=>{
-    const t=c.dataset.t;
-    if(state.play.has(t))state.play.delete(t);else state.play.add(t);
-    c.classList.toggle('on');c.setAttribute('aria-pressed',state.play.has(t));
-    updateFoodSubChips();
-    apply();
-  });
-});
-document.querySelectorAll('.chip.drive').forEach(c=>{
-  c.addEventListener('click',()=>{
-    const d=+c.dataset.d;
-    document.querySelectorAll('.chip.drive').forEach(x=>{x.classList.remove('on');x.setAttribute('aria-pressed','false')});
-    if(state.drive===d){state.drive=null;}else{state.drive=d;c.classList.add('on');c.setAttribute('aria-pressed','true');}
-    apply();
-  });
-});
+document.querySelectorAll('.emode button').forEach(b=>b.addEventListener('click',()=>{ if(state.mode!==b.dataset.m) setMode(b.dataset.m); }));
 document.querySelectorAll('.chip[data-f]').forEach(c=>{
   c.addEventListener('click',()=>{
     const f=c.dataset.f;state[f]=!state[f];
-    c.classList.toggle('on');c.setAttribute('aria-pressed',state[f]);
+    c.classList.toggle('on',state[f]);c.setAttribute('aria-pressed',state[f]);
     apply();
   });
 });
-document.getElementById('reset').addEventListener('click',resetAll);
-function resetAll(){
-  state.play.clear();state.drive=null;state.rain=false;state.free=false;state.kids=false;state.jidokan=false;state.zashiki=false;state.kids_chair=false;state.chain=false;
-  document.querySelectorAll('.chip.on').forEach(c=>{c.classList.remove('on');c.setAttribute('aria-pressed','false')});
-  updateFoodSubChips();
-  apply();
-}
-
-// --- mood buttons ---
-document.querySelectorAll('.mood-btn').forEach(b=>{
-  b.addEventListener('click',()=>{
-    resetAll();
-    const mood=b.dataset.mood;
-    if(mood==='rain'){ state.rain=true; setChip('[data-f="rain"]'); }
-    else if(mood==='free'){ state.free=true; setChip('[data-f="free"]'); }
-    else { state.play.add(mood); setChip('.chip.play[data-t="'+mood+'"]'); }
-    updateFoodSubChips();
-    apply();
-    document.getElementById('filterbar').scrollIntoView({behavior:'smooth',block:'start'});
-    setTimeout(()=>{try{if(map)map.invalidateSize();}catch(e){console.warn('map invalidateSize failed',e);}},400);
-  });
-});
+function resetAll(){ setMode(state.mode); }
 function setChip(sel){const c=document.querySelector(sel);if(c){c.classList.add('on');c.setAttribute('aria-pressed','true');}}
 
-// --- fullscreen map button: hand off current filter + origin city to map.html ---
+// --- fullscreen map button: 新しいマップ（erabu.html）へ ---
 (function(){
   const btn=document.getElementById('fullscreenMapBtn');
   if(!btn) return;
   btn.addEventListener('click',()=>{
-    const params=new URLSearchParams();
-    if(state.rain) params.set('filter','rain');
-    else if(state.free) params.set('filter','free');
-    else if(state.kids) params.set('filter','kids');
-    else if(state.jidokan) params.set('filter','jidokan');
-    else if(state.play.size) params.set('filter',[...state.play][0]);
-    if(!origin.isAnjo){
-      params.set('from',origin.name);
-      // 現在地はCITIESに無いため座標も渡し、全画面側で現在地設定を維持する
-      if(origin.name==='現在地'){ params.set('flat',origin.lat.toFixed(5)); params.set('flng',origin.lng.toFixed(5)); }
-    }
-    const qs=params.toString();
-    location.href='./map.html'+(qs?('?'+qs):'');
+    if(typeof gtag==='function') gtag('event','seo_cta_click',{src:'top',position:'map-fullscreen'});
+    location.href='./erabu.html?src=top_map_full'+(state.mode==='eat'?'&m=eat':'');
   });
 })();
 
@@ -5593,6 +5534,7 @@ originSel.addEventListener('change',()=>{
   const opt=originSel.selectedOptions[0];
   const parts=originSel.value.split(',');
   setOrigin(opt.dataset.name, +parts[0], +parts[1]);
+  try{ if(map) map.setView([origin.lat,origin.lng],12); }catch(e){}
 });
 
 document.getElementById('originGeo').addEventListener('click',()=>{
@@ -5701,7 +5643,7 @@ async function updateWeather(){
 (function(){
   const rb=document.getElementById('wxbarRain');
   if(rb) rb.addEventListener('click',()=>{
-    state.rain=true; setChip('[data-f="rain"]'); apply();
+    if(state.mode!=='play') setMode('play'); state.rain=true; setChip('[data-f="rain"]'); apply();
     const list=document.querySelector('.listwrap')||document.querySelector('.cards');
     if(list) list.scrollIntoView({behavior:'smooth',block:'start'});
   });
