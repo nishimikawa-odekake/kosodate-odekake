@@ -503,7 +503,8 @@ function pinKind(s){
   if (pt.indexOf('animal') >= 0) return 'animal';
   if (pt.indexOf('vehicle') >= 0) return 'vehicle';
   if (pt.indexOf('museum_science') >= 0) return 'book';
-  if (pt.indexOf('active') >= 0 || pt.indexOf('water') >= 0 || pt.indexOf('nature') >= 0) return 'park';
+  // v12（2026-09-26）：屋内の施設（屋内あそび場・温水プールなど）は公園の絵にしない
+  if (pt.indexOf('active') >= 0 || pt.indexOf('water') >= 0 || pt.indexOf('nature') >= 0) return s.indoor_or_outdoor === 'indoor' ? 'indoor' : 'park';
   return 'indoor';   // create・indoor・何もなし
 }
 const epinIcon=s=>{const k=pinKind(s),p=EPIN[k]||EPIN.indoor;return L.divIcon({className:'epw',html:'<svg class="pg" viewBox="'+p.vb+'" aria-hidden="true">'+(p.d?'<path d="'+p.d+'" transform="translate(0 1.8)" fill="#000" fill-opacity=".24"/>':'')+p.svg+'</svg>',iconSize:[40,47],iconAnchor:[20,45],popupAnchor:[0,-40]});};
